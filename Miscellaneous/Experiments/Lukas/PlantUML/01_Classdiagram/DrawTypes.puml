@@ -1,0 +1,71 @@
+@startuml FUDGE-Core
+skinparam monochrome true
+skinparam componentStyle uml2
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam handwritten false
+
+'page 2x2
+left to right direction
+package FUDGE <<Rectangle>> {
+	package SketchTypes <<Rectangle>>{
+		class SketchObject {
+			+ color: string | CanvasGradient | CanvasPattern
+			+ name: String
+			+ order: number
+			+ lineWidth: number
+			{static} sort(a: SketchObject, b: SketchObject): number
+		}
+
+		class SketchPath extends SketchObject {
+			- closed: boolean
+			- path2d: Path2D
+			+ points: SketchVertex[]
+			+ fillColor: string | CanvasGradient | CanvasPattern
+			draw(context: CanvasRenderingContext2D, selected: boolean = false)
+			generatePath2D()
+			addVertexToEnd(bcp1: SketchVertex)
+			getPath2D(): Path2D
+			move(d: Vector2): Path2D
+			move(dx: number, dy: number): Path2D
+		}
+
+		' class SketchLine {
+			' 	+ startPoint: Vector2
+			' 	+ endPoint: Vector2
+			' 	+ startBezierPoint: Vector2
+			' 	+ endBezierPoint: Vector2
+			' 	+ parent: SketchPath
+			'
+		' }
+
+		class SketchPoint {
+			# path: Path2D
+			+ x: number
+			+ y: number
+			getPath2D(): Path2D
+			generatePath2D(): Path2D
+			draw(context: CanvasRenderingContext2D, selected: boolean = false)
+			move(dx: number, dy: number): Path2D
+			moveTo(x: number, y: number): Path2D
+		}
+
+		class SketchVertex extends SketchPoint {
+			tangentIn: SketchTangentPoint
+			tangentOut: SketchTangentPoint
+			+ parent: SketchPath
+			draw(context: CanvasRenderingContext2D, selected: boolean = false, showTangents: boolean = false)
+			move(dx: number, dy: number): Path2D
+		}
+
+		class SketchTangentPoint extends SketchPoint {
+			+ parent: SketchVertex
+			generatePath2D(): Path2D
+		}
+
+		' Associations
+		SketchPath "1" -- "n" SketchVertex
+		Vertex "1" -- "2" SketchTangentPoint
+	}
+}
+@enduml

@@ -1,0 +1,33 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558 
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "typescript",
+            "tsconfig": "Source/tsconfig.json",
+            "option": "watch",
+            "problemMatcher": [
+                "$tsc-watch"
+            ]
+        },
+        {
+            "label": "auto-watch",
+            "type": "shell",
+            "command": "tsc -watch -p Source/Fudge",
+            "runOptions": {
+                "runOn": "folderOpen",
+                "tsconfig": "Source/Fudge/tsconfig.json"
+            }
+        },
+        {
+            "label": "auto-watch",
+            "type": "shell",
+            "command": "tsc -watch -p Source",
+            "runOptions": {
+                "runOn": "folderOpen",
+                "tsconfig": "Source/tsconfig.json"
+            }
+        }
+    ]
+}
