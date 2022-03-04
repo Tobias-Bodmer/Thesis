@@ -2,17 +2,28 @@
 <html>
 <head>
     <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta settings='"server": "ws://localhost:8080", "login": "Test", "partner": "Test"'>
     <title>Page Title</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <!-- <link rel='stylesheet' type='text/css' media='screen' href='main.css'> -->
     <script src='FUDGE/Aid/FudgeAid.js'></script>
     <script src='FUDGE/Core/FudgeCore.js'></script>
+    <script src='FUDGE/Net/Client/FudgeClient.js'></script>
     <script src='FUDGE/UserInterface/FudgeUserInterface.js'></script>
-    <script src='Classes/Main.ts'></script>
-    <script src='Build/Game.js'></script>
+    <script src='Build/Main.js' defer></script>
 </head>
 <body>
+    <canvas id="Canvas"></canvas>
+    <div id="ConnectionGUI">
+        <label>Port:</label>
+        <input type="number" max="9999" id="PortHost">
+        <button id="Host">Host</button>
+        <label>IP-Adress:</label>
+        <input type="text" id="IPConnection">
+        <label>Port:</label>
+        <input type="number" max="9999" id="PortConnection">
+        <button id="Connecting">Connecting</button>
+    </div>
     
 </body>
 </html>
