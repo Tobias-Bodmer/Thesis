@@ -1,9 +1,6 @@
 //#region "Imports"
-// import ƒ = FudgeCore;
-// import ƒAid = FudgeAid;
-// import ƒInterface = FudgeUserInterface;
-import { FudgeServer } from "../FUDGE/Net/Server/FudgeServer.js";
-var ƒNet = FudgeNet;
+import { FudgeNet } from "../FUDGE/Net/Build/Server/Message.js";
+import { FudgeServer } from "../FUDGE/Net/Build/Server/FudgeServer.js";
 //#endregion "Imports"
 var Game;
 (function (Game) {
@@ -20,11 +17,12 @@ var Game;
     //#endregion "PrivateVariables"
     //#region "FudgeNetComponent"
     function hostServer() {
+        console.log("hello World");
         if (!isNaN(+portHost.value)) {
             //TODO: learn FudgeNet
             let host = new FudgeServer();
             host.startUp(+portHost.value);
-            console.log(host.socket);
+            console.log(host);
         }
         else {
             alert("Your Port is not a number");
@@ -33,7 +31,7 @@ var Game;
     function conneting() {
         if (!isNaN(+IPConnection.value) && !isNaN(+PortConnection.value)) {
             //TODO: learn FudgeNet
-            let client = new ƒNet.FudgeClient();
+            let client = new FudgeNet.FudgeClient();
             client.connectToServer();
             console.log(+IPConnection.value);
             console.log(IPConnection.value + PortConnection.value);

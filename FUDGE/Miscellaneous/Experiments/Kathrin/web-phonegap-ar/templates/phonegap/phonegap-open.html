@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<link href="../../styles/main.css" rel="stylesheet" />
+	</head>
+	<body>
+		<h1>Open existing PhoneGap Application</h1>
+
+		<p>Choose the directory to your existing phonegap project.</p>
+		<div class="chose-path-container">
+			<p>Your directory path: <span class="chose-path"></span></p>
+		</div>
+
+		<div class="input-container">
+			<div class="flex-container">
+				<label for="app-dir" class="custom-file-input">
+					Select project path
+					<input
+						type="file"
+						name="app-dir"
+						id="app-dir"
+						webkitdirectory
+						mozdirectory
+						msdirectory
+						odirectory
+						directory
+					/>
+				</label>
+			</div>
+
+			<button type="submit" class="action-btn" id="open-phonegap-dir">Open project</button>
+		</div>
+		<script>
+			require("../../scripts/phonegap/phonegap-open.renderer.js");
+		</script>
+	</body>
+</html>

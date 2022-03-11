@@ -1,0 +1,65 @@
+@startuml Viewport.draw
+skinparam monochrome true
+skinparam shadowing false
+header
+    Viewport.draw
+endheader
+|Viewport|
+|RenderManager|
+|RenderOperator|
+|Viewport|
+if () then ([camera inactive])
+    end
+else
+    :clear(camera.color);
+endif
+|RenderManager|
+package clear {
+    :_color]
+}
+|Viewport|
+:addBranch(branch);
+|RenderManager|
+package addBranch {
+    :_node]
+    :addNode(_node);
+    while () is ([more children])
+        :child = next child]
+        :addBranch(child);
+    endwhile
+}
+|Viewport|
+:drawBranch(branch);
+|RenderManager|
+package drawBranch {
+    :_node, _camera, _world]
+    :calculate finalNodeTransform]
+    :calculate projection];
+    :drawNode(_node, projection) *;
+    |RenderManager|
+    while () is ([more children])
+        :child = next child]
+        :drawBranch(child, _camera);
+    endwhile
+}
+|Viewport|
+:copy
+RenderManager.canvas section
+to Viewport.canvas section;
+stop
+|RenderManager|
+package drawNode {
+    :_node, projection]
+    :retrieve buffer-, material-, 
+    shader-info for _node]
+    :draw();
+}
+|RenderOperator|
+package draw {
+    :_renderinfos, _projection]
+    :use infos, bind buffers,
+    supply data to WebGL]
+    :WebGL.drawArrays(...);
+}
+stop
+@enduml

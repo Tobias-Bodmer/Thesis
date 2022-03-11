@@ -1,12 +1,10 @@
-    //#region "Imports"
-    // import ƒ = FudgeCore;
-    // import ƒAid = FudgeAid;
-    // import ƒInterface = FudgeUserInterface;
-    import { FudgeServer } from "../FUDGE/Net/Server/FudgeServer.js";
-    import ƒNet = FudgeNet;
-    //#endregion "Imports"
+//#region "Imports"
+import { FudgeNet } from "../FUDGE/Net/Build/Server/Message.js";
+import { FudgeServer } from "../FUDGE/Net/Build/Server/FudgeServer.js";
+//#endregion "Imports"
 
 namespace Game {
+
     //#region "DomElements"
     let portHost = (<HTMLInputElement>document.getElementById("PortHost"));
     document.getElementById("Host").addEventListener("click", hostServer, true);
@@ -22,26 +20,31 @@ namespace Game {
     //#region "PrivateVariables"
 
     //#endregion "PrivateVariables"
-    
+
     //#region "FudgeNetComponent"
     function hostServer() {
+
+        console.log("hello World");
+        
         if (!isNaN(+portHost.value)) {
 
             //TODO: learn FudgeNet
             let host = new FudgeServer();
+            
+            
             host.startUp(+portHost.value);
 
-            console.log(host.socket);
+            console.log(host);
         } else {
             alert("Your Port is not a number");
         }
     }
-    
+
     function conneting() {
         if (!isNaN(+IPConnection.value) && !isNaN(+PortConnection.value)) {
-            
+
             //TODO: learn FudgeNet
-            let client = new ƒNet.FudgeClient();
+            let client = new FudgeNet.FudgeClient();
             client.connectToServer();
 
             console.log(+IPConnection.value)
@@ -49,6 +52,6 @@ namespace Game {
         } else {
             alert("Your IP or Port is not a number");
         }
-     }
+    }
     //#endregion "FudgeNetComponent"
 }
