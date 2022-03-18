@@ -14,6 +14,9 @@ declare namespace Enemy {
 declare namespace InputSystem {
 }
 declare namespace Items {
+    class Item {
+        constructor();
+    }
 }
 declare namespace Level {
     class Landscape extends ƒ.Node {
@@ -21,11 +24,17 @@ declare namespace Level {
     }
 }
 declare namespace Networking {
+    import ƒClient = FudgeNet.FudgeClient;
+    let client: ƒClient;
 }
 declare namespace Player {
-    class Player {
-        constructor();
-        move(): void;
+    class Player extends ƒAid.NodeSprite {
+        authority: string;
+        healthPoints: number;
+        attackPoints: number;
+        items: Array<Items.Item>;
+        constructor(_name: string, _authority: string);
+        move(_direction: ƒ.Vector2): void;
         attack(): void;
     }
 }

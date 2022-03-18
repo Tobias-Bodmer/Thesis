@@ -8,8 +8,8 @@ namespace Game {
     export import ƒAid = FudgeAid;
 
     //#region "DomElements"
-    export let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("Canvas");   
-    window.addEventListener("load", init);
+    export let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("Canvas");
+    window.addEventListener("load", waitOnConnection);
     //#endregion "DomElements"
 
     //#region "PublicVariables"
@@ -30,7 +30,7 @@ namespace Game {
         cmpCamera.mtxPivot.lookAt(ƒ.Vector3.ZERO(), ƒ.Vector3.Y());
 
         graph.addChild(new ƒAid.Node("blob", ƒ.Matrix4x4.IDENTITY(), new ƒ.Material("mtrCharacter", ƒ.ShaderFlat, new ƒ.CoatColored(ƒ.Color.CSS("withe", 0))), new ƒ.MeshCube()));
-        
+
         graph.getChildren()[0].mtxLocal.scale(new ƒ.Vector3(1, 1, 1))
 
         console.log(graph.getChildren()[0].name);
@@ -40,11 +40,20 @@ namespace Game {
         draw();
     }
 
+    function waitOnConnection() {
+        if (Networking.client != undefined && Networking.client.id != null || undefined) {
+            document.getElementById("ConnectionGUI").style.visibility = "hidden";
+            init();
+        }else {
+            setTimeout(waitOnConnection, 300);
+        }
+    }
+
     function draw(): void {
         viewport.draw();
     }
 
-    function update() {
+    function update(): void {
         draw();
     }
 

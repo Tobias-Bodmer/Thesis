@@ -5,6 +5,8 @@ namespace Networking {
     import ƒClient = FudgeNet.FudgeClient;
     // import ƒServer = FudgeServer;
 
+    export let client: ƒClient;
+
     let portHost = <HTMLInputElement>document.getElementById("PortHost");
     document.getElementById("Host").addEventListener("click", hostServer, true);
     let IPConnection = <HTMLInputElement>document.getElementById("IPConnection");
@@ -27,10 +29,16 @@ namespace Networking {
     }
 
     function conneting() {
-        let client = new ƒClient();
+        client = new ƒClient();
         client.connectToServer(IPConnection.value + PortConnection.value);
 
         console.log(+IPConnection.value)
         console.log(IPConnection.value + PortConnection.value);
+    }
+
+    window.addEventListener("beforeunload", onUnload, false);
+
+    function onUnload() {
+        //TODO: do we need to close connections?
     }
 }
