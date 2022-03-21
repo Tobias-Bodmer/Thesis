@@ -1,36 +1,50 @@
 namespace InputSystem {
 
-    document.addEventListener("keypress", move);
+    document.addEventListener("keydown", keyboardDownEvent);
+    document.addEventListener("keyup", keyboardUpEvent);
     Game.canvas.addEventListener("mousedown", attack);
 
-    function move(_e: KeyboardEvent) {
+    let controller = new Map<string, boolean>([
+        ["W", false],
+        ["A", false],
+        ["S", false],
+        ["D", false]
+    ]);
 
+    function keyboardDownEvent(_e: KeyboardEvent) {
         let key: string = _e.code.toUpperCase().substring(3);
+        controller.set(key, true);
+    }
+
+    function keyboardUpEvent(_e: KeyboardEvent) {
+        let key: string = _e.code.toUpperCase().substring(3);
+        controller.set(key, false);
+    }
+
+    export function move() {
         let moveVector: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
+        let hasChanged: boolean = false;
 
-
-        switch (key) {
-            case "W":
-                moveVector.y += 1;
-                break;
-
-            case "A":
-                moveVector.x -= 1;
-                break;
-
-            case "S":
-                moveVector.y -= 1;
-                break;
-
-            case "D":
-                moveVector.x += 1;
-                break;
-
-            default:
-                break;
+        if (controller.get("W")) {
+            moveVector.y += 1;
+            hasChanged = true;
+        }
+        if (controller.get("A")) {
+            moveVector.x -= 1;
+            hasChanged = true;
+        }
+        if (controller.get("S")) {
+            moveVector.y -= 1;
+            hasChanged = true;
+        }
+        if (controller.get("D")) {
+            moveVector.x += 1;
+            hasChanged = true;
         }
 
-        Game.player.move(moveVector);
+        if (hasChanged){
+            Game.player.move(moveVector);
+        }
     }
 
     function attack(e_: MouseEvent) {

@@ -16,7 +16,7 @@ namespace Player {
 
         public move(_direction: ƒ.Vector3) {
             // if (Networking.client.id == this.authority) {
-                _direction.scale((1 / Game.ƒ.Loop.timeFrameReal * this.speed))
+                _direction.scale((1 / 60 * this.speed))
                 this.cmpTransform.mtxLocal.translate(_direction);
             // }
         }

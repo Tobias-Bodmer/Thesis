@@ -52,6 +52,8 @@ namespace Game {
         viewport.initialize("Viewport", graph, cmpCamera, canvas);
 
         draw();
+
+        ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, 60);
     }
 
     function waitOnConnection() {
@@ -68,10 +70,10 @@ namespace Game {
     }
 
     function update(): void {
+        InputSystem.move();
         draw();
     }
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
-    ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, 60);
     //#endregion "essential"
 }

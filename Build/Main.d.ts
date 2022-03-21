@@ -12,6 +12,7 @@ declare namespace Game {
 declare namespace Enemy {
 }
 declare namespace InputSystem {
+    function move(): void;
 }
 declare namespace Items {
     class Item {
