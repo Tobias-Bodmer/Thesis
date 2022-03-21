@@ -1,12 +1,13 @@
 namespace InputSystem {
 
-    Game.canvas.addEventListener("keypress", move);
+    document.addEventListener("keypress", move);
     Game.canvas.addEventListener("mousedown", attack);
 
     function move(_e: KeyboardEvent) {
 
-        let key: string = _e.code.toUpperCase();
-        let moveVector: Game.ƒ.Vector2 = new Game.ƒ.Vector2();
+        let key: string = _e.code.toUpperCase().substring(3);
+        let moveVector: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
+
 
         switch (key) {
             case "W":
@@ -29,7 +30,7 @@ namespace InputSystem {
                 break;
         }
 
-        // player.move
+        Game.player.move(moveVector);
     }
 
     function attack(e_: MouseEvent) {
