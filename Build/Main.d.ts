@@ -1,5 +1,4 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference path="../FUDGE/Net/Build/Server/FudgeServer.d.ts" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
@@ -8,6 +7,7 @@ declare namespace Game {
     let canvas: HTMLCanvasElement;
     let viewport: ƒ.Viewport;
     let graph: ƒ.Node;
+    let player: Player.Player;
 }
 declare namespace Enemy {
 }
@@ -28,13 +28,14 @@ declare namespace Networking {
     let client: ƒClient;
 }
 declare namespace Player {
-    class Player extends ƒAid.NodeSprite {
+    class Player extends Game.ƒAid.NodeSprite {
         authority: string;
         healthPoints: number;
         attackPoints: number;
         items: Array<Items.Item>;
-        constructor(_name: string, _authority: string);
-        move(_direction: ƒ.Vector2): void;
+        speed: number;
+        constructor(_name: string, _authority: string, _speed: number);
+        move(_direction: ƒ.Vector3): void;
         attack(): void;
     }
 }

@@ -1,9 +1,7 @@
 ///<reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts"/>
-///<reference path="../FUDGE/Net/Build/Server/FudgeServer.d.ts"/>
 
 namespace Networking {
     import ƒClient = FudgeNet.FudgeClient;
-    // import ƒServer = FudgeServer;
 
     export let client: ƒClient;
 

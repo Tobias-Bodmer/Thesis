@@ -9,12 +9,13 @@ namespace Game {
 
     //#region "DomElements"
     export let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("Canvas");
-    window.addEventListener("load", waitOnConnection);
+    window.addEventListener("load", init);
     //#endregion "DomElements"
 
     //#region "PublicVariables"
     export let viewport: ƒ.Viewport = new ƒ.Viewport();
     export let graph: ƒ.Node = new ƒ.Node("Graph");
+    export let player: Player.Player;
     //#endregion "PublicVariables"
 
     //#region "PrivateVariables"
@@ -23,17 +24,30 @@ namespace Game {
 
     //#region "essential"
     function init() {
-        cmpCamera.mtxPivot.translateZ(15);
+        player = new Player.Player("Player1", "11", 5);
+        
+        ƒ.Debug.log(player);
+        
+        // let node: ƒ.Node = new ƒ.Node("Quad");
+        
+        // let mesh: ƒ.MeshQuad = new ƒ.MeshQuad();
+        // let cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
+        // node.addComponent(cmpMesh);
+        
+        // let mtrSolidWhite: ƒ.Material = new ƒ.Material("SolidWhite", ƒ.ShaderFlat, new ƒ.CoatColored(ƒ.Color.CSS("WHITE")));
+        // let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(mtrSolidWhite);
+        // node.addComponent(cmpMaterial);
+        
+        // graph.appendChild(node);
+       
+        graph.appendChild(player);
 
-        cmpCamera.mtxPivot.rotateX(180);
+        ƒAid.addStandardLightComponents(graph);
+        
+        cmpCamera.mtxPivot.translateZ(25);
+        cmpCamera.mtxPivot.rotateY(180);
 
-        cmpCamera.mtxPivot.lookAt(ƒ.Vector3.ZERO(), ƒ.Vector3.Y());
-
-        graph.addChild(new ƒAid.Node("blob", ƒ.Matrix4x4.IDENTITY(), new ƒ.Material("mtrCharacter", ƒ.ShaderFlat, new ƒ.CoatColored(ƒ.Color.CSS("withe", 0))), new ƒ.MeshCube()));
-
-        graph.getChildren()[0].mtxLocal.scale(new ƒ.Vector3(1, 1, 1))
-
-        console.log(graph.getChildren()[0].name);
+        ƒ.Debug.log(graph);
 
         viewport.initialize("Viewport", graph, cmpCamera, canvas);
 
@@ -58,6 +72,6 @@ namespace Game {
     }
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
-    ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, 69);
+    ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, 60);
     //#endregion "essential"
 }

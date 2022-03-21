@@ -1,20 +1,24 @@
 namespace Player {
 
-    export class Player extends ƒAid.NodeSprite{
+    export class Player extends Game.ƒAid.NodeSprite{
         public authority: string;
         public healthPoints: number;
         public attackPoints: number;
         public items: Array<Items.Item>;
+        public speed: number;
         
-        constructor(_name: string, _authority: string) {
+        constructor(_name: string, _authority: string, _speed: number) {
             super(_name);
+            this.addComponent(new ƒ.ComponentTransform());
             this.authority = _authority;
+            this.speed = _speed;
         }
 
-        public move(_direction: ƒ.Vector2) {
-            if (Networking.client.id == this.authority) {
-                this.mtxLocal.translate(new ƒ.Vector3(_direction.x, 0, _direction.y));
-            }
+        public move(_direction: ƒ.Vector3) {
+            // if (Networking.client.id == this.authority) {
+                _direction.scale((1 / Game.ƒ.Loop.timeFrameReal * this.speed))
+                this.cmpTransform.mtxLocal.translate(_direction);
+            // }
         }
 
         public attack() {
