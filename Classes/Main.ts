@@ -16,6 +16,7 @@ namespace Game {
     export let viewport: ƒ.Viewport = new ƒ.Viewport();
     export let graph: ƒ.Node = new ƒ.Node("Graph");
     export let player: Player.Player;
+    export let player2: Player.Player;
     //#endregion "PublicVariables"
 
     //#region "PrivateVariables"

@@ -8,6 +8,7 @@ declare namespace Game {
     let viewport: ƒ.Viewport;
     let graph: ƒ.Node;
     let player: Player.Player;
+    let player2: Player.Player;
 }
 declare namespace Player {
     class Attributes {
@@ -42,8 +43,18 @@ declare namespace Level {
     }
 }
 declare namespace Networking {
+    enum FUNCTION {
+        SPAWN = 0,
+        TRANSFORM = 1
+    }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
+    let posUpdate: ƒ.Vector3;
+    /**
+     * sends transform over network
+     * @param __position current position of Object
+     */
+    function updatePosition(_position: ƒ.Vector3): void;
 }
 declare namespace Player {
     class Player extends Game.ƒAid.NodeSprite {
