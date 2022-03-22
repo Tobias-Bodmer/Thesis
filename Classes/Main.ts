@@ -26,7 +26,7 @@ namespace Game {
     //#region "essential"
     function init() {
         player = new Player.Player("Player1", "11", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
-
+        player.addComponent(cmpCamera);
         ƒ.Debug.log(player);
 
         // let node: ƒ.Node = new ƒ.Node("Quad");
