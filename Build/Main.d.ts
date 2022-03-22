@@ -9,6 +9,21 @@ declare namespace Game {
     let graph: ƒ.Node;
     let player: Player.Player;
 }
+declare namespace Player {
+    class Attributes {
+        healthPoints: number;
+        speed: number;
+        attackPoints: number;
+        constructor(_healthPoints: number, _attackPoints: number, _speed: number);
+    }
+}
+declare namespace Player {
+    class Character {
+        name: string;
+        attributes: Attributes;
+        constructor(name: string, attributes: Attributes);
+    }
+}
 declare namespace Enemy {
 }
 declare namespace InputSystem {
@@ -16,7 +31,9 @@ declare namespace InputSystem {
 }
 declare namespace Items {
     class Item {
-        constructor();
+        itemName: string;
+        description: string;
+        constructor(_itemName: string, _description: string);
     }
 }
 declare namespace Level {
@@ -31,11 +48,9 @@ declare namespace Networking {
 declare namespace Player {
     class Player extends Game.ƒAid.NodeSprite {
         authority: string;
-        healthPoints: number;
-        attackPoints: number;
         items: Array<Items.Item>;
-        speed: number;
-        constructor(_name: string, _authority: string, _speed: number);
+        hero: Character;
+        constructor(_name: string, _authority: string, _hero: Character);
         move(_direction: ƒ.Vector3): void;
         attack(): void;
     }

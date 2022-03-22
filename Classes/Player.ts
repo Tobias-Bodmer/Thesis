@@ -9,6 +9,7 @@ namespace Player {
             super(_name);
             this.addComponent(new ƒ.ComponentTransform());
             this.authority = _authority;
+            this.hero = _hero;
         }
 
         public move(_direction: ƒ.Vector3) {
