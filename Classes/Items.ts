@@ -16,6 +16,10 @@ namespace Items {
         constructor() {
             
 >>>>>>> parent of dda45a4 (Merge branch 'main' of https://github.com/Tobias-Bodmer/Thesis)
+=======
+        constructor() {
+            
+>>>>>>> parent of dda45a4 (Merge branch 'main' of https://github.com/Tobias-Bodmer/Thesis)
         }
     }
 }
