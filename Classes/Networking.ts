@@ -28,6 +28,7 @@ namespace Networking {
 
     function conneting() {
         client = new ƒClient();
+        client.addEventListener(FudgeNet.EVENT.MESSAGE_RECEIVED, receiveMessage);
         client.connectToServer(IPConnection.value + PortConnection.value);
 
         console.log(+IPConnection.value)
@@ -41,6 +42,17 @@ namespace Networking {
         let message = "schwanz wie ne gans"
 
         client.dispatch({ route: ws ? FudgeNet.ROUTE.VIA_SERVER : undefined, content: { text: message } })
+
+    }
+
+    async function receiveMessage(_event: CustomEvent | MessageEvent | Event): Promise<void> {
+        if (_event instanceof MessageEvent) {
+            let message: FudgeNet.Message = JSON.parse(_event.data);
+            if (message.command != FudgeNet.COMMAND.SERVER_HEARTBEAT && message.command != FudgeNet.COMMAND.CLIENT_HEARTBEAT) {
+                console.log(message.content);
+            }
+        }
+
     }
 
     window.addEventListener("beforeunload", onUnload, false);
