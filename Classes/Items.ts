@@ -5,14 +5,12 @@ namespace Items {
 
         /**
  * Creates new Item
- * @param iName name of the item
- * @param iDesc description of the item
+ * @param _itemName name of the item
+ * @param _description description of the item
  */
-        constructor(iName: string, iDesc: string) {
-            this.itemName = iName;
-            this.description = iDesc;
-
-
+        constructor(_itemName: string, _description: string) {
+            this.itemName = _itemName;
+            this.description = _description;
         }
     }
 }

@@ -24,26 +24,26 @@ namespace Game {
 
     //#region "essential"
     function init() {
-        player = new Player.Player("Player1", "11", 5);
-        
+        player = new Player.Player("Player1", "11", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
+
         ƒ.Debug.log(player);
-        
+
         // let node: ƒ.Node = new ƒ.Node("Quad");
-        
+
         // let mesh: ƒ.MeshQuad = new ƒ.MeshQuad();
         // let cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
         // node.addComponent(cmpMesh);
-        
+
         // let mtrSolidWhite: ƒ.Material = new ƒ.Material("SolidWhite", ƒ.ShaderFlat, new ƒ.CoatColored(ƒ.Color.CSS("WHITE")));
         // let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(mtrSolidWhite);
         // node.addComponent(cmpMaterial);
-        
+
         // graph.appendChild(node);
-       
+
         graph.appendChild(player);
 
         ƒAid.addStandardLightComponents(graph);
-        
+
         cmpCamera.mtxPivot.translateZ(25);
         cmpCamera.mtxPivot.rotateY(180);
 
@@ -60,7 +60,7 @@ namespace Game {
         if (Networking.client != undefined && Networking.client.id != null || undefined) {
             document.getElementById("ConnectionGUI").style.visibility = "hidden";
             init();
-        }else {
+        } else {
             setTimeout(waitOnConnection, 300);
         }
     }
