@@ -1,5 +1,6 @@
 namespace Items {
     export class Item {
+<<<<<<< HEAD
         public itemName: string;
         public description: string;
 
@@ -11,6 +12,10 @@ namespace Items {
         constructor(_itemName: string, _description: string) {
             this.itemName = _itemName;
             this.description = _description;
+=======
+        constructor() {
+            
+>>>>>>> parent of dda45a4 (Merge branch 'main' of https://github.com/Tobias-Bodmer/Thesis)
         }
     }
 }
