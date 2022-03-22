@@ -1,6 +1,7 @@
 namespace Items {
     export class Item {
 <<<<<<< HEAD
+<<<<<<< HEAD
         public itemName: string;
         public description: string;
 
