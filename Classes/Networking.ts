@@ -12,6 +12,11 @@ namespace Networking {
     document.getElementById("Connecting").addEventListener("click", conneting, true);
 
     function hostServer() {
+
+        let message = "schwanz wie ne gans"
+
+        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: message } })
+
         if (!isNaN(+portHost.value)) {
 
             //TODO: learn FudgeNet
@@ -33,16 +38,6 @@ namespace Networking {
 
         console.log(+IPConnection.value)
         console.log(IPConnection.value + PortConnection.value);
-
-        let formdata: FormData = new FormData(document.forms[1]);
-        let protocol: string = formdata.get("protocol").toString();
-        let ws: boolean = protocol == "ws";
-        let receiver: string = formdata.get("receiver").toString();
-
-        let message = "schwanz wie ne gans"
-
-        client.dispatch({ route: ws ? FudgeNet.ROUTE.VIA_SERVER : undefined, content: { text: message } })
-
     }
 
     async function receiveMessage(_event: CustomEvent | MessageEvent | Event): Promise<void> {
