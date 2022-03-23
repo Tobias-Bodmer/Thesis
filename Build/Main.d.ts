@@ -9,6 +9,15 @@ declare namespace Game {
     let graph: ƒ.Node;
     let player: Player.Player;
     let player2: Player.Player;
+    let connected: boolean;
+}
+declare namespace Spawn {
+    class Spawnables extends Game.ƒAid.NodeSprite {
+        position: ƒ.Vector3;
+        lifetime: number;
+        constructor(_name: string, _position: ƒ.Vector3, _lifetime: number);
+        lifespan(): void;
+    }
 }
 declare namespace Player {
     class Attributes {
@@ -16,6 +25,11 @@ declare namespace Player {
         speed: number;
         attackPoints: number;
         constructor(_healthPoints: number, _attackPoints: number, _speed: number);
+    }
+}
+declare namespace Spawn {
+    class Bullet extends Spawnables {
+        constructor(_name: string, _position: ƒ.Vector3, _lifetime: number);
     }
 }
 declare namespace Player {
@@ -31,10 +45,9 @@ declare namespace InputSystem {
     function move(): void;
 }
 declare namespace Items {
-    class Item {
-        itemName: string;
+    class Item extends Spawn.Spawnables {
         description: string;
-        constructor(_itemName: string, _description: string);
+        constructor(_name: string, _lifetime: number, _position: ƒ.Vector3, _description: string);
     }
 }
 declare namespace Level {
@@ -61,6 +74,7 @@ declare namespace Player {
         authority: string;
         items: Array<Items.Item>;
         hero: Character;
+        position: ƒ.Vector3;
         constructor(_name: string, _authority: string, _hero: Character);
         move(_direction: ƒ.Vector3): void;
         attack(): void;

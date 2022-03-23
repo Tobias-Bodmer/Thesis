@@ -17,6 +17,7 @@ namespace Game {
     export let graph: ƒ.Node = new ƒ.Node("Graph");
     export let player: Player.Player;
     export let player2: Player.Player;
+    export let connected: boolean = false;
     //#endregion "PublicVariables"
 
     //#region "PrivateVariables"
@@ -27,6 +28,7 @@ namespace Game {
     async function init() {
         player = new Player.Player("Player1", "11", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
         player.addComponent(cmpCamera);
+        damping();
         ƒ.Debug.log(player);
 
         let node: ƒ.Node = new ƒ.Node("Quad");
@@ -55,18 +57,18 @@ namespace Game {
         newCoat.texture = newTxt;
         oldComCoat.material = newMtr;
 
-        node.cmpTransform.mtxLocal.scale(new ƒ.Vector3(50,50,1));
+        node.cmpTransform.mtxLocal.scale(new ƒ.Vector3(50, 50, 1));
         node.cmpTransform.mtxLocal.translateZ(-1);
 
         graph.addChild(node);
-        
+
         graph.appendChild(player);
-        
+
         ƒAid.addStandardLightComponents(graph);
-        
+
         cmpCamera.mtxPivot.translateZ(25);
         cmpCamera.mtxPivot.rotateY(180);
-        
+
         ƒ.Debug.log(graph);
 
         viewport.initialize("Viewport", graph, cmpCamera, canvas);
@@ -92,8 +94,13 @@ namespace Game {
     function update(): void {
         InputSystem.move();
         draw();
+        damping();
     }
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     //#endregion "essential"
+
+    function damping() {
+        // ƒ.Debug.log("test: " + cmpCamera.mtxWorldToView.translation);
+    }
 }

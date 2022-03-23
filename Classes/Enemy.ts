@@ -1,3 +1,5 @@
-namespace Enemy { 
-    
+namespace Enemy {
+    export class Enemy {
+        
+    }
 }

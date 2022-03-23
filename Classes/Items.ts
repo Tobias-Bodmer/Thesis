@@ -1,13 +1,12 @@
 namespace Items {
     export class Item {
-        public itemName: string;
         public description: string;
+        public name: string;
 
-  
-        constructor(_itemName: string, _description: string) {
-            this.itemName = _itemName;
+
+        constructor(_name: string, _description: string) {
+            this.name = _name;
             this.description = _description;
-
         }
     }
 }

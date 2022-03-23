@@ -42,12 +42,14 @@ namespace InputSystem {
             hasChanged = true;
         }
 
-        
 
-        if (hasChanged) {
-            Game.player.move(Game.ƒ.Vector3.NORMALIZATION(moveVector,1));
+
+        if (hasChanged && moveVector.magnitude != 0) {
+            Game.player.move(Game.ƒ.Vector3.NORMALIZATION(moveVector, 1));
             //update new transform 
-            Networking.updatePosition(Game.ƒ.Vector3.NORMALIZATION(moveVector,1));
+            if (Game.connected) {
+                Networking.updatePosition(Game.ƒ.Vector3.NORMALIZATION(moveVector, 1));
+            }
         }
     }
 
