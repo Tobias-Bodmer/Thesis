@@ -12,11 +12,14 @@ declare namespace Game {
     let connected: boolean;
 }
 declare namespace Spawn {
-    class Spawnables extends Game.ƒAid.NodeSprite {
+    interface ISpawnable {
         position: ƒ.Vector3;
         lifetime: number;
-        constructor(_name: string, _position: ƒ.Vector3, _lifetime: number);
-        lifespan(): void;
+        lifespan(): boolean;
+    }
+}
+declare namespace Player {
+    interface IKillable {
     }
 }
 declare namespace Player {
@@ -28,8 +31,11 @@ declare namespace Player {
     }
 }
 declare namespace Spawn {
-    class Bullet extends Spawnables {
-        constructor(_name: string, _position: ƒ.Vector3, _lifetime: number);
+    class Bullet extends Game.ƒAid.NodeSprite implements ISpawnable {
+        attackPoints: number;
+        position: ƒ.Vector3;
+        lifetime: number;
+        lifespan(): boolean;
     }
 }
 declare namespace Player {
@@ -40,14 +46,17 @@ declare namespace Player {
     }
 }
 declare namespace Enemy {
+    class Enemy {
+    }
 }
 declare namespace InputSystem {
     function move(): void;
 }
 declare namespace Items {
-    class Item extends Spawn.Spawnables {
+    class Item {
         description: string;
-        constructor(_name: string, _lifetime: number, _position: ƒ.Vector3, _description: string);
+        name: string;
+        constructor(_name: string, _description: string);
     }
 }
 declare namespace Level {

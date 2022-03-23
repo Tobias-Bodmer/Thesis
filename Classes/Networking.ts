@@ -39,6 +39,7 @@ namespace Networking {
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
                         console.log(message.content.value);
                         Game.player2 = new Player.Player("player2", message.idSource.toString(), new Player.Character("Thorian", new Player.Attributes(100, 10, 5)));
+                        Game.player2.mtxLocal.translation = Game.player2.position;
                         Game.graph.appendChild(Game.player2);
                     }
                     if (message.content != undefined && message.content.text == FUNCTION.TRANSFORM.toString()) {

@@ -10,6 +10,7 @@ namespace Game {
     //#region "DomElements"
     export let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("Canvas");
     window.addEventListener("load", init);
+    canvas.addEventListener("click", doSmth);
     //#endregion "DomElements"
 
     //#region "PublicVariables"
@@ -24,11 +25,18 @@ namespace Game {
     let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
     //#endregion "PrivateVariables"
 
+    function doSmth(_mouseEvent: MouseEvent) {
+        console.log(_mouseEvent.clientX + " /" + _mouseEvent.clientY);
+        let player3 = new Player.Player("Player3,", "12", new Player.Character("Thohor", new Player.Attributes(10, 5, 5)));
+        graph.appendChild(player3);
+        player3.cmpTransform.mtxLocal.translation = new ƒ.Vector3(0, 2, 0);
+        Game.ƒ.RayHitInfo.length
+    }
+
     //#region "essential"
     async function init() {
         player = new Player.Player("Player1", "11", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
         player.addComponent(cmpCamera);
-        damping();
         ƒ.Debug.log(player);
 
         let node: ƒ.Node = new ƒ.Node("Quad");
@@ -58,7 +66,7 @@ namespace Game {
         oldComCoat.material = newMtr;
 
         node.cmpTransform.mtxLocal.scale(new ƒ.Vector3(50, 50, 1));
-        node.cmpTransform.mtxLocal.translateZ(-1);
+        node.cmpTransform.mtxLocal.translateZ(-0.01);
 
         graph.addChild(node);
 
@@ -94,13 +102,9 @@ namespace Game {
     function update(): void {
         InputSystem.move();
         draw();
-        damping();
     }
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     //#endregion "essential"
 
-    function damping() {
-        // ƒ.Debug.log("test: " + cmpCamera.mtxWorldToView.translation);
-    }
 }
