@@ -9,6 +9,10 @@ namespace Spawn {
 
 namespace Player {
     export interface IKillable {
+        onDeath(): void;
+    }
 
+    export interface IDamagble {
+        getDamage(): void;
     }
 }
