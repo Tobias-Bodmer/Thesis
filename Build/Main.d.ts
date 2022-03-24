@@ -83,7 +83,6 @@ declare namespace Player {
         authority: string;
         items: Array<Items.Item>;
         hero: Character;
-        position: ƒ.Vector3;
         constructor(_name: string, _authority: string, _hero: Character);
         move(_direction: ƒ.Vector3): void;
         attack(): void;

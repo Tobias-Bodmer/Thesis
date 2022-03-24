@@ -26,7 +26,10 @@ namespace Game {
     //#endregion "PrivateVariables"
 
     function doSmth(_mouseEvent: MouseEvent) {
-        console.log(_mouseEvent.clientX + " /" + _mouseEvent.clientY);
+        let pointer: ƒ.Vector2 = new ƒ.Vector2(_mouseEvent.pageX, _mouseEvent.pageY);
+        let ray: ƒ.Ray = viewport.getRayFromClient(pointer);
+        let hit: ƒ.RayHitInfo = ƒ.Physics.raycast(ray.origin, ray.direction);
+        console.log(hit.hitPoint);
         let player3 = new Player.Player("Player3,", "12", new Player.Character("Thohor", new Player.Attributes(10, 5, 5)));
         graph.appendChild(player3);
         player3.cmpTransform.mtxLocal.translation = new ƒ.Vector3(0, 2, 0);

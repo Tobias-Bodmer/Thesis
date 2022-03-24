@@ -18,7 +18,7 @@ namespace Networking {
     document.getElementById("Connecting").addEventListener("click", conneting, true);
 
     function hostServer() {
-        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, value: Game.player.hero } })
+        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, value: Game.player.hero, position: Game.player.cmpTransform.mtxLocal.translation } })
         Game.connected = true;
     }
 
@@ -39,7 +39,7 @@ namespace Networking {
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
                         console.log(message.content.value);
                         Game.player2 = new Player.Player("player2", message.idSource.toString(), new Player.Character("Thorian", new Player.Attributes(100, 10, 5)));
-                        Game.player2.mtxLocal.translation = Game.player2.position;
+                        Game.player2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                         Game.graph.appendChild(Game.player2);
                     }
                     if (message.content != undefined && message.content.text == FUNCTION.TRANSFORM.toString()) {
