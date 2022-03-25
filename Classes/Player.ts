@@ -4,6 +4,7 @@ namespace Player {
         public authority: string;
         public items: Array<Items.Item>;
         public hero: Character;
+        rect1: ƒ.Rectangle;
 
         constructor(_name: string, _authority: string, _hero: Character) {
             super(_name);
@@ -21,6 +22,24 @@ namespace Player {
 
         public attack() {
 
+        }
+
+        public collector() {
+
+        }
+        /**
+         * adds Attributes to the Player Attributes
+         * @param _attributes incoming attributes
+         */
+        public addAttribuesByItem(_item: Items.AttributeItem): void {
+            switch (_item.type) {
+                case Items.ITEMTYPE.ADD:
+                    break; // calculate attributes by adding them
+                case Items.ITEMTYPE.SUBSTRACT:
+                    break; // calculate attribes by substacting them
+                case Items.ITEMTYPE.PROCENTUAL:
+                    break; // calculate attributes by giving spefic %
+            }
         }
     }
 }

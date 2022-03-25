@@ -26,6 +26,26 @@ declare namespace Player {
         getDamage(): void;
     }
 }
+declare namespace Items {
+    enum ITEMTYPE {
+        ADD = 0,
+        SUBSTRACT = 1,
+        PROCENTUAL = 2
+    }
+    class AttributeItem extends Item {
+        type: ITEMTYPE;
+        attributes: Player.Attributes;
+        /**
+         * Creates an item that can change Attributes of the player
+         * @param _name name of the Item
+         * @param _description Descirption of the item
+         * @param _position Position where to spawn
+         * @param _lifetime optional: how long is the item visible
+         * @param _attributes define which attributes will change, compare with {@link Player.Attributes}
+         */
+        constructor(_name: string, _description: string, _position: ƒ.Vector3, _lifetime: number, _attributes: Player.Attributes, _type: ITEMTYPE);
+    }
+}
 declare namespace Player {
     class Attributes {
         healthPoints: number;
@@ -89,8 +109,15 @@ declare namespace Player {
         authority: string;
         items: Array<Items.Item>;
         hero: Character;
+        rect1: ƒ.Rectangle;
         constructor(_name: string, _authority: string, _hero: Character);
         move(_direction: ƒ.Vector3): void;
         attack(): void;
+        collector(): void;
+        /**
+         * adds Attributes to the Player Attributes
+         * @param _attributes incoming attributes
+         */
+        addAttribuesByItem(_item: Items.AttributeItem): void;
     }
 }
