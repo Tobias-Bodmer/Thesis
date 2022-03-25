@@ -1,6 +1,0 @@
-*.tsbuildinfo
-FudgeCore.js.map
-FudgeAid.js.map
-node_modules
-!Editor/node_modules
-FUDGE-win32-x64

@@ -1,7 +1,0 @@
-{
-    "File": "Test2",
-    "Extension": ".json",
-    "Encoding": "UTF-8",
-    "Special": "äöüß\n\r",
-    "EndOfFile": true
-}
