@@ -15,11 +15,15 @@ declare namespace Spawn {
     interface ISpawnable {
         position: ƒ.Vector3;
         lifetime: number;
-        lifespan(): boolean;
+        lifespan(_a: ƒ.Node): void;
     }
 }
 declare namespace Player {
     interface IKillable {
+        onDeath(): void;
+    }
+    interface IDamagble {
+        getDamage(): void;
     }
 }
 declare namespace Player {
@@ -53,10 +57,12 @@ declare namespace InputSystem {
     function move(): void;
 }
 declare namespace Items {
-    class Item {
+    class Item extends Game.ƒAid.NodeSprite implements Spawn.ISpawnable {
         description: string;
-        name: string;
-        constructor(_name: string, _description: string);
+        position: ƒ.Vector3;
+        lifetime: number;
+        constructor(_name: string, _description: string, _position: ƒ.Vector3, _lifetime?: number);
+        lifespan(_graph: ƒ.Node): void;
     }
 }
 declare namespace Level {

@@ -10,7 +10,7 @@ namespace Game {
     //#region "DomElements"
     export let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("Canvas");
     window.addEventListener("load", init);
-    canvas.addEventListener("click", doSmth);
+    canvas.addEventListener("mouseover", doSmth);
     //#endregion "DomElements"
 
     //#region "PublicVariables"
@@ -22,18 +22,23 @@ namespace Game {
     //#endregion "PublicVariables"
 
     //#region "PrivateVariables"
+    let item1: Items.Item;
     let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
+    let frameRate: number = 60;
     //#endregion "PrivateVariables"
 
     function doSmth(_mouseEvent: MouseEvent) {
-        let pointer: ƒ.Vector2 = new ƒ.Vector2(_mouseEvent.pageX, _mouseEvent.pageY);
-        let ray: ƒ.Ray = viewport.getRayFromClient(pointer);
-        let hit: ƒ.RayHitInfo = ƒ.Physics.raycast(ray.origin, ray.direction);
-        console.log(hit.hitPoint);
-        let player3 = new Player.Player("Player3,", "12", new Player.Character("Thohor", new Player.Attributes(10, 5, 5)));
-        graph.appendChild(player3);
-        player3.cmpTransform.mtxLocal.translation = new ƒ.Vector3(0, 2, 0);
-        Game.ƒ.RayHitInfo.length
+        // let pointer: ƒ.Vector2 = new ƒ.Vector2(_mouseEvent.pageX, _mouseEvent.pageY);
+        // let ray: ƒ.Ray = viewport.getRayFromClient(pointer);
+        // let hit: ƒ.RayHitInfo = ƒ.Physics.raycast(ray.origin, ray.direction);
+        // console.log(hit.hitPoint);
+        // let player3 = new Player.Player("Player3,", "12", new Player.Character("Thohor", new Player.Attributes(10, 5, 5)));
+        // graph.appendChild(player3);
+        // player3.cmpTransform.mtxLocal.translation = new ƒ.Vector3(0, 2, 0);
+        // Game.ƒ.RayHitInfo.length
+        // let pickData: Pick[] = ƒ.Picker.pickViewport(viewport, new ƒ.Vector2(_mouseEvent.clientX, _mouseEvent.clientY));
+        // console.log(pickData);
+        // ƒ.Ray
     }
 
     //#region "essential"
@@ -41,6 +46,10 @@ namespace Game {
         player = new Player.Player("Player1", "11", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
         player.addComponent(cmpCamera);
         ƒ.Debug.log(player);
+
+        //#region init Items
+        item1 = new Items.Item("Item1", "", new ƒ.Vector3(0, 5, 0));
+        //#endregion
 
         let node: ƒ.Node = new ƒ.Node("Quad");
 
@@ -50,12 +59,12 @@ namespace Game {
         let cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
         node.addComponent(cmpMesh);
 
-        let mtrSolidWhite: ƒ.Material = new ƒ.Material("SolidWhite", ƒ.ShaderFlat, new ƒ.CoatTextured(ƒ.Color.CSS("WHITE"),));
+        let mtrSolidWhite: ƒ.Material = new ƒ.Material("SolidWhite", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
         let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(mtrSolidWhite);
         node.addComponent(cmpMaterial);
 
         let newTxt: ƒ.TextureImage = new ƒ.TextureImage();
-        let newCoat: ƒ.CoatTextured = new ƒ.CoatTextured();
+        let newCoat: ƒ.CoatRemissiveTextured = new ƒ.CoatRemissiveTextured();
         let oldComCoat: ƒ.ComponentMaterial = new ƒ.ComponentMaterial();
         let newMtr: ƒ.Material = new ƒ.Material("mtr", ƒ.ShaderFlatTextured, newCoat);
         let oldPivot: ƒ.Matrix4x4 = new ƒ.Matrix4x4();
@@ -74,6 +83,7 @@ namespace Game {
         graph.addChild(node);
 
         graph.appendChild(player);
+        graph.appendChild(item1);
 
         ƒAid.addStandardLightComponents(graph);
 
@@ -86,7 +96,7 @@ namespace Game {
 
         draw();
 
-        ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, 60);
+        ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, frameRate);
     }
 
     function waitOnConnection() {
@@ -105,6 +115,13 @@ namespace Game {
     function update(): void {
         InputSystem.move();
         draw();
+        //#region count items
+        let items: Items.Item[] = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).lifetime != null)
+        items.forEach(element => {
+            element.lifespan(graph);
+        });
+        //#endregion
+
     }
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);

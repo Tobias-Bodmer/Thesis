@@ -3,7 +3,7 @@ namespace Spawn {
         position: ƒ.Vector3;
         lifetime: number;
 
-        lifespan(): boolean;
+        lifespan(_a: ƒ.Node): void;
     }
 }
 
