@@ -21,6 +21,7 @@ namespace InputSystem {
         controller.set(key, false);
     }
 
+
     export function move() {
         let moveVector: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
         let hasChanged: boolean = false;

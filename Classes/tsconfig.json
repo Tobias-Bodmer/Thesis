@@ -56,6 +56,6 @@
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
   },
   "include": [
-    "Main.ts","Interfaces.ts", "./"
+    "Main.ts","Interfaces.ts","Items.ts", "./"
   ]
 }

@@ -11,7 +11,7 @@ namespace Game {
     export let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("Canvas");
     let crc2: CanvasRenderingContext2D = canvas.getContext("2d");
     window.addEventListener("load", init);
-    canvas.addEventListener("mouseover", doSmth);
+    canvas.addEventListener("mousemove", mouseToWorldPos);
     //#endregion "DomElements"
 
     //#region "PublicVariables"
@@ -23,24 +23,20 @@ namespace Game {
     //#endregion "PublicVariables"
 
     //#region "PrivateVariables"
+    let mousePosition: ƒ.Vector3;
     let item1: Items.Item;
     let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
     let frameRate: number = 60;
     //#endregion "PrivateVariables"
 
-    function doSmth(_mouseEvent: MouseEvent) {
-        // let pointer: ƒ.Vector2 = new ƒ.Vector2(_mouseEvent.pageX, _mouseEvent.pageY);
-        // let ray: ƒ.Ray = viewport.getRayFromClient(pointer);
-        // let hit: ƒ.RayHitInfo = ƒ.Physics.raycast(ray.origin, ray.direction);
-        // console.log(hit.hitPoint);
-        // let player3 = new Player.Player("Player3,", "12", new Player.Character("Thohor", new Player.Attributes(10, 5, 5)));
-        // graph.appendChild(player3);
-        // player3.cmpTransform.mtxLocal.translation = new ƒ.Vector3(0, 2, 0);
-        // Game.ƒ.RayHitInfo.length
-        // let pickData: Pick[] = ƒ.Picker.pickViewport(viewport, new ƒ.Vector2(_mouseEvent.clientX, _mouseEvent.clientY));
-        // console.log(pickData);
-        // ƒ.Ray
+    //#region mouseHandler
+    function mouseToWorldPos(_mouseEvent: MouseEvent): void {
+        let ray: ƒ.Ray = viewport.getRayFromClient(new ƒ.Vector2(_mouseEvent.clientX, _mouseEvent.clientY));
+        mousePosition = ray.intersectPlane(new ƒ.Vector3(0, 0, 0), new ƒ.Vector3(0, 0, 1));
+        calcDegree(player.mtxLocal.translation, mousePosition);
+
     }
+    //#endregion
 
     //#region "essential"
     async function init() {
@@ -123,7 +119,19 @@ namespace Game {
         });
         //#endregion
 
- 
+        //#region  calculate player rotation
+        // player.mtxLocal.rotateZ();
+        //#endregion
+    }
+
+    function calcDegree(_center: ƒ.Vector3, _target: ƒ.Vector3): number {
+        let xDistance: number = _target.x - _center.x;
+        let yDistance: number = _target.y - _center.y;
+        let degree: number = 0;
+        let radians: number = Math.tan(xDistance / yDistance);
+        ƒ.Debug.log(xDistance + "/ " + yDistance + " degrees: " + Math.round(radians * (180 / Math.PI)));
+        return degree;
+
     }
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);

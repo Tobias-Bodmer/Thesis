@@ -27,6 +27,15 @@ declare namespace Player {
     }
 }
 declare namespace Items {
+    class Item extends Game.ƒAid.NodeSprite implements Spawn.ISpawnable {
+        description: string;
+        position: ƒ.Vector3;
+        lifetime: number;
+        constructor(_name: string, _description: string, _position: ƒ.Vector3, _lifetime?: number);
+        lifespan(_graph: ƒ.Node): void;
+    }
+}
+declare namespace Items {
     enum ITEMTYPE {
         ADD = 0,
         SUBSTRACT = 1,
@@ -75,15 +84,6 @@ declare namespace Enemy {
 }
 declare namespace InputSystem {
     function move(): void;
-}
-declare namespace Items {
-    class Item extends Game.ƒAid.NodeSprite implements Spawn.ISpawnable {
-        description: string;
-        position: ƒ.Vector3;
-        lifetime: number;
-        constructor(_name: string, _description: string, _position: ƒ.Vector3, _lifetime?: number);
-        lifespan(_graph: ƒ.Node): void;
-    }
 }
 declare namespace Level {
     class Landscape extends ƒ.Node {
