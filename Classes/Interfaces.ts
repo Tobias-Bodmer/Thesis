@@ -1,6 +1,5 @@
-namespace Spawn {
+namespace Interfaces {
     export interface ISpawnable {
-        position: ƒ.Vector3;
         lifetime: number;
 
         lifespan(_a: ƒ.Node): void;

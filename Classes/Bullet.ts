@@ -1,14 +1,31 @@
-namespace Spawn {
-    export class Bullet extends Game.ƒAid.NodeSprite implements ISpawnable {
-        public attackPoints: number
-        public position: ƒ.Vector3;
+namespace Items {
+    export class Bullet extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+        public hitPoints: number
+        public flyDirection: ƒ.Vector3;
+        public speed: number;
         public lifetime: number;
 
-        lifespan(): boolean {
-            if (this.lifetime > 0) {
-                return false;
+        lifespan(_graph: ƒ.Node): void {
+            if (this.lifetime >= 0 && this.lifetime != null) {
+                this.lifetime--;
+                if (this.lifetime < 0) {
+                    _graph.removeChild(this);
+                }
             }
-            return true;
+        }
+
+        constructor(_name: string, _position: ƒ.Vector3, _direction: ƒ.Vector3, _attackPoints: number, _lifetime: number, _speed: number) {
+            super(_name)
+            this.hitPoints = _attackPoints;
+            this.lifetime = _lifetime * Game.frameRate;
+            this.addComponent(new ƒ.ComponentTransform());
+            this.mtxLocal.translation = _position;
+            this.speed = _speed;
+            this.flyDirection = _direction;
+        }
+
+        move() {
+            this.cmpTransform.mtxLocal.translate(this.flyDirection);
         }
     }
 }

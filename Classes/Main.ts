@@ -19,12 +19,12 @@ namespace Game {
     export let player: Player.Player;
     export let player2: Player.Player;
     export let connected: boolean = false;
+    export let frameRate: number = 60;
     //#endregion "PublicVariables"
 
     //#region "PrivateVariables"
     let item1: Items.Item;
     let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
-    let frameRate: number = 60;
     //#endregion "PrivateVariables"
 
     //#region "essential"
@@ -108,6 +108,12 @@ namespace Game {
             element.lifespan(graph);
         });
         //#endregion
+
+        let bullets: Items.Bullet[] = <Items.Bullet[]>graph.getChildren().filter(element => (<Items.Bullet>element).lifetime != null)
+        bullets.forEach(element => {
+            element.move();
+            element.lifespan(graph);
+        })
     }
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);

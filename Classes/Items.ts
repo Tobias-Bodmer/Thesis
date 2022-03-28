@@ -1,7 +1,6 @@
 namespace Items {
-    export class Item extends Game.ƒAid.NodeSprite implements Spawn.ISpawnable {
+    export class Item extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
         public description: string;
-        position: ƒ.Vector3;
         lifetime: number;
 
         constructor(_name: string, _description: string, _position: ƒ.Vector3, _lifetime?: number) {

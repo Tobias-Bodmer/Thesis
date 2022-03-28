@@ -12,6 +12,8 @@ namespace InputSystem {
         ["D", false]
     ]);
 
+    let mousePosition: ƒ.Vector3;
+
     function keyboardDownEvent(_e: KeyboardEvent) {
         let key: string = _e.code.toUpperCase().substring(3);
         controller.set(key, true);
@@ -25,7 +27,7 @@ namespace InputSystem {
     //#region rotate
     function rotateToMouse(_mouseEvent: MouseEvent): void {
         let ray: ƒ.Ray = Game.viewport.getRayFromClient(new ƒ.Vector2(_mouseEvent.clientX, _mouseEvent.clientY));
-        let mousePosition = ray.intersectPlane(new ƒ.Vector3(0, 0, 0), new ƒ.Vector3(0, 0, 1));
+        mousePosition = ray.intersectPlane(new ƒ.Vector3(0, 0, 0), new ƒ.Vector3(0, 0, 1));
         Game.player.mtxLocal.rotation = new ƒ.Vector3(0, 0, calcDegree(Game.player.mtxLocal.translation, mousePosition));
     }
 
@@ -78,6 +80,7 @@ namespace InputSystem {
         switch (mouseButton) {
             case 0:
                 //TODO: left mouse button player.attack
+                Game.player.attack(ƒ.Vector3.DIFFERENCE(mousePosition, Game.player.mtxLocal.translation))
 
                 break;
             case 2:

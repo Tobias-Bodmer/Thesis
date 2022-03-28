@@ -10,10 +10,10 @@ declare namespace Game {
     let player: Player.Player;
     let player2: Player.Player;
     let connected: boolean;
+    let frameRate: number;
 }
-declare namespace Spawn {
+declare namespace Interfaces {
     interface ISpawnable {
-        position: ƒ.Vector3;
         lifetime: number;
         lifespan(_a: ƒ.Node): void;
     }
@@ -27,9 +27,8 @@ declare namespace Player {
     }
 }
 declare namespace Items {
-    class Item extends Game.ƒAid.NodeSprite implements Spawn.ISpawnable {
+    class Item extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
         description: string;
-        position: ƒ.Vector3;
         lifetime: number;
         constructor(_name: string, _description: string, _position: ƒ.Vector3, _lifetime?: number);
         lifespan(_graph: ƒ.Node): void;
@@ -63,12 +62,15 @@ declare namespace Player {
         constructor(_healthPoints: number, _attackPoints: number, _speed: number);
     }
 }
-declare namespace Spawn {
-    class Bullet extends Game.ƒAid.NodeSprite implements ISpawnable {
-        attackPoints: number;
-        position: ƒ.Vector3;
+declare namespace Items {
+    class Bullet extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+        hitPoints: number;
+        flyDirection: ƒ.Vector3;
+        speed: number;
         lifetime: number;
-        lifespan(): boolean;
+        lifespan(_graph: ƒ.Node): void;
+        constructor(_name: string, _position: ƒ.Vector3, _direction: ƒ.Vector3, _attackPoints: number, _lifetime: number, _speed: number);
+        move(): void;
     }
 }
 declare namespace Player {
@@ -112,7 +114,7 @@ declare namespace Player {
         rect1: ƒ.Rectangle;
         constructor(_name: string, _authority: string, _hero: Character);
         move(_direction: ƒ.Vector3): void;
-        attack(): void;
+        attack(_direction: ƒ.Vector3): void;
         collector(): void;
         /**
          * adds Attributes to the Player Attributes
