@@ -3,7 +3,8 @@
 namespace Networking {
     export enum FUNCTION {
         SPAWN,
-        TRANSFORM
+        TRANSFORM,
+        BULLET
     }
 
     import ƒClient = FudgeNet.FudgeClient;
@@ -18,6 +19,7 @@ namespace Networking {
     function hostServer() {
         client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, value: Game.player.hero, position: Game.player.cmpTransform.mtxLocal.translation } })
         Game.connected = true;
+        ƒ.Debug.log("Connected to Server");
     }
 
     function conneting() {
@@ -39,8 +41,10 @@ namespace Networking {
                     }
                     if (message.content != undefined && message.content.text == FUNCTION.TRANSFORM.toString()) {
                         let moveVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.value.data[0], message.content.value.data[1], message.content.value.data[2])
-                        Game.player2.move(moveVector);
-                        // console.log(Game.player2.cmpTransform.mtxLocal.translation);
+                        let rotateVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.rotation.data[0], message.content.rotation.data[1], message.content.rotation.data[2])
+                        Game.player2.mtxLocal.translation = moveVector;
+                        Game.player2.mtxLocal.rotation = rotateVector;
+                        console.log(moveVector + " " + rotateVector);
                     }
                 }
             }
@@ -50,13 +54,17 @@ namespace Networking {
      * sends transform over network
      * @param __position current position of Object
      */
-    export function updatePosition(_position: ƒ.Vector3) {
-        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.TRANSFORM, value: _position } })
+    export function updatePosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3) {
+        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.TRANSFORM, value: _position, rotation: _rotation } })
+    }
+
+    export function updateBullet() {
+
     }
 
     window.addEventListener("beforeunload", onUnload, false);
 
     function onUnload() {
-        //TODO: do we need to close connections?
+        //TODO: do we need to close connections? no.
     }
 }

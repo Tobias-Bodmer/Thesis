@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
@@ -95,7 +95,8 @@ declare namespace Level {
 declare namespace Networking {
     enum FUNCTION {
         SPAWN = 0,
-        TRANSFORM = 1
+        TRANSFORM = 1,
+        BULLET = 2
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -104,7 +105,8 @@ declare namespace Networking {
      * sends transform over network
      * @param __position current position of Object
      */
-    function updatePosition(_position: ƒ.Vector3): void;
+    function updatePosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3): void;
+    function updateBullet(): void;
 }
 declare namespace Player {
     class Player extends Game.ƒAid.NodeSprite {

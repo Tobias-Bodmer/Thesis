@@ -68,7 +68,8 @@ namespace InputSystem {
             Game.player.move(Game.ƒ.Vector3.NORMALIZATION(moveVector, 1));
             //update new transform 
             if (Game.connected) {
-                Networking.updatePosition(Game.ƒ.Vector3.NORMALIZATION(moveVector, 1));
+                ƒ.Debug.log(Game.player.mtxLocal.translation);
+                Networking.updatePosition(Game.player.mtxLocal.translation,Game.player.mtxLocal.rotation);
             }
         }
     }
