@@ -11,7 +11,7 @@ namespace Game {
     export let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("Canvas");
     let crc2: CanvasRenderingContext2D = canvas.getContext("2d");
     window.addEventListener("load", init);
-    canvas.addEventListener("mousemove", mouseToWorldPos);
+    canvas.addEventListener("mousemove", rotateToMouse);
     //#endregion "DomElements"
 
     //#region "PublicVariables"
@@ -30,11 +30,10 @@ namespace Game {
     //#endregion "PrivateVariables"
 
     //#region mouseHandler
-    function mouseToWorldPos(_mouseEvent: MouseEvent): void {
+    function rotateToMouse(_mouseEvent: MouseEvent): void {
         let ray: ƒ.Ray = viewport.getRayFromClient(new ƒ.Vector2(_mouseEvent.clientX, _mouseEvent.clientY));
         mousePosition = ray.intersectPlane(new ƒ.Vector3(0, 0, 0), new ƒ.Vector3(0, 0, 1));
-        calcDegree(player.mtxLocal.translation, mousePosition);
-
+        player.mtxLocal.rotateZ(calcDegree(player.mtxLocal.translation, mousePosition));
     }
     //#endregion
 
@@ -82,6 +81,7 @@ namespace Game {
         graph.appendChild(player);
         graph.appendChild(item1);
 
+
         ƒAid.addStandardLightComponents(graph);
 
         cmpCamera.mtxPivot.translateZ(25);
@@ -118,19 +118,14 @@ namespace Game {
             element.lifespan(graph);
         });
         //#endregion
-
-        //#region  calculate player rotation
-        // player.mtxLocal.rotateZ();
-        //#endregion
     }
 
     function calcDegree(_center: ƒ.Vector3, _target: ƒ.Vector3): number {
         let xDistance: number = _target.x - _center.x;
         let yDistance: number = _target.y - _center.y;
-        let degree: number = 0;
-        let radians: number = Math.tan(xDistance / yDistance);
-        ƒ.Debug.log(xDistance + "/ " + yDistance + " degrees: " + Math.round(radians * (180 / Math.PI)));
-        return degree;
+        let degrees: number = Math.tan(xDistance / yDistance);
+        ƒ.Debug.log(xDistance + "/ " + yDistance + " degrees: " + Math.round(degrees * (180 / Math.PI)));
+        return degrees;
 
     }
 
