@@ -33,14 +33,26 @@ namespace Game {
     function rotateToMouse(_mouseEvent: MouseEvent): void {
         let ray: ƒ.Ray = viewport.getRayFromClient(new ƒ.Vector2(_mouseEvent.clientX, _mouseEvent.clientY));
         mousePosition = ray.intersectPlane(new ƒ.Vector3(0, 0, 0), new ƒ.Vector3(0, 0, 1));
-        player.mtxLocal.rotateZ(calcDegree(player.mtxLocal.translation, mousePosition));
+
+        // ƒ.Debug.log(mousePosition);
+        // calcDegree(player.mtxLocal.translation, mousePosition);
+        // player.mtxLocal.lookAtRotate(mousePosition);
+    }
+
+    function calcDegree(_center: ƒ.Vector3, _target: ƒ.Vector3): number {
+        let xDistance: number = _target.x - _center.x;
+        let yDistance: number = _target.y - _center.y;
+        let degrees: number = Math.atan2(yDistance, xDistance) * (180 / Math.PI) - 90;
+        ƒ.Debug.log("degrees: " + degrees * (180 / Math.PI) + player.mtxLocal.rotation);
+        return degrees;
+
     }
     //#endregion
 
     //#region "essential"
     async function init() {
         player = new Player.Player("Player1", "11", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
-        player.addComponent(cmpCamera);
+        // player.addComponent(cmpCamera);
         ƒ.Debug.log(player);
 
         //#region init Items
@@ -118,14 +130,9 @@ namespace Game {
             element.lifespan(graph);
         });
         //#endregion
-    }
 
-    function calcDegree(_center: ƒ.Vector3, _target: ƒ.Vector3): number {
-        let xDistance: number = _target.x - _center.x;
-        let yDistance: number = _target.y - _center.y;
-        let degrees: number = Math.tan(xDistance / yDistance);
-        ƒ.Debug.log(xDistance + "/ " + yDistance + " degrees: " + Math.round(degrees * (180 / Math.PI)));
-        return degrees;
+        player.mtxLocal.rotation = new ƒ.Vector3(0, 0, calcDegree(player.mtxLocal.translation, mousePosition));
+
 
     }
 
