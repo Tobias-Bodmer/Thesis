@@ -11,10 +11,8 @@ namespace Networking {
     export let client: ƒClient;
     export let posUpdate: ƒ.Vector3;
 
-    let portHost = <HTMLInputElement>document.getElementById("PortHost");
     document.getElementById("Host").addEventListener("click", hostServer, true);
     let IPConnection = <HTMLInputElement>document.getElementById("IPConnection");
-    let PortConnection = <HTMLInputElement>document.getElementById("PortConnection");
     document.getElementById("Connecting").addEventListener("click", conneting, true);
 
     function hostServer() {
@@ -25,10 +23,7 @@ namespace Networking {
     function conneting() {
         client = new ƒClient();
         client.addEventListener(FudgeNet.EVENT.MESSAGE_RECEIVED, receiveMessage);
-        client.connectToServer(IPConnection.value + PortConnection.value);
-
-        console.log(+IPConnection.value)
-        console.log(IPConnection.value + PortConnection.value);
+        client.connectToServer(IPConnection.value);
     }
 
     async function receiveMessage(_event: CustomEvent | MessageEvent | Event): Promise<void> {
