@@ -11,7 +11,6 @@ namespace Game {
     export let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("Canvas");
     let crc2: CanvasRenderingContext2D = canvas.getContext("2d");
     window.addEventListener("load", init);
-    canvas.addEventListener("mousemove", rotateToMouse);
     //#endregion "DomElements"
 
     //#region "PublicVariables"
@@ -23,31 +22,10 @@ namespace Game {
     //#endregion "PublicVariables"
 
     //#region "PrivateVariables"
-    let mousePosition: ƒ.Vector3;
     let item1: Items.Item;
     let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
     let frameRate: number = 60;
     //#endregion "PrivateVariables"
-
-    //#region mouseHandler
-    function rotateToMouse(_mouseEvent: MouseEvent): void {
-        let ray: ƒ.Ray = viewport.getRayFromClient(new ƒ.Vector2(_mouseEvent.clientX, _mouseEvent.clientY));
-        mousePosition = ray.intersectPlane(new ƒ.Vector3(0, 0, 0), new ƒ.Vector3(0, 0, 1));
-
-        // ƒ.Debug.log(mousePosition);
-        // calcDegree(player.mtxLocal.translation, mousePosition);
-        // player.mtxLocal.lookAtRotate(mousePosition);
-    }
-
-    function calcDegree(_center: ƒ.Vector3, _target: ƒ.Vector3): number {
-        let xDistance: number = _target.x - _center.x;
-        let yDistance: number = _target.y - _center.y;
-        let degrees: number = Math.atan2(yDistance, xDistance) * (180 / Math.PI) - 90;
-        ƒ.Debug.log("degrees: " + degrees * (180 / Math.PI) + player.mtxLocal.rotation);
-        return degrees;
-
-    }
-    //#endregion
 
     //#region "essential"
     async function init() {
@@ -130,10 +108,6 @@ namespace Game {
             element.lifespan(graph);
         });
         //#endregion
-
-        player.mtxLocal.rotation = new ƒ.Vector3(0, 0, calcDegree(player.mtxLocal.translation, mousePosition));
-
-
     }
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);

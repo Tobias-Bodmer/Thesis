@@ -3,6 +3,7 @@ namespace InputSystem {
     document.addEventListener("keydown", keyboardDownEvent);
     document.addEventListener("keyup", keyboardUpEvent);
     Game.canvas.addEventListener("mousedown", attack);
+    Game.canvas.addEventListener("mousemove", rotateToMouse);
 
     let controller = new Map<string, boolean>([
         ["W", false],
@@ -20,6 +21,22 @@ namespace InputSystem {
         let key: string = _e.code.toUpperCase().substring(3);
         controller.set(key, false);
     }
+
+    //#region rotate
+    function rotateToMouse(_mouseEvent: MouseEvent): void {
+        let ray: ƒ.Ray = Game.viewport.getRayFromClient(new ƒ.Vector2(_mouseEvent.clientX, _mouseEvent.clientY));
+        let mousePosition = ray.intersectPlane(new ƒ.Vector3(0, 0, 0), new ƒ.Vector3(0, 0, 1));
+        Game.player.mtxLocal.rotation = new ƒ.Vector3(0, 0, calcDegree(Game.player.mtxLocal.translation, mousePosition));
+    }
+
+    function calcDegree(_center: ƒ.Vector3, _target: ƒ.Vector3): number {
+        let xDistance: number = _target.x - _center.x;
+        let yDistance: number = _target.y - _center.y;
+        let degrees: number = Math.atan2(yDistance, xDistance) * (180 / Math.PI) - 90;
+        return degrees;
+
+    }
+    //#endregion
 
 
     export function move() {
