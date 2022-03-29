@@ -46,6 +46,9 @@ namespace Networking {
                         Game.player2.mtxLocal.rotation = rotateVector;
                         console.log(moveVector + " " + rotateVector);
                     }
+                    if (message.content != undefined && message.content.text == FUNCTION.BULLET.toString()) {
+                        Game.player2.attack(new Game.ƒ.Vector3(message.content.direction.data[0],message.content.direction.data[1],message.content.direction.data[2]))
+                    }
                 }
             }
         }
@@ -58,13 +61,13 @@ namespace Networking {
         client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.TRANSFORM, value: _position, rotation: _rotation } })
     }
 
-    export function updateBullet() {
-
+    export function updateBullet(_direction: ƒ.Vector3) {
+        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.BULLET, direction: _direction } })
     }
 
     window.addEventListener("beforeunload", onUnload, false);
 
     function onUnload() {
-        //TODO: do we need to close connections? no.
+        //TODO: Things we do after the player left the game
     }
 }
