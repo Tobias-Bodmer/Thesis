@@ -37,6 +37,7 @@ namespace Game {
         item1 = new Items.Item("Item1", "", new ƒ.Vector3(0, 5, 0));
         //#endregion
 
+        Generation.generateGrid();
         let node: ƒ.Node = new ƒ.Node("Quad");
 
         node.addComponent(new ƒ.ComponentTransform());

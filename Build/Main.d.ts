@@ -125,3 +125,19 @@ declare namespace Player {
         addAttribuesByItem(_item: Items.AttributeItem): void;
     }
 }
+declare namespace Generation {
+    enum ROOMTYPE {
+        NORMAL = 0,
+        CHALLENGE = 1,
+        BOSS = 2
+    }
+    class Room {
+        roomType: ROOMTYPE;
+        coordinates: [number, number];
+        exits: [boolean, boolean, boolean, boolean];
+        constructor(_coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: ROOMTYPE);
+    }
+}
+declare namespace Generation {
+    function generateGrid(): void;
+}
