@@ -1,5 +1,6 @@
 namespace Generation {
     export enum ROOMTYPE {
+        START,
         NORMAL,
         CHALLENGE,
         BOSS
@@ -7,8 +8,8 @@ namespace Generation {
 
     export class Room {
         public roomType: ROOMTYPE
-        public coordinates: [number, number];
-        exits: [boolean, boolean, boolean, boolean] // N O S W
+        public coordinates: [number, number]; // X Y
+        exits: [boolean, boolean, boolean, boolean] // N E S W
 
 
         constructor(_coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: ROOMTYPE) {

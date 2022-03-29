@@ -127,9 +127,10 @@ declare namespace Player {
 }
 declare namespace Generation {
     enum ROOMTYPE {
-        NORMAL = 0,
-        CHALLENGE = 1,
-        BOSS = 2
+        START = 0,
+        NORMAL = 1,
+        CHALLENGE = 2,
+        BOSS = 3
     }
     class Room {
         roomType: ROOMTYPE;
