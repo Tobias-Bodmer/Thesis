@@ -42,7 +42,7 @@ namespace Enemy {
             let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.target.cmpTransform.mtxLocal.translation, this.cmpTransform.mtxLocal.translation);
             direction.normalize();
 
-            direction.scale((1 / 60 * this.properties.attributes.speed));
+            direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
             this.cmpTransform.mtxLocal.translate(direction, true);
         }
 

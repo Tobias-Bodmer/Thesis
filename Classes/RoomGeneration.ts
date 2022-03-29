@@ -2,14 +2,18 @@ namespace Generation {
 
     let maxX: number = 9;
     let maxY: number = 9;
-    let numberOfRooms: number = 2;
+    let numberOfRooms: number = 4;
     let usedPositions: [number, number][] = [];
     let rooms: Room[] = [];
+
+    //spawn chances
+    let challengeRoomSpawnChance: number = 10;
+    let treasureRoomSpawnChance: number = 5;
     export function generateGrid(): void {
         generateRooms();
     }
 
-    function generateRooms() {
+    function generateRooms(): void {
         let midX = Math.floor((maxX - 1) / 2);
         let midY = Math.floor((maxY - 1) / 2);
         let startCoords: [number, number] = [midX, midY];
@@ -17,21 +21,18 @@ namespace Generation {
         rooms.push(new Room(startCoords, calcPathExits(startCoords), Generation.ROOMTYPE.START))
         usedPositions.push(startCoords);
 
-        for (let i = 0; i < numberOfRooms; i++) {
+        for (let i: number = 0; i < numberOfRooms; i++) {
             addRoom(rooms[rooms.length - 1], Generation.ROOMTYPE.NORMAL);
         }
         addRoom(rooms[rooms.length - 1], Generation.ROOMTYPE.BOSS);
+        addSpecialRooms();
         rooms.forEach(room => {
-            console.log(room.coordinates + " " + room.exits);
             room.exits = calcRoomDoors(room.coordinates);
+            console.log(room.coordinates + " " + room.exits + " " + room.roomType);
         })
-        rooms.forEach(room => {
-            console.log("calced: " + room.coordinates + " " + room.exits);
-        })
-
     }
 
-    function addRoom(_currentRoom: Room, _roomType: Generation.ROOMTYPE) {
+    function addRoom(_currentRoom: Room, _roomType: Generation.ROOMTYPE): void {
         let numberOfExits: number = countBool(_currentRoom.exits);
         let randomNumber: number = Math.floor(Math.random() * numberOfExits);
         let possibleExitIndex: number[] = getExitIndex(_currentRoom.exits);
@@ -63,7 +64,26 @@ namespace Generation {
 
     }
 
-    
+    function addSpecialRooms(): void {
+        rooms.forEach(room => {
+            room.exits = calcPathExits(room.coordinates);
+            if (isSpawning(challengeRoomSpawnChance)) {
+                addRoom(room, Generation.ROOMTYPE.CHALLENGE)
+            }
+            if (isSpawning(treasureRoomSpawnChance)) {
+                addRoom(room, Generation.ROOMTYPE.TREASURE);
+            }
+        });
+    }
+
+    function isSpawning(_spawnChance: number): boolean {
+        let x = Math.random() * 100;
+        if (x < _spawnChance) {
+            return true;
+        }
+        return false;
+    }
+
 
     function countBool(_bool: [boolean, boolean, boolean, boolean]): number {
         let counter: number = 0;
@@ -85,6 +105,11 @@ namespace Generation {
         return numbers;
 
     }
+    /**
+     * calculates possible exits for new rooms
+     * @param _position position of room
+     * @returns boolean for each direction north, east, south, west
+     */
 
     function calcPathExits(_position: [number, number]): [boolean, boolean, boolean, boolean] {
         let north: boolean = false;

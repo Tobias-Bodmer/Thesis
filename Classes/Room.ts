@@ -2,6 +2,8 @@ namespace Generation {
     export enum ROOMTYPE {
         START,
         NORMAL,
+        MERCHANT,
+        TREASURE,
         CHALLENGE,
         BOSS
     }
