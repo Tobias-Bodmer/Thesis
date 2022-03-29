@@ -63,6 +63,8 @@ namespace Generation {
 
     }
 
+    
+
     function countBool(_bool: [boolean, boolean, boolean, boolean]): number {
         let counter: number = 0;
         _bool.forEach(bool => {
@@ -116,16 +118,16 @@ namespace Generation {
 
         for (let i = 0; i < usedPositions.length; i++) {
             // console.log(usedPositions[i][0] - _position[1]);
-            if (usedPositions[i][0] - _position[1] == -1) {
+            if (usedPositions[i][1] - _position[1] == -1 && usedPositions[i][0] - _position[0] == 0) {
                 south = true;
             }
-            if (usedPositions[i][0] - _position[0] == -1) {
+            if (usedPositions[i][0] - _position[0] == -1 && usedPositions[i][1] - _position[1] == 0) {
                 west = true;
             }
-            if (usedPositions[i][1] - _position[1] == 1) {
+            if (usedPositions[i][1] - _position[1] == 1 && usedPositions[i][0] - _position[0] == 0) {
                 north = true;
             }
-            if (usedPositions[i][0] - _position[0] == 1) {
+            if (usedPositions[i][0] - _position[0] == 1 && usedPositions[i][1] - _position[1] == 0) {
                 east = true;
             }
         }

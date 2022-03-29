@@ -44,7 +44,7 @@ namespace Networking {
                         let rotateVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.rotation.data[0], message.content.rotation.data[1], message.content.rotation.data[2])
                         Game.player2.mtxLocal.translation = moveVector;
                         Game.player2.mtxLocal.rotation = rotateVector;
-                        console.log(moveVector + " " + rotateVector);
+                        // console.log(moveVector + " " + rotateVector);
                     }
                     if (message.content != undefined && message.content.text == FUNCTION.BULLET.toString()) {
                         Game.player2.attack(new Game.ƒ.Vector3(message.content.direction.data[0],message.content.direction.data[1],message.content.direction.data[2]))

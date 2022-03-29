@@ -66,10 +66,6 @@ namespace InputSystem {
 
         if (hasChanged && moveVector.magnitude != 0) {
             Game.player.move(Game.ƒ.Vector3.NORMALIZATION(moveVector, 1));
-            //update new transform 
-            if (Game.connected) {
-                ƒ.Debug.log(Game.player.mtxLocal.translation);
-            }
         }
         if (Game.connected) {
             Networking.updatePosition(Game.player.mtxLocal.translation, Game.player.mtxLocal.rotation);
@@ -85,7 +81,9 @@ namespace InputSystem {
                 //TODO: left mouse button player.attack
                 let direction: Game.ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(mousePosition, Game.player.mtxLocal.translation)
                 Game.player.attack(direction);
-                Networking.updateBullet(direction);
+                if (Game.connected) {
+                    Networking.updateBullet(direction);
+                }
                 break;
             case 2:
                 //TODO: right mouse button player.charge or something like that
