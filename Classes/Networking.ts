@@ -35,7 +35,7 @@ namespace Networking {
                 if (message.command != FudgeNet.COMMAND.SERVER_HEARTBEAT && message.command != FudgeNet.COMMAND.CLIENT_HEARTBEAT) {
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
                         console.log(message.content.value);
-                        Game.player2 = new Player.Player("player2", message.idSource.toString(), new Player.Character("Thorian", new Player.Attributes(100, 10, 5)));
+                        Game.player2 = new Player.Player("player2", new Player.Character("Thorian", new Player.Attributes(100, 10, 5)));
                         Game.player2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                         Game.graph.appendChild(Game.player2);
                     }
@@ -62,7 +62,9 @@ namespace Networking {
     }
 
     export function updateBullet(_direction: ƒ.Vector3) {
-        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.BULLET, direction: _direction } })
+        if (Game.connected) {
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.BULLET, direction: _direction } })
+        }
     }
 
     window.addEventListener("beforeunload", onUnload, false);

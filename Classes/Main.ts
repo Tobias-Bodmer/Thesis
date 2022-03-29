@@ -29,8 +29,7 @@ namespace Game {
 
     //#region "essential"
     async function init() {
-        player = new Player.Player("Player1", "11", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
-        // player.addComponent(cmpCamera);
+        player = new Player.Player("Player1", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
         ƒ.Debug.log(player);
 
         //#region init Items
@@ -38,6 +37,8 @@ namespace Game {
         //#endregion
 
         Generation.generateGrid();
+
+        //#region Testing objects
         let node: ƒ.Node = new ƒ.Node("Quad");
 
         node.addComponent(new ƒ.ComponentTransform());
@@ -68,6 +69,10 @@ namespace Game {
         node.cmpTransform.mtxLocal.translateZ(-0.01);
 
         graph.addChild(node);
+
+        graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(5,5,2))));
+        //#endregion
+
 
         graph.appendChild(player);
         graph.appendChild(item1);
@@ -114,6 +119,12 @@ namespace Game {
         bullets.forEach(element => {
             element.move();
             element.lifespan(graph);
+        })
+
+        let enemys: Enemy.Enemy[] = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).properties != null)
+        enemys.forEach(element => {
+            element.move();
+            element.destroy(graph);
         })
     }
 

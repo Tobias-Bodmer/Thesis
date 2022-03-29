@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
@@ -68,9 +68,11 @@ declare namespace Items {
         flyDirection: ƒ.Vector3;
         speed: number;
         lifetime: number;
-        lifespan(_graph: ƒ.Node): void;
+        collider: Game.ƒ.Rectangle;
+        lifespan(_graph: ƒ.Node): Promise<void>;
         constructor(_name: string, _position: ƒ.Vector3, _direction: ƒ.Vector3, _attackPoints: number, _lifetime: number, _speed: number);
-        move(): void;
+        move(): Promise<void>;
+        collisionDetection(): Promise<void>;
     }
 }
 declare namespace Player {
@@ -81,7 +83,15 @@ declare namespace Player {
     }
 }
 declare namespace Enemy {
-    class Enemy {
+    class Enemy extends Game.ƒAid.NodeSprite {
+        properties: Player.Character;
+        smart: boolean;
+        target: Player.Player;
+        collider: Game.ƒ.Rectangle;
+        constructor(_name: string, _properties: Player.Character);
+        move(): Promise<void>;
+        moveSimple(): Promise<void>;
+        destroy(_graph: Game.ƒ.Node): Promise<void>;
     }
 }
 declare namespace InputSystem {
@@ -110,11 +120,10 @@ declare namespace Networking {
 }
 declare namespace Player {
     class Player extends Game.ƒAid.NodeSprite {
-        authority: string;
         items: Array<Items.Item>;
         hero: Character;
         rect1: ƒ.Rectangle;
-        constructor(_name: string, _authority: string, _hero: Character);
+        constructor(_name: string, _hero: Character);
         move(_direction: ƒ.Vector3): void;
         attack(_direction: ƒ.Vector3): void;
         collector(): void;
