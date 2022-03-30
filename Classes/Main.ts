@@ -69,8 +69,9 @@ namespace Game {
         node.cmpTransform.mtxLocal.translateZ(-0.01);
 
         graph.addChild(node);
-
-        graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, 2))));
+        for (let i = 0; i < 3; i++) {
+            graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, Math.random() * 3 + 1)), [i * 0.3, 5]));
+        }
         //#endregion
 
 
@@ -124,7 +125,7 @@ namespace Game {
         let enemys: Enemy.Enemy[] = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).properties != null)
         enemys.forEach(element => {
             element.move();
-            element.destroy(graph);
+            element.lifespan(graph);
         })
     }
 

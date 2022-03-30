@@ -17,7 +17,7 @@ namespace Networking {
     document.getElementById("Connecting").addEventListener("click", conneting, true);
 
     function hostServer() {
-        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, value: Game.player.properties, position: Game.player.cmpTransform.mtxLocal.translation } })
+        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, value: Game.player.hero, position: Game.player.cmpTransform.mtxLocal.translation } })
         Game.connected = true;
         ƒ.Debug.log("Connected to Server");
     }

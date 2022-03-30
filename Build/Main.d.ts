@@ -83,15 +83,17 @@ declare namespace Player {
     }
 }
 declare namespace Enemy {
-    class Enemy extends Game.ƒAid.NodeSprite {
+    class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
         properties: Player.Character;
         smart: boolean;
         target: Player.Player;
         collider: Game.ƒ.Rectangle;
-        constructor(_name: string, _properties: Player.Character);
+        lifetime: number;
+        position: [number, number];
+        constructor(_name: string, _properties: Player.Character, _position: [number, number]);
         move(): Promise<void>;
         moveSimple(): Promise<void>;
-        destroy(_graph: Game.ƒ.Node): Promise<void>;
+        lifespan(_graph: Game.ƒ.Node): Promise<void>;
     }
 }
 declare namespace InputSystem {
@@ -121,7 +123,7 @@ declare namespace Networking {
 declare namespace Player {
     class Player extends Game.ƒAid.NodeSprite {
         items: Array<Items.Item>;
-        properties: Character;
+        hero: Character;
         rect1: ƒ.Rectangle;
         constructor(_name: string, _properties: Character);
         move(_direction: ƒ.Vector3): void;
