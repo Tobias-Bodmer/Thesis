@@ -143,13 +143,23 @@ declare namespace Generation {
         CHALLENGE = 4,
         BOSS = 5
     }
-    class Room {
+    class Room extends ƒ.Node {
         roomType: ROOMTYPE;
         coordinates: [number, number];
         exits: [boolean, boolean, boolean, boolean];
-        constructor(_coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: ROOMTYPE);
+        node: ƒ.Node;
+        mesh: ƒ.MeshQuad;
+        cmpMesh: ƒ.ComponentMesh;
+        startRoomMat: ƒ.Material;
+        normalRoomMat: ƒ.Material;
+        merchantRoomMat: ƒ.Material;
+        treasureRoomMat: ƒ.Material;
+        challengeRoomMat: ƒ.Material;
+        bossRoomMat: ƒ.Material;
+        cmpMaterial: ƒ.ComponentMaterial;
+        constructor(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: ROOMTYPE);
     }
 }
 declare namespace Generation {
-    function generateGrid(): void;
+    function generateRooms(): void;
 }

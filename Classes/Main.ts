@@ -36,7 +36,7 @@ namespace Game {
         item1 = new Items.Item("Item1", "", new ƒ.Vector3(0, 5, 0));
         //#endregion
 
-        Generation.generateGrid();
+        Generation.generateRooms();
 
         //#region Testing objects
         let node: ƒ.Node = new ƒ.Node("Quad");
@@ -70,7 +70,7 @@ namespace Game {
 
         graph.addChild(node);
 
-        graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(5,5,2))));
+        graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(5, 5, 2))));
         //#endregion
 
 

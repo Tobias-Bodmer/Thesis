@@ -1,24 +1,17 @@
 namespace Generation {
 
-    let maxX: number = 9;
-    let maxY: number = 9;
-    let numberOfRooms: number = 4;
+    let numberOfRooms: number = 6;
     let usedPositions: [number, number][] = [];
     let rooms: Room[] = [];
 
     //spawn chances
-    let challengeRoomSpawnChance: number = 10;
-    let treasureRoomSpawnChance: number = 5;
-    export function generateGrid(): void {
-        generateRooms();
-    }
+    let challengeRoomSpawnChance: number = 20;
+    let treasureRoomSpawnChance: number = 10;
 
-    function generateRooms(): void {
-        let midX = Math.floor((maxX - 1) / 2);
-        let midY = Math.floor((maxY - 1) / 2);
-        let startCoords: [number, number] = [midX, midY];
+    export function generateRooms(): void {
+        let startCoords: [number, number] = [0, 0];
 
-        rooms.push(new Room(startCoords, calcPathExits(startCoords), Generation.ROOMTYPE.START))
+        rooms.push(new Room("roomStart", startCoords, calcPathExits(startCoords), Generation.ROOMTYPE.START))
         usedPositions.push(startCoords);
 
         for (let i: number = 0; i < numberOfRooms; i++) {
@@ -26,6 +19,7 @@ namespace Generation {
         }
         addRoom(rooms[rooms.length - 1], Generation.ROOMTYPE.BOSS);
         addSpecialRooms();
+        addRoom(rooms[rooms.length - 3], Generation.ROOMTYPE.MERCHANT);
         rooms.forEach(room => {
             room.exits = calcRoomDoors(room.coordinates);
             console.log(room.coordinates + " " + room.exits + " " + room.roomType);
@@ -41,22 +35,22 @@ namespace Generation {
         switch (possibleExitIndex[randomNumber]) {
             case 0: // north
                 newRoomPosition = [_currentRoom.coordinates[0], _currentRoom.coordinates[1] + 1];
-                rooms.push(new Room((newRoomPosition), calcPathExits(newRoomPosition), _roomType));
+                rooms.push(new Room("roomNormal", (newRoomPosition), calcPathExits(newRoomPosition), _roomType));
                 usedPositions.push(newRoomPosition);
                 break;
             case 1: // east
                 newRoomPosition = [_currentRoom.coordinates[0] + 1, _currentRoom.coordinates[1]];
-                rooms.push(new Room((newRoomPosition), calcPathExits(newRoomPosition), _roomType));
+                rooms.push(new Room("roomNormal", (newRoomPosition), calcPathExits(newRoomPosition), _roomType));
                 usedPositions.push(newRoomPosition);
                 break;
             case 2: // south
                 newRoomPosition = [_currentRoom.coordinates[0], _currentRoom.coordinates[1] - 1];
-                rooms.push(new Room((newRoomPosition), calcPathExits(newRoomPosition), _roomType));
+                rooms.push(new Room("roomNormal", (newRoomPosition), calcPathExits(newRoomPosition), _roomType));
                 usedPositions.push(newRoomPosition);
                 break;
             case 3: //west
                 newRoomPosition = [_currentRoom.coordinates[0] - 1, _currentRoom.coordinates[1]];
-                rooms.push(new Room((newRoomPosition), calcPathExits(newRoomPosition), _roomType));
+                rooms.push(new Room("roomNormal", (newRoomPosition), calcPathExits(newRoomPosition), _roomType));
                 usedPositions.push(newRoomPosition);
                 break;
 
@@ -67,11 +61,13 @@ namespace Generation {
     function addSpecialRooms(): void {
         rooms.forEach(room => {
             room.exits = calcPathExits(room.coordinates);
-            if (isSpawning(challengeRoomSpawnChance)) {
-                addRoom(room, Generation.ROOMTYPE.CHALLENGE)
-            }
             if (isSpawning(treasureRoomSpawnChance)) {
                 addRoom(room, Generation.ROOMTYPE.TREASURE);
+                return;
+            }
+            if (isSpawning(challengeRoomSpawnChance)) {
+                addRoom(room, Generation.ROOMTYPE.CHALLENGE)
+                return;
             }
         });
     }
@@ -173,9 +169,7 @@ namespace Generation {
         let neighbours = _neighbours;
         let toRemoveIndex: number[] = [];
         for (let i = 0; i < neighbours.length; i++) {
-            if (neighbours[i][0] < 0 || neighbours[i][1] < 0 || neighbours[i][0] > maxX || neighbours[i][1] > maxY) {
-                toRemoveIndex.push(i);
-            }
+            // check ich position already used
             usedPositions.forEach(room => {
                 if (neighbours[i][0] == room[0] && neighbours[i][1] == room[1]) {
                     toRemoveIndex.push(i);
