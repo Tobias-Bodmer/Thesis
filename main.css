@@ -2,3 +2,15 @@ canvas {
     width: 1000px;
     height: 600px;
 }
+
+#HP-Bar {
+    border: 1px solid black;
+    width: 300px;
+    background-color: grey;
+}
+
+#HP {
+    width: 100%;
+    height: 10px;
+    background-color: green;
+}

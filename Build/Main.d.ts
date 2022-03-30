@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
@@ -29,8 +29,9 @@ declare namespace Player {
 declare namespace Items {
     class Item extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
         description: string;
+        imgSrc: string;
         lifetime: number;
-        constructor(_name: string, _description: string, _position: ƒ.Vector3, _lifetime?: number);
+        constructor(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime?: number);
         lifespan(_graph: ƒ.Node): void;
     }
 }
@@ -51,12 +52,13 @@ declare namespace Items {
          * @param _lifetime optional: how long is the item visible
          * @param _attributes define which attributes will change, compare with {@link Player.Attributes}
          */
-        constructor(_name: string, _description: string, _position: ƒ.Vector3, _lifetime: number, _attributes: Player.Attributes, _type: ITEMTYPE);
+        constructor(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime: number, _attributes: Player.Attributes, _type: ITEMTYPE);
     }
 }
 declare namespace Player {
     class Attributes {
         healthPoints: number;
+        maxhealthPoints: number;
         speed: number;
         attackPoints: number;
         constructor(_healthPoints: number, _attackPoints: number, _speed: number);
@@ -69,6 +71,7 @@ declare namespace Items {
         speed: number;
         lifetime: number;
         collider: Game.ƒ.Rectangle;
+        private killcount;
         lifespan(_graph: ƒ.Node): Promise<void>;
         constructor(_name: string, _position: ƒ.Vector3, _direction: ƒ.Vector3, _attackPoints: number, _lifetime: number, _speed: number);
         move(): Promise<void>;
@@ -164,4 +167,7 @@ declare namespace Generation {
 }
 declare namespace Generation {
     function generateRooms(): void;
+}
+declare namespace UI {
+    function updateUI(): void;
 }

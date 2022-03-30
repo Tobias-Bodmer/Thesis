@@ -1,11 +1,13 @@
 namespace Items {
     export class Item extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
         public description: string;
+        public imgSrc: string;
         lifetime: number;
 
-        constructor(_name: string, _description: string, _position: ƒ.Vector3, _lifetime?: number) {
+        constructor(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime?: number) {
             super(_name);
             this.description = _description;
+            this.imgSrc = _imgSrc;
             this.lifetime = _lifetime;
             this.addComponent(new ƒ.ComponentTransform());
             this.cmpTransform.mtxLocal.translate(_position);

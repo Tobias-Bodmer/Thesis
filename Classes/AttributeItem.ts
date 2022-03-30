@@ -16,8 +16,8 @@ namespace Items {
          * @param _lifetime optional: how long is the item visible
          * @param _attributes define which attributes will change, compare with {@link Player.Attributes}
          */
-        constructor(_name: string, _description: string, _position: ƒ.Vector3, _lifetime: number, _attributes: Player.Attributes, _type: ITEMTYPE) {
-            super(_name, _description, _position, _lifetime);
+        constructor(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime: number, _attributes: Player.Attributes, _type: ITEMTYPE) {
+            super(_name, _description, _position, _imgSrc, _lifetime);
             this.attributes = _attributes;
             this.type = _type;
         }

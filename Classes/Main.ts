@@ -33,7 +33,7 @@ namespace Game {
         ƒ.Debug.log(player);
 
         //#region init Items
-        item1 = new Items.Item("Item1", "", new ƒ.Vector3(0, 5, 0));
+        item1 = new Items.Item("Item1", "", new ƒ.Vector3(0, 5, 0), "./Resources/Image/Items");
         //#endregion
 
         Generation.generateRooms();
@@ -127,6 +127,8 @@ namespace Game {
             element.move();
             element.lifespan(graph);
         })
+
+        UI.updateUI();
     }
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);

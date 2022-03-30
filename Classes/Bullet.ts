@@ -6,6 +6,8 @@ namespace Items {
         public lifetime: number;
         public collider: Game.ƒ.Rectangle;
 
+        private killcount: number = 1; 
+
         async lifespan(_graph: ƒ.Node) {
             if (this.lifetime >= 0 && this.lifetime != null) {
                 this.lifetime--;
@@ -35,11 +37,11 @@ namespace Items {
 
         async collisionDetection() {
             let colliders: any[] = Game.graph.getChildren().filter(element => (<any>element).collider != undefined);
-
             colliders.forEach((element) => {
-                if (this.collider.collides(element.collider) && element.properties != undefined) {
+                if (this.collider.collides(element.collider) && element.properties != undefined && this.killcount > 0) {
                     (<Enemy.Enemy>element).properties.attributes.healthPoints -= this.hitPoints;
                     this.lifetime = 0;
+                    this.killcount--;
                 }
             })
         }
