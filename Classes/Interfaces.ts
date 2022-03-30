@@ -1,7 +1,6 @@
 namespace Interfaces {
     export interface ISpawnable {
-        lifetime: number;
-
+        lifetime?: number;
         lifespan(_a: ƒ.Node): void;
     }
 }

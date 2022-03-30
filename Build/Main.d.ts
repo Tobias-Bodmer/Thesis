@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
@@ -14,7 +14,7 @@ declare namespace Game {
 }
 declare namespace Interfaces {
     interface ISpawnable {
-        lifetime: number;
+        lifetime?: number;
         lifespan(_a: ƒ.Node): void;
     }
 }
@@ -69,11 +69,11 @@ declare namespace Items {
         hitPoints: number;
         flyDirection: ƒ.Vector3;
         speed: number;
-        lifetime: number;
         collider: Game.ƒ.Rectangle;
+        lifetime: number;
         private killcount;
         lifespan(_graph: ƒ.Node): Promise<void>;
-        constructor(_name: string, _position: ƒ.Vector3, _direction: ƒ.Vector3, _attackPoints: number, _lifetime: number, _speed: number);
+        constructor(_name: string, _position: ƒ.Vector2, _direction: ƒ.Vector3, _attackPoints: number, _lifetime: number, _speed: number);
         move(): Promise<void>;
         collisionDetection(): Promise<void>;
     }
@@ -92,10 +92,10 @@ declare namespace Enemy {
         target: Player.Player;
         collider: Game.ƒ.Rectangle;
         lifetime: number;
-        position: [number, number];
-        constructor(_name: string, _properties: Player.Character, _position: [number, number]);
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
         move(): Promise<void>;
         moveSimple(): Promise<void>;
+        moveAway(): Promise<void>;
         lifespan(_graph: Game.ƒ.Node): Promise<void>;
     }
 }

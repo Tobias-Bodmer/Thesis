@@ -3,10 +3,10 @@ namespace Items {
         public hitPoints: number
         public flyDirection: ƒ.Vector3;
         public speed: number;
-        public lifetime: number;
         public collider: Game.ƒ.Rectangle;
+        lifetime: number;
 
-        private killcount: number = 1; 
+        private killcount: number = 1;
 
         async lifespan(_graph: ƒ.Node) {
             if (this.lifetime >= 0 && this.lifetime != null) {
@@ -17,12 +17,12 @@ namespace Items {
             }
         }
 
-        constructor(_name: string, _position: ƒ.Vector3, _direction: ƒ.Vector3, _attackPoints: number, _lifetime: number, _speed: number) {
+        constructor(_name: string, _position: ƒ.Vector2, _direction: ƒ.Vector3, _attackPoints: number, _lifetime: number, _speed: number) {
             super(_name)
             this.hitPoints = _attackPoints;
             this.lifetime = _lifetime * Game.frameRate;
             this.addComponent(new ƒ.ComponentTransform());
-            this.mtxLocal.translation = _position;
+            this.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
             this.speed = _speed;
             this.flyDirection = _direction;
 

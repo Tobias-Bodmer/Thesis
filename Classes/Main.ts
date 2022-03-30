@@ -69,7 +69,7 @@ namespace Game {
 
         graph.addChild(node);
         for (let i = 0; i < 3; i++) {
-            graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, Math.random() * 3 + 1)), [i * 0.3, 5]));
+            graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, Math.random() * 3 + 1)), new ƒ.Vector2(i * 0.3, 5)));
         }
         //#endregion
 

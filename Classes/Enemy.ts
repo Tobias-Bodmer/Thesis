@@ -6,14 +6,13 @@ namespace Enemy {
         public target: Player.Player;
         public collider: Game.ƒ.Rectangle;
         lifetime: number;
-        position: [number, number];
 
-        constructor(_name: string, _properties: Player.Character, _position: [number, number]) {
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2) {
             super(_name);
             this.addComponent(new ƒ.ComponentTransform());
             this.properties = _properties;
 
-            this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position[0], _position[1], 0);
+            this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
 
             this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
         }
@@ -42,6 +41,14 @@ namespace Enemy {
 
         async moveSimple() {
             let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.target.cmpTransform.mtxLocal.translation, this.cmpTransform.mtxLocal.translation);
+            direction.normalize();
+
+            direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
+            this.cmpTransform.mtxLocal.translate(direction, true);
+        }
+
+        async moveAway() {
+            let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.cmpTransform.mtxLocal.translation, this.target.cmpTransform.mtxLocal.translation);
             direction.normalize();
 
             direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
