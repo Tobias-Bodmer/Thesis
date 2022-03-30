@@ -121,9 +121,9 @@ declare namespace Networking {
 declare namespace Player {
     class Player extends Game.ƒAid.NodeSprite {
         items: Array<Items.Item>;
-        hero: Character;
+        properties: Character;
         rect1: ƒ.Rectangle;
-        constructor(_name: string, _hero: Character);
+        constructor(_name: string, _properties: Character);
         move(_direction: ƒ.Vector3): void;
         attack(_direction: ƒ.Vector3): void;
         collector(): void;

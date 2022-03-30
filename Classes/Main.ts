@@ -70,7 +70,7 @@ namespace Game {
 
         graph.addChild(node);
 
-        graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(5, 5, 2))));
+        graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, 2))));
         //#endregion
 
 

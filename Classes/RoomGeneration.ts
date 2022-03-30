@@ -1,6 +1,6 @@
 namespace Generation {
 
-    let numberOfRooms: number = 6;
+    let numberOfRooms: number = 3;
     let usedPositions: [number, number][] = [];
     let rooms: Room[] = [];
 
@@ -22,7 +22,7 @@ namespace Generation {
         addRoom(rooms[rooms.length - 3], Generation.ROOMTYPE.MERCHANT);
         rooms.forEach(room => {
             room.exits = calcRoomDoors(room.coordinates);
-            console.log(room.coordinates + " " + room.exits + " " + room.roomType);
+            console.log(room.coordinates + " " + room.exits + " " + room.roomType.toString());
         })
     }
 

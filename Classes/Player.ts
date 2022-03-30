@@ -2,18 +2,18 @@ namespace Player {
 
     export class Player extends Game.ƒAid.NodeSprite {
         public items: Array<Items.Item>;
-        public hero: Character;
+        public properties: Character;
         rect1: ƒ.Rectangle;
 
-        constructor(_name: string, _hero: Character) {
+        constructor(_name: string, _properties: Character) {
             super(_name);
             this.addComponent(new ƒ.ComponentTransform());
-            this.hero = _hero;
+            this.properties = _properties;
         }
 
         public move(_direction: ƒ.Vector3) {
             // if (Networking.client.id == this.authority) {
-            _direction.scale((1 / 60 * this.hero.attributes.speed))
+            _direction.scale((1 / 60 * this.properties.attributes.speed))
             this.cmpTransform.mtxLocal.translate(_direction, false);
             // }
         }
