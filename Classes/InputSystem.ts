@@ -5,26 +5,9 @@ namespace InputSystem {
     Game.canvas.addEventListener("mousedown", attack);
     Game.canvas.addEventListener("mousemove", rotateToMouse);
 
-    let controller = new Map<string, boolean>([
-        ["W", false],
-        ["A", false],
-        ["S", false],
-        ["D", false]
-    ]);
-
+    //#region rotate
     let mousePosition: ƒ.Vector3;
 
-    function keyboardDownEvent(_e: KeyboardEvent) {
-        let key: string = _e.code.toUpperCase().substring(3);
-        controller.set(key, true);
-    }
-
-    function keyboardUpEvent(_e: KeyboardEvent) {
-        let key: string = _e.code.toUpperCase().substring(3);
-        controller.set(key, false);
-    }
-
-    //#region rotate
     function rotateToMouse(_mouseEvent: MouseEvent): void {
         let ray: ƒ.Ray = Game.viewport.getRayFromClient(new ƒ.Vector2(_mouseEvent.clientX, _mouseEvent.clientY));
         mousePosition = ray.intersectPlane(new ƒ.Vector3(0, 0, 0), new ƒ.Vector3(0, 0, 1));
@@ -40,6 +23,23 @@ namespace InputSystem {
     }
     //#endregion
 
+    //#region move
+    let controller = new Map<string, boolean>([
+        ["W", false],
+        ["A", false],
+        ["S", false],
+        ["D", false]
+    ]);
+
+    function keyboardDownEvent(_e: KeyboardEvent) {
+        let key: string = _e.code.toUpperCase().substring(3);
+        controller.set(key, true);
+    }
+
+    function keyboardUpEvent(_e: KeyboardEvent) {
+        let key: string = _e.code.toUpperCase().substring(3);
+        controller.set(key, false);
+    }
 
     export function move() {
         let moveVector: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
@@ -62,8 +62,6 @@ namespace InputSystem {
             hasChanged = true;
         }
 
-
-
         if (hasChanged && moveVector.magnitude != 0) {
             Game.player.move(Game.ƒ.Vector3.NORMALIZATION(moveVector, 1));
         }
@@ -71,14 +69,16 @@ namespace InputSystem {
             Networking.updatePosition(Game.player.mtxLocal.translation, Game.player.mtxLocal.rotation);
         }
     }
+    //#endregion
 
+    //#region attack
     function attack(e_: MouseEvent) {
 
         let mouseButton = e_.button;
 
         switch (mouseButton) {
             case 0:
-                //TODO: left mouse button player.attack
+                //left mouse button player.attack
                 let direction: Game.ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(mousePosition, Game.player.mtxLocal.translation)
                 Game.player.attack(direction);
                 if (Game.connected) {
@@ -94,5 +94,5 @@ namespace InputSystem {
                 break;
         }
     }
-
+    //#endregion
 }

@@ -1,7 +1,7 @@
 namespace Player {
 
     export class Player extends Game.ƒAid.NodeSprite {
-        public items: Array<Items.Item>;
+        public items: Array<Items.Item> = [];
         public hero: Character;
         rect1: ƒ.Rectangle;
 
@@ -12,10 +12,8 @@ namespace Player {
         }
 
         public move(_direction: ƒ.Vector3) {
-            // if (Networking.client.id == this.authority) {
             _direction.scale((1 / 60 * this.hero.attributes.speed))
             this.cmpTransform.mtxLocal.translate(_direction, false);
-            // }
         }
 
         public attack(_direction: ƒ.Vector3) {

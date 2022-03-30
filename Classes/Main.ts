@@ -9,7 +9,6 @@ namespace Game {
 
     //#region "DomElements"
     export let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("Canvas");
-    let crc2: CanvasRenderingContext2D = canvas.getContext("2d");
     window.addEventListener("load", init);
     //#endregion "DomElements"
 
