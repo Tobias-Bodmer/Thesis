@@ -64,7 +64,7 @@ namespace Game {
         newCoat.texture = newTxt;
         oldComCoat.material = newMtr;
 
-        node.cmpTransform.mtxLocal.scale(new ƒ.Vector3(50, 50, 1));
+        node.cmpTransform.mtxLocal.scale(new ƒ.Vector3(30, 30, 1));
         node.cmpTransform.mtxLocal.translateZ(-0.01);
 
         graph.addChild(node);
@@ -107,7 +107,11 @@ namespace Game {
 
     function update(): void {
         InputSystem.move();
+
         draw();
+
+        // cameraUpdate();
+
         //#region count items
         let items: Items.Item[] = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).lifetime != null)
         items.forEach(element => {
@@ -128,6 +132,11 @@ namespace Game {
         })
 
         UI.updateUI();
+    }
+
+    export function cameraUpdate() {
+        let direction = ƒ.Vector2.DIFFERENCE(player.cmpTransform.mtxLocal.translation.toVector2(), cmpCamera.mtxPivot.translation.toVector2());
+        cmpCamera.mtxPivot.translate(new ƒ.Vector3(-direction.x, direction.y, 0), true);
     }
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);

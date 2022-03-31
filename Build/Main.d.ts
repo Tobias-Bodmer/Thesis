@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
@@ -11,6 +11,7 @@ declare namespace Game {
     let player2: Player.Player;
     let connected: boolean;
     let frameRate: number;
+    function cameraUpdate(): void;
 }
 declare namespace Interfaces {
     interface ISpawnable {

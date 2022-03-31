@@ -3,7 +3,7 @@ namespace InputSystem {
     document.addEventListener("keydown", keyboardDownEvent);
     document.addEventListener("keyup", keyboardUpEvent);
     Game.canvas.addEventListener("mousedown", attack);
-    Game.canvas.addEventListener("mousemove", rotateToMouse);
+    Game.canvas.addEventListener("click", rotateToMouse);
 
     //#region rotate
     let mousePosition: ƒ.Vector3;
@@ -11,6 +11,9 @@ namespace InputSystem {
     function rotateToMouse(_mouseEvent: MouseEvent): void {
         let ray: ƒ.Ray = Game.viewport.getRayFromClient(new ƒ.Vector2(_mouseEvent.clientX, _mouseEvent.clientY));
         mousePosition = ray.intersectPlane(new ƒ.Vector3(0, 0, 0), new ƒ.Vector3(0, 0, 1));
+
+        ƒ.Debug.log(mousePosition);
+
         Game.player.mtxLocal.rotation = new ƒ.Vector3(0, 0, calcDegree(Game.player.mtxLocal.translation, mousePosition));
     }
 
