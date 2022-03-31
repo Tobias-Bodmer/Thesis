@@ -1,10 +1,11 @@
 namespace Items {
     export class Bullet extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
-        public hitPoints: number
         public flyDirection: ƒ.Vector3;
-        public speed: number;
         public collider: Game.ƒ.Rectangle;
-        lifetime: number;
+
+        public hitPoints: number = 5;
+        public speed: number = 15;
+        lifetime: number = 1 * Game.frameRate;
 
         private killcount: number = 1;
 
@@ -17,17 +18,14 @@ namespace Items {
             }
         }
 
-        constructor(_name: string, _position: ƒ.Vector2, _direction: ƒ.Vector3, _attackPoints: number, _lifetime: number, _speed: number) {
-            super(_name)
-            this.hitPoints = _attackPoints;
-            this.lifetime = _lifetime * Game.frameRate;
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3) {
+            super("normalBullet");
             this.addComponent(new ƒ.ComponentTransform());
             this.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
-            this.speed = _speed;
             this.flyDirection = _direction;
-
             this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
         }
+
 
         async move() {
             this.cmpTransform.mtxLocal.translate(this.flyDirection);
@@ -44,6 +42,15 @@ namespace Items {
                     this.killcount--;
                 }
             })
+        }
+    }
+
+    export class slowBullet extends Bullet {
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3) {
+            super(_position, _direction);
+            this.speed = 6;
+            this.hitPoints = 10;
+            this.lifetime = 5 * Game.frameRate;
         }
     }
 }

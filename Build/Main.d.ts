@@ -67,16 +67,19 @@ declare namespace Player {
 }
 declare namespace Items {
     class Bullet extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
-        hitPoints: number;
         flyDirection: ƒ.Vector3;
-        speed: number;
         collider: Game.ƒ.Rectangle;
+        hitPoints: number;
+        speed: number;
         lifetime: number;
         private killcount;
         lifespan(_graph: ƒ.Node): Promise<void>;
-        constructor(_name: string, _position: ƒ.Vector2, _direction: ƒ.Vector3, _attackPoints: number, _lifetime: number, _speed: number);
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3);
         move(): Promise<void>;
         collisionDetection(): Promise<void>;
+    }
+    class slowBullet extends Bullet {
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3);
     }
 }
 declare namespace Player {
@@ -87,18 +90,35 @@ declare namespace Player {
     }
 }
 declare namespace Enemy {
-    class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+    enum ENEMYTYPE {
+        DUMB = 0,
+        RUNNER = 1,
+        SMART = 2
+    }
+    export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
         properties: Player.Character;
-        smart: boolean;
+        aiType: ENEMYTYPE;
         target: Player.Player;
         collider: Game.ƒ.Rectangle;
         lifetime: number;
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
+        /**
+         * Creates an Enemy
+         * @param _name Name of the enemy
+         * @param _properties Properties, storing attributes and stuff
+         * @param _position position where to spawn
+         * @param _aiType optional: standard ai = dumb
+         */
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _aiType?: ENEMYTYPE);
         move(): Promise<void>;
         moveSimple(): Promise<void>;
-        moveAway(): Promise<void>;
         lifespan(_graph: Game.ƒ.Node): Promise<void>;
     }
+    export class EnemyFlee extends Enemy {
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _aiType?: ENEMYTYPE);
+        move(): Promise<void>;
+        moveAway(): Promise<void>;
+    }
+    export {};
 }
 declare namespace InputSystem {
     function move(): void;
