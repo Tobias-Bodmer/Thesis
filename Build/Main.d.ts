@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
@@ -188,6 +188,11 @@ declare namespace Generation {
         bossRoomMat: ƒ.Material;
         cmpMaterial: ƒ.ComponentMaterial;
         constructor(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: ROOMTYPE);
+    }
+    class Wall extends ƒ.Node {
+        collider: Game.ƒ.Rectangle;
+        wallThickness: number;
+        constructor(_position: Game.ƒ.Vector2, _width: number);
     }
 }
 declare namespace Generation {

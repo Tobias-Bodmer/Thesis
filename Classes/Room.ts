@@ -57,4 +57,34 @@ namespace Generation {
             this.node.cmpTransform.mtxLocal.translation = new ƒ.Vector3(this.coordinates[0], this.coordinates[1], 0);
         }
     }
+
+    export class Wall extends ƒ.Node {
+        public collider: Game.ƒ.Rectangle;
+        public wallThickness: number = 1;
+
+        constructor(_position: Game.ƒ.Vector2, _width: number) {
+            super("Wall");
+            this.addComponent(new ƒ.ComponentTransform());
+            this.cmpTransform.mtxLocal.translation = _position.toVector3(0);
+
+            if (_position.x == 0) {
+                if (_position.y > 0) {
+                    this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(_width, this.wallThickness, 0);
+                    this.collider = new Game.ƒ.Rectangle(_position.x, _position.y + 2 / this.cmpTransform.mtxLocal.scaling.y, _width, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
+                } else {
+                    this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(_width, this.wallThickness, 0);
+                    this.collider = new Game.ƒ.Rectangle(_position.x, _position.y - 2 / this.cmpTransform.mtxLocal.scaling.y, _width, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
+                }
+            } else if (_position.y == 0) {
+                if (_position.x > 0) {
+                    this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(this.wallThickness, _width, 0);
+                    this.collider = new Game.ƒ.Rectangle(_position.x + 2 / this.cmpTransform.mtxLocal.scaling.x, _position.y, _width, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
+
+                } else {
+                    this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(this.wallThickness, _width, 0);
+                    this.collider = new Game.ƒ.Rectangle(_position.x - 2 / this.cmpTransform.mtxLocal.scaling.x, _position.y, _width, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
+                }
+            }
+        }
+    }
 }
