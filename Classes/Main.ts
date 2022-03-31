@@ -24,6 +24,7 @@ namespace Game {
     //#region "PrivateVariables"
     let item1: Items.Item;
     let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
+    const damper: number = 3.5;
     //#endregion "PrivateVariables"
 
     //#region "essential"
@@ -110,22 +111,22 @@ namespace Game {
 
         draw();
 
-        // cameraUpdate();
+        cameraUpdate();
 
         //#region count items
-        let items: Items.Item[] = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).lifetime != null)
+        let items: Items.Item[] = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.Tag.ITEM)
         items.forEach(element => {
             element.lifespan(graph);
         });
         //#endregion
 
-        let bullets: Items.Bullet[] = <Items.Bullet[]>graph.getChildren().filter(element => (<Items.Bullet>element).lifetime != null)
+        let bullets: Items.Bullet[] = <Items.Bullet[]>graph.getChildren().filter(element => (<Items.Bullet>element).tag == Tag.Tag.BULLET)
         bullets.forEach(element => {
             element.move();
             element.lifespan(graph);
         })
 
-        let enemys: Enemy.Enemy[] = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).properties != null)
+        let enemys: Enemy.Enemy[] = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.Tag.ENEMY)
         enemys.forEach(element => {
             element.move();
             element.lifespan(graph);
@@ -136,6 +137,7 @@ namespace Game {
 
     export function cameraUpdate() {
         let direction = ƒ.Vector2.DIFFERENCE(player.cmpTransform.mtxLocal.translation.toVector2(), cmpCamera.mtxPivot.translation.toVector2());
+        direction.scale(1 / frameRate * damper);
         cmpCamera.mtxPivot.translate(new ƒ.Vector3(-direction.x, direction.y, 0), true);
     }
 

@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
@@ -29,6 +29,7 @@ declare namespace Player {
 }
 declare namespace Items {
     class Item extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+        tag: Tag.Tag;
         description: string;
         imgSrc: string;
         lifetime: number;
@@ -67,6 +68,7 @@ declare namespace Player {
 }
 declare namespace Items {
     class Bullet extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+        tag: Tag.Tag;
         hitPoints: number;
         flyDirection: ƒ.Vector3;
         speed: number;
@@ -88,6 +90,7 @@ declare namespace Player {
 }
 declare namespace Enemy {
     class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+        tag: Tag.Tag;
         properties: Player.Character;
         smart: boolean;
         target: Player.Player;
@@ -126,6 +129,7 @@ declare namespace Networking {
 }
 declare namespace Player {
     class Player extends Game.ƒAid.NodeSprite {
+        tag: Tag.Tag;
         items: Array<Items.Item>;
         hero: Character;
         rect1: ƒ.Rectangle;
@@ -168,6 +172,15 @@ declare namespace Generation {
 }
 declare namespace Generation {
     function generateRooms(): void;
+}
+declare namespace Tag {
+    enum Tag {
+        PLAYER = 0,
+        ENEMY = 1,
+        BULLET = 2,
+        ITEM = 3,
+        WALL = 4
+    }
 }
 declare namespace UI {
     function updateUI(): void;

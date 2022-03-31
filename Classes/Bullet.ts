@@ -1,5 +1,6 @@
 namespace Items {
     export class Bullet extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+        public tag: Tag.Tag = Tag.Tag.BULLET;
         public hitPoints: number
         public flyDirection: ƒ.Vector3;
         public speed: number;

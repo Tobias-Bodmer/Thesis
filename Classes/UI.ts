@@ -1,5 +1,5 @@
 namespace UI {
-    // let divUI: HTMLDivElement = <HTMLDivElement>document.getElementById("UI");
+    //let divUI: HTMLDivElement = <HTMLDivElement>document.getElementById("UI");
     let player1UI: HTMLDivElement = <HTMLDivElement>document.getElementById("Player1");
     let player2UI: HTMLDivElement = <HTMLDivElement>document.getElementById("Player2");
 

@@ -1,6 +1,7 @@
 namespace Enemy {
 
     export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+        public tag: Tag.Tag = Tag.Tag.ENEMY;
         public properties: Player.Character;
         public smart: boolean = false;
         public target: Player.Player;
