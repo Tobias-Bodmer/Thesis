@@ -29,6 +29,7 @@ declare namespace Player {
 }
 declare namespace Items {
     class Item extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+        tag: Tag.Tag;
         description: string;
         imgSrc: string;
         lifetime: number;
@@ -67,6 +68,7 @@ declare namespace Player {
 }
 declare namespace Items {
     class Bullet extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+        tag: Tag.Tag;
         flyDirection: ƒ.Vector3;
         collider: Game.ƒ.Rectangle;
         hitPoints: number;
@@ -96,6 +98,7 @@ declare namespace Enemy {
         SMART = 2
     }
     export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+        tag: Tag.Tag;
         properties: Player.Character;
         aiType: ENEMYTYPE;
         target: Player.Player;
@@ -146,6 +149,7 @@ declare namespace Networking {
 }
 declare namespace Player {
     class Player extends Game.ƒAid.NodeSprite {
+        tag: Tag.Tag;
         items: Array<Items.Item>;
         hero: Character;
         rect1: ƒ.Rectangle;
@@ -188,6 +192,15 @@ declare namespace Generation {
 }
 declare namespace Generation {
     function generateRooms(): void;
+}
+declare namespace Tag {
+    enum Tag {
+        PLAYER = 0,
+        ENEMY = 1,
+        BULLET = 2,
+        ITEM = 3,
+        WALL = 4
+    }
 }
 declare namespace UI {
     function updateUI(): void;

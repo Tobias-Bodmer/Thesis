@@ -1,6 +1,7 @@
 namespace Player {
 
     export class Player extends Game.ƒAid.NodeSprite {
+        public tag: Tag.Tag = Tag.Tag.PLAYER;
         public items: Array<Items.Item> = [];
         public hero: Character;
         rect1: ƒ.Rectangle;

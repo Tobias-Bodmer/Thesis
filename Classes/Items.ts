@@ -1,5 +1,6 @@
 namespace Items {
     export class Item extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+        public tag: Tag.Tag = Tag.Tag.ITEM;
         public description: string;
         public imgSrc: string;
         lifetime: number;
