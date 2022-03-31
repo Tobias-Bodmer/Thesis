@@ -3,13 +3,13 @@ namespace InputSystem {
     document.addEventListener("keydown", keyboardDownEvent);
     document.addEventListener("keyup", keyboardUpEvent);
     Game.canvas.addEventListener("mousedown", attack);
-    Game.canvas.addEventListener("click", rotateToMouse);
+    Game.canvas.addEventListener("mousemove", rotateToMouse);
 
     //#region rotate
     let mousePosition: ƒ.Vector3;
 
     function rotateToMouse(_mouseEvent: MouseEvent): void {
-        let ray: ƒ.Ray = Game.viewport.getRayFromClient(new ƒ.Vector2(_mouseEvent.clientX, _mouseEvent.clientY));
+        let ray: ƒ.Ray = Game.viewport.getRayFromClient(new ƒ.Vector2(_mouseEvent.offsetX, _mouseEvent.offsetY));
         mousePosition = ray.intersectPlane(new ƒ.Vector3(0, 0, 0), new ƒ.Vector3(0, 0, 1));
 
         ƒ.Debug.log(mousePosition);
