@@ -152,7 +152,7 @@ declare namespace Player {
         tag: Tag.Tag;
         items: Array<Items.Item>;
         hero: Character;
-        rect1: ƒ.Rectangle;
+        collider: ƒ.Rectangle;
         constructor(_name: string, _properties: Character);
         move(_direction: ƒ.Vector3): void;
         attack(_direction: ƒ.Vector3): void;
@@ -174,6 +174,7 @@ declare namespace Generation {
         BOSS = 5
     }
     class Room extends ƒ.Node {
+        tag: Tag.Tag;
         roomType: ROOMTYPE;
         coordinates: [number, number];
         exits: [boolean, boolean, boolean, boolean];
@@ -190,6 +191,7 @@ declare namespace Generation {
         constructor(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: ROOMTYPE);
     }
     class Wall extends ƒ.Node {
+        tag: Tag.Tag;
         collider: Game.ƒ.Rectangle;
         wallThickness: number;
         constructor(_position: Game.ƒ.Vector2, _width: number);
@@ -204,7 +206,8 @@ declare namespace Tag {
         ENEMY = 1,
         BULLET = 2,
         ITEM = 3,
-        WALL = 4
+        ROOM = 4,
+        WALL = 5
     }
 }
 declare namespace UI {

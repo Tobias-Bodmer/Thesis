@@ -109,9 +109,17 @@ namespace Game {
     function update(): void {
         InputSystem.move();
 
+        if (player2 != undefined && !connected) {
+            connected = true;
+        }
+
         draw();
 
         cameraUpdate();
+
+        if (Game.connected) {
+            Networking.updatePosition(Game.player.mtxLocal.translation, Game.player.mtxLocal.rotation);
+        }
 
         //#region count items
         let items: Items.Item[] = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.Tag.ITEM)

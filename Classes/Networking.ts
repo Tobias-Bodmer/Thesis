@@ -18,7 +18,6 @@ namespace Networking {
 
     function hostServer() {
         client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, value: Game.player.hero, position: Game.player.cmpTransform.mtxLocal.translation } })
-        Game.connected = true;
         ƒ.Debug.log("Connected to Server");
     }
 
@@ -42,6 +41,9 @@ namespace Networking {
                     if (message.content != undefined && message.content.text == FUNCTION.TRANSFORM.toString()) {
                         let moveVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.value.data[0], message.content.value.data[1], message.content.value.data[2])
                         let rotateVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.rotation.data[0], message.content.rotation.data[1], message.content.rotation.data[2])
+                        
+                        console.log(message.content);
+                        
                         Game.player2.mtxLocal.translation = moveVector;
                         Game.player2.mtxLocal.rotation = rotateVector;
                     }

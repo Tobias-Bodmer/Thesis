@@ -9,6 +9,7 @@ namespace Generation {
     }
 
     export class Room extends ƒ.Node {
+        public tag: Tag.Tag = Tag.Tag.ROOM;
         public roomType: ROOMTYPE
         public coordinates: [number, number]; // X Y
         exits: [boolean, boolean, boolean, boolean] // N E S W
@@ -59,6 +60,7 @@ namespace Generation {
     }
 
     export class Wall extends ƒ.Node {
+        public tag: Tag.Tag = Tag.Tag.WALL;
         public collider: Game.ƒ.Rectangle;
         public wallThickness: number = 1;
 

@@ -65,9 +65,6 @@ namespace InputSystem {
         if (hasChanged && moveVector.magnitude != 0) {
             Game.player.move(Game.ƒ.Vector3.NORMALIZATION(moveVector, 1));
         }
-        if (Game.connected) {
-            Networking.updatePosition(Game.player.mtxLocal.translation, Game.player.mtxLocal.rotation);
-        }
     }
     //#endregion
 

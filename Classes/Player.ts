@@ -4,7 +4,7 @@ namespace Player {
         public tag: Tag.Tag = Tag.Tag.PLAYER;
         public items: Array<Items.Item> = [];
         public hero: Character;
-        rect1: ƒ.Rectangle;
+        collider: ƒ.Rectangle;
 
         constructor(_name: string, _properties: Character) {
             super(_name);
@@ -13,7 +13,16 @@ namespace Player {
         }
 
         public move(_direction: ƒ.Vector3) {
-            _direction.scale((1 / 60 * this.hero.attributes.speed))
+            _direction.scale((1 / 60 * this.hero.attributes.speed));
+
+            //TODO: don't let the player walk in the wall but don't ignor the movement completely 
+            // let colliders: Generation.Wall[] = <Generation.Wall[]>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.Tag.ROOM).getChildren().filter(element => (<Generation.Wall>element).tag == Tag.Tag.WALL); 
+            // colliders.forEach((element) => {
+            //     if (this.collider.collides(element.collider)) {
+            //         this.collider.getIntersection(element.collider);
+            //     }
+            // })
+
             this.cmpTransform.mtxLocal.translate(_direction, false);
         }
 
