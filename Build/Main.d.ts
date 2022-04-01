@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
@@ -123,6 +123,12 @@ declare namespace Enemy {
     }
     export {};
 }
+declare namespace Enemy {
+    class EnemySpawner {
+        spawnPositions: ƒ.Vector2[];
+        numberOfENemies: number;
+    }
+}
 declare namespace InputSystem {
     function move(): void;
 }
@@ -132,10 +138,14 @@ declare namespace Level {
     }
 }
 declare namespace Networking {
-    enum FUNCTION {
+    enum FUNCTIONPLAYER {
         SPAWN = 0,
         TRANSFORM = 1,
         BULLET = 2
+    }
+    enum FUNCTIONENEMY {
+        SPAWN = 0,
+        TRANSFORM = 1
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
