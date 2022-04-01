@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
@@ -112,14 +112,14 @@ declare namespace Enemy {
          * @param _aiType optional: standard ai = dumb
          */
         constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _aiType?: ENEMYTYPE);
-        move(): Promise<void>;
-        moveSimple(): Promise<void>;
-        lifespan(_graph: Game.ƒ.Node): Promise<void>;
+        move(): void;
+        moveSimple(): void;
+        lifespan(_graph: Game.ƒ.Node): void;
     }
     export class EnemyFlee extends Enemy {
         constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _aiType?: ENEMYTYPE);
-        move(): Promise<void>;
-        moveAway(): Promise<void>;
+        move(): void;
+        moveAway(): void;
     }
     export {};
 }
@@ -187,8 +187,9 @@ declare namespace Generation {
         tag: Tag.Tag;
         roomType: ROOMTYPE;
         coordinates: [number, number];
+        walls: Wall[];
+        roomSize: number;
         exits: [boolean, boolean, boolean, boolean];
-        node: ƒ.Node;
         mesh: ƒ.MeshQuad;
         cmpMesh: ƒ.ComponentMesh;
         startRoomMat: ƒ.Material;

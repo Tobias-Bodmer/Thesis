@@ -24,6 +24,12 @@ namespace Generation {
             room.exits = calcRoomDoors(room.coordinates);
             console.log(room.coordinates + " " + room.exits + " " + room.roomType.toString());
         })
+
+        Game.graph.addChild(rooms[0]);
+        Game.graph.appendChild(rooms[0].walls[0]);
+        Game.graph.appendChild(rooms[0].walls[1]);
+        Game.graph.appendChild(rooms[0].walls[2]);
+        Game.graph.appendChild(rooms[0].walls[3]);
     }
 
     function addRoom(_currentRoom: Room, _roomType: Generation.ROOMTYPE): void {

@@ -10,20 +10,61 @@ namespace Player {
             super(_name);
             this.addComponent(new ƒ.ComponentTransform());
             this.hero = _properties;
+            this.collider = new ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, ƒ.ORIGIN2D.CENTER);
         }
 
         public move(_direction: ƒ.Vector3) {
+            let canMoveX: boolean = true;
+            let canMoveY: boolean = true;
+            //TODO: collider position transform by Center 
+            this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
             _direction.scale((1 / 60 * this.hero.attributes.speed));
 
-            //TODO: don't let the player walk in the wall but don't ignor the movement completely 
-            // let colliders: Generation.Wall[] = <Generation.Wall[]>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.Tag.ROOM).getChildren().filter(element => (<Generation.Wall>element).tag == Tag.Tag.WALL); 
-            // colliders.forEach((element) => {
-            //     if (this.collider.collides(element.collider)) {
-            //         this.collider.getIntersection(element.collider);
-            //     }
-            // })
+            let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.Tag.ROOM)).walls;
+            colliders.forEach((element) => {
+                if (this.collider.collides(element.collider)) {
 
-            this.cmpTransform.mtxLocal.translate(_direction, false);
+                    let intersection = this.collider.getIntersection(element.collider);
+                    let areaBeforeMove = intersection.height * intersection.width;
+
+                    let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
+                    let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
+                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+
+                    if (this.collider.getIntersection(element.collider) != null) {
+                        let newIntersection = this.collider.getIntersection(element.collider);
+                        let areaAfterMove = newIntersection.height * newIntersection.width;
+
+                        if (areaBeforeMove < areaAfterMove) {
+                            canMoveX = false;
+                        }
+                    }
+
+                    this.collider.position = oldPosition;
+                    newDirection = new Game.ƒ.Vector2(0, _direction.y);
+                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+
+                    if (this.collider.getIntersection(element.collider) != null) {
+                        let newIntersection = this.collider.getIntersection(element.collider);
+                        let areaAfterMove = newIntersection.height * newIntersection.width;
+
+                        if (areaBeforeMove < areaAfterMove) {
+                            canMoveY = false;
+                        }
+                    }
+                    this.collider.position = oldPosition;
+                }
+            })
+
+            if (canMoveX && canMoveY) {
+                this.cmpTransform.mtxLocal.translate(_direction, false);
+            } else if (canMoveX && !canMoveY) {
+                _direction = new ƒ.Vector3(_direction.x, 0, _direction.z)
+                this.cmpTransform.mtxLocal.translate(_direction, false);
+            } else if (!canMoveX && canMoveY) {
+                _direction = new ƒ.Vector3(0, _direction.y, _direction.z)
+                this.cmpTransform.mtxLocal.translate(_direction, false);
+            }
         }
 
         public attack(_direction: ƒ.Vector3) {

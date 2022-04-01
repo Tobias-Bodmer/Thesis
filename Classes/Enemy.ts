@@ -30,7 +30,7 @@ namespace Enemy {
             this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
         }
 
-        async move() {
+        move() {
             this.target = Game.player;
 
             if (Game.connected) {
@@ -57,16 +57,63 @@ namespace Enemy {
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
         }
 
-        async moveSimple() {
+        moveSimple() {
             let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.target.cmpTransform.mtxLocal.translation, this.cmpTransform.mtxLocal.translation);
             direction.normalize();
 
             direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
-            this.cmpTransform.mtxLocal.translate(direction, true);
+
+            let canMoveX = true;
+            let canMoveY = true;
+            let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.Tag.ROOM)).walls;
+            colliders.forEach((element) => {
+                if (this.collider.collides(element.collider)) {
+
+                    let intersection = this.collider.getIntersection(element.collider);
+                    let areaBeforeMove = intersection.height * intersection.width;
+
+                    let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
+                    let newDirection = new Game.ƒ.Vector2(direction.x, 0)
+                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+
+                    if (this.collider.getIntersection(element.collider) != null) {
+                        let newIntersection = this.collider.getIntersection(element.collider);
+                        let areaAfterMove = newIntersection.height * newIntersection.width;
+
+                        if (areaBeforeMove < areaAfterMove) {
+                            canMoveX = false;
+                        }
+                    }
+
+                    this.collider.position = oldPosition;
+                    newDirection = new Game.ƒ.Vector2(0, direction.y);
+                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+
+                    if (this.collider.getIntersection(element.collider) != null) {
+                        let newIntersection = this.collider.getIntersection(element.collider);
+                        let areaAfterMove = newIntersection.height * newIntersection.width;
+
+                        if (areaBeforeMove < areaAfterMove) {
+                            canMoveY = false;
+                        }
+                    }
+                    this.collider.position = oldPosition;
+                }
+            });
+
+            if (canMoveX && canMoveY) {
+                this.cmpTransform.mtxLocal.translate(direction);
+            } else if (canMoveX && !canMoveY) {
+                direction = new ƒ.Vector3(direction.x, 0, direction.z)
+                this.cmpTransform.mtxLocal.translate(direction);
+            } else if (!canMoveX && canMoveY) {
+                direction = new ƒ.Vector3(0, direction.y, direction.z)
+                this.cmpTransform.mtxLocal.translate(direction);
+            }
         }
 
 
-        async lifespan(_graph: Game.ƒ.Node) {
+        lifespan(_graph: Game.ƒ.Node) {
             if (this.properties.attributes.healthPoints <= 0) {
                 _graph.removeChild(this);
             }
@@ -78,7 +125,8 @@ namespace Enemy {
         constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _aiType?: ENEMYTYPE) {
             super(_name, _properties, _position, _aiType);
         }
-        async move() {
+
+        move() {
             this.target = Game.player;
 
             if (Game.connected) {
@@ -95,7 +143,8 @@ namespace Enemy {
             this.moveAway();
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
         }
-        async moveAway() {
+
+        moveAway() {
             let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.cmpTransform.mtxLocal.translation, this.target.cmpTransform.mtxLocal.translation);
             direction.normalize();
 

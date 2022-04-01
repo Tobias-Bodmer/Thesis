@@ -68,7 +68,7 @@ namespace Game {
         node.cmpTransform.mtxLocal.scale(new ƒ.Vector3(30, 30, 1));
         node.cmpTransform.mtxLocal.translateZ(-0.01);
 
-        graph.addChild(node);
+        // graph.addChild(node);
         for (let i = 0; i < 3; i++) {
             graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, Math.random() * 3 + 1)), new ƒ.Vector2(i * 0.3, 5)));
         }

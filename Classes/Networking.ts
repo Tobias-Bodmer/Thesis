@@ -50,6 +50,7 @@ namespace Networking {
                         Game.graph.appendChild(Game.player2);
                         Game.connected = true;
                     }
+
                     if (Game.connected) {
                         if (message.content != undefined && message.content.text == FUNCTIONPLAYER.TRANSFORM.toString()) {
                             let moveVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.value.data[0], message.content.value.data[1], message.content.value.data[2])
@@ -65,7 +66,7 @@ namespace Networking {
                         }
                         if (hasHost) {
                             if (message.content != undefined && message.content.text == FUNCTIONENEMY.SPAWN.toString()) {
-                                
+
                             }
                         }
                     }
