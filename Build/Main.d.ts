@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
@@ -92,15 +92,9 @@ declare namespace Player {
     }
 }
 declare namespace Enemy {
-    enum ENEMYTYPE {
-        DUMB = 0,
-        RUNNER = 1,
-        SMART = 2
-    }
-    export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+    class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
         tag: Tag.Tag;
         properties: Player.Character;
-        aiType: ENEMYTYPE;
         target: Player.Player;
         collider: Game.ƒ.Rectangle;
         lifetime: number;
@@ -111,22 +105,23 @@ declare namespace Enemy {
          * @param _position position where to spawn
          * @param _aiType optional: standard ai = dumb
          */
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _aiType?: ENEMYTYPE);
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
         move(): void;
         moveSimple(): void;
         lifespan(_graph: Game.ƒ.Node): void;
+        getCanMoveXY(direction: ƒ.Vector3): [boolean, boolean];
     }
-    export class EnemyFlee extends Enemy {
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _aiType?: ENEMYTYPE);
+    class EnemyFlee extends Enemy {
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
         move(): void;
         moveAway(): void;
     }
-    export {};
 }
 declare namespace Enemy {
     class EnemySpawner {
         spawnPositions: ƒ.Vector2[];
         numberOfENemies: number;
+        constructor(_spawPositions: ƒ.Vector2[], _numberOfEnemies: number);
     }
 }
 declare namespace InputSystem {

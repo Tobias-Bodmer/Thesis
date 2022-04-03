@@ -1,14 +1,9 @@
 namespace Enemy {
-    enum ENEMYTYPE {
-        DUMB,
-        RUNNER,
-        SMART,
-    }
+
 
     export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
         public tag: Tag.Tag = Tag.Tag.ENEMY;
         public properties: Player.Character;
-        public aiType: ENEMYTYPE = ENEMYTYPE.DUMB;
         public target: Player.Player;
         public collider: Game.ƒ.Rectangle;
         lifetime: number;
@@ -20,11 +15,10 @@ namespace Enemy {
          * @param _aiType optional: standard ai = dumb
          */
 
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _aiType?: ENEMYTYPE) {
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2) {
             super(_name);
             this.addComponent(new ƒ.ComponentTransform());
             this.properties = _properties;
-            this.aiType = _aiType
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
 
             this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
@@ -39,20 +33,12 @@ namespace Enemy {
 
                 if (distancePlayer1 < distancePlayer2) {
                     this.target = Game.player;
-                } else {
+                }
+                else {
                     this.target = Game.player2;
                 }
-
             }
-            switch (this.aiType) {
-                case ENEMYTYPE.DUMB:
-                    this.moveSimple();
-                    break;
-
-                default:
-                    this.moveSimple();
-                    break;
-            }
+            this.moveSimple();
 
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
         }
@@ -63,6 +49,30 @@ namespace Enemy {
 
             direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
 
+            let canMove: [boolean, boolean] = this.getCanMoveXY(direction);
+            let canMoveX: boolean = canMove[0];
+            let canMoveY: boolean = canMove[1];
+
+            //TODO: in Funktion packen damit man von allem Enemies drauf zugreifen kann
+            if (canMoveX && canMoveY) {
+                this.cmpTransform.mtxLocal.translate(direction);
+            } else if (canMoveX && !canMoveY) {
+                direction = new ƒ.Vector3(direction.x, 0, direction.z)
+                this.cmpTransform.mtxLocal.translate(direction);
+            } else if (!canMoveX && canMoveY) {
+                direction = new ƒ.Vector3(0, direction.y, direction.z)
+                this.cmpTransform.mtxLocal.translate(direction);
+            }
+        }
+
+
+        lifespan(_graph: Game.ƒ.Node) {
+            if (this.properties.attributes.healthPoints <= 0) {
+                _graph.removeChild(this);
+            }
+        }
+
+        getCanMoveXY(direction: ƒ.Vector3): [boolean, boolean] {
             let canMoveX = true;
             let canMoveY = true;
             let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.Tag.ROOM)).walls;
@@ -100,30 +110,14 @@ namespace Enemy {
                     this.collider.position = oldPosition;
                 }
             });
-
-            if (canMoveX && canMoveY) {
-                this.cmpTransform.mtxLocal.translate(direction);
-            } else if (canMoveX && !canMoveY) {
-                direction = new ƒ.Vector3(direction.x, 0, direction.z)
-                this.cmpTransform.mtxLocal.translate(direction);
-            } else if (!canMoveX && canMoveY) {
-                direction = new ƒ.Vector3(0, direction.y, direction.z)
-                this.cmpTransform.mtxLocal.translate(direction);
-            }
-        }
-
-
-        lifespan(_graph: Game.ƒ.Node) {
-            if (this.properties.attributes.healthPoints <= 0) {
-                _graph.removeChild(this);
-            }
+            return [canMoveX, canMoveY];
         }
     }
 
     export class EnemyFlee extends Enemy {
 
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _aiType?: ENEMYTYPE) {
-            super(_name, _properties, _position, _aiType);
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2) {
+            super(_name, _properties, _position);
         }
 
         move() {
