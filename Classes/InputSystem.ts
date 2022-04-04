@@ -72,11 +72,11 @@ namespace InputSystem {
     function attack(e_: MouseEvent) {
 
         let mouseButton = e_.button;
-
         switch (mouseButton) {
             case 0:
                 //left mouse button player.attack
                 let direction: Game.ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(mousePosition, Game.player.mtxLocal.translation)
+                rotateToMouse(e_);
                 Game.player.attack(direction);
                 if (Game.connected) {
                     Networking.updateBullet(direction);

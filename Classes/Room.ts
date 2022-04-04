@@ -64,6 +64,10 @@ namespace Generation {
             this.walls.push(new Wall(new ƒ.Vector2(0, (this.roomSize / 2)), this.roomSize));
             this.walls.push(new Wall(new ƒ.Vector2(0, -(this.roomSize / 2)), this.roomSize));
         }
+
+        public getRoomSize(): number {
+            return this.roomSize;
+        }
     }
 
     export class Wall extends ƒ.Node {

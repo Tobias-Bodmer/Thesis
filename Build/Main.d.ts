@@ -121,7 +121,9 @@ declare namespace Enemy {
     class EnemySpawner {
         spawnPositions: ƒ.Vector2[];
         numberOfENemies: number;
-        constructor(_spawPositions: ƒ.Vector2[], _numberOfEnemies: number);
+        spawnOffset: number;
+        constructor(_roomSize: number, _numberOfEnemies: number);
+        getSpawnPositions(_room: Generation.Room): ƒ.Vector2[];
     }
 }
 declare namespace InputSystem {
@@ -195,6 +197,7 @@ declare namespace Generation {
         bossRoomMat: ƒ.Material;
         cmpMaterial: ƒ.ComponentMaterial;
         constructor(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: ROOMTYPE);
+        getRoomSize(): number;
     }
     class Wall extends ƒ.Node {
         tag: Tag.Tag;
