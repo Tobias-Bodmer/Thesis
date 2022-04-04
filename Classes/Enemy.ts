@@ -41,6 +41,7 @@ namespace Enemy {
             this.moveSimple();
 
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
+            this.collider.position.subtract(ƒ.Vector2.SCALE(this.collider.size, 0.5));
         }
 
         moveSimple() {

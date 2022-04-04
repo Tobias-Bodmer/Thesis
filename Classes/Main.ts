@@ -114,7 +114,7 @@ namespace Game {
         }
 
         draw();
-
+                
         cameraUpdate();
 
         if (Game.connected) {

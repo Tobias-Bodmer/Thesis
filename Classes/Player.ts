@@ -18,6 +18,8 @@ namespace Player {
             let canMoveY: boolean = true;
             //TODO: collider position transform by Center 
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
+            this.collider.position.subtract(ƒ.Vector2.SCALE(this.collider.size, 0.5));
+
             _direction.scale((1 / 60 * this.hero.attributes.speed));
 
             let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.Tag.ROOM)).walls;
