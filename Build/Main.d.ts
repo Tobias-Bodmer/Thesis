@@ -157,10 +157,15 @@ declare namespace Player {
         tag: Tag.Tag;
         items: Array<Items.Item>;
         hero: Character;
+        cooldownTime: number;
+        currentCooldownTime: number;
+        attackCount: number;
+        currentAttackCount: number;
         collider: ƒ.Rectangle;
         constructor(_name: string, _properties: Character);
         move(_direction: ƒ.Vector3): void;
         attack(_direction: ƒ.Vector3): void;
+        cooldown(): void;
         collector(): void;
         /**
          * adds Attributes to the Player Attributes

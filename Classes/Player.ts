@@ -4,6 +4,10 @@ namespace Player {
         public tag: Tag.Tag = Tag.Tag.PLAYER;
         public items: Array<Items.Item> = [];
         public hero: Character;
+        cooldownTime: number = 20;
+        currentCooldownTime: number = this.cooldownTime;
+        attackCount: number = 1;
+        currentAttackCount: number = this.attackCount;
         collider: ƒ.Rectangle;
 
         constructor(_name: string, _properties: Character) {
@@ -70,10 +74,27 @@ namespace Player {
         }
 
         public attack(_direction: ƒ.Vector3) {
-            _direction.normalize();
-            let bullet: Items.Bullet = new Items.Bullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction);
-            bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
-            Game.graph.addChild(bullet);
+            if (this.currentAttackCount > 0) {
+                _direction.normalize();
+                let bullet: Items.Bullet = new Items.Bullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction);
+                bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
+                Game.graph.addChild(bullet);
+
+                this.currentAttackCount--;
+            }
+        }
+
+        public cooldown() {
+            if (this.currentAttackCount <= 0) {
+                if (this.currentCooldownTime <= 0) {
+                    this.currentCooldownTime = this.cooldownTime;
+                    this.currentAttackCount = this.attackCount;
+                } else {
+                    console.log(this.currentCooldownTime);
+
+                    this.currentCooldownTime--;
+                }
+            }
         }
 
         public collector() {

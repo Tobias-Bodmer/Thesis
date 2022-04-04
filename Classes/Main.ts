@@ -117,6 +117,8 @@ namespace Game {
                 
         cameraUpdate();
 
+        player.cooldown();
+
         if (Game.connected) {
             Networking.updatePosition(Game.player.mtxLocal.translation, Game.player.mtxLocal.rotation);
         }
