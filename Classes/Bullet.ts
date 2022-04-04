@@ -32,6 +32,7 @@ namespace Items {
         async move() {
             this.cmpTransform.mtxLocal.translate(this.flyDirection);
             this.collider.position = new Game.ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y);
+            this.collider.position.subtract(ƒ.Vector2.SCALE(this.collider.size, 0.5));
             this.collisionDetection();
         }
 
