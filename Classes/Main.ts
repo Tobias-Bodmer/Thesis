@@ -40,7 +40,7 @@ namespace Game {
         // ƒ.Debug.log(player);
 
         //#region init Items
-        item1 = new Items.Item("Item1", "", new ƒ.Vector3(0, 5, 0), "./Resources/Image/Items");
+        item1 = new Items.InternalItem("speedUP", "adds speed and shit", new ƒ.Vector3(0, 2, 0), new Player.Attributes(0, 0, 1), Items.ITEMTYPE.ADD, "./Resources/Image/Items");
         //#endregion
 
         Generation.generateRooms();
@@ -147,6 +147,7 @@ namespace Game {
         let items: Items.Item[] = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.Tag.ITEM)
         items.forEach(element => {
             element.lifespan(graph);
+            (<Items.InternalItem>element).collisionDetection();
         });
         //#endregion
 

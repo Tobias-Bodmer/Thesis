@@ -3,7 +3,7 @@ namespace Player {
     export abstract class Player extends Game.ƒAid.NodeSprite {
         public tag: Tag.Tag = Tag.Tag.PLAYER;
         public items: Array<Items.Item> = [];
-        public hero: Character;
+        public properties: Character;
         cooldownTime: number = 10;
         currentCooldownTime: number = this.cooldownTime;
         attackCount: number = 1;
@@ -13,7 +13,7 @@ namespace Player {
         constructor(_name: string, _properties: Character) {
             super(_name);
             this.addComponent(new ƒ.ComponentTransform());
-            this.hero = _properties;
+            this.properties = _properties;
             this.collider = new ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, ƒ.ORIGIN2D.CENTER);
         }
 
@@ -24,7 +24,7 @@ namespace Player {
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
             this.collider.position.subtract(ƒ.Vector2.SCALE(this.collider.size, 0.5));
 
-            _direction.scale((1 / 60 * this.hero.attributes.speed));
+            _direction.scale((1 / 60 * this.properties.attributes.speed));
 
             let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.Tag.ROOM)).walls;
             colliders.forEach((element) => {
@@ -100,20 +100,7 @@ namespace Player {
         public collector() {
 
         }
-        /**
-         * adds Attributes to the Player Attributes
-         * @param _attributes incoming attributes
-         */
-        public addAttribuesByItem(_item: Items.AttributeItem): void {
-            switch (_item.type) {
-                case Items.ITEMTYPE.ADD:
-                    break; // calculate attributes by adding them
-                case Items.ITEMTYPE.SUBSTRACT:
-                    break; // calculate attribes by substacting them
-                case Items.ITEMTYPE.PROCENTUAL:
-                    break; // calculate attributes by giving spefic %
-            }
-        }
+        
     }
 
     export class Melee extends Player {

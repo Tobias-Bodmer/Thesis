@@ -21,7 +21,7 @@ namespace Networking {
     document.getElementById("Host").addEventListener("click", hostServer, true);
     let IPConnection = <HTMLInputElement>document.getElementById("IPConnection");
     document.getElementById("Connecting").addEventListener("click", conneting, true);
-    document.getElementById("Enemy").addEventListener("click", bla, true);
+
 
 
 
@@ -77,22 +77,18 @@ namespace Networking {
         }
     }
 
-    function bla() {
-        if (Game.connected && client.idHost == client.id) {
-            Game.graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, Math.random() * 3 + 1)), new ƒ.Vector2(0, 1)));
-        }
-    }
-
+    //#region player
     function hostServer() {
         if (client.idHost == undefined) {
             client.becomeHost();
             someoneIsHost = true;
         }
-        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, value: Game.player.hero, position: Game.player.cmpTransform.mtxLocal.translation } })
+        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, value: Game.player.properties, position: Game.player.cmpTransform.mtxLocal.translation } })
     }
     /**
      * sends transform over network
      * @param __position current position of Object
+     * @param _rotation current rotation of Object
      */
     export function updatePosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3) {
         client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.TRANSFORM, value: _position, rotation: _rotation } })
@@ -103,6 +99,9 @@ namespace Networking {
             client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.BULLET, direction: _direction } })
         }
     }
+    //#endregion
+
+    //#region  enemy
     export function spawnEnemy(_enemy: Enemy.Enemy, _id: number) {
         if (Game.connected && client.idHost == client.id) {
             // console.log(_enemy.properties);
@@ -119,6 +118,7 @@ namespace Networking {
         client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.ENEMYDIE, id: _id } })
 
     }
+    //#endregion
 
     export function idGenerator(): number {
         let id = Math.floor(Math.random() * 1000);
@@ -140,9 +140,9 @@ namespace Networking {
                 break;
             }
         }
-        console.log("beforeIDs: " + currentIDs);
+        console.log("id to pop: " + _id);
         currentIDs.splice(index, 1);
-        console.log("cafterIDs: " + currentIDs);
+        console.log("afterIDs: " + currentIDs);
     }
 
     window.addEventListener("beforeunload", onUnload, false);

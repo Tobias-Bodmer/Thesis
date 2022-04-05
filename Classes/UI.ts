@@ -5,7 +5,7 @@ namespace UI {
 
     export function updateUI() {
         //Player1 UI
-        (<HTMLDivElement>player1UI.querySelector("#HP")).style.width = (Game.player.hero.attributes.healthPoints / Game.player.hero.attributes.maxhealthPoints * 100) + "%";
+        (<HTMLDivElement>player1UI.querySelector("#HP")).style.width = (Game.player.properties.attributes.healthPoints / Game.player.properties.attributes.maxhealthPoints * 100) + "%";
 
         //TODO: Needs testing
         //InventoryUI
@@ -29,7 +29,7 @@ namespace UI {
 
         //Player2 UI
         if (Game.connected) {
-            (<HTMLDivElement>player2UI.querySelector("#HP")).style.width = (Game.player2.hero.attributes.healthPoints / Game.player2.hero.attributes.maxhealthPoints * 100) + "%";
+            (<HTMLDivElement>player2UI.querySelector("#HP")).style.width = (Game.player2.properties.attributes.healthPoints / Game.player2.properties.attributes.maxhealthPoints * 100) + "%";
 
             //InventoryUI
             Game.player2.items.forEach((element) => {
