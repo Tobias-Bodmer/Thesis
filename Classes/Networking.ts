@@ -16,7 +16,7 @@ namespace Networking {
     export let posUpdate: ƒ.Vector3;
     export let someoneIsHost: boolean = false;
     export let enemy: Enemy.Enemy;
-    let currentIDs: number[] = [];
+    export let currentIDs: number[] = [];
 
     document.getElementById("Host").addEventListener("click", hostServer, true);
     let IPConnection = <HTMLInputElement>document.getElementById("IPConnection");
@@ -126,7 +126,7 @@ namespace Networking {
         else {
             currentIDs.push(id);
         }
-        
+
         return id;
     }
 
@@ -139,7 +139,7 @@ namespace Networking {
             }
         }
         console.log("beforeIDs: " + currentIDs);
-        currentIDs.splice(index,1);
+        currentIDs.splice(index, 1);
         console.log("cafterIDs: " + currentIDs);
     }
 

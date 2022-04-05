@@ -22,6 +22,8 @@ namespace Enemy {
             this.properties = _properties;
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
             if (_id != undefined) {
+                Networking.popID(this.id);
+                Networking.currentIDs.push(_id);
                 this.id = _id;
             }
             this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);

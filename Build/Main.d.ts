@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
@@ -160,6 +160,7 @@ declare namespace Networking {
     let posUpdate: ƒ.Vector3;
     let someoneIsHost: boolean;
     let enemy: Enemy.Enemy;
+    let currentIDs: number[];
     /**
      * sends transform over network
      * @param __position current position of Object
