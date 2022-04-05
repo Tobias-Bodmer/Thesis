@@ -1,6 +1,18 @@
 canvas {
+    border: 1px solid black;
     width: 1000px;
     height: 600px;
+}
+
+#Startscreen {
+    position: absolute;
+    top: 320px;
+    left: 200px;
+}
+
+#Startscreen > button {
+    width: 200px;
+    height: 60px;
 }
 
 #HP-Bar {

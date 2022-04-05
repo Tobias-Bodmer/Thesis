@@ -9,7 +9,7 @@ namespace Game {
 
     //#region "DomElements"
     export let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("Canvas");
-    window.addEventListener("load", init);
+    window.addEventListener("load", start);
     //#endregion "DomElements"
 
     //#region "PublicVariables"
@@ -48,9 +48,6 @@ namespace Game {
         //#region Testing objects
         bat = new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, Math.random() * 3 + 1)), new ƒ.Vector2(0, 1));
         console.table(JSON.stringify(bat.properties));
-
-        graph.addChild(bat);
-
 
         let node: ƒ.Node = new ƒ.Node("Quad");
 
@@ -109,11 +106,28 @@ namespace Game {
         await UI.txtFive.load("./Resources/Image/5.png");
     }
 
-    function waitOnConnection() {
-        if (Networking.client != undefined && Networking.client.id != null || undefined) {
-            document.getElementById("ConnectionGUI").style.visibility = "hidden";
-            init();
+    function start() {
+        //add sprite to graphe for startscreen
+        document.getElementById("StartGame").addEventListener("click", () => {
+            Networking.conneting();
+            waitOnConnection();
+        });
+        document.getElementById("Option").addEventListener("click", () => {
+
+        });
+        document.getElementById("Credits").addEventListener("click", () => {
+
+        });
+    }
+
+    async function waitOnConnection() {
+        Networking.client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: Networking.FUNCTION.CONNECTED, value: Networking.client.id } })
+        if (Networking.clients.length > 1) {
+            document.getElementById("Startscreen").style.visibility = "hidden";
+            await init();
+            Networking.spawnPlayer();
         } else {
+            console.log(Networking.clients);
             setTimeout(waitOnConnection, 300);
         }
     }

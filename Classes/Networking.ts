@@ -2,6 +2,7 @@
 
 namespace Networking {
     export enum FUNCTION {
+        CONNECTED,
         SPAWN,
         TRANSFORM,
         BULLET,
@@ -13,29 +14,46 @@ namespace Networking {
     import ƒClient = FudgeNet.FudgeClient;
 
     export let client: ƒClient;
+    export let clients: string[] = [];
     export let posUpdate: ƒ.Vector3;
     export let someoneIsHost: boolean = false;
     export let enemy: Enemy.Enemy;
     export let currentIDs: number[] = [];
 
-    document.getElementById("Host").addEventListener("click", hostServer, true);
+    document.getElementById("Host").addEventListener("click", spawnPlayer, true);
     let IPConnection = <HTMLInputElement>document.getElementById("IPConnection");
     document.getElementById("Connecting").addEventListener("click", conneting, true);
 
 
 
 
-    function conneting() {
+    export function conneting() {
         client = new ƒClient();
         client.addEventListener(FudgeNet.EVENT.MESSAGE_RECEIVED, receiveMessage);
         client.connectToServer(IPConnection.value);
+
+        addClientID()
+
+        function addClientID() {
+            if (client.id != undefined) {
+                clients.push(client.id);
+            } else {
+                setTimeout(addClientID, 300);
+            }
+        }
     }
+
 
     async function receiveMessage(_event: CustomEvent | MessageEvent | Event): Promise<void> {
         if (_event instanceof MessageEvent) {
             let message: FudgeNet.Message = JSON.parse(_event.data);
             if (message.idSource != client.id) {
                 if (message.command != FudgeNet.COMMAND.SERVER_HEARTBEAT && message.command != FudgeNet.COMMAND.CLIENT_HEARTBEAT) {
+                    if (message.content != undefined && message.content.text == FUNCTION.CONNECTED.toString()) {
+                        if (message.content.value != client.id && clients.find(element => element == message.content.value) == undefined) {
+                            clients.push(message.content.value);
+                        }
+                    }
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
                         // console.table("hero: " + message.content.value.attributes.healthPoints);
                         Game.player2 = new Player.Ranged("player2", new Player.Character(message.content.value.name, new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed)));
@@ -78,7 +96,7 @@ namespace Networking {
     }
 
     //#region player
-    function hostServer() {
+    export function spawnPlayer() {
         if (client.idHost == undefined) {
             client.becomeHost();
             someoneIsHost = true;

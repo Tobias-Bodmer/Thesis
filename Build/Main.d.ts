@@ -159,19 +159,23 @@ declare namespace Level {
 }
 declare namespace Networking {
     enum FUNCTION {
-        SPAWN = 0,
-        TRANSFORM = 1,
-        BULLET = 2,
-        SPAWNENEMY = 3,
-        ENEMYTRANSFORM = 4,
-        ENEMYDIE = 5
+        CONNECTED = 0,
+        SPAWN = 1,
+        TRANSFORM = 2,
+        BULLET = 3,
+        SPAWNENEMY = 4,
+        ENEMYTRANSFORM = 5,
+        ENEMYDIE = 6
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
+    let clients: string[];
     let posUpdate: ƒ.Vector3;
     let someoneIsHost: boolean;
     let enemy: Enemy.Enemy;
     let currentIDs: number[];
+    function conneting(): void;
+    function spawnPlayer(): void;
     /**
      * sends transform over network
      * @param __position current position of Object
