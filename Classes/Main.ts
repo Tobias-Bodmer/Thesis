@@ -34,6 +34,8 @@ namespace Game {
 
     //#region "essential"
     async function init() {
+        loadTextures();
+
         player = new Player.Player("Player1", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
         // ƒ.Debug.log(player);
 
@@ -102,6 +104,10 @@ namespace Game {
         ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, frameRate);
     }
 
+    async function loadTextures() {
+        await Items.bulletTxt.load("./Resources/Image/arrow.png");
+    }
+
     function waitOnConnection() {
         if (Networking.client != undefined && Networking.client.id != null || undefined) {
             document.getElementById("ConnectionGUI").style.visibility = "hidden";
@@ -127,7 +133,7 @@ namespace Game {
         cameraUpdate();
 
         player.cooldown();
-        
+
         if (Game.connected) {
             player2.cooldown();
         }

@@ -115,4 +115,17 @@ namespace Player {
             }
         }
     }
+
+    export class Melee extends Player {
+        public attack(_direction: ƒ.Vector3) {
+            if (this.currentAttackCount > 0) {
+                _direction.normalize();
+                let bullet: Items.Bullet = new Items.MeleeBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction);
+                bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
+                Game.graph.addChild(bullet);
+
+                this.currentAttackCount--;
+            }
+        }
+    }
 }
