@@ -127,7 +127,7 @@ namespace Game {
         cameraUpdate();
 
         player.cooldown();
-        
+
         if (Game.connected) {
             player2.cooldown();
         }
@@ -155,6 +155,8 @@ namespace Game {
                 element.move();
                 element.lifespan(graph);
             })
+
+            EnemySpawner.spawnEnemies();
         }
         UI.updateUI();
     }

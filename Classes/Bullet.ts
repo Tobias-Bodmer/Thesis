@@ -6,7 +6,7 @@ namespace Items {
         public collider: Game.ƒ.Rectangle;
 
         public hitPoints: number = 5;
-        public speed: number = 15;
+        public speed: number = 20;
         lifetime: number = 1 * Game.frameRate;
 
         private killcount: number = 1;
@@ -41,7 +41,7 @@ namespace Items {
             colliders.forEach((element) => {
                 if (this.collider.collides(element.collider) && element.properties != undefined && this.killcount > 0) {
                     (<Enemy.Enemy>element).properties.attributes.healthPoints -= this.hitPoints;
-                    console.log((<Enemy.Enemy>element).properties.attributes.healthPoints);
+                    // console.log((<Enemy.Enemy>element).properties.attributes.healthPoints);
                     this.lifetime = 0;
                     this.killcount--;
                 }

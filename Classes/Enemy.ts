@@ -21,11 +21,9 @@ namespace Enemy {
             this.addComponent(new ƒ.ComponentTransform());
             this.properties = _properties;
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
-            console.log("before:" + this.id);
             if (_id != undefined) {
                 this.id = _id;
             }
-            console.log("after:" + this.id);
             this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
             Networking.spawnEnemy(this, this.id);
         }
