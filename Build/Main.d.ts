@@ -58,24 +58,25 @@ declare namespace Enemy {
     }
 }
 declare namespace Items {
-    class Item extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
-        tag: Tag.Tag;
-        description: string;
-        imgSrc: string;
-        lifetime: number;
-        constructor(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime?: number);
-        lifespan(_graph: ƒ.Node): void;
-    }
-}
-declare namespace Items {
     enum ITEMTYPE {
         ADD = 0,
         SUBSTRACT = 1,
         PROCENTUAL = 2
     }
-    class AttributeItem extends Item {
-        type: ITEMTYPE;
+    class Item extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+        tag: Tag.Tag;
+        id: number;
+        description: string;
+        imgSrc: string;
+        collider: Game.ƒ.Rectangle;
+        lifetime: number;
+        constructor(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc?: string, _lifetime?: number);
+        lifespan(_graph: ƒ.Node): void;
+        collisionDetection(): Promise<void>;
+    }
+    class InternalItem extends Item {
         attributes: Player.Attributes;
+        type: ITEMTYPE;
         /**
          * Creates an item that can change Attributes of the player
          * @param _name name of the Item
@@ -84,7 +85,8 @@ declare namespace Items {
          * @param _lifetime optional: how long is the item visible
          * @param _attributes define which attributes will change, compare with {@link Player.Attributes}
          */
-        constructor(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime: number, _attributes: Player.Attributes, _type: ITEMTYPE);
+        constructor(_name: string, _description: string, _position: ƒ.Vector3, _attributes: Player.Attributes, _type: ITEMTYPE, _imgSrc?: string, _lifetime?: number);
+        collisionDetection(): Promise<void>;
     }
 }
 declare namespace Player {
@@ -93,10 +95,19 @@ declare namespace Player {
         maxhealthPoints: number;
         speed: number;
         attackPoints: number;
+        cooldownTime: number;
+        currentCooldownTime: number;
+        attackCount: number;
+        currentAttackCount: number;
         constructor(_healthPoints: number, _attackPoints: number, _speed: number);
+        /**
+         * adds Attributes to the Player Attributes
+         * @param _attributes incoming attributes
+         */
+        addAttribuesByItem(_attributes: Player.Attributes, _itemType: Items.ITEMTYPE): void;
     }
 }
-declare namespace Items {
+declare namespace Bullets {
     let bulletTxt: ƒ.TextureImage;
     class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable {
         tag: Tag.Tag;
@@ -164,6 +175,7 @@ declare namespace Networking {
     /**
      * sends transform over network
      * @param __position current position of Object
+     * @param _rotation current rotation of Object
      */
     function updatePosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3): void;
     function updateBullet(_direction: ƒ.Vector3): void;
@@ -177,22 +189,13 @@ declare namespace Player {
     abstract class Player extends Game.ƒAid.NodeSprite {
         tag: Tag.Tag;
         items: Array<Items.Item>;
-        hero: Character;
-        cooldownTime: number;
-        currentCooldownTime: number;
-        attackCount: number;
-        currentAttackCount: number;
+        properties: Character;
         collider: ƒ.Rectangle;
         constructor(_name: string, _properties: Character);
         move(_direction: ƒ.Vector3): void;
         attack(_direction: ƒ.Vector3): void;
         cooldown(): void;
         collector(): void;
-        /**
-         * adds Attributes to the Player Attributes
-         * @param _attributes incoming attributes
-         */
-        addAttribuesByItem(_item: Items.AttributeItem): void;
     }
     class Melee extends Player {
         attack(_direction: ƒ.Vector3): void;
@@ -250,4 +253,8 @@ declare namespace Tag {
 }
 declare namespace UI {
     function updateUI(): void;
+}
+declare namespace Weapons {
+    class Weapon {
+    }
 }

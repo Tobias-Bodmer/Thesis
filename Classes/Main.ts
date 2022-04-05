@@ -40,7 +40,7 @@ namespace Game {
         // ƒ.Debug.log(player);
 
         //#region init Items
-        item1 = new Items.Item("Item1", "", new ƒ.Vector3(0, 5, 0), "./Resources/Image/Items");
+        item1 = new Items.InternalItem("speedUP", "adds speed and shit", new ƒ.Vector3(0, 2, 0), new Player.Attributes(0, 0, 1), Items.ITEMTYPE.ADD, "./Resources/Image/Items");
         //#endregion
 
         Generation.generateRooms();
@@ -79,13 +79,7 @@ namespace Game {
         node.cmpTransform.mtxLocal.scale(new ƒ.Vector3(30, 30, 1));
         node.cmpTransform.mtxLocal.translateZ(-0.01);
 
-        // graph.addChild(node);
-        for (let i = 0; i < 3; i++) {
-            graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, Math.random() * 3 + 1)), new ƒ.Vector2(i * 0.3, 5)));
-        }
-        //#endregion
-
-
+        
         graph.appendChild(player);
         graph.appendChild(item1);
 
@@ -105,7 +99,7 @@ namespace Game {
     }
 
     async function loadTextures() {
-        await Items.bulletTxt.load("./Resources/Image/arrow.png");
+        await Bullets.bulletTxt.load("./Resources/Image/arrow.png");
     }
 
     function waitOnConnection() {
@@ -147,20 +141,15 @@ namespace Game {
         let items: Items.Item[] = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.Tag.ITEM)
         items.forEach(element => {
             element.lifespan(graph);
+            (<Items.InternalItem>element).collisionDetection();
         });
         //#endregion
 
-        let bullets: Items.Bullet[] = <Items.Bullet[]>graph.getChildren().filter(element => (<Items.Bullet>element).tag == Tag.Tag.BULLET)
+        let bullets: Bullets.Bullet[] = <Bullets.Bullet[]>graph.getChildren().filter(element => (<Bullets.Bullet>element).tag == Tag.Tag.BULLET)
         bullets.forEach(element => {
             element.move();
             element.lifespan(graph);
         })
-
-        let damageUIs: UI.DamageUI[] = <UI.DamageUI[]>graph.getChildren().filter(element => (<UI.DamageUI>element).tag == Tag.Tag.DAMAGEUI)
-        damageUIs.forEach(element => {
-            element.lifespan(graph);
-        })
-
         enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.Tag.ENEMY)
         if (Game.connected && Networking.client.idHost == Networking.client.id) {
             enemies.forEach(element => {
