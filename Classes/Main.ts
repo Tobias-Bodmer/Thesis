@@ -19,6 +19,7 @@ namespace Game {
     export let player2: Player.Player;
     export let connected: boolean = false;
     export let frameRate: number = 60;
+    export let bat: Enemy.Enemy;
     //#endregion "PublicVariables"
 
     //#region "PrivateVariables"
@@ -28,10 +29,13 @@ namespace Game {
     let enemies: Enemy.Enemy[] = [];
     //#endregion "PrivateVariables"
 
+    //#region enemies
+    //#endregion
+
     //#region "essential"
     async function init() {
         player = new Player.Player("Player1", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
-        ƒ.Debug.log(player);
+        // ƒ.Debug.log(player);
 
         //#region init Items
         item1 = new Items.Item("Item1", "", new ƒ.Vector3(0, 5, 0), "./Resources/Image/Items");
@@ -40,6 +44,10 @@ namespace Game {
         Generation.generateRooms();
 
         //#region Testing objects
+        bat = new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, Math.random() * 3 + 1)), new ƒ.Vector2(0, 1));
+        console.table(JSON.stringify(bat.properties));
+
+
         let node: ƒ.Node = new ƒ.Node("Quad");
 
         node.addComponent(new ƒ.ComponentTransform());
@@ -70,9 +78,9 @@ namespace Game {
         node.cmpTransform.mtxLocal.translateZ(-0.01);
 
         // graph.addChild(node);
-        for (let i = 0; i < 3; i++) {
-            graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, Math.random() * 3 + 1)), new ƒ.Vector2(i * 0.3, 5)));
-        }
+        // for (let i = 0; i < 3; i++) {
+        //     graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, Math.random() * 3 + 1)), new ƒ.Vector2(i * 0.3, 5)));
+        // }
         //#endregion
 
 
@@ -123,6 +131,7 @@ namespace Game {
         if (Game.connected) {
             Networking.updatePosition(Game.player.mtxLocal.translation, Game.player.mtxLocal.rotation);
         }
+        // Networking.spawnEnemy(bat, bat.id);
 
         //#region count items
         let items: Items.Item[] = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.Tag.ITEM)
@@ -136,13 +145,13 @@ namespace Game {
             element.move();
             element.lifespan(graph);
         })
-
-        enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.Tag.ENEMY)
-        enemies.forEach(element => {
-            element.move();
-            element.lifespan(graph);
-        })
-
+        if (Game.connected && Networking.client.idHost == Networking.client.id) {
+            enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.Tag.ENEMY)
+            enemies.forEach(element => {
+                element.move();
+                element.lifespan(graph);
+            })
+        }
         UI.updateUI();
     }
 

@@ -31,6 +31,7 @@ namespace Enemy {
             if (Game.connected && Networking.client.idHost == Networking.client.id) {
             }
             this.moveSimple();
+            Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.id);
 
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
             this.collider.position.subtract(ƒ.Vector2.SCALE(this.collider.size, 0.5));
@@ -52,6 +53,8 @@ namespace Enemy {
             }
             let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.target.cmpTransform.mtxLocal.translation, this.cmpTransform.mtxLocal.translation);
             direction.normalize();
+
+            console.log(direction);
 
             direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
 

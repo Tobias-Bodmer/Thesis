@@ -11,6 +11,7 @@ declare namespace Game {
     let player2: Player.Player;
     let connected: boolean;
     let frameRate: number;
+    let bat: Enemy.Enemy;
     function cameraUpdate(): void;
 }
 declare namespace Interfaces {
@@ -25,6 +26,33 @@ declare namespace Player {
     }
     interface IDamagble {
         getDamage(): void;
+    }
+}
+declare namespace Enemy {
+    class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+        tag: Tag.Tag;
+        id: number;
+        properties: Player.Character;
+        target: Player.Player;
+        collider: Game.ƒ.Rectangle;
+        lifetime: number;
+        /**
+         * Creates an Enemy
+         * @param _name Name of the enemy
+         * @param _properties Properties, storing attributes and stuff
+         * @param _position position where to spawn
+         * @param _aiType optional: standard ai = dumb
+         */
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _id?: number);
+        move(): void;
+        moveSimple(): void;
+        lifespan(_graph: Game.ƒ.Node): void;
+        getCanMoveXY(direction: ƒ.Vector3): [boolean, boolean];
+    }
+    class EnemyFlee extends Enemy {
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
+        move(): void;
+        moveAway(): void;
     }
 }
 declare namespace Items {
@@ -92,33 +120,6 @@ declare namespace Player {
     }
 }
 declare namespace Enemy {
-    class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
-        tag: Tag.Tag;
-        id: number;
-        properties: Player.Character;
-        target: Player.Player;
-        collider: Game.ƒ.Rectangle;
-        lifetime: number;
-        /**
-         * Creates an Enemy
-         * @param _name Name of the enemy
-         * @param _properties Properties, storing attributes and stuff
-         * @param _position position where to spawn
-         * @param _aiType optional: standard ai = dumb
-         */
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _id?: number);
-        move(): void;
-        moveSimple(): void;
-        lifespan(_graph: Game.ƒ.Node): void;
-        getCanMoveXY(direction: ƒ.Vector3): [boolean, boolean];
-    }
-    class EnemyFlee extends Enemy {
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
-        move(): void;
-        moveAway(): void;
-    }
-}
-declare namespace Enemy {
     class EnemySpawner {
         spawnPositions: ƒ.Vector2[];
         numberOfENemies: number;
@@ -136,26 +137,25 @@ declare namespace Level {
     }
 }
 declare namespace Networking {
-    enum FUNCTIONPLAYER {
+    enum FUNCTION {
         SPAWN = 0,
         TRANSFORM = 1,
-        BULLET = 2
-    }
-    enum FUNCTIONENEMY {
-        SPAWN = 0,
-        TRANSFORM = 1
+        BULLET = 2,
+        SPAWNENEMY = 3
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
     let posUpdate: ƒ.Vector3;
+    let someoneIsHost: boolean;
+    let enemy: Enemy.Enemy;
     /**
      * sends transform over network
      * @param __position current position of Object
      */
     function updatePosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3): void;
     function updateBullet(_direction: ƒ.Vector3): void;
-    function spawnEnemy(_enemy: Enemy.Enemy): void;
-    function updateEnemyPosition(_position: ƒ.Vector3): void;
+    function spawnEnemy(_enemy: Enemy.Enemy, _id: number): void;
+    function updateEnemyPosition(_position: ƒ.Vector3, _id: number): void;
     function idGenerator(): number;
     function popID(_id: number): void;
 }
