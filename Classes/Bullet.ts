@@ -23,7 +23,7 @@ namespace Items {
             }
         }
 
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3) {
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3) {            
             super("normalBullet");
             this.addComponent(new ƒ.ComponentTransform());
             this.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
@@ -39,7 +39,7 @@ namespace Items {
             this.addComponent(cmpMaterial);
             
             this.loadTexture();
-            this.mtxLocal.rotateZ(InputSystem.calcDegree(this.cmpTransform.mtxLocal.translation, this.flyDirection) + 90);
+            this.mtxLocal.rotateZ(InputSystem.calcDegree(this.cmpTransform.mtxLocal.translation, ƒ.Vector3.SUM(_direction, this.cmpTransform.mtxLocal.translation)) + 90);
             this.cmpTransform.mtxLocal.scaleY(0.25);
             this.flyDirection = ƒ.Vector3.X();
         }
