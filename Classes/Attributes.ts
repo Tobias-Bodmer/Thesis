@@ -5,6 +5,10 @@ namespace Player {
         public maxhealthPoints: number;
         public speed: number;
         public attackPoints: number;
+        cooldownTime: number = 10;
+        public currentCooldownTime: number = this.cooldownTime;
+        attackCount: number = 1;
+        public currentAttackCount: number = this.attackCount;
 
         constructor(_healthPoints: number, _attackPoints: number, _speed: number) {
             this.healthPoints = _healthPoints;

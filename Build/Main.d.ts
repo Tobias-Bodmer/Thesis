@@ -95,6 +95,10 @@ declare namespace Player {
         maxhealthPoints: number;
         speed: number;
         attackPoints: number;
+        cooldownTime: number;
+        currentCooldownTime: number;
+        attackCount: number;
+        currentAttackCount: number;
         constructor(_healthPoints: number, _attackPoints: number, _speed: number);
         /**
          * adds Attributes to the Player Attributes
@@ -103,7 +107,7 @@ declare namespace Player {
         addAttribuesByItem(_attributes: Player.Attributes, _itemType: Items.ITEMTYPE): void;
     }
 }
-declare namespace Items {
+declare namespace Bullets {
     let bulletTxt: ƒ.TextureImage;
     class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable {
         tag: Tag.Tag;
@@ -186,10 +190,6 @@ declare namespace Player {
         tag: Tag.Tag;
         items: Array<Items.Item>;
         properties: Character;
-        cooldownTime: number;
-        currentCooldownTime: number;
-        attackCount: number;
-        currentAttackCount: number;
         collider: ƒ.Rectangle;
         constructor(_name: string, _properties: Character);
         move(_direction: ƒ.Vector3): void;
@@ -253,4 +253,8 @@ declare namespace Tag {
 }
 declare namespace UI {
     function updateUI(): void;
+}
+declare namespace Weapons {
+    class Weapon {
+    }
 }

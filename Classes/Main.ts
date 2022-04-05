@@ -79,13 +79,7 @@ namespace Game {
         node.cmpTransform.mtxLocal.scale(new ƒ.Vector3(30, 30, 1));
         node.cmpTransform.mtxLocal.translateZ(-0.01);
 
-        // graph.addChild(node);
-        // for (let i = 0; i < 3; i++) {
-        //     graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, Math.random() * 3 + 1)), new ƒ.Vector2(i * 0.3, 5)));
-        // }
-        //#endregion
-
-
+        
         graph.appendChild(player);
         graph.appendChild(item1);
 
@@ -105,7 +99,7 @@ namespace Game {
     }
 
     async function loadTextures() {
-        await Items.bulletTxt.load("./Resources/Image/arrow.png");
+        await Bullets.bulletTxt.load("./Resources/Image/arrow.png");
     }
 
     function waitOnConnection() {
@@ -151,7 +145,7 @@ namespace Game {
         });
         //#endregion
 
-        let bullets: Items.Bullet[] = <Items.Bullet[]>graph.getChildren().filter(element => (<Items.Bullet>element).tag == Tag.Tag.BULLET)
+        let bullets: Bullets.Bullet[] = <Bullets.Bullet[]>graph.getChildren().filter(element => (<Bullets.Bullet>element).tag == Tag.Tag.BULLET)
         bullets.forEach(element => {
             element.move();
             element.lifespan(graph);

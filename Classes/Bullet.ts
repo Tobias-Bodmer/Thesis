@@ -1,4 +1,4 @@
-namespace Items {
+namespace Bullets {
 
     export let bulletTxt: ƒ.TextureImage = new ƒ.TextureImage();
 

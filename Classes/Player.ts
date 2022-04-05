@@ -4,10 +4,7 @@ namespace Player {
         public tag: Tag.Tag = Tag.Tag.PLAYER;
         public items: Array<Items.Item> = [];
         public properties: Character;
-        cooldownTime: number = 10;
-        currentCooldownTime: number = this.cooldownTime;
-        attackCount: number = 1;
-        currentAttackCount: number = this.attackCount;
+       
         collider: ƒ.Rectangle;
 
         constructor(_name: string, _properties: Character) {
@@ -74,25 +71,25 @@ namespace Player {
         }
 
         public attack(_direction: ƒ.Vector3) {
-            if (this.currentAttackCount > 0) {
+            if (this.properties.attributes.currentAttackCount > 0) {
                 _direction.normalize();
-                let bullet: Items.Bullet = new Items.Bullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction);
+                let bullet: Bullets.Bullet = new Bullets.Bullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction);
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
                 Game.graph.addChild(bullet);
 
-                this.currentAttackCount--;
+                this.properties.attributes.currentAttackCount--;
             }
         }
 
         public cooldown() {
-            if (this.currentAttackCount <= 0) {
-                if (this.currentCooldownTime <= 0) {
-                    this.currentCooldownTime = this.cooldownTime;
-                    this.currentAttackCount = this.attackCount;
+            if (this.properties.attributes.currentAttackCount <= 0) {
+                if (this.properties.attributes.currentCooldownTime <= 0) {
+                    this.properties.attributes.currentCooldownTime = this.properties.attributes.cooldownTime;
+                    this.properties.attributes.currentAttackCount = this.properties.attributes.attackCount;
                 } else {
                     // console.log(this.currentCooldownTime);
 
-                    this.currentCooldownTime--;
+                    this.properties.attributes.currentCooldownTime--;
                 }
             }
         }
@@ -105,13 +102,13 @@ namespace Player {
 
     export class Melee extends Player {
         public attack(_direction: ƒ.Vector3) {
-            if (this.currentAttackCount > 0) {
+            if (this.properties.attributes.currentAttackCount > 0) {
                 _direction.normalize();
-                let bullet: Items.Bullet = new Items.MeleeBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction);
+                let bullet: Bullets.Bullet = new Bullets.MeleeBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction);
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
                 Game.graph.addChild(bullet);
 
-                this.currentAttackCount--;
+                this.properties.attributes.currentAttackCount--;
             }
         }
     }
