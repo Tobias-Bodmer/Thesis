@@ -21,18 +21,24 @@ namespace Enemy {
             this.addComponent(new ƒ.ComponentTransform());
             this.properties = _properties;
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
-            this.id = _id;
+            console.log("before:" + this.id);
+            if (_id != undefined) {
+                this.id = _id;
+            }
+            console.log("after:" + this.id);
             this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
+            Networking.spawnEnemy(this, this.id);
         }
 
         move() {
 
             //TODO: only move calculate move on host and update position on other clients
-            if (Game.connected && Networking.client.idHost == Networking.client.id) {
-            }
             this.moveSimple();
+            this.updateCollider();
             Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.id);
+        }
 
+        updateCollider() {
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
             this.collider.position.subtract(ƒ.Vector2.SCALE(this.collider.size, 0.5));
         }
@@ -54,7 +60,7 @@ namespace Enemy {
             let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.target.cmpTransform.mtxLocal.translation, this.cmpTransform.mtxLocal.translation);
             direction.normalize();
 
-            console.log(direction);
+            // console.log(direction);
 
             direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
 
@@ -77,6 +83,8 @@ namespace Enemy {
 
         lifespan(_graph: Game.ƒ.Node) {
             if (this.properties.attributes.healthPoints <= 0) {
+                Networking.removeEnemy(this.id);
+                Networking.popID(this.id);
                 _graph.removeChild(this);
             }
         }

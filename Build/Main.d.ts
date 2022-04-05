@@ -11,6 +11,7 @@ declare namespace Game {
     let player2: Player.Player;
     let connected: boolean;
     let frameRate: number;
+    let enemies: Enemy.Enemy[];
     let bat: Enemy.Enemy;
     function cameraUpdate(): void;
 }
@@ -45,6 +46,7 @@ declare namespace Enemy {
          */
         constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _id?: number);
         move(): void;
+        updateCollider(): void;
         moveSimple(): void;
         lifespan(_graph: Game.ƒ.Node): void;
         getCanMoveXY(direction: ƒ.Vector3): [boolean, boolean];
@@ -141,7 +143,9 @@ declare namespace Networking {
         SPAWN = 0,
         TRANSFORM = 1,
         BULLET = 2,
-        SPAWNENEMY = 3
+        SPAWNENEMY = 3,
+        ENEMYTRANSFORM = 4,
+        ENEMYDIE = 5
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -156,6 +160,7 @@ declare namespace Networking {
     function updateBullet(_direction: ƒ.Vector3): void;
     function spawnEnemy(_enemy: Enemy.Enemy, _id: number): void;
     function updateEnemyPosition(_position: ƒ.Vector3, _id: number): void;
+    function removeEnemy(_id: number): void;
     function idGenerator(): number;
     function popID(_id: number): void;
 }

@@ -19,6 +19,7 @@ namespace Game {
     export let player2: Player.Player;
     export let connected: boolean = false;
     export let frameRate: number = 60;
+    export let enemies: Enemy.Enemy[] = [];
     export let bat: Enemy.Enemy;
     //#endregion "PublicVariables"
 
@@ -26,7 +27,6 @@ namespace Game {
     let item1: Items.Item;
     let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
     const damper: number = 3.5;
-    let enemies: Enemy.Enemy[] = [];
     //#endregion "PrivateVariables"
 
     //#region enemies
@@ -145,8 +145,8 @@ namespace Game {
             element.move();
             element.lifespan(graph);
         })
+        enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.Tag.ENEMY)
         if (Game.connected && Networking.client.idHost == Networking.client.id) {
-            enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.Tag.ENEMY)
             enemies.forEach(element => {
                 element.move();
                 element.lifespan(graph);

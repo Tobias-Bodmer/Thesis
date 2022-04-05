@@ -5,7 +5,9 @@ namespace Networking {
         SPAWN,
         TRANSFORM,
         BULLET,
-        SPAWNENEMY
+        SPAWNENEMY,
+        ENEMYTRANSFORM,
+        ENEMYDIE
     }
 
     import ƒClient = FudgeNet.FudgeClient;
@@ -56,9 +58,18 @@ namespace Networking {
                         }
 
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNENEMY.toString()) {
-                            console.log("enemy: " + message.content.position.data[0]);
-                            // enemy = new Enemy.Enemy("normalEnemy", new Player.Character("sss", new Player.Attributes(message.content.enemy.healthPoints, message.content.enemy.attackPoints, message.content.enemy.speed)), new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]), message.content.id);
-                            Game.graph.addChild(new Enemy.Enemy("normalEnemy", new Player.Character("sss", new Player.Attributes(message.content.enemy.attributes.healthPoints, message.content.enemy.attributes.attackPoints, message.content.enemy.attributes.speed)), new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]), message.content.id));
+                            // console.log("enemy: " + message.content.id);
+                            Game.graph.addChild(new Enemy.Enemy("normalEnemy", new Player.Character(message.content.enemy.name, new Player.Attributes(message.content.enemy.attributes.healthPoints, message.content.enemy.attributes.attackPoints, message.content.enemy.attributes.speed)), new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]), message.content.id));
+                        }
+                        if (message.content != undefined && message.content.text == FUNCTION.ENEMYTRANSFORM.toString()) {
+                            let enemy = Game.enemies.find(enem => enem.id == message.content.id);
+                            enemy.cmpTransform.mtxLocal.translation = new ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
+                            enemy.updateCollider();
+                        }
+                        if (message.content != undefined && message.content.text == FUNCTION.ENEMYDIE.toString()) {
+                            let enemy = Game.enemies.find(enem => enem.id == message.content.id);
+                            Game.graph.removeChild(enemy);
+                            popID(message.content.id);
                         }
                     }
                 }
@@ -67,7 +78,9 @@ namespace Networking {
     }
 
     function bla() {
-        spawnEnemy(Game.bat, Game.bat.id);
+        if (Game.connected && client.idHost == client.id) {
+            Game.graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, Math.random() * 3 + 1)), new ƒ.Vector2(0, 1)));
+        }
     }
 
     function hostServer() {
@@ -93,12 +106,18 @@ namespace Networking {
     export function spawnEnemy(_enemy: Enemy.Enemy, _id: number) {
         if (Game.connected && client.idHost == client.id) {
             // console.log(_enemy.properties);
+            console.log(_id);
             client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNENEMY, enemy: _enemy.properties, position: _enemy.mtxLocal.translation, id: _id } })
         }
     }
 
     export function updateEnemyPosition(_position: ƒ.Vector3, _id: number) {
-        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.TRANSFORM, position: _position } })
+        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.ENEMYTRANSFORM, position: _position, id: _id } })
+    }
+
+    export function removeEnemy(_id: number) {
+        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.ENEMYDIE, id: _id } })
+
     }
 
     export function idGenerator(): number {
