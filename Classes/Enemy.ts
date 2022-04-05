@@ -3,6 +3,7 @@ namespace Enemy {
 
     export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
         public tag: Tag.Tag = Tag.Tag.ENEMY;
+        public id: number = Networking.idGenerator();
         public properties: Player.Character;
         public target: Player.Player;
         public collider: Game.ƒ.Rectangle;
@@ -15,16 +16,27 @@ namespace Enemy {
          * @param _aiType optional: standard ai = dumb
          */
 
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2) {
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _id?: number) {
             super(_name);
             this.addComponent(new ƒ.ComponentTransform());
             this.properties = _properties;
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
-
+            this.id = _id;
             this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
         }
 
         move() {
+
+            //TODO: only move calculate move on host and update position on other clients
+            if (Game.connected && Networking.client.idHost == Networking.client.id) {
+            }
+            this.moveSimple();
+
+            this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
+            this.collider.position.subtract(ƒ.Vector2.SCALE(this.collider.size, 0.5));
+        }
+
+        moveSimple() {
             this.target = Game.player;
 
             if (Game.connected) {
@@ -38,13 +50,6 @@ namespace Enemy {
                     this.target = Game.player2;
                 }
             }
-            this.moveSimple();
-
-            this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
-            this.collider.position.subtract(ƒ.Vector2.SCALE(this.collider.size, 0.5));
-        }
-
-        moveSimple() {
             let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.target.cmpTransform.mtxLocal.translation, this.cmpTransform.mtxLocal.translation);
             direction.normalize();
 

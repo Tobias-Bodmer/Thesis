@@ -25,6 +25,7 @@ namespace Game {
     let item1: Items.Item;
     let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
     const damper: number = 3.5;
+    let enemies: Enemy.Enemy[] = [];
     //#endregion "PrivateVariables"
 
     //#region "essential"
@@ -114,7 +115,7 @@ namespace Game {
         }
 
         draw();
-                
+
         cameraUpdate();
 
         player.cooldown();
@@ -136,8 +137,8 @@ namespace Game {
             element.lifespan(graph);
         })
 
-        let enemys: Enemy.Enemy[] = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.Tag.ENEMY)
-        enemys.forEach(element => {
+        enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.Tag.ENEMY)
+        enemies.forEach(element => {
             element.move();
             element.lifespan(graph);
         })

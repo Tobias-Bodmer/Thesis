@@ -90,7 +90,7 @@ namespace Player {
                     this.currentCooldownTime = this.cooldownTime;
                     this.currentAttackCount = this.attackCount;
                 } else {
-                    console.log(this.currentCooldownTime);
+                    // console.log(this.currentCooldownTime);
 
                     this.currentCooldownTime--;
                 }

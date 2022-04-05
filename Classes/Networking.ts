@@ -17,20 +17,14 @@ namespace Networking {
 
     export let client: ƒClient;
     export let posUpdate: ƒ.Vector3;
-    let hasHost: boolean = false;
+    let someoneIsHost: boolean = false;
+    let currentIDs: number[] = [];
 
     document.getElementById("Host").addEventListener("click", hostServer, true);
     let IPConnection = <HTMLInputElement>document.getElementById("IPConnection");
     document.getElementById("Connecting").addEventListener("click", conneting, true);
 
-    function hostServer() {
-        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTIONPLAYER.SPAWN, value: Game.player.hero, position: Game.player.cmpTransform.mtxLocal.translation } })
-        if (client.idHost == undefined) {
-            client.becomeHost();
-            hasHost = true;
-        }
-        console.log("host: " + client.idHost);
-    }
+
 
     function conneting() {
         client = new ƒClient();
@@ -44,7 +38,7 @@ namespace Networking {
             if (message.idSource != client.id) {
                 if (message.command != FudgeNet.COMMAND.SERVER_HEARTBEAT && message.command != FudgeNet.COMMAND.CLIENT_HEARTBEAT) {
                     if (message.content != undefined && message.content.text == FUNCTIONPLAYER.SPAWN.toString()) {
-                        console.log(message.content.value);
+                        console.log("hero" + message.content.value.data[1]);
                         Game.player2 = new Player.Player("player2", new Player.Character("Thorian", new Player.Attributes(100, 10, 5)));
                         Game.player2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                         Game.graph.appendChild(Game.player2);
@@ -64,7 +58,7 @@ namespace Networking {
                         if (message.content != undefined && message.content.text == FUNCTIONPLAYER.BULLET.toString()) {
                             Game.player2.attack(new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]))
                         }
-                        if (hasHost) {
+                        if (someoneIsHost) {
                             if (message.content != undefined && message.content.text == FUNCTIONENEMY.SPAWN.toString()) {
 
                             }
@@ -73,6 +67,15 @@ namespace Networking {
                 }
             }
         }
+    }
+
+    function hostServer() {
+        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTIONPLAYER.SPAWN, value: Game.player.hero, position: Game.player.cmpTransform.mtxLocal.translation } })
+        if (client.idHost == undefined) {
+            client.becomeHost();
+            someoneIsHost = true;
+        }
+        console.log("host: " + client.idHost);
     }
     /**
      * sends transform over network
@@ -86,6 +89,37 @@ namespace Networking {
         if (Game.connected) {
             client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTIONPLAYER.BULLET, direction: _direction } })
         }
+    }
+    export function spawnEnemy(_enemy: Enemy.Enemy) {
+        if (Game.connected && someoneIsHost) {
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER_HOST, content: { text: FUNCTIONENEMY.SPAWN, enemy: _enemy } })
+        }
+    }
+
+    export function updateEnemyPosition(_position: ƒ.Vector3) {
+        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER_HOST, content: { text: FUNCTIONENEMY.TRANSFORM, position: _position } })
+    }
+
+    export function idGenerator(): number {
+        let id = Math.random() * 1000;
+        if (currentIDs.find(curID => curID == id)) {
+            idGenerator();
+        }
+        else {
+            currentIDs.push(id);
+        }
+        return id;
+    }
+
+    export function popID(_id: number) {
+        let index: number;
+        for (let i = 0; i < currentIDs.length; i++) {
+            if (currentIDs[i] == _id) {
+                index = i;
+                break;
+            }
+        }
+        currentIDs.splice(index);
     }
 
     window.addEventListener("beforeunload", onUnload, false);

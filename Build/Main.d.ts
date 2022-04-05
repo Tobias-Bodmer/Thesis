@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
@@ -94,6 +94,7 @@ declare namespace Player {
 declare namespace Enemy {
     class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
         tag: Tag.Tag;
+        id: number;
         properties: Player.Character;
         target: Player.Player;
         collider: Game.ƒ.Rectangle;
@@ -105,7 +106,7 @@ declare namespace Enemy {
          * @param _position position where to spawn
          * @param _aiType optional: standard ai = dumb
          */
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _id?: number);
         move(): void;
         moveSimple(): void;
         lifespan(_graph: Game.ƒ.Node): void;
@@ -153,6 +154,10 @@ declare namespace Networking {
      */
     function updatePosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3): void;
     function updateBullet(_direction: ƒ.Vector3): void;
+    function spawnEnemy(_enemy: Enemy.Enemy): void;
+    function updateEnemyPosition(_position: ƒ.Vector3): void;
+    function idGenerator(): number;
+    function popID(_id: number): void;
 }
 declare namespace Player {
     class Player extends Game.ƒAid.NodeSprite {
