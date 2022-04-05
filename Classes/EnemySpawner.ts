@@ -1,10 +1,10 @@
 namespace EnemySpawner {
-    let spawnTime: number = 10 * Game.frameRate;
+    let spawnTime: number = 1 * Game.frameRate;
     let currentTime: number = spawnTime;
 
     export function spawnEnemies(): void {
         if (currentTime == spawnTime) {
-            Game.graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, 2)), new ƒ.Vector2((Math.random() * 10 - (Math.random() * 10)) * 2, (Math.random() * 10 - (Math.random() * 10) * 2))));
+            Game.graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, 2)), new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2))));
         }
         currentTime--;
         if (currentTime <= 0) {

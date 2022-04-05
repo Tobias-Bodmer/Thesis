@@ -61,8 +61,10 @@ namespace Networking {
                         }
                         if (message.content != undefined && message.content.text == FUNCTION.ENEMYTRANSFORM.toString()) {
                             let enemy = Game.enemies.find(enem => enem.id == message.content.id);
-                            enemy.cmpTransform.mtxLocal.translation = new ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
-                            enemy.updateCollider();
+                            if (enemy != undefined) {
+                                enemy.cmpTransform.mtxLocal.translation = new ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
+                                enemy.updateCollider();
+                            }
                         }
                         if (message.content != undefined && message.content.text == FUNCTION.ENEMYDIE.toString()) {
                             let enemy = Game.enemies.find(enem => enem.id == message.content.id);
