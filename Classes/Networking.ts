@@ -38,7 +38,7 @@ namespace Networking {
                 if (message.command != FudgeNet.COMMAND.SERVER_HEARTBEAT && message.command != FudgeNet.COMMAND.CLIENT_HEARTBEAT) {
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
                         // console.table("hero: " + message.content.value.attributes.healthPoints);
-                        Game.player2 = new Player.Player("player2", new Player.Character(message.content.value.name, new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed)));
+                        Game.player2 = new Player.Ranged("player2", new Player.Character(message.content.value.name, new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed)));
                         Game.player2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                         Game.graph.appendChild(Game.player2);
                         Game.connected = true;
