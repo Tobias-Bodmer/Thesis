@@ -172,7 +172,7 @@ declare namespace Networking {
     function popID(_id: number): void;
 }
 declare namespace Player {
-    class Player extends Game.ƒAid.NodeSprite {
+    abstract class Player extends Game.ƒAid.NodeSprite {
         tag: Tag.Tag;
         items: Array<Items.Item>;
         hero: Character;
@@ -194,6 +194,8 @@ declare namespace Player {
     }
     class Melee extends Player {
         attack(_direction: ƒ.Vector3): void;
+    }
+    class Ranged extends Player {
     }
 }
 declare namespace Generation {

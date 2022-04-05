@@ -36,7 +36,7 @@ namespace Game {
     async function init() {
         loadTextures();
 
-        player = new Player.Player("Player1", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
+        player = new Player.Ranged("Player1", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
         // ƒ.Debug.log(player);
 
         //#region init Items

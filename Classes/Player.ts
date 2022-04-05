@@ -1,6 +1,6 @@
 namespace Player {
 
-    export class Player extends Game.ƒAid.NodeSprite {
+    export abstract class Player extends Game.ƒAid.NodeSprite {
         public tag: Tag.Tag = Tag.Tag.PLAYER;
         public items: Array<Items.Item> = [];
         public hero: Character;
@@ -127,5 +127,9 @@ namespace Player {
                 this.currentAttackCount--;
             }
         }
+    }
+
+    export class Ranged extends Player {
+
     }
 }
