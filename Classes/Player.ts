@@ -4,7 +4,7 @@ namespace Player {
         public tag: Tag.Tag = Tag.Tag.PLAYER;
         public items: Array<Items.Item> = [];
         public hero: Character;
-        cooldownTime: number = 20;
+        cooldownTime: number = 10;
         currentCooldownTime: number = this.cooldownTime;
         attackCount: number = 1;
         currentAttackCount: number = this.attackCount;

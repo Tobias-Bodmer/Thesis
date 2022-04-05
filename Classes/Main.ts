@@ -161,6 +161,8 @@ namespace Game {
                 element.move();
                 element.lifespan(graph);
             })
+
+            EnemySpawner.spawnEnemies();
         }
         UI.updateUI();
     }

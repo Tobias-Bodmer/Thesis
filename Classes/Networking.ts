@@ -37,7 +37,7 @@ namespace Networking {
             if (message.idSource != client.id) {
                 if (message.command != FudgeNet.COMMAND.SERVER_HEARTBEAT && message.command != FudgeNet.COMMAND.CLIENT_HEARTBEAT) {
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
-                        console.table("hero: " + message.content.value.attributes.healthPoints);
+                        // console.table("hero: " + message.content.value.attributes.healthPoints);
                         Game.player2 = new Player.Player("player2", new Player.Character(message.content.value.name, new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed)));
                         Game.player2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                         Game.graph.appendChild(Game.player2);
@@ -49,7 +49,6 @@ namespace Networking {
                             let moveVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.value.data[0], message.content.value.data[1], message.content.value.data[2])
                             let rotateVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.rotation.data[0], message.content.rotation.data[1], message.content.rotation.data[2])
 
-
                             Game.player2.mtxLocal.translation = moveVector;
                             Game.player2.mtxLocal.rotation = rotateVector;
                         }
@@ -58,7 +57,6 @@ namespace Networking {
                         }
 
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNENEMY.toString()) {
-                            // console.log("enemy: " + message.content.id);
                             Game.graph.addChild(new Enemy.Enemy("normalEnemy", new Player.Character(message.content.enemy.name, new Player.Attributes(message.content.enemy.attributes.healthPoints, message.content.enemy.attributes.attackPoints, message.content.enemy.attributes.speed)), new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]), message.content.id));
                         }
                         if (message.content != undefined && message.content.text == FUNCTION.ENEMYTRANSFORM.toString()) {
@@ -106,7 +104,7 @@ namespace Networking {
     export function spawnEnemy(_enemy: Enemy.Enemy, _id: number) {
         if (Game.connected && client.idHost == client.id) {
             // console.log(_enemy.properties);
-            console.log(_id);
+            // console.log(_id);
             client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNENEMY, enemy: _enemy.properties, position: _enemy.mtxLocal.translation, id: _id } })
         }
     }
@@ -128,7 +126,7 @@ namespace Networking {
         else {
             currentIDs.push(id);
         }
-        console.log("currenetIDs: " + currentIDs);
+        
         return id;
     }
 
@@ -140,7 +138,9 @@ namespace Networking {
                 break;
             }
         }
-        currentIDs.splice(index);
+        console.log("beforeIDs: " + currentIDs);
+        currentIDs.splice(index,1);
+        console.log("cafterIDs: " + currentIDs);
     }
 
     window.addEventListener("beforeunload", onUnload, false);
