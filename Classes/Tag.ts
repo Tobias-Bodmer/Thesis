@@ -5,6 +5,7 @@ namespace Tag {
         BULLET,
         ITEM,
         ROOM,
-        WALL
+        WALL,
+        DAMAGEUI
     }
 }

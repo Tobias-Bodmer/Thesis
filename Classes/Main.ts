@@ -80,9 +80,9 @@ namespace Game {
         node.cmpTransform.mtxLocal.translateZ(-0.01);
 
         // graph.addChild(node);
-        // for (let i = 0; i < 3; i++) {
-        //     graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, Math.random() * 3 + 1)), new ƒ.Vector2(i * 0.3, 5)));
-        // }
+        for (let i = 0; i < 3; i++) {
+            graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, Math.random() * 3 + 1)), new ƒ.Vector2(i * 0.3, 5)));
+        }
         //#endregion
 
 
@@ -155,6 +155,12 @@ namespace Game {
             element.move();
             element.lifespan(graph);
         })
+
+        let damageUIs: UI.DamageUI[] = <UI.DamageUI[]>graph.getChildren().filter(element => (<UI.DamageUI>element).tag == Tag.Tag.DAMAGEUI)
+        damageUIs.forEach(element => {
+            element.lifespan(graph);
+        })
+
         enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.Tag.ENEMY)
         if (Game.connected && Networking.client.idHost == Networking.client.id) {
             enemies.forEach(element => {
