@@ -53,11 +53,16 @@ namespace UI {
     }
 
 
-
+    export let txtOne: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtTow: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtThree: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtFour: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtFive: ƒ.TextureImage = new ƒ.TextureImage();
+    
     export class DamageUI extends ƒ.Node {
         public tag: Tag.Tag = Tag.Tag.DAMAGEUI;
 
-        lifetime: number = 1 * Game.frameRate;
+        lifetime: number = 0.5 * Game.frameRate;
 
         async lifespan(_graph: ƒ.Node) {
             if (this.lifetime >= 0 && this.lifetime != null) {
@@ -71,8 +76,8 @@ namespace UI {
         constructor(_position: ƒ.Vector3, _damage: number) {
             super("damageUI");
             this.addComponent(new ƒ.ComponentTransform());
-            this.cmpTransform.mtxLocal.scale(new ƒ.Vector3(0.25, 0.25, 0.25));
-            this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
+            this.cmpTransform.mtxLocal.scale(new ƒ.Vector3(0.33, 0.33, 0.33));
+            this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.25);
 
             let mesh: ƒ.MeshQuad = new ƒ.MeshQuad();
             let cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
@@ -93,10 +98,36 @@ namespace UI {
 
             oldComCoat = this.getComponent(ƒ.ComponentMaterial);
 
-            // newTxt = bulletTxt;
+            switch (_texture) {
+                case 1:
+                    newTxt = txtOne;
+                    break;
+                case 2:
+                    newTxt = txtTow;
+                    break;
+                case 3:
+                    newTxt = txtThree;
+                    break;
+                case 4:
+                    newTxt = txtFour;
+                    break;
+                case 5:
+                    newTxt = txtFive;
+                    break;
+                case 6:
+                    newTxt = txtOne;
+                    break;
+                default:
+                    break;
+            }
+
             newCoat.color = ƒ.Color.CSS("WHITE");
             newCoat.texture = newTxt;
             oldComCoat.material = newMtr;
+        }
+
+        async move() {
+            this.cmpTransform.mtxLocal.translate(new ƒ.Vector3(0, 0.1, 0));
         }
     }
 }

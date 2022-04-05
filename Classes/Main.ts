@@ -49,6 +49,8 @@ namespace Game {
         bat = new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, Math.random() * 3 + 1)), new ƒ.Vector2(0, 1));
         console.table(JSON.stringify(bat.properties));
 
+        graph.addChild(bat);
+
 
         let node: ƒ.Node = new ƒ.Node("Quad");
 
@@ -100,6 +102,11 @@ namespace Game {
 
     async function loadTextures() {
         await Bullets.bulletTxt.load("./Resources/Image/arrow.png");
+        await UI.txtOne.load("./Resources/Image/5.png");
+        await UI.txtTow.load("./Resources/Image/5.png");
+        await UI.txtThree.load("./Resources/Image/5.png");
+        await UI.txtFour.load("./Resources/Image/5.png");
+        await UI.txtFive.load("./Resources/Image/5.png");
     }
 
     function waitOnConnection() {
@@ -150,6 +157,13 @@ namespace Game {
             element.move();
             element.lifespan(graph);
         })
+
+        let damageUI: UI.DamageUI[] = <UI.DamageUI[]>graph.getChildren().filter(element => (<UI.DamageUI>element).tag == Tag.Tag.DAMAGEUI)
+        damageUI.forEach(element => {
+            element.move();
+            element.lifespan(graph);
+        })
+
         enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.Tag.ENEMY)
         if (Game.connected && Networking.client.idHost == Networking.client.id) {
             enemies.forEach(element => {

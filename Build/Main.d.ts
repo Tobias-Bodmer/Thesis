@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
@@ -248,11 +248,25 @@ declare namespace Tag {
         BULLET = 2,
         ITEM = 3,
         ROOM = 4,
-        WALL = 5
+        WALL = 5,
+        DAMAGEUI = 6
     }
 }
 declare namespace UI {
     function updateUI(): void;
+    let txtOne: ƒ.TextureImage;
+    let txtTow: ƒ.TextureImage;
+    let txtThree: ƒ.TextureImage;
+    let txtFour: ƒ.TextureImage;
+    let txtFive: ƒ.TextureImage;
+    class DamageUI extends ƒ.Node {
+        tag: Tag.Tag;
+        lifetime: number;
+        lifespan(_graph: ƒ.Node): Promise<void>;
+        constructor(_position: ƒ.Vector3, _damage: number);
+        loadTexture(_texture: number): void;
+        move(): Promise<void>;
+    }
 }
 declare namespace Weapons {
     class Weapon {
