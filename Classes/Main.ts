@@ -34,6 +34,8 @@ namespace Game {
 
     //#region "essential"
     async function init() {
+        loadTextures();
+
         player = new Player.Player("Player1", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
         // ƒ.Debug.log(player);
 
@@ -100,6 +102,10 @@ namespace Game {
         draw();
 
         ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, frameRate);
+    }
+
+    async function loadTextures() {
+        await Items.bulletTxt.load("./Resources/Image/arrow.png");
     }
 
     function waitOnConnection() {

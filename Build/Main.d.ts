@@ -97,21 +97,27 @@ declare namespace Player {
     }
 }
 declare namespace Items {
-    class Bullet extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+    let bulletTxt: ƒ.TextureImage;
+    class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable {
         tag: Tag.Tag;
         flyDirection: ƒ.Vector3;
         collider: Game.ƒ.Rectangle;
         hitPoints: number;
         speed: number;
         lifetime: number;
-        private killcount;
+        killcount: number;
         lifespan(_graph: ƒ.Node): Promise<void>;
         constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3);
         move(): Promise<void>;
+        loadTexture(): void;
         collisionDetection(): Promise<void>;
     }
-    class slowBullet extends Bullet {
+    class SlowBullet extends Bullet {
         constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3);
+    }
+    class MeleeBullet extends Bullet {
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3);
+        loadTexture(): Promise<void>;
     }
 }
 declare namespace Player {
@@ -132,6 +138,7 @@ declare namespace EnemySpawner {
     }
 }
 declare namespace InputSystem {
+    function calcDegree(_center: ƒ.Vector3, _target: ƒ.Vector3): number;
     function move(): void;
 }
 declare namespace Level {
@@ -185,6 +192,9 @@ declare namespace Player {
          * @param _attributes incoming attributes
          */
         addAttribuesByItem(_item: Items.AttributeItem): void;
+    }
+    class Melee extends Player {
+        attack(_direction: ƒ.Vector3): void;
     }
 }
 declare namespace Generation {

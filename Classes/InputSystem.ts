@@ -14,7 +14,7 @@ namespace InputSystem {
         Game.player.mtxLocal.rotation = new ƒ.Vector3(0, 0, calcDegree(Game.player.mtxLocal.translation, mousePosition));
     }
 
-    function calcDegree(_center: ƒ.Vector3, _target: ƒ.Vector3): number {
+    export function calcDegree(_center: ƒ.Vector3, _target: ƒ.Vector3): number {
         let xDistance: number = _target.x - _center.x;
         let yDistance: number = _target.y - _center.y;
         let degrees: number = Math.atan2(yDistance, xDistance) * (180 / Math.PI) - 90;
