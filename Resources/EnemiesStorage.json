@@ -3,7 +3,7 @@
         {
             "name": "bat",
             "attributes": {
-                "healtPoints": 10,
+                "healthPoints": 10,
                 "attackPoints": 1,
                 "speed": 3
             }
@@ -11,7 +11,7 @@
         {
             "name": "bat2",
             "attributes": {
-                "healtPoints": 10,
+                "healthPoints": 10,
                 "attackPoints": 1,
                 "speed": 3
             }

@@ -33,7 +33,7 @@ declare namespace Player {
 declare namespace Enemy {
     class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
         tag: Tag.Tag;
-        id: number;
+        netId: number;
         properties: Player.Character;
         target: Player.Player;
         collider: Game.ƒ.Rectangle;
@@ -51,6 +51,8 @@ declare namespace Enemy {
         moveSimple(): void;
         lifespan(_graph: Game.ƒ.Node): void;
         getCanMoveXY(direction: ƒ.Vector3): [boolean, boolean];
+    }
+    class EnemyDumb extends Enemy {
     }
     class EnemyFlee extends Enemy {
         constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);

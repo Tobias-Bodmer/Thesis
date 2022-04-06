@@ -3,7 +3,7 @@ namespace Enemy {
 
     export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
         public tag: Tag.Tag = Tag.Tag.ENEMY;
-        public id: number = Networking.idGenerator();
+        public netId: number = Networking.idGenerator();
         public properties: Player.Character;
         target: Player.Player;
         public collider: Game.ƒ.Rectangle;
@@ -22,12 +22,12 @@ namespace Enemy {
             this.properties = _properties;
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
             if (_id != undefined) {
-                Networking.popID(this.id);
+                Networking.popID(this.netId);
                 Networking.currentIDs.push(_id);
-                this.id = _id;
+                this.netId = _id;
             }
             this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
-            Networking.spawnEnemy(this, this.id);
+            Networking.spawnEnemy(this, this.netId);
         }
 
         move() {
@@ -35,7 +35,7 @@ namespace Enemy {
             //TODO: only move calculate move on host and update position on other clients
             this.moveSimple();
             this.updateCollider();
-            Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.id);
+            Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId);
         }
 
         updateCollider() {
@@ -83,8 +83,8 @@ namespace Enemy {
 
         lifespan(_graph: Game.ƒ.Node) {
             if (this.properties.attributes.healthPoints <= 0) {
-                Networking.removeEnemy(this.id);
-                Networking.popID(this.id);
+                Networking.removeEnemy(this.netId);
+                Networking.popID(this.netId);
                 _graph.removeChild(this);
             }
         }
@@ -129,6 +129,10 @@ namespace Enemy {
             });
             return [canMoveX, canMoveY];
         }
+    }
+
+    export class EnemyDumb extends Enemy{
+
     }
 
     export class EnemyFlee extends Enemy {
