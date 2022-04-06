@@ -38,6 +38,8 @@ declare namespace Enemy {
         target: Player.Player;
         collider: Game.ƒ.Rectangle;
         lifetime: number;
+        canMoveX: boolean;
+        canMoveY: boolean;
         /**
          * Creates an Enemy
          * @param _name Name of the enemy
@@ -49,15 +51,19 @@ declare namespace Enemy {
         move(): void;
         updateCollider(): void;
         moveSimple(): void;
+        moveAway(): void;
         lifespan(_graph: Game.ƒ.Node): void;
-        getCanMoveXY(direction: ƒ.Vector3): [boolean, boolean];
+        getCanMoveXY(direction: ƒ.Vector3): void;
     }
     class EnemyDumb extends Enemy {
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
+        move(): void;
+        lifespan(_graph: ƒ.Node): void;
     }
     class EnemyFlee extends Enemy {
         constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
         move(): void;
-        moveAway(): void;
+        lifespan(_graph: ƒ.Node): void;
     }
 }
 declare namespace Items {

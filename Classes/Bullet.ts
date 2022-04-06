@@ -72,7 +72,7 @@ namespace Bullets {
                 if (this.collider.collides(element.collider) && element.properties != undefined && this.killcount > 0) {
                     (<Enemy.Enemy>element).properties.attributes.healthPoints -= this.hitPoints;
                     Game.graph.addChild(new UI.DamageUI((<Enemy.Enemy>element).cmpTransform.mtxLocal.translation, this.hitPoints));
-                    console.log((<Enemy.Enemy>element).properties.attributes.healthPoints);
+                    // console.log((<Enemy.Enemy>element).properties.attributes.healthPoints);
                     this.lifetime = 0;
                     this.killcount--;
                 }

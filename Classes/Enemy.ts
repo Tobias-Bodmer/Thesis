@@ -8,6 +8,8 @@ namespace Enemy {
         target: Player.Player;
         public collider: Game.ƒ.Rectangle;
         lifetime: number;
+        canMoveX: boolean = true;
+        canMoveY: boolean = true;
         /**
          * Creates an Enemy
          * @param _name Name of the enemy
@@ -31,9 +33,6 @@ namespace Enemy {
         }
 
         move() {
-
-            //TODO: only move calculate move on host and update position on other clients
-            this.moveSimple();
             this.updateCollider();
             Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId);
         }
@@ -64,20 +63,35 @@ namespace Enemy {
 
             direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
 
-            let canMove: [boolean, boolean] = this.getCanMoveXY(direction);
-            let canMoveX: boolean = canMove[0];
-            let canMoveY: boolean = canMove[1];
-
+            // let canMove: [boolean, boolean] = this.getCanMoveXY(direction);
+            // let canMoveX: boolean = canMove[0];
+            // let canMoveY: boolean = canMove[1];
+            this.getCanMoveXY(direction);
             //TODO: in Funktion packen damit man von allem Enemies drauf zugreifen kann
-            if (canMoveX && canMoveY) {
-                this.cmpTransform.mtxLocal.translate(direction);
-            } else if (canMoveX && !canMoveY) {
-                direction = new ƒ.Vector3(direction.x, 0, direction.z)
-                this.cmpTransform.mtxLocal.translate(direction);
-            } else if (!canMoveX && canMoveY) {
-                direction = new ƒ.Vector3(0, direction.y, direction.z)
-                this.cmpTransform.mtxLocal.translate(direction);
+
+        }
+
+        moveAway() {
+            this.target = Game.player;
+
+            if (Game.connected) {
+                let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player.cmpTransform.mtxLocal.translation);
+                let distancePlayer2 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player2.cmpTransform.mtxLocal.translation);
+
+                if (distancePlayer1 < distancePlayer2) {
+                    this.target = Game.player;
+                } else {
+                    this.target = Game.player2;
+                }
+
             }
+            let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.cmpTransform.mtxLocal.translation, this.target.cmpTransform.mtxLocal.translation);
+            direction.normalize();
+
+            direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
+            this.cmpTransform.mtxLocal.translate(direction, true);
+
+            this.getCanMoveXY(direction);
         }
 
 
@@ -89,7 +103,7 @@ namespace Enemy {
             }
         }
 
-        getCanMoveXY(direction: ƒ.Vector3): [boolean, boolean] {
+        getCanMoveXY(direction: ƒ.Vector3) {
             let canMoveX = true;
             let canMoveY = true;
             let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.Tag.ROOM)).walls;
@@ -127,12 +141,31 @@ namespace Enemy {
                     this.collider.position = oldPosition;
                 }
             });
-            return [canMoveX, canMoveY];
+            if (canMoveX && canMoveY) {
+                this.cmpTransform.mtxLocal.translate(direction);
+            } else if (canMoveX && !canMoveY) {
+                direction = new ƒ.Vector3(direction.x, 0, direction.z)
+                this.cmpTransform.mtxLocal.translate(direction);
+            } else if (!canMoveX && canMoveY) {
+                direction = new ƒ.Vector3(0, direction.y, direction.z)
+                this.cmpTransform.mtxLocal.translate(direction);
+            }
         }
     }
 
-    export class EnemyDumb extends Enemy{
+    export class EnemyDumb extends Enemy {
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2) {
+            super(_name, _properties, _position);
+        }
 
+        move(): void {
+            super.move()
+            this.moveSimple();
+        }
+
+        lifespan(_graph: ƒ.Node): void {
+            super.lifespan(_graph);
+        }
     }
 
     export class EnemyFlee extends Enemy {
@@ -142,29 +175,13 @@ namespace Enemy {
         }
 
         move() {
-            this.target = Game.player;
-
-            if (Game.connected) {
-                let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player.cmpTransform.mtxLocal.translation);
-                let distancePlayer2 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player2.cmpTransform.mtxLocal.translation);
-
-                if (distancePlayer1 < distancePlayer2) {
-                    this.target = Game.player;
-                } else {
-                    this.target = Game.player2;
-                }
-
-            }
+            super.move();
             this.moveAway();
-            this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
         }
 
-        moveAway() {
-            let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.cmpTransform.mtxLocal.translation, this.target.cmpTransform.mtxLocal.translation);
-            direction.normalize();
-
-            direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
-            this.cmpTransform.mtxLocal.translate(direction, true);
+        lifespan(_graph: ƒ.Node): void {
+            super.lifespan(_graph);
         }
+
     }
 }

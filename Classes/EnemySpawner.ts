@@ -5,7 +5,7 @@ namespace EnemySpawner {
     export function spawnEnemies(): void {
         if (currentTime == spawnTime) {
             const ref = Game.enemiesJSON.find(elem => elem.name == "bat");
-            Game.graph.addChild(new Enemy.Enemy("Enemy", new Player.Character(ref.name, new Player.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed)), new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2))));
+            Game.graph.addChild(new Enemy.EnemyDumb("Enemy", new Player.Character(ref.name, new Player.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed)), new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2))));
         }
         currentTime--;
         if (currentTime <= 0) {

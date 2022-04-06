@@ -12,7 +12,6 @@ namespace Player {
             this.maxHealthPoints = _healthPoints;
             this.attackPoints = _attackPoints;
             this.speed = _speed;
-            console.log(this.healthPoints);
         }
 
         /**
