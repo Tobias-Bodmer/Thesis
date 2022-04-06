@@ -22,7 +22,7 @@ namespace Generation {
         addRoom(rooms[rooms.length - 3], Generation.ROOMTYPE.MERCHANT);
         rooms.forEach(room => {
             room.exits = calcRoomDoors(room.coordinates);
-            console.log(room.coordinates + " " + room.exits + " " + room.roomType.toString());
+            // console.log(room.coordinates + " " + room.exits + " " + room.roomType.toString());
         })
 
         Game.graph.addChild(rooms[0]);

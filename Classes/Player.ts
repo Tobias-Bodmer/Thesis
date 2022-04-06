@@ -1,4 +1,8 @@
 namespace Player {
+    export enum Type {
+        RANGED,
+        MELEE
+    }
 
     export abstract class Player extends Game.ƒAid.NodeSprite {
         public tag: Tag.Tag = Tag.Tag.PLAYER;

@@ -20,7 +20,7 @@ namespace Networking {
     export let enemy: Enemy.Enemy;
     export let currentIDs: number[] = [];
 
-    document.getElementById("Host").addEventListener("click", spawnPlayer, true);
+    document.getElementById("Host").addEventListener("click", () => {spawnPlayer()}, true);
     let IPConnection = <HTMLInputElement>document.getElementById("IPConnection");
     document.getElementById("Connecting").addEventListener("click", conneting, true);
 
@@ -55,11 +55,19 @@ namespace Networking {
                         }
                     }
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
-                        // console.table("hero: " + message.content.value.attributes.healthPoints);
-                        Game.player2 = new Player.Ranged("player2", new Player.Character(message.content.value.name, new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed)));
-                        Game.player2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
-                        Game.graph.appendChild(Game.player2);
-                        Game.connected = true;
+                        console.table(message.content.type);
+                        if (message.content.type == Player.Type.MELEE) {
+                            Game.player2 = new Player.Melee("player2", new Player.Character(message.content.value.name, new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed)));
+                            Game.player2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
+                            Game.graph.appendChild(Game.player2);
+                            Game.connected = true;
+                        } else if (message.content.type == Player.Type.RANGED) {
+                            Game.player2 = new Player.Ranged("player2", new Player.Character(message.content.value.name, new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed)));
+                            Game.player2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
+                            Game.graph.appendChild(Game.player2);
+                            Game.connected = true;
+                        }
+
                     }
 
                     if (Game.connected) {
@@ -96,12 +104,19 @@ namespace Networking {
     }
 
     //#region player
-    export function spawnPlayer() {
+    export function spawnPlayer(_type?: Player.Type) {
         if (client.idHost == undefined) {
             client.becomeHost();
             someoneIsHost = true;
         }
-        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, value: Game.player.properties, position: Game.player.cmpTransform.mtxLocal.translation } })
+
+        if (_type == Player.Type.MELEE){
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.Type.MELEE, value: Game.player.properties, position: Game.player.cmpTransform.mtxLocal.translation } })
+        } else if (_type == Player.Type.RANGED) {
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.Type.RANGED, value: Game.player.properties, position: Game.player.cmpTransform.mtxLocal.translation } })
+        } else {
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.Type.RANGED, value: Game.player.properties, position: Game.player.cmpTransform.mtxLocal.translation } })
+        }
     }
     /**
      * sends transform over network

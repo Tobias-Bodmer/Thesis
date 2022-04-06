@@ -180,7 +180,7 @@ declare namespace Networking {
     let enemy: Enemy.Enemy;
     let currentIDs: number[];
     function conneting(): void;
-    function spawnPlayer(): void;
+    function spawnPlayer(_type?: Player.Type): void;
     /**
      * sends transform over network
      * @param __position current position of Object
@@ -195,6 +195,10 @@ declare namespace Networking {
     function popID(_id: number): void;
 }
 declare namespace Player {
+    enum Type {
+        RANGED = 0,
+        MELEE = 1
+    }
     abstract class Player extends Game.ƒAid.NodeSprite {
         tag: Tag.Tag;
         items: Array<Items.Item>;

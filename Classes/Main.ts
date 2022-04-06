@@ -39,7 +39,9 @@ namespace Game {
 
     //#region "essential"
     async function init() {
-        loadTextures();
+        if (Bullets.bulletTxt == null) {
+            loadTextures();
+        }
         await loadEnemiesJSON();
 
         if (player == null) {
@@ -113,21 +115,22 @@ namespace Game {
 
     async function loadTextures() {
         await Bullets.bulletTxt.load("./Resources/Image/arrow.png");
-        
-        await UI.txtZero.load("./Resources/Image/5.png");
-        await UI.txtOne.load("./Resources/Image/5.png");
-        await UI.txtTow.load("./Resources/Image/5.png");
-        await UI.txtThree.load("./Resources/Image/5.png");
-        await UI.txtFour.load("./Resources/Image/5.png");
+
+        await UI.txtZero.load("./Resources/Image/0.png");
+        await UI.txtOne.load("./Resources/Image/1.png");
+        await UI.txtTow.load("./Resources/Image/2.png");
+        await UI.txtThree.load("./Resources/Image/3.png");
+        await UI.txtFour.load("./Resources/Image/4.png");
         await UI.txtFive.load("./Resources/Image/5.png");
-        await UI.txtSix.load("./Resources/Image/5.png");
-        await UI.txtSeven.load("./Resources/Image/5.png");
-        await UI.txtEight.load("./Resources/Image/5.png");
-        await UI.txtNine.load("./Resources/Image/5.png");
-        await UI.txtTen.load("./Resources/Image/5.png");
+        await UI.txtSix.load("./Resources/Image/6.png");
+        await UI.txtSeven.load("./Resources/Image/7.png");
+        await UI.txtEight.load("./Resources/Image/8.png");
+        await UI.txtNine.load("./Resources/Image/9.png");
+        await UI.txtTen.load("./Resources/Image/10.png");
     }
 
     function start() {
+        loadTextures();
         //add sprite to graphe for startscreen
         document.getElementById("Startscreen").style.visibility = "visible";
         document.getElementById("StartGame").addEventListener("click", () => {
@@ -144,13 +147,13 @@ namespace Game {
         });
     }
 
+    let playerType: Player.Type;
     async function waitOnConnection() {
         Networking.client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: Networking.FUNCTION.CONNECTED, value: Networking.client.id } })
         if (Networking.clients.length > 1 && player != null) {
             await init();
-            Networking.spawnPlayer();
+            Networking.spawnPlayer(playerType);
         } else {
-            console.log(Networking.clients);
             setTimeout(waitOnConnection, 300);
         }
     }
@@ -158,9 +161,11 @@ namespace Game {
     function playerChoice(_e: Event) {
         if ((<HTMLButtonElement>_e.target).id == "Ranged") {
             player = new Player.Ranged("player", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
+            playerType = Player.Type.RANGED;
         }
         if ((<HTMLButtonElement>_e.target).id == "Melee") {
             player = new Player.Melee("player", new Player.Character("Thor,", new Player.Attributes(10, 1, 5)));
+            playerType = Player.Type.MELEE;
         }
         document.getElementById("Lobbyscreen").style.visibility = "hidden";
     }

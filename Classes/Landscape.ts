@@ -6,7 +6,6 @@ namespace Level {
 
             // this.getChildren()[0].getComponent(Game.ƒ.ComponentTransform).mtxLocal.translateZ(-2)
 
-            console.log();
         }
     }
 
