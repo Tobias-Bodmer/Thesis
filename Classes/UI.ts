@@ -58,6 +58,11 @@ namespace UI {
     export let txtThree: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtFour: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtFive: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtSix: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtSeven: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtEight: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtNine: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtTen: ƒ.TextureImage = new ƒ.TextureImage();
 
     export class DamageUI extends ƒ.Node {
         public tag: Tag.Tag = Tag.Tag.DAMAGEUI;
@@ -118,7 +123,19 @@ namespace UI {
                     newTxt = txtFive;
                     break;
                 case 6:
-                    newTxt = txtOne;
+                    newTxt = txtSeven;
+                    break;
+                case 7:
+                    newTxt = txtEight;
+                    break;
+                case 8:
+                    newTxt = txtEight;
+                    break;
+                case 9:
+                    newTxt = txtNine;
+                    break;
+                case 10:
+                    newTxt = txtTen;
                     break;
                 default:
                     break;

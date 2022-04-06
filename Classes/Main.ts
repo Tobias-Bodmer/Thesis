@@ -113,11 +113,18 @@ namespace Game {
 
     async function loadTextures() {
         await Bullets.bulletTxt.load("./Resources/Image/arrow.png");
+        
+        await UI.txtZero.load("./Resources/Image/5.png");
         await UI.txtOne.load("./Resources/Image/5.png");
         await UI.txtTow.load("./Resources/Image/5.png");
         await UI.txtThree.load("./Resources/Image/5.png");
         await UI.txtFour.load("./Resources/Image/5.png");
         await UI.txtFive.load("./Resources/Image/5.png");
+        await UI.txtSix.load("./Resources/Image/5.png");
+        await UI.txtSeven.load("./Resources/Image/5.png");
+        await UI.txtEight.load("./Resources/Image/5.png");
+        await UI.txtNine.load("./Resources/Image/5.png");
+        await UI.txtTen.load("./Resources/Image/5.png");
     }
 
     function start() {

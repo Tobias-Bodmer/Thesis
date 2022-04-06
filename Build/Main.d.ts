@@ -270,6 +270,11 @@ declare namespace UI {
     let txtThree: ƒ.TextureImage;
     let txtFour: ƒ.TextureImage;
     let txtFive: ƒ.TextureImage;
+    let txtSix: ƒ.TextureImage;
+    let txtSeven: ƒ.TextureImage;
+    let txtEight: ƒ.TextureImage;
+    let txtNine: ƒ.TextureImage;
+    let txtTen: ƒ.TextureImage;
     class DamageUI extends ƒ.Node {
         tag: Tag.Tag;
         lifetime: number;
