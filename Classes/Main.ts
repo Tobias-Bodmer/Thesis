@@ -21,6 +21,7 @@ namespace Game {
     export let connected: boolean = false;
     export let frameRate: number = 60;
     export let enemies: Enemy.Enemy[] = [];
+    export let enemiesJSON: Player.Character[];
     export let bat: Enemy.Enemy;
     //#endregion "PublicVariables"
 
@@ -36,7 +37,7 @@ namespace Game {
     //#region "essential"
     async function init() {
         loadTextures();
-        loadJSON();
+        await loadEnemiesJSON();
         player = new Player.Ranged("Player1", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
         // ƒ.Debug.log(player);
 
@@ -47,7 +48,8 @@ namespace Game {
         Generation.generateRooms();
 
         //#region Testing objects
-        bat = new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, Math.random() * 3 + 1)), new ƒ.Vector2(0, 1));
+        let ref = enemiesJSON.find(elem => elem.name == "bat");
+        bat = new Enemy.Enemy("Enemy", new Player.Character(ref.name, ref.attributes), new ƒ.Vector2(0, 1));
         console.table(JSON.stringify(bat.properties));
 
         let node: ƒ.Node = new ƒ.Node("Quad");
@@ -98,12 +100,9 @@ namespace Game {
         ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, frameRate);
     }
 
-    async function loadJSON() {
-        let load: any = await (await fetch("./Resources/EnemiesStorage.json")).json;
-
-        let obj: Object = JSON.parse(load);
-        console.log(obj);
-
+    async function loadEnemiesJSON() {
+        const load = await (await fetch("./Resources/EnemiesStorage.JSON")).json();
+        enemiesJSON = ((<Player.Character[]>load.enemies));
     }
 
     async function loadTextures() {

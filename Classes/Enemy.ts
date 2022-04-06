@@ -5,7 +5,7 @@ namespace Enemy {
         public tag: Tag.Tag = Tag.Tag.ENEMY;
         public id: number = Networking.idGenerator();
         public properties: Player.Character;
-        public target: Player.Player;
+        target: Player.Player;
         public collider: Game.ƒ.Rectangle;
         lifetime: number;
         /**

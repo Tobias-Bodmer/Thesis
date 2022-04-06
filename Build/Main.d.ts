@@ -12,6 +12,7 @@ declare namespace Game {
     let connected: boolean;
     let frameRate: number;
     let enemies: Enemy.Enemy[];
+    let enemiesJSON: Player.Character[];
     let bat: Enemy.Enemy;
     function cameraUpdate(): void;
 }

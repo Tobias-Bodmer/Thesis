@@ -4,7 +4,8 @@ namespace EnemySpawner {
 
     export function spawnEnemies(): void {
         if (currentTime == spawnTime) {
-            Game.graph.addChild(new Enemy.Enemy("Enemy", new Player.Character("bat", new Player.Attributes(10, 5, 2)), new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2))));
+            let ref = Game.enemiesJSON.find(elem => elem.name == "bat")
+            Game.graph.addChild(new Enemy.Enemy("Enemy", new Player.Character(ref.name, ref.attributes), new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2))));
         }
         currentTime--;
         if (currentTime <= 0) {
