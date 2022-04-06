@@ -4,7 +4,8 @@ namespace Player {
         public tag: Tag.Tag = Tag.Tag.PLAYER;
         public items: Array<Items.Item> = [];
         public properties: Character;
-       
+        public weapon: Weapons.Weapon = new Weapons.Weapon(5,1);
+
         collider: ƒ.Rectangle;
 
         constructor(_name: string, _properties: Character) {
@@ -71,25 +72,25 @@ namespace Player {
         }
 
         public attack(_direction: ƒ.Vector3) {
-            if (this.properties.attributes.currentAttackCount > 0) {
+            if (this.weapon.currentAttackCount > 0) {
                 _direction.normalize();
                 let bullet: Bullets.Bullet = new Bullets.Bullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction);
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
                 Game.graph.addChild(bullet);
 
-                this.properties.attributes.currentAttackCount--;
+                this.weapon.currentAttackCount--;
             }
         }
 
         public cooldown() {
-            if (this.properties.attributes.currentAttackCount <= 0) {
-                if (this.properties.attributes.currentCooldownTime <= 0) {
-                    this.properties.attributes.currentCooldownTime = this.properties.attributes.cooldownTime;
-                    this.properties.attributes.currentAttackCount = this.properties.attributes.attackCount;
+            if (this.weapon.currentAttackCount <= 0) {
+                if (this.weapon.currentCooldownTime <= 0) {
+                    this.weapon.currentCooldownTime = this.weapon.cooldownTime;
+                    this.weapon.currentAttackCount = this.weapon.attackCount;
                 } else {
                     // console.log(this.currentCooldownTime);
 
-                    this.properties.attributes.currentCooldownTime--;
+                    this.weapon.currentCooldownTime--;
                 }
             }
         }
@@ -97,18 +98,18 @@ namespace Player {
         public collector() {
 
         }
-        
+
     }
 
     export class Melee extends Player {
         public attack(_direction: ƒ.Vector3) {
-            if (this.properties.attributes.currentAttackCount > 0) {
+            if (this.weapon.currentAttackCount > 0) {
                 _direction.normalize();
                 let bullet: Bullets.Bullet = new Bullets.MeleeBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction);
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
                 Game.graph.addChild(bullet);
 
-                this.properties.attributes.currentAttackCount--;
+                this.weapon.currentAttackCount--;
             }
         }
     }

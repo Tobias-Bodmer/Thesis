@@ -2,17 +2,14 @@ namespace Player {
     export class Attributes {
 
         public healthPoints: number;
-        public maxhealthPoints: number;
+        public maxHealthPoints: number;
         public speed: number;
         public attackPoints: number;
-        cooldownTime: number = 10;
-        public currentCooldownTime: number = this.cooldownTime;
-        attackCount: number = 1;
-        public currentAttackCount: number = this.attackCount;
+        
 
         constructor(_healthPoints: number, _attackPoints: number, _speed: number) {
             this.healthPoints = _healthPoints;
-            this.maxhealthPoints = _healthPoints;
+            this.maxHealthPoints = _healthPoints;
             this.attackPoints = _attackPoints;
             this.speed = _speed;
         }
@@ -25,7 +22,7 @@ namespace Player {
             switch (_itemType) {
                 case Items.ITEMTYPE.ADD:
                     this.healthPoints += _attributes.healthPoints;
-                    this.maxhealthPoints += _attributes.maxhealthPoints;
+                    this.maxHealthPoints += _attributes.maxHealthPoints;
                     this.speed += _attributes.speed;
                     this.attackPoints += _attributes.attackPoints;
                     break; // calculate attributes by adding them

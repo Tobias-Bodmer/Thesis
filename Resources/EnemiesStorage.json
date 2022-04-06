@@ -1,0 +1,15 @@
+{
+    "enemies": {
+        "properties": [
+            {
+                "name": "bat",
+                "attributes": {
+                    "healtPoints": 10,
+                    "maxHealthPoints": 10,
+                    "speed": 3,
+                    "attackPoints": 1
+                }
+            }
+        ]
+    }
+}

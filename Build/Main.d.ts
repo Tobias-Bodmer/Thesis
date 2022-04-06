@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
@@ -92,13 +92,9 @@ declare namespace Items {
 declare namespace Player {
     class Attributes {
         healthPoints: number;
-        maxhealthPoints: number;
+        maxHealthPoints: number;
         speed: number;
         attackPoints: number;
-        cooldownTime: number;
-        currentCooldownTime: number;
-        attackCount: number;
-        currentAttackCount: number;
         constructor(_healthPoints: number, _attackPoints: number, _speed: number);
         /**
          * adds Attributes to the Player Attributes
@@ -135,7 +131,7 @@ declare namespace Player {
     class Character {
         name: string;
         attributes: Attributes;
-        constructor(name: string, attributes: Attributes);
+        constructor(_name: string, _attributes: Attributes);
     }
 }
 declare namespace EnemySpawner {
@@ -194,6 +190,7 @@ declare namespace Player {
         tag: Tag.Tag;
         items: Array<Items.Item>;
         properties: Character;
+        weapon: Weapons.Weapon;
         collider: ƒ.Rectangle;
         constructor(_name: string, _properties: Character);
         move(_direction: ƒ.Vector3): void;
@@ -258,6 +255,7 @@ declare namespace Tag {
 }
 declare namespace UI {
     function updateUI(): void;
+    let txtZero: ƒ.TextureImage;
     let txtOne: ƒ.TextureImage;
     let txtTow: ƒ.TextureImage;
     let txtThree: ƒ.TextureImage;
@@ -274,5 +272,10 @@ declare namespace UI {
 }
 declare namespace Weapons {
     class Weapon {
+        cooldownTime: number;
+        currentCooldownTime: number;
+        attackCount: number;
+        currentAttackCount: number;
+        constructor(_cooldownTime: number, _attackCount: number);
     }
 }

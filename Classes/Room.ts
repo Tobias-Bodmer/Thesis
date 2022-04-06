@@ -17,7 +17,7 @@ namespace Generation {
         exits: [boolean, boolean, boolean, boolean] // N E S W
         mesh: ƒ.MeshQuad = new ƒ.MeshQuad;
         cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(this.mesh);
-        startRoomMat: ƒ.Material = new ƒ.Material("startRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("red")));
+        startRoomMat: ƒ.Material = new ƒ.Material("startRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("yellow")));
         normalRoomMat: ƒ.Material = new ƒ.Material("normalRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
         merchantRoomMat: ƒ.Material = new ƒ.Material("merchantRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("green")));
         treasureRoomMat: ƒ.Material = new ƒ.Material("treasureRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("yellow")));

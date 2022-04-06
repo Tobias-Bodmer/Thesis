@@ -7,9 +7,10 @@ namespace Game {
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
 
+
     //#region "DomElements"
     export let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("Canvas");
-    window.addEventListener("load", start);
+    window.addEventListener("load", init);
     //#endregion "DomElements"
 
     //#region "PublicVariables"
@@ -35,7 +36,7 @@ namespace Game {
     //#region "essential"
     async function init() {
         loadTextures();
-
+        loadJSON();
         player = new Player.Ranged("Player1", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
         // ƒ.Debug.log(player);
 
@@ -78,7 +79,7 @@ namespace Game {
         node.cmpTransform.mtxLocal.scale(new ƒ.Vector3(30, 30, 1));
         node.cmpTransform.mtxLocal.translateZ(-0.01);
 
-        
+
         graph.appendChild(player);
         graph.appendChild(item1);
 
@@ -95,6 +96,14 @@ namespace Game {
         draw();
 
         ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, frameRate);
+    }
+
+    async function loadJSON() {
+        let load: any = await (await fetch("./Resources/EnemiesStorage.json")).json;
+
+        let obj: Object = JSON.parse(load);
+        console.log(obj);
+
     }
 
     async function loadTextures() {

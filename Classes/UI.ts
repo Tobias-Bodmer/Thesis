@@ -5,7 +5,7 @@ namespace UI {
 
     export function updateUI() {
         //Player1 UI
-        (<HTMLDivElement>player1UI.querySelector("#HP")).style.width = (Game.player.properties.attributes.healthPoints / Game.player.properties.attributes.maxhealthPoints * 100) + "%";
+        (<HTMLDivElement>player1UI.querySelector("#HP")).style.width = (Game.player.properties.attributes.healthPoints / Game.player.properties.attributes.maxHealthPoints * 100) + "%";
 
         //TODO: Needs testing
         //InventoryUI
@@ -29,7 +29,7 @@ namespace UI {
 
         //Player2 UI
         if (Game.connected) {
-            (<HTMLDivElement>player2UI.querySelector("#HP")).style.width = (Game.player2.properties.attributes.healthPoints / Game.player2.properties.attributes.maxhealthPoints * 100) + "%";
+            (<HTMLDivElement>player2UI.querySelector("#HP")).style.width = (Game.player2.properties.attributes.healthPoints / Game.player2.properties.attributes.maxHealthPoints * 100) + "%";
 
             //InventoryUI
             Game.player2.items.forEach((element) => {
@@ -52,13 +52,13 @@ namespace UI {
         }
     }
 
-
+    export let txtZero: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtOne: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtTow: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtThree: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtFour: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtFive: ƒ.TextureImage = new ƒ.TextureImage();
-    
+
     export class DamageUI extends ƒ.Node {
         public tag: Tag.Tag = Tag.Tag.DAMAGEUI;
 
@@ -99,6 +99,9 @@ namespace UI {
             oldComCoat = this.getComponent(ƒ.ComponentMaterial);
 
             switch (_texture) {
+                case 0:
+                    newTxt = txtZero;
+                    break;
                 case 1:
                     newTxt = txtOne;
                     break;
@@ -128,6 +131,7 @@ namespace UI {
 
         async move() {
             this.cmpTransform.mtxLocal.translate(new ƒ.Vector3(0, 0.1, 0));
+            // this.cmpTransform.mtxLocal.scale(new ƒ.Vector3(0.1,0.1,0.1));
         }
     }
 }
