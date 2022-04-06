@@ -10,7 +10,10 @@ namespace Game {
 
     //#region "DomElements"
     export let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("Canvas");
-    window.addEventListener("load", init);
+    // window.addEventListener("load", init);
+    window.addEventListener("load", start);
+    document.getElementById("Ranged").addEventListener("click", playerChoice);
+    document.getElementById("Melee").addEventListener("click", playerChoice);
     //#endregion "DomElements"
 
     //#region "PublicVariables"
@@ -38,7 +41,10 @@ namespace Game {
     async function init() {
         loadTextures();
         await loadEnemiesJSON();
-        player = new Player.Ranged("Player1", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
+
+        if (player == null) {
+            player = new Player.Ranged("Player1", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
+        }
         // ƒ.Debug.log(player);
 
         //#region init Items
@@ -116,8 +122,11 @@ namespace Game {
 
     function start() {
         //add sprite to graphe for startscreen
+        document.getElementById("Startscreen").style.visibility = "visible";
         document.getElementById("StartGame").addEventListener("click", () => {
             Networking.conneting();
+            document.getElementById("Startscreen").style.visibility = "hidden";
+            document.getElementById("Lobbyscreen").style.visibility = "visible";
             waitOnConnection();
         });
         document.getElementById("Option").addEventListener("click", () => {
@@ -130,14 +139,23 @@ namespace Game {
 
     async function waitOnConnection() {
         Networking.client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: Networking.FUNCTION.CONNECTED, value: Networking.client.id } })
-        if (Networking.clients.length > 1) {
-            document.getElementById("Startscreen").style.visibility = "hidden";
+        if (Networking.clients.length > 1 && player != null) {
             await init();
             Networking.spawnPlayer();
         } else {
             console.log(Networking.clients);
             setTimeout(waitOnConnection, 300);
         }
+    }
+
+    function playerChoice(_e: Event) {
+        if ((<HTMLButtonElement>_e.target).id == "Ranged") {
+            player = new Player.Ranged("player", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
+        }
+        if ((<HTMLButtonElement>_e.target).id == "Melee") {
+            player = new Player.Melee("player", new Player.Character("Thor,", new Player.Attributes(10, 1, 5)));
+        }
+        document.getElementById("Lobbyscreen").style.visibility = "hidden";
     }
 
     function draw(): void {

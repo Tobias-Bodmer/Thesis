@@ -4,13 +4,30 @@ canvas {
     height: 600px;
 }
 
+#Lobbyscreen {
+    position: absolute;
+    visibility: hidden;
+    top: 520px;
+    left: 10px;
+}
+
+#Lobbyscreen > button {
+    margin-left: 170px;
+    margin-right: 170px;
+    width: 150px;
+    height: 40px;
+}
+
 #Startscreen {
     position: absolute;
+    visibility: hidden;
     top: 320px;
-    left: 200px;
+    left: 70px;
 }
 
 #Startscreen > button {
+    margin-left: 40px;
+    margin-right: 40px;
     width: 200px;
     height: 60px;
 }
