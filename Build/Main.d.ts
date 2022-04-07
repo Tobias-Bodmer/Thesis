@@ -35,8 +35,8 @@ declare namespace Enemy {
         tag: Tag.Tag;
         netId: number;
         properties: Player.Character;
-        target: Player.Player;
         collider: Game.ƒ.Rectangle;
+        target: Player.Player;
         lifetime: number;
         canMoveX: boolean;
         canMoveY: boolean;
@@ -64,6 +64,13 @@ declare namespace Enemy {
         constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
         move(): void;
         lifespan(_graph: ƒ.Node): void;
+    }
+    class EnemyCircle extends Enemy {
+        distance: number;
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
+        move(): void;
+        lifespan(_graph: ƒ.Node): void;
+        moveCircle(): Promise<void>;
     }
 }
 declare namespace Items {
@@ -155,6 +162,7 @@ declare namespace EnemySpawner {
 }
 declare namespace InputSystem {
     function calcDegree(_center: ƒ.Vector3, _target: ƒ.Vector3): number;
+    function calcPositionFromDegree(_degrees: number, _distance: number): ƒ.Vector2;
     function move(): void;
 }
 declare namespace Level {

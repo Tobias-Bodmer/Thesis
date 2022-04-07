@@ -21,6 +21,16 @@ namespace InputSystem {
         return degrees;
 
     }
+
+    export function calcPositionFromDegree(_degrees: number, _distance: number): ƒ.Vector2 {
+        let distance = 5;
+        let newDeg = (_degrees * Math.PI) / 180;
+        let y = Math.cos(newDeg);
+        let x = Math.sin(newDeg) * -1;
+        let coord = new ƒ.Vector2(x, y);
+        coord.scale(distance);
+        return coord;
+    }
     //#endregion
 
     //#region move

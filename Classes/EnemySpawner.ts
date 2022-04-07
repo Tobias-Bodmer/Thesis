@@ -1,5 +1,5 @@
 namespace EnemySpawner {
-    let spawnTime: number = 1 * Game.frameRate;
+    let spawnTime: number = 3 * Game.frameRate;
     let currentTime: number = spawnTime;
 
     export function spawnEnemies(): void {

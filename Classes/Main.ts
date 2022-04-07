@@ -55,6 +55,8 @@ namespace Game {
 
         Generation.generateRooms();
 
+        // let enemy = new Enemy.EnemyCircle("sörkler", new Player.Character("sörki", new Player.Attributes(10, 2, 3)), new ƒ.Vector2(2, 3));
+        // graph.addChild(enemy);
         //#region Testing objects
         let node: ƒ.Node = new ƒ.Node("Quad");
 
