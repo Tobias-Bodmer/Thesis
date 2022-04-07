@@ -73,7 +73,7 @@ namespace Generation {
     export class Wall extends ƒ.Node {
         public tag: Tag.Tag = Tag.Tag.WALL;
         public collider: Game.ƒ.Rectangle;
-        public wallThickness: number = 3;
+        public wallThickness: number = 2;
 
         constructor(_position: Game.ƒ.Vector2, _width: number) {
             super("Wall");

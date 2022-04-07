@@ -5,7 +5,7 @@ namespace Enemy {
         public tag: Tag.Tag = Tag.Tag.ENEMY;
         public netId: number = Networking.idGenerator();
         public properties: Player.Character;
-        public collider: Game.ƒ.Rectangle;
+        public collider: Collider.Collider;
         target: Player.Player;
         lifetime: number;
         canMoveX: boolean = true;
@@ -33,7 +33,7 @@ namespace Enemy {
                 Networking.currentIDs.push(_id);
                 this.netId = _id;
             }
-            this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
+            this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);
             Networking.spawnEnemy(this, this.netId);
             //TODO: add sprite animation
             // this.startSprite();
@@ -68,7 +68,6 @@ namespace Enemy {
 
         updateCollider() {
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
-            this.collider.position.subtract(ƒ.Vector2.SCALE(this.collider.size, 0.5));
         }
 
         moveSimple() {
@@ -137,18 +136,19 @@ namespace Enemy {
             let canMoveY = true;
             let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.Tag.ROOM)).walls;
             colliders.forEach((element) => {
-                if (this.collider.collides(element.collider)) {
+                if (this.collider.collidesRect(element.collider)) {
 
-                    let intersection = this.collider.getIntersection(element.collider);
-                    let areaBeforeMove = intersection.height * intersection.width;
+                    let intersection = this.collider.getIntersectionRect(element.collider);
+                    let areaBeforeMove = Math.round((intersection.height * intersection.width)*1000)/1000;
 
                     let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
                     let newDirection = new Game.ƒ.Vector2(direction.x, 0)
                     this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
 
-                    if (this.collider.getIntersection(element.collider) != null) {
-                        let newIntersection = this.collider.getIntersection(element.collider);
-                        let areaAfterMove = newIntersection.height * newIntersection.width;
+                    if (this.collider.getIntersectionRect(element.collider) != null) {
+                        let newIntersection = this.collider.getIntersectionRect(element.collider);
+                        let areaAfterMove = Math.round((newIntersection.height * newIntersection.width)*1000)/1000;
+
 
                         if (areaBeforeMove < areaAfterMove) {
                             canMoveX = false;
@@ -159,9 +159,10 @@ namespace Enemy {
                     newDirection = new Game.ƒ.Vector2(0, direction.y);
                     this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
 
-                    if (this.collider.getIntersection(element.collider) != null) {
-                        let newIntersection = this.collider.getIntersection(element.collider);
-                        let areaAfterMove = newIntersection.height * newIntersection.width;
+                    if (this.collider.getIntersectionRect(element.collider) != null) {
+                        let newIntersection = this.collider.getIntersectionRect(element.collider);
+                        let areaAfterMove = Math.round((newIntersection.height * newIntersection.width)*1000)/1000;
+
 
                         if (areaBeforeMove < areaAfterMove) {
                             canMoveY = false;

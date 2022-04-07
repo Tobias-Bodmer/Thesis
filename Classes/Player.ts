@@ -10,13 +10,13 @@ namespace Player {
         public properties: Character;
         public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1);
 
-        collider: ƒ.Rectangle;
+        collider: Collider.Collider;
 
         constructor( _name: string, _properties: Character) {
             super(_name);
             this.addComponent(new ƒ.ComponentTransform());
             this.properties = _properties;
-            this.collider = new ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, ƒ.ORIGIN2D.CENTER);
+            this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);
         }
 
         public move(_direction: ƒ.Vector3) {
@@ -24,24 +24,23 @@ namespace Player {
             let canMoveY: boolean = true;
 
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
-            this.collider.position.subtract(ƒ.Vector2.SCALE(this.collider.size, 0.5));
 
             _direction.scale((1 / 60 * this.properties.attributes.speed));
 
+            
             let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.Tag.ROOM)).walls;
             colliders.forEach((element) => {
-                if (this.collider.collides(element.collider)) {
-
-                    let intersection = this.collider.getIntersection(element.collider);
-                    let areaBeforeMove = intersection.height * intersection.width;
+                if (this.collider.collidesRect(element.collider)) {
+                    let intersection = this.collider.getIntersectionRect(element.collider);
+                    let areaBeforeMove = Math.round((intersection.height * intersection.width)*1000)/1000;
 
                     let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
                     let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
                     this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
 
-                    if (this.collider.getIntersection(element.collider) != null) {
-                        let newIntersection = this.collider.getIntersection(element.collider);
-                        let areaAfterMove = newIntersection.height * newIntersection.width;
+                    if (this.collider.getIntersectionRect(element.collider) != null) {
+                        let newIntersection = this.collider.getIntersectionRect(element.collider);
+                        let areaAfterMove = Math.round((newIntersection.height * newIntersection.width)*1000)/1000;
 
                         if (areaBeforeMove < areaAfterMove) {
                             canMoveX = false;
@@ -52,9 +51,9 @@ namespace Player {
                     newDirection = new Game.ƒ.Vector2(0, _direction.y);
                     this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
 
-                    if (this.collider.getIntersection(element.collider) != null) {
-                        let newIntersection = this.collider.getIntersection(element.collider);
-                        let areaAfterMove = newIntersection.height * newIntersection.width;
+                    if (this.collider.getIntersectionRect(element.collider) != null) {
+                        let newIntersection = this.collider.getIntersectionRect(element.collider);
+                        let areaAfterMove = Math.round((newIntersection.height * newIntersection.width)*1000)/1000;
 
                         if (areaBeforeMove < areaAfterMove) {
                             canMoveY = false;

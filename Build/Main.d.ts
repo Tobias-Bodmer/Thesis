@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
@@ -36,7 +36,7 @@ declare namespace Enemy {
         tag: Tag.Tag;
         netId: number;
         properties: Player.Character;
-        collider: Game.ƒ.Rectangle;
+        collider: Collider.Collider;
         target: Player.Player;
         lifetime: number;
         canMoveX: boolean;
@@ -128,7 +128,7 @@ declare namespace Bullets {
     class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable {
         tag: Tag.Tag;
         flyDirection: ƒ.Vector3;
-        collider: Game.ƒ.Rectangle;
+        collider: Collider.Collider;
         hitPoints: number;
         speed: number;
         lifetime: number;
@@ -152,6 +152,21 @@ declare namespace Player {
         name: string;
         attributes: Attributes;
         constructor(_name: string, _attributes: Attributes);
+    }
+}
+declare namespace Collider {
+    class Collider {
+        radius: number;
+        position: ƒ.Vector2;
+        get top(): number;
+        get left(): number;
+        get right(): number;
+        get bottom(): number;
+        constructor(_position: ƒ.Vector2, _radius: number);
+        collides(_collider: Collider): boolean;
+        collidesRect(_collider: Game.ƒ.Rectangle): boolean;
+        getIntersection(_collider: Collider): number;
+        getIntersectionRect(_collider: ƒ.Rectangle): ƒ.Rectangle;
     }
 }
 declare namespace EnemySpawner {
@@ -216,7 +231,7 @@ declare namespace Player {
         items: Array<Items.Item>;
         properties: Character;
         weapon: Weapons.Weapon;
-        collider: ƒ.Rectangle;
+        collider: Collider.Collider;
         constructor(_name: string, _properties: Character);
         move(_direction: ƒ.Vector3): void;
         attack(_direction: ƒ.Vector3): void;
