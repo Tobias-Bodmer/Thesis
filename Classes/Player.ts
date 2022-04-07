@@ -22,7 +22,7 @@ namespace Player {
         public move(_direction: ƒ.Vector3) {
             let canMoveX: boolean = true;
             let canMoveY: boolean = true;
-            //TODO: collider position transform by Center 
+            
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
             this.collider.position.subtract(ƒ.Vector2.SCALE(this.collider.size, 0.5));
 
