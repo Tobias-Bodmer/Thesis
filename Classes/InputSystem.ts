@@ -11,7 +11,7 @@ namespace InputSystem {
     function rotateToMouse(_mouseEvent: MouseEvent): void {
         let ray: ƒ.Ray = Game.viewport.getRayFromClient(new ƒ.Vector2(_mouseEvent.offsetX, _mouseEvent.offsetY));
         mousePosition = ray.intersectPlane(new ƒ.Vector3(0, 0, 0), new ƒ.Vector3(0, 0, 1));
-        Game.player.mtxLocal.rotation = new ƒ.Vector3(0, 0, calcDegree(Game.player.mtxLocal.translation, mousePosition));
+        Game.player1.mtxLocal.rotation = new ƒ.Vector3(0, 0, calcDegree(Game.player1.mtxLocal.translation, mousePosition));
     }
 
     export function calcDegree(_center: ƒ.Vector3, _target: ƒ.Vector3): number {
@@ -73,7 +73,7 @@ namespace InputSystem {
         }
 
         if (hasChanged && moveVector.magnitude != 0) {
-            Game.player.move(Game.ƒ.Vector3.NORMALIZATION(moveVector, 1));
+            Game.player1.move(Game.ƒ.Vector3.NORMALIZATION(moveVector, 1));
         }
     }
     //#endregion
@@ -85,9 +85,9 @@ namespace InputSystem {
         switch (mouseButton) {
             case 0:
                 //left mouse button player.attack
-                let direction: Game.ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(mousePosition, Game.player.mtxLocal.translation)
+                let direction: Game.ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(mousePosition, Game.player1.mtxLocal.translation)
                 rotateToMouse(e_);
-                Game.player.attack(direction);
+                Game.player1.attack(direction);
                 if (Game.connected) {
                     Networking.updateBullet(direction);
                 }

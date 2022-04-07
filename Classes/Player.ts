@@ -8,11 +8,11 @@ namespace Player {
         public tag: Tag.Tag = Tag.Tag.PLAYER;
         public items: Array<Items.Item> = [];
         public properties: Character;
-        public weapon: Weapons.Weapon = new Weapons.Weapon(5,1);
+        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1);
 
         collider: ƒ.Rectangle;
 
-        constructor(_name: string, _properties: Character) {
+        constructor( _name: string, _properties: Character) {
             super(_name);
             this.addComponent(new ƒ.ComponentTransform());
             this.properties = _properties;
@@ -22,7 +22,7 @@ namespace Player {
         public move(_direction: ƒ.Vector3) {
             let canMoveX: boolean = true;
             let canMoveY: boolean = true;
-            
+
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
             this.collider.position.subtract(ƒ.Vector2.SCALE(this.collider.size, 0.5));
 
@@ -87,9 +87,12 @@ namespace Player {
         }
 
         public cooldown() {
+
+            let specificCoolDownTime: number = this.weapon.cooldownTime * this.properties.attributes.coolDownReduction;
+            // console.log(this.properties.attributes.coolDownReduction);
             if (this.weapon.currentAttackCount <= 0) {
                 if (this.weapon.currentCooldownTime <= 0) {
-                    this.weapon.currentCooldownTime = this.weapon.cooldownTime;
+                    this.weapon.currentCooldownTime = specificCoolDownTime;
                     this.weapon.currentAttackCount = this.weapon.attackCount;
                 } else {
                     // console.log(this.currentCooldownTime);

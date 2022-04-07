@@ -5,11 +5,11 @@ namespace UI {
 
     export function updateUI() {
         //Player1 UI
-        (<HTMLDivElement>player1UI.querySelector("#HP")).style.width = (Game.player.properties.attributes.healthPoints / Game.player.properties.attributes.maxHealthPoints * 100) + "%";
+        (<HTMLDivElement>player1UI.querySelector("#HP")).style.width = (Game.player1.properties.attributes.healthPoints / Game.player1.properties.attributes.maxHealthPoints * 100) + "%";
 
         //TODO: Needs testing
         //InventoryUI
-        Game.player.items.forEach((element) => {
+        Game.player1.items.forEach((element) => {
             let exsist: boolean = false;
 
             //search DOMImg for Item

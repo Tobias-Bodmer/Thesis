@@ -10,6 +10,11 @@ namespace Enemy {
         lifetime: number;
         canMoveX: boolean = true;
         canMoveY: boolean = true;
+
+        //#region  animation
+        animations: ƒAid.SpriteSheetAnimations;
+        private clrWhite: ƒ.Color = ƒ.Color.CSS("white");
+        //#endregion
         /**
          * Creates an Enemy
          * @param _name Name of the enemy
@@ -30,7 +35,31 @@ namespace Enemy {
             }
             this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
             Networking.spawnEnemy(this, this.netId);
+            //TODO: add sprite animation
+            // this.startSprite();
         }
+        // async startSprite() {
+        //     await this.loadSprites();
+        //     this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["fly"]);
+        //     this.setFrameDirection(1);
+        //     this.framerate = 25;
+        // }
+
+        // async loadSprites(): Promise<void> {
+        //     let imgSpriteSheet: ƒ.TextureImage = new ƒ.TextureImage();
+        //     await imgSpriteSheet.load("./Resources/Image/Enemies/fledi.png");
+
+        //     let spriteSheet: ƒ.CoatTextured = new ƒ.CoatTextured(this.clrWhite, imgSpriteSheet);
+        //     this.generateSprites(spriteSheet);
+        // }
+
+        // generateSprites(_spritesheet: ƒ.CoatTextured): void {
+        //     this.animations = {};
+        //     let name: string = "fly";
+        //     let sprite: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation(name, _spritesheet);
+        //     sprite.generateByGrid(ƒ.Rectangle.GET(0, 0, 25, 20), 4, 22, ƒ.ORIGIN2D.BOTTOMCENTER, ƒ.Vector2.X(20));
+        //     this.animations[name] = sprite;
+        // }
 
         move() {
             this.updateCollider();
@@ -43,14 +72,14 @@ namespace Enemy {
         }
 
         moveSimple() {
-            this.target = Game.player;
+            this.target = Game.player1;
 
             if (Game.connected) {
-                let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player.cmpTransform.mtxLocal.translation);
+                let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player1.cmpTransform.mtxLocal.translation);
                 let distancePlayer2 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player2.cmpTransform.mtxLocal.translation);
 
                 if (distancePlayer1 < distancePlayer2) {
-                    this.target = Game.player;
+                    this.target = Game.player1;
                 }
                 else {
                     this.target = Game.player2;
@@ -72,14 +101,14 @@ namespace Enemy {
         }
 
         moveAway() {
-            this.target = Game.player;
+            this.target = Game.player1;
 
             if (Game.connected) {
-                let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player.cmpTransform.mtxLocal.translation);
+                let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player1.cmpTransform.mtxLocal.translation);
                 let distancePlayer2 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player2.cmpTransform.mtxLocal.translation);
 
                 if (distancePlayer1 < distancePlayer2) {
-                    this.target = Game.player;
+                    this.target = Game.player1;
                 } else {
                     this.target = Game.player2;
                 }
@@ -202,9 +231,9 @@ namespace Enemy {
         }
 
         async moveCircle() {
-            this.target = Game.player;
+            this.target = Game.player1;
             console.log(this.target);
-            let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player.cmpTransform.mtxLocal.translation);
+            let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player1.cmpTransform.mtxLocal.translation);
             // let distancePlayer2 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player2.cmpTransform.mtxLocal.translation);
             if (distancePlayer1 > this.distance) {
                 this.moveSimple();

@@ -66,7 +66,7 @@ namespace Items {
         async collisionDetection(): Promise<void> {
             let colliders: any[] = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.Tag.PLAYER);
             colliders.forEach((element) => {
-                if (this.collider.collides(element.collider) && element.properties != undefined) {
+                if (this.collider.collides(element.collider) && element.properties != undefined && (this.lifetime > 0 || this.lifetime == undefined)) {
                     (<Player.Player>element).properties.attributes.addAttribuesByItem(this.attributes, this.type);
                     // console.log((<Enemy.Enemy>element).properties.attributes.healthPoints);
                     this.lifetime = 0;

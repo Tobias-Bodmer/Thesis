@@ -19,23 +19,24 @@ namespace Game {
     //#region "PublicVariables"
     export let viewport: ƒ.Viewport = new ƒ.Viewport();
     export let graph: ƒ.Node = new ƒ.Node("Graph");
-    export let player: Player.Player;
+    export let player1: Player.Player;
     export let player2: Player.Player;
     export let connected: boolean = false;
     export let frameRate: number = 60;
     export let enemies: Enemy.Enemy[] = [];
     export let enemiesJSON: Player.Character[];
+    export let itemsJSON: Player.Character[];
     export let bat: Enemy.Enemy;
     //#endregion "PublicVariables"
 
     //#region "PrivateVariables"
     let item1: Items.Item;
     let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
+    let playerType: Player.Type;
     const damper: number = 3.5;
     //#endregion "PrivateVariables"
 
-    //#region enemies
-    //#endregion
+
 
     //#region "essential"
     async function init() {
@@ -44,13 +45,13 @@ namespace Game {
         }
         await loadEnemiesJSON();
 
-        if (player == null) {
-            player = new Player.Ranged("Player1", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
+        if (player1 == null) {
+            player1 = new Player.Ranged("Player1", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
         }
         // ƒ.Debug.log(player);
 
         //#region init Items
-        item1 = new Items.InternalItem("speedUP", "adds speed and shit", new ƒ.Vector3(0, 2, 0), new Player.Attributes(0, 0, 1), Items.ITEMTYPE.ADD, "./Resources/Image/Items");
+        item1 = new Items.InternalItem("cooldown reduction", "adds speed and shit", new ƒ.Vector3(0, 2, 0), new Player.Attributes(0, 0, 0, 100), Items.ITEMTYPE.PROCENTUAL, "./Resources/Image/Items");
         //#endregion
 
         Generation.generateRooms();
@@ -88,7 +89,7 @@ namespace Game {
         node.cmpTransform.mtxLocal.translateZ(-0.01);
 
 
-        graph.appendChild(player);
+        graph.appendChild(player1);
         graph.appendChild(item1);
 
 
@@ -105,73 +106,6 @@ namespace Game {
 
         ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, frameRate);
     }
-
-    async function loadEnemiesJSON() {
-        const load = await (await fetch("./Resources/EnemiesStorage.json")).json();
-        enemiesJSON = ((<Player.Character[]>load.enemies));
-    }
-
-    async function loadTextures() {
-        await Bullets.bulletTxt.load("./Resources/Image/arrow.png");
-
-        await UI.txtZero.load("./Resources/Image/0.png");
-        await UI.txtOne.load("./Resources/Image/1.png");
-        await UI.txtTow.load("./Resources/Image/2.png");
-        await UI.txtThree.load("./Resources/Image/3.png");
-        await UI.txtFour.load("./Resources/Image/4.png");
-        await UI.txtFive.load("./Resources/Image/5.png");
-        await UI.txtSix.load("./Resources/Image/6.png");
-        await UI.txtSeven.load("./Resources/Image/7.png");
-        await UI.txtEight.load("./Resources/Image/8.png");
-        await UI.txtNine.load("./Resources/Image/9.png");
-        await UI.txtTen.load("./Resources/Image/10.png");
-    }
-
-    function start() {
-        loadTextures();
-        //add sprite to graphe for startscreen
-        document.getElementById("Startscreen").style.visibility = "visible";
-        document.getElementById("StartGame").addEventListener("click", () => {
-            Networking.conneting();
-            document.getElementById("Startscreen").style.visibility = "hidden";
-            document.getElementById("Lobbyscreen").style.visibility = "visible";
-            waitOnConnection();
-        });
-        document.getElementById("Option").addEventListener("click", () => {
-
-        });
-        document.getElementById("Credits").addEventListener("click", () => {
-
-        });
-    }
-
-    let playerType: Player.Type;
-    async function waitOnConnection() {
-        Networking.client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: Networking.FUNCTION.CONNECTED, value: Networking.client.id } })
-        if (Networking.clients.length > 1 && player != null) {
-            await init();
-            Networking.spawnPlayer(playerType);
-        } else {
-            setTimeout(waitOnConnection, 300);
-        }
-    }
-
-    function playerChoice(_e: Event) {
-        if ((<HTMLButtonElement>_e.target).id == "Ranged") {
-            player = new Player.Ranged("player", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
-            playerType = Player.Type.RANGED;
-        }
-        if ((<HTMLButtonElement>_e.target).id == "Melee") {
-            player = new Player.Melee("player", new Player.Character("Thor,", new Player.Attributes(10, 1, 5)));
-            playerType = Player.Type.MELEE;
-        }
-        document.getElementById("Lobbyscreen").style.visibility = "hidden";
-    }
-
-    function draw(): void {
-        viewport.draw();
-    }
-
     function update(): void {
         InputSystem.move();
 
@@ -183,14 +117,14 @@ namespace Game {
 
         cameraUpdate();
 
-        player.cooldown();
+        player1.cooldown();
 
         if (Game.connected) {
             player2.cooldown();
         }
 
         if (Game.connected) {
-            Networking.updatePosition(Game.player.mtxLocal.translation, Game.player.mtxLocal.rotation);
+            Networking.updatePosition(Game.player1.mtxLocal.translation, Game.player1.mtxLocal.rotation);
         }
         // Networking.spawnEnemy(bat, bat.id);
 
@@ -226,8 +160,76 @@ namespace Game {
         UI.updateUI();
     }
 
+    function start() {
+        loadTextures();
+        //add sprite to graphe for startscreen
+        document.getElementById("Startscreen").style.visibility = "visible";
+        document.getElementById("StartGame").addEventListener("click", () => {
+            Networking.conneting();
+            document.getElementById("Startscreen").style.visibility = "hidden";
+            document.getElementById("Lobbyscreen").style.visibility = "visible";
+            waitOnConnection();
+        });
+        document.getElementById("Option").addEventListener("click", () => {
+
+        });
+        document.getElementById("Credits").addEventListener("click", () => {
+
+        });
+    }
+    async function loadEnemiesJSON() {
+        const load = await (await fetch("./Resources/EnemiesStorage.json")).json();
+        enemiesJSON = ((<Player.Character[]>load.enemies));
+    }
+
+    async function loadTextures() {
+        await Bullets.bulletTxt.load("./Resources/Image/arrow.png");
+
+        await UI.txtZero.load("./Resources/Image/0.png");
+        await UI.txtOne.load("./Resources/Image/1.png");
+        await UI.txtTow.load("./Resources/Image/2.png");
+        await UI.txtThree.load("./Resources/Image/3.png");
+        await UI.txtFour.load("./Resources/Image/4.png");
+        await UI.txtFive.load("./Resources/Image/5.png");
+        await UI.txtSix.load("./Resources/Image/6.png");
+        await UI.txtSeven.load("./Resources/Image/7.png");
+        await UI.txtEight.load("./Resources/Image/8.png");
+        await UI.txtNine.load("./Resources/Image/9.png");
+        await UI.txtTen.load("./Resources/Image/10.png");
+    }
+
+
+
+    async function waitOnConnection() {
+        Networking.client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: Networking.FUNCTION.CONNECTED, value: Networking.client.id } })
+        if (Networking.clients.length > 1 && player1 != null) {
+            await init();
+            Networking.spawnPlayer(playerType);
+        } else {
+            setTimeout(waitOnConnection, 300);
+        }
+    }
+
+    function playerChoice(_e: Event) {
+        if ((<HTMLButtonElement>_e.target).id == "Ranged") {
+            player1 = new Player.Ranged("player", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
+            playerType = Player.Type.RANGED;
+        }
+        if ((<HTMLButtonElement>_e.target).id == "Melee") {
+            player1 = new Player.Melee("player", new Player.Character("Thor,", new Player.Attributes(10, 1, 5)));
+            playerType = Player.Type.MELEE;
+        }
+        document.getElementById("Lobbyscreen").style.visibility = "hidden";
+    }
+
+    function draw(): void {
+        viewport.draw();
+    }
+
+
+
     export function cameraUpdate() {
-        let direction = ƒ.Vector2.DIFFERENCE(player.cmpTransform.mtxLocal.translation.toVector2(), cmpCamera.mtxPivot.translation.toVector2());
+        let direction = ƒ.Vector2.DIFFERENCE(player1.cmpTransform.mtxLocal.translation.toVector2(), cmpCamera.mtxPivot.translation.toVector2());
         direction.scale(1 / frameRate * damper);
         cmpCamera.mtxPivot.translate(new ƒ.Vector3(-direction.x, direction.y, 0), true);
     }

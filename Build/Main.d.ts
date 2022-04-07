@@ -7,12 +7,13 @@ declare namespace Game {
     let canvas: HTMLCanvasElement;
     let viewport: ƒ.Viewport;
     let graph: ƒ.Node;
-    let player: Player.Player;
+    let player1: Player.Player;
     let player2: Player.Player;
     let connected: boolean;
     let frameRate: number;
     let enemies: Enemy.Enemy[];
     let enemiesJSON: Player.Character[];
+    let itemsJSON: Player.Character[];
     let bat: Enemy.Enemy;
     function cameraUpdate(): void;
 }
@@ -40,6 +41,8 @@ declare namespace Enemy {
         lifetime: number;
         canMoveX: boolean;
         canMoveY: boolean;
+        animations: ƒAid.SpriteSheetAnimations;
+        private clrWhite;
         /**
          * Creates an Enemy
          * @param _name Name of the enemy
@@ -111,7 +114,8 @@ declare namespace Player {
         maxHealthPoints: number;
         speed: number;
         attackPoints: number;
-        constructor(_healthPoints: number, _attackPoints: number, _speed: number);
+        coolDownReduction: number;
+        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _cooldownReduction?: number);
         /**
          * adds Attributes to the Player Attributes
          * @param _attributes incoming attributes

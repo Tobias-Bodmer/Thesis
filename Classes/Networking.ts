@@ -20,7 +20,7 @@ namespace Networking {
     export let enemy: Enemy.Enemy;
     export let currentIDs: number[] = [];
 
-    document.getElementById("Host").addEventListener("click", () => {spawnPlayer()}, true);
+    document.getElementById("Host").addEventListener("click", () => { spawnPlayer() }, true);
     let IPConnection = <HTMLInputElement>document.getElementById("IPConnection");
     document.getElementById("Connecting").addEventListener("click", conneting, true);
 
@@ -110,12 +110,12 @@ namespace Networking {
             someoneIsHost = true;
         }
 
-        if (_type == Player.Type.MELEE){
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.Type.MELEE, value: Game.player.properties, position: Game.player.cmpTransform.mtxLocal.translation } })
+        if (_type == Player.Type.MELEE) {
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.Type.MELEE, value: Game.player1.properties, position: Game.player1.cmpTransform.mtxLocal.translation } })
         } else if (_type == Player.Type.RANGED) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.Type.RANGED, value: Game.player.properties, position: Game.player.cmpTransform.mtxLocal.translation } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.Type.RANGED, value: Game.player1.properties, position: Game.player1.cmpTransform.mtxLocal.translation } })
         } else {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.Type.RANGED, value: Game.player.properties, position: Game.player.cmpTransform.mtxLocal.translation } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.Type.RANGED, value: Game.player1.properties, position: Game.player1.cmpTransform.mtxLocal.translation } })
         }
     }
     /**
