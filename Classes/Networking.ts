@@ -173,9 +173,9 @@ namespace Networking {
                 break;
             }
         }
-        console.log("id to pop: " + _id);
+        // console.log("id to pop: " + _id);
         currentIDs.splice(index, 1);
-        console.log("afterIDs: " + currentIDs);
+        // console.log("afterIDs: " + currentIDs);
     }
 
     window.addEventListener("beforeunload", onUnload, false);

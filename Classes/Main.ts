@@ -56,10 +56,6 @@ namespace Game {
         Generation.generateRooms();
 
         //#region Testing objects
-        let ref = enemiesJSON.find(elem => elem.name == "bat");
-        bat = new Enemy.Enemy("Enemy", new Player.Character(ref.name, ref.attributes), new ƒ.Vector2(0, 1));
-        console.table(JSON.stringify(bat.properties));
-
         let node: ƒ.Node = new ƒ.Node("Quad");
 
         node.addComponent(new ƒ.ComponentTransform());
@@ -109,7 +105,7 @@ namespace Game {
     }
 
     async function loadEnemiesJSON() {
-        const load = await (await fetch("./Resources/EnemiesStorage.JSON")).json();
+        const load = await (await fetch("./Resources/EnemiesStorage.json")).json();
         enemiesJSON = ((<Player.Character[]>load.enemies));
     }
 
