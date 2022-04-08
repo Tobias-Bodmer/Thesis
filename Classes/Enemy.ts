@@ -1,12 +1,45 @@
 namespace Enemy {
+    enum BEHAVIOUR {
+        FOLLOW, FLEE
+    }
+    import ƒAid = FudgeAid;
 
+
+    class DumbInstructions {
+        public static get(): ƒAid.StateMachineInstructions<BEHAVIOUR> {
+            let setup: ƒAid.StateMachineInstructions<BEHAVIOUR> = new ƒAid.StateMachineInstructions();
+            setup.transitDefault = DumbInstructions.transitDefault;
+            setup.actDefault = DumbInstructions.actDefault;
+            setup.setAction(BEHAVIOUR.FOLLOW, this.stop);
+            return setup;
+        }
+        static async actDefault(_machine: ƒAid.StateMachine<BEHAVIOUR>) {
+            // console.log("defaulAction");
+            // _machine.transit(BEHAVIOUR.FOLLOW);
+            // _machine.act();
+        }
+
+        private static transitDefault(_machine: ƒAid.StateMachine<BEHAVIOUR>) {
+            // console.log("transition");
+        }
+
+        // private static transit(_machine: ƒAid.StateMachine<BEHAVIOUR>) {
+        //     console.log("transit transit");
+        // }
+
+        private static async stop(_machine: ƒAid.StateMachine<BEHAVIOUR>) {
+            // console.log("stop");
+            // _machine.transit(BEHAVIOUR.IDLE);
+            // // _machine.act();
+        }
+    }
 
     export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
         public tag: Tag.Tag = Tag.Tag.ENEMY;
         public netId: number = Networking.idGenerator();
         public properties: Player.Character;
         public collider: Collider.Collider;
-        target: Player.Player;
+        target: ƒ.Vector3;
         lifetime: number;
         canMoveX: boolean = true;
         canMoveY: boolean = true;
@@ -61,7 +94,7 @@ namespace Enemy {
         //     this.animations[name] = sprite;
         // }
 
-        move() {
+        public move() {
             this.updateCollider();
             Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId);
         }
@@ -70,21 +103,28 @@ namespace Enemy {
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
         }
 
-        moveSimple() {
-            this.target = Game.player1;
+        getTarget(): ƒ.Vector3 {
+            let target = Game.player1;
 
             if (Game.connected) {
                 let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player1.cmpTransform.mtxLocal.translation);
                 let distancePlayer2 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player2.cmpTransform.mtxLocal.translation);
 
                 if (distancePlayer1 < distancePlayer2) {
-                    this.target = Game.player1;
+                    target = Game.player1;
                 }
                 else {
-                    this.target = Game.player2;
+                    target = Game.player2;
                 }
             }
-            let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.target.cmpTransform.mtxLocal.translation, this.cmpTransform.mtxLocal.translation);
+
+            return target.cmpTransform.mtxLocal.translation;
+        }
+
+        public moveSimple() {
+            this.target = this.getTarget();
+
+            let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.target, this.cmpTransform.mtxLocal.translation);
             direction.normalize();
 
             // console.log(direction);
@@ -100,20 +140,10 @@ namespace Enemy {
         }
 
         moveAway() {
-            this.target = Game.player1;
+            this.target = this.getTarget();
 
-            if (Game.connected) {
-                let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player1.cmpTransform.mtxLocal.translation);
-                let distancePlayer2 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player2.cmpTransform.mtxLocal.translation);
 
-                if (distancePlayer1 < distancePlayer2) {
-                    this.target = Game.player1;
-                } else {
-                    this.target = Game.player2;
-                }
-
-            }
-            let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.cmpTransform.mtxLocal.translation, this.target.cmpTransform.mtxLocal.translation);
+            let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.cmpTransform.mtxLocal.translation, this.target);
             direction.normalize();
 
             direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
@@ -139,7 +169,7 @@ namespace Enemy {
                 if (this.collider.collidesRect(element.collider)) {
 
                     let intersection = this.collider.getIntersectionRect(element.collider);
-                    let areaBeforeMove = Math.round((intersection.height * intersection.width)*1000)/1000;
+                    let areaBeforeMove = Math.round((intersection.height * intersection.width) * 1000) / 1000;
 
                     let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
                     let newDirection = new Game.ƒ.Vector2(direction.x, 0)
@@ -147,7 +177,7 @@ namespace Enemy {
 
                     if (this.collider.getIntersectionRect(element.collider) != null) {
                         let newIntersection = this.collider.getIntersectionRect(element.collider);
-                        let areaAfterMove = Math.round((newIntersection.height * newIntersection.width)*1000)/1000;
+                        let areaAfterMove = Math.round((newIntersection.height * newIntersection.width) * 1000) / 1000;
 
 
                         if (areaBeforeMove < areaAfterMove) {
@@ -161,7 +191,7 @@ namespace Enemy {
 
                     if (this.collider.getIntersectionRect(element.collider) != null) {
                         let newIntersection = this.collider.getIntersectionRect(element.collider);
-                        let areaAfterMove = Math.round((newIntersection.height * newIntersection.width)*1000)/1000;
+                        let areaAfterMove = Math.round((newIntersection.height * newIntersection.width) * 1000) / 1000;
 
 
                         if (areaBeforeMove < areaAfterMove) {
@@ -184,22 +214,62 @@ namespace Enemy {
     }
 
     export class EnemyDumb extends Enemy {
+        private static instructions: ƒAid.StateMachineInstructions<BEHAVIOUR> = DumbInstructions.get();
+        stateMachine: ƒAid.ComponentStateMachine<BEHAVIOUR> = new ƒAid.ComponentStateMachine();
+
         constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2) {
             super(_name, _properties, _position);
+            this.stateMachine.instructions = EnemyDumb.instructions;
+            this.addComponent(this.stateMachine);
+            this.stateMachine.act();
         }
 
         move(): void {
-            super.move()
-            this.moveSimple();
+
+            // this.moveSimple();
+            super.move();
+            this.move2();
+        }
+
+        behaviour() {
+            let target = this.getTarget();
+            let distance = ƒ.Vector3.DIFFERENCE(target, this.cmpTransform.mtxLocal.translation).magnitude;
+            if (distance < 1) {
+                this.stateMachine.transit(BEHAVIOUR.FLEE);
+                this.stateMachine.act();
+            }
+            else if (distance > 5) {
+                this.stateMachine.transit(BEHAVIOUR.FOLLOW);
+                this.stateMachine.act();
+            }
+
+        }
+
+        move2() {
+
+            this.behaviour();
+            switch (this.stateMachine.stateCurrent) {
+                case BEHAVIOUR.FLEE:
+                    this.moveAway();
+                    break;
+                case BEHAVIOUR.FOLLOW:
+                    this.moveSimple()
+                    break;
+                default:
+                    this.moveSimple();
+                    break;
+            }
         }
 
         lifespan(_graph: ƒ.Node): void {
             super.lifespan(_graph);
         }
+
+
+
     }
 
     export class EnemyFlee extends Enemy {
-
         constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2) {
             super(_name, _properties, _position);
         }
@@ -212,7 +282,6 @@ namespace Enemy {
         lifespan(_graph: ƒ.Node): void {
             super.lifespan(_graph);
         }
-
     }
 
     export class EnemyCircle extends Enemy {
@@ -232,7 +301,7 @@ namespace Enemy {
         }
 
         async moveCircle() {
-            this.target = Game.player1;
+            this.target = this.getTarget();
             console.log(this.target);
             let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player1.cmpTransform.mtxLocal.translation);
             // let distancePlayer2 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player2.cmpTransform.mtxLocal.translation);
@@ -240,7 +309,7 @@ namespace Enemy {
                 this.moveSimple();
             }
             else {
-                let degree = InputSystem.calcDegree(this.cmpTransform.mtxLocal.translation, this.target.cmpTransform.mtxLocal.translation)
+                let degree = InputSystem.calcDegree(this.cmpTransform.mtxLocal.translation, this.target)
                 let add = 0;
 
                 // while (distancePlayer1 <= this.distance) {
@@ -253,7 +322,6 @@ namespace Enemy {
                 // }
 
             }
-
         }
     }
 }

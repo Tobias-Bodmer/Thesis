@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
@@ -32,12 +32,17 @@ declare namespace Player {
     }
 }
 declare namespace Enemy {
-    class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+    enum BEHAVIOUR {
+        FOLLOW = 0,
+        FLEE = 1
+    }
+    import ƒAid = FudgeAid;
+    export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
         tag: Tag.Tag;
         netId: number;
         properties: Player.Character;
         collider: Collider.Collider;
-        target: Player.Player;
+        target: ƒ.Vector3;
         lifetime: number;
         canMoveX: boolean;
         canMoveY: boolean;
@@ -53,28 +58,34 @@ declare namespace Enemy {
         constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _id?: number);
         move(): void;
         updateCollider(): void;
+        getTarget(): ƒ.Vector3;
         moveSimple(): void;
         moveAway(): void;
         lifespan(_graph: Game.ƒ.Node): void;
         getCanMoveXY(direction: ƒ.Vector3): void;
     }
-    class EnemyDumb extends Enemy {
+    export class EnemyDumb extends Enemy {
+        private static instructions;
+        stateMachine: ƒAid.ComponentStateMachine<BEHAVIOUR>;
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
+        move(): void;
+        behaviour(): void;
+        move2(): void;
+        lifespan(_graph: ƒ.Node): void;
+    }
+    export class EnemyFlee extends Enemy {
         constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
         move(): void;
         lifespan(_graph: ƒ.Node): void;
     }
-    class EnemyFlee extends Enemy {
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
-        move(): void;
-        lifespan(_graph: ƒ.Node): void;
-    }
-    class EnemyCircle extends Enemy {
+    export class EnemyCircle extends Enemy {
         distance: number;
         constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
         move(): void;
         lifespan(_graph: ƒ.Node): void;
         moveCircle(): Promise<void>;
     }
+    export {};
 }
 declare namespace Items {
     enum ITEMTYPE {

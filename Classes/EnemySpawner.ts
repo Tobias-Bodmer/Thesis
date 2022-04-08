@@ -1,15 +1,19 @@
 namespace EnemySpawner {
-    let spawnTime: number = 3 * Game.frameRate;
+    let spawnTime: number = 1 * Game.frameRate;
     let currentTime: number = spawnTime;
+    let maxEnemies: number = 20;
 
     export function spawnEnemies(): void {
-        if (currentTime == spawnTime) {
-            const ref = Game.enemiesJSON.find(elem => elem.name == "bat");
-            Game.graph.addChild(new Enemy.EnemyDumb("Enemy", new Player.Character(ref.name, new Player.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed)), new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2))));
-        }
-        currentTime--;
-        if (currentTime <= 0) {
-            currentTime = spawnTime;
+        if (Game.enemies.length < maxEnemies) {
+            // console.log(Game.enemies.length);
+            if (currentTime == spawnTime) {
+                const ref = Game.enemiesJSON.find(elem => elem.name == "bat");
+                Game.graph.addChild(new Enemy.EnemyDumb("Enemy", new Player.Character(ref.name, new Player.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed)), new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2))));
+            }
+            currentTime--;
+            if (currentTime <= 0) {
+                currentTime = spawnTime;
+            }
         }
     }
 
