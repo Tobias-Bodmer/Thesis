@@ -56,6 +56,9 @@ declare namespace Enemy {
          * @param _aiType optional: standard ai = dumb
          */
         constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _id?: number);
+        startSprite(): Promise<void>;
+        loadSprites(): Promise<void>;
+        generateSprites(_spritesheet: ƒ.CoatTextured): void;
         move(): void;
         updateCollider(): void;
         getTarget(): ƒ.Vector3;
@@ -70,7 +73,7 @@ declare namespace Enemy {
         constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
         move(): void;
         behaviour(): void;
-        move2(): void;
+        moveBehaviour(): void;
         lifespan(_graph: ƒ.Node): void;
     }
     export class EnemyFlee extends Enemy {

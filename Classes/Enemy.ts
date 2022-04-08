@@ -69,30 +69,30 @@ namespace Enemy {
             this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);
             Networking.spawnEnemy(this, this.netId);
             //TODO: add sprite animation
-            // this.startSprite();
+            this.startSprite();
         }
-        // async startSprite() {
-        //     await this.loadSprites();
-        //     this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["fly"]);
-        //     this.setFrameDirection(1);
-        //     this.framerate = 25;
-        // }
+        async startSprite() {
+            await this.loadSprites();
+            this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["fly"]);
+            this.setFrameDirection(1);
+            this.framerate = 12;
+        }
 
-        // async loadSprites(): Promise<void> {
-        //     let imgSpriteSheet: ƒ.TextureImage = new ƒ.TextureImage();
-        //     await imgSpriteSheet.load("./Resources/Image/Enemies/fledi.png");
+        async loadSprites(): Promise<void> {
+            let imgSpriteSheet: ƒ.TextureImage = new ƒ.TextureImage();
+            await imgSpriteSheet.load("./Resources/Image/Enemies/spinni.png");
 
-        //     let spriteSheet: ƒ.CoatTextured = new ƒ.CoatTextured(this.clrWhite, imgSpriteSheet);
-        //     this.generateSprites(spriteSheet);
-        // }
+            let spriteSheet: ƒ.CoatTextured = new ƒ.CoatTextured(this.clrWhite, imgSpriteSheet);
+            this.generateSprites(spriteSheet);
+        }
 
-        // generateSprites(_spritesheet: ƒ.CoatTextured): void {
-        //     this.animations = {};
-        //     let name: string = "fly";
-        //     let sprite: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation(name, _spritesheet);
-        //     sprite.generateByGrid(ƒ.Rectangle.GET(0, 0, 25, 20), 4, 22, ƒ.ORIGIN2D.BOTTOMCENTER, ƒ.Vector2.X(20));
-        //     this.animations[name] = sprite;
-        // }
+        generateSprites(_spritesheet: ƒ.CoatTextured): void {
+            this.animations = {};
+            let name: string = "fly";
+            let sprite: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation(name, _spritesheet);
+            sprite.generateByGrid(ƒ.Rectangle.GET(0, 0, 18, 14), 4, 22, ƒ.ORIGIN2D.BOTTOMCENTER, ƒ.Vector2.X(18));
+            this.animations[name] = sprite;
+        }
 
         public move() {
             this.updateCollider();
@@ -147,7 +147,7 @@ namespace Enemy {
             direction.normalize();
 
             direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
-            this.cmpTransform.mtxLocal.translate(direction, true);
+            // this.cmpTransform.mtxLocal.translate(direction, true);
 
             this.getCanMoveXY(direction);
         }
@@ -228,7 +228,7 @@ namespace Enemy {
 
             // this.moveSimple();
             super.move();
-            this.move2();
+            this.moveBehaviour();
         }
 
         behaviour() {
@@ -244,8 +244,7 @@ namespace Enemy {
             }
 
         }
-
-        move2() {
+        moveBehaviour() {
 
             this.behaviour();
             switch (this.stateMachine.stateCurrent) {
