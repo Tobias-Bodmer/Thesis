@@ -4,6 +4,7 @@ namespace Bullets {
 
     export class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable {
 
+        public netId: number = Networking.idGenerator();
         public tag: Tag.Tag = Tag.Tag.BULLET;
         public flyDirection: ƒ.Vector3;
         public collider: Collider.Collider;
@@ -19,12 +20,18 @@ namespace Bullets {
                 this.lifetime--;
                 if (this.lifetime < 0) {
                     _graph.removeChild(this);
+                    Networking.removeBullet(this.netId);
                 }
             }
         }
 
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3) {            
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number) {            
             super("normalBullet");
+
+            if(_netId != null) {
+                this.netId = _netId;
+            }
+
             this.addComponent(new ƒ.ComponentTransform());
             this.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
             this.flyDirection = _direction;
@@ -49,6 +56,10 @@ namespace Bullets {
             this.cmpTransform.mtxLocal.translate(this.flyDirection);
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
             this.collisionDetection();
+
+            if (Game.connected) {
+                Networking.updateBullet(this.cmpTransform.mtxLocal.translation, this.netId);
+            }
         }
 
         loadTexture() {
@@ -71,7 +82,7 @@ namespace Bullets {
                 if (this.collider.collides(element.collider) && element.properties != undefined && this.killcount > 0) {
                     (<Enemy.Enemy>element).properties.attributes.healthPoints -= this.hitPoints;
                     Game.graph.addChild(new UI.DamageUI((<Enemy.Enemy>element).cmpTransform.mtxLocal.translation, this.hitPoints));
-                    // console.log((<Enemy.Enemy>element).properties.attributes.healthPoints);
+                    Networking.spawnDamageUI((<Enemy.Enemy>element).cmpTransform.mtxLocal.translation, this.hitPoints);
                     this.lifetime = 0;
                     this.killcount--;
                 }
@@ -80,7 +91,7 @@ namespace Bullets {
             colliders = [];
             colliders = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.Tag.ROOM)).walls;
             colliders.forEach((element) => {
-                if (this.collider.collides(element.collider)) {
+                if (this.collider.collidesRect(element.collider)) {
                     this.lifetime = 0;
                 }
             })
@@ -88,8 +99,8 @@ namespace Bullets {
     }
 
     export class SlowBullet extends Bullet {
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3) {
-            super(_position, _direction);
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number) {
+            super(_position, _direction, _netId);
             this.speed = 6;
             this.hitPoints = 10;
             this.lifetime = 5 * Game.frameRate;
@@ -97,8 +108,8 @@ namespace Bullets {
     }
 
     export class MeleeBullet extends Bullet {
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3) {
-            super(_position, _direction);
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number) {
+            super(_position, _direction, _netId);
             this.speed = 6;
             this.hitPoints = 10;
             this.lifetime = 6;

@@ -19,11 +19,12 @@ namespace Game {
     //#region "PublicVariables"
     export let viewport: ƒ.Viewport = new ƒ.Viewport();
     export let graph: ƒ.Node = new ƒ.Node("Graph");
-    export let player1: Player.Player;
-    export let player2: Player.Player;
+    export let avatar1: Player.Player;
+    export let avatar2: Player.Player;
     export let connected: boolean = false;
     export let frameRate: number = 60;
     export let enemies: Enemy.Enemy[] = [];
+    export let bullets: Bullets.Bullet[];
     export let enemiesJSON: Player.Character[];
     export let itemsJSON: Player.Character[];
     export let bat: Enemy.Enemy;
@@ -45,10 +46,9 @@ namespace Game {
         }
         await loadEnemiesJSON();
 
-        if (player1 == null) {
-            player1 = new Player.Ranged("Player1", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
+        if (avatar1 == null) {
+            avatar1 = new Player.Ranged("Player1", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
         }
-        // ƒ.Debug.log(player);
 
         //#region init Items
         item1 = new Items.InternalItem("cooldown reduction", "adds speed and shit", new ƒ.Vector3(0, 2, 0), new Player.Attributes(0, 0, 0, 100), Items.ITEMTYPE.PROCENTUAL, "./Resources/Image/Items");
@@ -59,37 +59,9 @@ namespace Game {
         // let enemy = new Enemy.EnemyCircle("sörkler", new Player.Character("sörki", new Player.Attributes(10, 2, 3)), new ƒ.Vector2(2, 3));
         // graph.addChild(enemy);
         //#region Testing objects
-        let node: ƒ.Node = new ƒ.Node("Quad");
-
-        node.addComponent(new ƒ.ComponentTransform());
-
-        let mesh: ƒ.MeshQuad = new ƒ.MeshQuad();
-        let cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
-        node.addComponent(cmpMesh);
-
-        let mtrSolidWhite: ƒ.Material = new ƒ.Material("SolidWhite", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
-        let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(mtrSolidWhite);
-        node.addComponent(cmpMaterial);
-
-        let newTxt: ƒ.TextureImage = new ƒ.TextureImage();
-        let newCoat: ƒ.CoatRemissiveTextured = new ƒ.CoatRemissiveTextured();
-        let oldComCoat: ƒ.ComponentMaterial = new ƒ.ComponentMaterial();
-        let newMtr: ƒ.Material = new ƒ.Material("mtr", ƒ.ShaderFlatTextured, newCoat);
-        let oldPivot: ƒ.Matrix4x4 = new ƒ.Matrix4x4();
-
-        oldComCoat = node.getComponent(ƒ.ComponentMaterial);
-        oldPivot = node.getComponent(ƒ.ComponentMesh).mtxPivot;
-
-        await newTxt.load("./Resources/Image/gras.png");
-        newCoat.color = ƒ.Color.CSS("WHITE");
-        newCoat.texture = newTxt;
-        oldComCoat.material = newMtr;
-
-        node.cmpTransform.mtxLocal.scale(new ƒ.Vector3(30, 30, 1));
-        node.cmpTransform.mtxLocal.translateZ(-0.01);
 
 
-        graph.appendChild(player1);
+        graph.appendChild(avatar1);
         graph.appendChild(item1);
 
 
@@ -98,7 +70,6 @@ namespace Game {
         cmpCamera.mtxPivot.translateZ(25);
         cmpCamera.mtxPivot.rotateY(180);
 
-        ƒ.Debug.log(graph);
 
         viewport.initialize("Viewport", graph, cmpCamera, canvas);
 
@@ -106,10 +77,11 @@ namespace Game {
 
         ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, frameRate);
     }
+
     function update(): void {
         InputSystem.move();
 
-        if (player2 != undefined && !connected) {
+        if (avatar2 != undefined && !connected) {
             connected = true;
         }
 
@@ -117,14 +89,14 @@ namespace Game {
 
         cameraUpdate();
 
-        player1.cooldown();
+        avatar1.cooldown();
 
         if (Game.connected) {
-            player2.cooldown();
+            avatar2.cooldown();
         }
 
         if (Game.connected) {
-            Networking.updatePosition(Game.player1.mtxLocal.translation, Game.player1.mtxLocal.rotation);
+            Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
         }
         // Networking.spawnEnemy(bat, bat.id);
 
@@ -136,11 +108,13 @@ namespace Game {
         });
         //#endregion
 
-        let bullets: Bullets.Bullet[] = <Bullets.Bullet[]>graph.getChildren().filter(element => (<Bullets.Bullet>element).tag == Tag.Tag.BULLET)
-        bullets.forEach(element => {
-            element.move();
-            element.lifespan(graph);
-        })
+        bullets = <Bullets.Bullet[]>graph.getChildren().filter(element => (<Bullets.Bullet>element).tag == Tag.Tag.BULLET)
+        if (Game.connected && Networking.client.idHost == Networking.client.id) {
+            bullets.forEach(element => {
+                element.move();
+                element.lifespan(graph);
+            })
+        }
 
         let damageUI: UI.DamageUI[] = <UI.DamageUI[]>graph.getChildren().filter(element => (<UI.DamageUI>element).tag == Tag.Tag.DAMAGEUI)
         damageUI.forEach(element => {
@@ -202,7 +176,7 @@ namespace Game {
 
     async function waitOnConnection() {
         Networking.client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: Networking.FUNCTION.CONNECTED, value: Networking.client.id } })
-        if (Networking.clients.length > 1 && player1 != null) {
+        if (Networking.clients.length > 1 && avatar1 != null) {
             await init();
             Networking.spawnPlayer(playerType);
         } else {
@@ -212,11 +186,11 @@ namespace Game {
 
     function playerChoice(_e: Event) {
         if ((<HTMLButtonElement>_e.target).id == "Ranged") {
-            player1 = new Player.Ranged("player", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
+            avatar1 = new Player.Ranged("player", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
             playerType = Player.Type.RANGED;
         }
         if ((<HTMLButtonElement>_e.target).id == "Melee") {
-            player1 = new Player.Melee("player", new Player.Character("Thor,", new Player.Attributes(10, 1, 5)));
+            avatar1 = new Player.Melee("player", new Player.Character("Thor,", new Player.Attributes(10, 1, 5)));
             playerType = Player.Type.MELEE;
         }
         document.getElementById("Lobbyscreen").style.visibility = "hidden";
@@ -229,7 +203,7 @@ namespace Game {
 
 
     export function cameraUpdate() {
-        let direction = ƒ.Vector2.DIFFERENCE(player1.cmpTransform.mtxLocal.translation.toVector2(), cmpCamera.mtxPivot.translation.toVector2());
+        let direction = ƒ.Vector2.DIFFERENCE(avatar1.cmpTransform.mtxLocal.translation.toVector2(), cmpCamera.mtxPivot.translation.toVector2());
         direction.scale(1 / frameRate * damper);
         cmpCamera.mtxPivot.translate(new ƒ.Vector3(-direction.x, direction.y, 0), true);
     }

@@ -5,10 +5,14 @@ namespace Networking {
         CONNECTED,
         SPAWN,
         TRANSFORM,
-        BULLET,
+        SPAWNBULLET,
+        SPAWNBULLETREQUEST,
+        BULLETTRANSFORM,
+        BULLETDIE,
         SPAWNENEMY,
         ENEMYTRANSFORM,
-        ENEMYDIE
+        ENEMYDIE,
+        SPAWNDAMAGEUI
     }
 
     import ƒClient = FudgeNet.FudgeClient;
@@ -23,8 +27,6 @@ namespace Networking {
     document.getElementById("Host").addEventListener("click", () => { spawnPlayer() }, true);
     let IPConnection = <HTMLInputElement>document.getElementById("IPConnection");
     document.getElementById("Connecting").addEventListener("click", conneting, true);
-
-
 
 
     export function conneting() {
@@ -49,42 +51,92 @@ namespace Networking {
             let message: FudgeNet.Message = JSON.parse(_event.data);
             if (message.idSource != client.id) {
                 if (message.command != FudgeNet.COMMAND.SERVER_HEARTBEAT && message.command != FudgeNet.COMMAND.CLIENT_HEARTBEAT) {
+                    //Add new client to array clients
                     if (message.content != undefined && message.content.text == FUNCTION.CONNECTED.toString()) {
                         if (message.content.value != client.id && clients.find(element => element == message.content.value) == undefined) {
                             clients.push(message.content.value);
                         }
                     }
+
+                    //Spawn avatar2 as ranged or melee 
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
-                        console.table(message.content.type);
                         if (message.content.type == Player.Type.MELEE) {
-                            Game.player2 = new Player.Melee("player2", new Player.Character(message.content.value.name, new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed)));
-                            Game.player2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
-                            Game.graph.appendChild(Game.player2);
+                            Game.avatar2 = new Player.Melee("player2", new Player.Character(message.content.value.name, new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed)));
+                            Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
+                            Game.graph.appendChild(Game.avatar2);
                             Game.connected = true;
                         } else if (message.content.type == Player.Type.RANGED) {
-                            Game.player2 = new Player.Ranged("player2", new Player.Character(message.content.value.name, new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed)));
-                            Game.player2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
-                            Game.graph.appendChild(Game.player2);
+                            Game.avatar2 = new Player.Ranged("player2", new Player.Character(message.content.value.name, new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed)));
+                            Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
+                            Game.graph.appendChild(Game.avatar2);
                             Game.connected = true;
                         }
-
                     }
 
+                    //Runtime updates and communication
                     if (Game.connected) {
+
+                        //Sync avatar2 position and rotation
                         if (message.content != undefined && message.content.text == FUNCTION.TRANSFORM.toString()) {
                             let moveVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.value.data[0], message.content.value.data[1], message.content.value.data[2])
                             let rotateVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.rotation.data[0], message.content.rotation.data[1], message.content.rotation.data[2])
 
-                            Game.player2.mtxLocal.translation = moveVector;
-                            Game.player2.mtxLocal.rotation = rotateVector;
-                        }
-                        if (message.content != undefined && message.content.text == FUNCTION.BULLET.toString()) {
-                            Game.player2.attack(new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]))
+                            Game.avatar2.mtxLocal.translation = moveVector;
+                            Game.avatar2.mtxLocal.rotation = rotateVector;
                         }
 
+                        //Spawn bullet from host
+                        if (message.content != undefined && message.content.text == FUNCTION.SPAWNBULLET.toString()) {
+                            console.log(message.content.netId);
+
+                            if (client.idHost != client.id && message.content.avatar == 2) {
+                                Game.avatar2.attack(new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]), message.content.netId);
+                            } else {
+                                Game.avatar1.attack(new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]), message.content.netId);
+                            }
+                        }
+
+                        //Spawn request for bullet from client
+                        if (message.content != undefined && message.content.text == FUNCTION.SPAWNBULLETREQUEST.toString()) {
+                            if (client.id == client.idHost) {
+                                let bullet = Game.avatar2.attack(new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]));
+                                if (bullet != null) {
+                                    spawnBullet(new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]), bullet.netId, 1);
+                                }
+                            }
+                        }
+
+                        //Sync bullet transform from host to client
+                        if (message.content != undefined && message.content.text == FUNCTION.BULLETTRANSFORM.toString()) {
+                            let newPosition: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2])
+                            console.log(message.content.netId);
+                            console.log(Game.bullets.find(element => element.netId == message.content.netId) != null);
+                            let bullet = Game.bullets.find(element => element.netId == message.content.netId);
+                            if (bullet != null) {
+                                bullet.cmpTransform.mtxLocal.translation = newPosition;
+                            }
+                        }
+
+                        //Kill bullet at the client from host
+                        if (message.content != undefined && message.content.text == FUNCTION.BULLETDIE.toString()) {
+                            if (client.id != client.idHost) {
+                                let bullet = Game.bullets.find(element => element.netId == message.content.netId);
+                                Game.graph.removeChild(bullet);
+                            }
+                        }
+
+                        //Spawn damageUI at the client 
+                        if (message.content != undefined && message.content.text == FUNCTION.SPAWNDAMAGEUI.toString()) {
+                            let position: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2])
+                            Game.graph.addChild(new UI.DamageUI(position, message.content.damage));
+                        }
+
+                        //Spawn enemy at the client 
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNENEMY.toString()) {
                             Game.graph.addChild(new Enemy.Enemy("normalEnemy", new Player.Character(message.content.enemy.name, new Player.Attributes(message.content.enemy.attributes.healthPoints, message.content.enemy.attributes.attackPoints, message.content.enemy.attributes.speed)), new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]), message.content.id));
                         }
+
+                        //Sync enemy transform from host to client
                         if (message.content != undefined && message.content.text == FUNCTION.ENEMYTRANSFORM.toString()) {
                             let enemy = Game.enemies.find(enem => enem.netId == message.content.id);
                             if (enemy != undefined) {
@@ -92,6 +144,8 @@ namespace Networking {
                                 enemy.updateCollider();
                             }
                         }
+
+                        //Kill enemy at the client from host
                         if (message.content != undefined && message.content.text == FUNCTION.ENEMYDIE.toString()) {
                             let enemy = Game.enemies.find(enem => enem.netId == message.content.id);
                             Game.graph.removeChild(enemy);
@@ -111,44 +165,67 @@ namespace Networking {
         }
 
         if (_type == Player.Type.MELEE) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.Type.MELEE, value: Game.player1.properties, position: Game.player1.cmpTransform.mtxLocal.translation } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.Type.MELEE, value: Game.avatar1.properties, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
         } else if (_type == Player.Type.RANGED) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.Type.RANGED, value: Game.player1.properties, position: Game.player1.cmpTransform.mtxLocal.translation } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.Type.RANGED, value: Game.avatar1.properties, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
         } else {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.Type.RANGED, value: Game.player1.properties, position: Game.player1.cmpTransform.mtxLocal.translation } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.Type.RANGED, value: Game.avatar1.properties, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
         }
     }
+
     /**
      * sends transform over network
      * @param __position current position of Object
      * @param _rotation current rotation of Object
      */
-    export function updatePosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3) {
+    export function updateAvatarPosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3) {
         client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.TRANSFORM, value: _position, rotation: _rotation } })
     }
+    //#endregion
 
-    export function updateBullet(_direction: ƒ.Vector3) {
+    //#region bullet
+    export function spawnBullet(_direction: ƒ.Vector3, _netId: number, _avatar: number) {
+        if (Game.connected && client.idHost == client.id) {
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNBULLET, direction: _direction, netId: _netId, avatar: _avatar } })
+        }
+    }
+
+    export function removeBullet(_netId: number) {
+        if (Game.connected && client.idHost == client.id) {
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.BULLETDIE, netId: _netId } })
+        }
+    }
+
+    export function spawnBulletRequest(_direction: ƒ.Vector3) {
+        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNBULLETREQUEST, direction: _direction } })
+    }
+
+    export function updateBullet(_position: ƒ.Vector3, _netId: number) {
         if (Game.connected) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.BULLET, direction: _direction } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.BULLETTRANSFORM, position: _position, netId: _netId } })
+        }
+    }
+
+    export function spawnDamageUI(_position: ƒ.Vector3, _damage: number) {
+        if (Game.connected && client.idHost == client.id) {
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNDAMAGEUI, position: _position, damage: _damage } })
         }
     }
     //#endregion
 
     //#region  enemy
-    export function spawnEnemy(_enemy: Enemy.Enemy, _id: number) {
+    export function spawnEnemy(_enemy: Enemy.Enemy, _netId: number) {
         if (Game.connected && client.idHost == client.id) {
-            // console.log(_enemy.properties);
-            // console.log(_id);
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNENEMY, enemy: _enemy.properties, position: _enemy.mtxLocal.translation, id: _id } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNENEMY, enemy: _enemy.properties, position: _enemy.mtxLocal.translation, id: _netId } })
         }
     }
 
-    export function updateEnemyPosition(_position: ƒ.Vector3, _id: number) {
-        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.ENEMYTRANSFORM, position: _position, id: _id } })
+    export function updateEnemyPosition(_position: ƒ.Vector3, _netId: number) {
+        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.ENEMYTRANSFORM, position: _position, id: _netId } })
     }
 
-    export function removeEnemy(_id: number) {
-        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.ENEMYDIE, id: _id } })
+    export function removeEnemy(_netId: number) {
+        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.ENEMYDIE, id: _netId } })
 
     }
     //#endregion
@@ -173,9 +250,7 @@ namespace Networking {
                 break;
             }
         }
-        // console.log("id to pop: " + _id);
         currentIDs.splice(index, 1);
-        // console.log("afterIDs: " + currentIDs);
     }
 
     window.addEventListener("beforeunload", onUnload, false);

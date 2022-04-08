@@ -12,7 +12,7 @@ namespace Player {
 
         collider: Collider.Collider;
 
-        constructor( _name: string, _properties: Character) {
+        constructor(_name: string, _properties: Character) {
             super(_name);
             this.addComponent(new ƒ.ComponentTransform());
             this.properties = _properties;
@@ -27,12 +27,12 @@ namespace Player {
 
             _direction.scale((1 / 60 * this.properties.attributes.speed));
 
-            
+
             let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.Tag.ROOM)).walls;
             colliders.forEach((element) => {
                 if (this.collider.collidesRect(element.collider)) {
                     let intersection = this.collider.getIntersectionRect(element.collider);
-                    let areaBeforeMove = Math.round((intersection.height * intersection.width)*1000)/1000;
+                    let areaBeforeMove = Math.round((intersection.height * intersection.width) * 1000) / 1000;
 
                     let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
                     let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
@@ -40,7 +40,7 @@ namespace Player {
 
                     if (this.collider.getIntersectionRect(element.collider) != null) {
                         let newIntersection = this.collider.getIntersectionRect(element.collider);
-                        let areaAfterMove = Math.round((newIntersection.height * newIntersection.width)*1000)/1000;
+                        let areaAfterMove = Math.round((newIntersection.height * newIntersection.width) * 1000) / 1000;
 
                         if (areaBeforeMove < areaAfterMove) {
                             canMoveX = false;
@@ -53,7 +53,7 @@ namespace Player {
 
                     if (this.collider.getIntersectionRect(element.collider) != null) {
                         let newIntersection = this.collider.getIntersectionRect(element.collider);
-                        let areaAfterMove = Math.round((newIntersection.height * newIntersection.width)*1000)/1000;
+                        let areaAfterMove = Math.round((newIntersection.height * newIntersection.width) * 1000) / 1000;
 
                         if (areaBeforeMove < areaAfterMove) {
                             canMoveY = false;
@@ -74,15 +74,17 @@ namespace Player {
             }
         }
 
-        public attack(_direction: ƒ.Vector3) {
+        public attack(_direction: ƒ.Vector3, _netId?: number): Bullets.Bullet {
             if (this.weapon.currentAttackCount > 0) {
                 _direction.normalize();
-                let bullet: Bullets.Bullet = new Bullets.Bullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction);
+                let bullet: Bullets.Bullet = new Bullets.Bullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, _netId);
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
                 Game.graph.addChild(bullet);
 
                 this.weapon.currentAttackCount--;
+                return bullet;
             }
+            return null;
         }
 
         public cooldown() {
@@ -108,15 +110,17 @@ namespace Player {
     }
 
     export class Melee extends Player {
-        public attack(_direction: ƒ.Vector3) {
+        public attack(_direction: ƒ.Vector3, _netId?: number): Bullets.Bullet {
             if (this.weapon.currentAttackCount > 0) {
                 _direction.normalize();
-                let bullet: Bullets.Bullet = new Bullets.MeleeBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction);
+                let bullet: Bullets.Bullet = new Bullets.MeleeBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, _netId);
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
                 Game.graph.addChild(bullet);
 
                 this.weapon.currentAttackCount--;
+                return bullet;
             }
+            return null;
         }
     }
 

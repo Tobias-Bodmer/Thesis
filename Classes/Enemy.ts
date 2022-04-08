@@ -104,17 +104,17 @@ namespace Enemy {
         }
 
         getTarget(): ƒ.Vector3 {
-            let target = Game.player1;
+            let target = Game.avatar1;
 
             if (Game.connected) {
-                let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player1.cmpTransform.mtxLocal.translation);
-                let distancePlayer2 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player2.cmpTransform.mtxLocal.translation);
+                let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.avatar1.cmpTransform.mtxLocal.translation);
+                let distancePlayer2 = this.cmpTransform.mtxLocal.translation.getDistance(Game.avatar2.cmpTransform.mtxLocal.translation);
 
                 if (distancePlayer1 < distancePlayer2) {
-                    target = Game.player1;
+                    target = Game.avatar1;
                 }
                 else {
-                    target = Game.player2;
+                    target = Game.avatar2;
                 }
             }
 
@@ -302,7 +302,7 @@ namespace Enemy {
         async moveCircle() {
             this.target = this.getTarget();
             console.log(this.target);
-            let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player1.cmpTransform.mtxLocal.translation);
+            let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.avatar1.cmpTransform.mtxLocal.translation);
             // let distancePlayer2 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player2.cmpTransform.mtxLocal.translation);
             if (distancePlayer1 > this.distance) {
                 this.moveSimple();

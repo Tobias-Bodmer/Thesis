@@ -5,11 +5,11 @@ namespace UI {
 
     export function updateUI() {
         //Player1 UI
-        (<HTMLDivElement>player1UI.querySelector("#HP")).style.width = (Game.player1.properties.attributes.healthPoints / Game.player1.properties.attributes.maxHealthPoints * 100) + "%";
+        (<HTMLDivElement>player1UI.querySelector("#HP")).style.width = (Game.avatar1.properties.attributes.healthPoints / Game.avatar1.properties.attributes.maxHealthPoints * 100) + "%";
 
         //TODO: Needs testing
         //InventoryUI
-        Game.player1.items.forEach((element) => {
+        Game.avatar1.items.forEach((element) => {
             let exsist: boolean = false;
 
             //search DOMImg for Item
@@ -29,10 +29,10 @@ namespace UI {
 
         //Player2 UI
         if (Game.connected) {
-            (<HTMLDivElement>player2UI.querySelector("#HP")).style.width = (Game.player2.properties.attributes.healthPoints / Game.player2.properties.attributes.maxHealthPoints * 100) + "%";
+            (<HTMLDivElement>player2UI.querySelector("#HP")).style.width = (Game.avatar2.properties.attributes.healthPoints / Game.avatar2.properties.attributes.maxHealthPoints * 100) + "%";
 
             //InventoryUI
-            Game.player2.items.forEach((element) => {
+            Game.avatar2.items.forEach((element) => {
                 let exsist: boolean = false;
 
                 //search DOMImg for Item

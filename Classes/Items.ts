@@ -26,7 +26,6 @@ namespace Items {
         public lifespan(_graph: ƒ.Node): void {
             if (this.lifetime >= 0 && this.lifetime != null) {
                 this.lifetime--;
-                // ƒ.Debug.log(this.name + ": " + this.lifetime);
                 if (this.lifetime < 0) {
                     _graph.removeChild(this);
                     Networking.popID(this.id);

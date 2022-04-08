@@ -1,17 +1,18 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
     let canvas: HTMLCanvasElement;
     let viewport: ƒ.Viewport;
     let graph: ƒ.Node;
-    let player1: Player.Player;
-    let player2: Player.Player;
+    let avatar1: Player.Player;
+    let avatar2: Player.Player;
     let connected: boolean;
     let frameRate: number;
     let enemies: Enemy.Enemy[];
+    let bullets: Bullets.Bullet[];
     let enemiesJSON: Player.Character[];
     let itemsJSON: Player.Character[];
     let bat: Enemy.Enemy;
@@ -140,6 +141,7 @@ declare namespace Player {
 declare namespace Bullets {
     let bulletTxt: ƒ.TextureImage;
     class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable {
+        netId: number;
         tag: Tag.Tag;
         flyDirection: ƒ.Vector3;
         collider: Collider.Collider;
@@ -148,16 +150,16 @@ declare namespace Bullets {
         lifetime: number;
         killcount: number;
         lifespan(_graph: ƒ.Node): Promise<void>;
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3);
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
         move(): Promise<void>;
         loadTexture(): void;
         collisionDetection(): Promise<void>;
     }
     class SlowBullet extends Bullet {
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3);
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
     }
     class MeleeBullet extends Bullet {
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3);
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
         loadTexture(): Promise<void>;
     }
 }
@@ -208,10 +210,14 @@ declare namespace Networking {
         CONNECTED = 0,
         SPAWN = 1,
         TRANSFORM = 2,
-        BULLET = 3,
-        SPAWNENEMY = 4,
-        ENEMYTRANSFORM = 5,
-        ENEMYDIE = 6
+        SPAWNBULLET = 3,
+        SPAWNBULLETREQUEST = 4,
+        BULLETTRANSFORM = 5,
+        BULLETDIE = 6,
+        SPAWNENEMY = 7,
+        ENEMYTRANSFORM = 8,
+        ENEMYDIE = 9,
+        SPAWNDAMAGEUI = 10
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -227,11 +233,15 @@ declare namespace Networking {
      * @param __position current position of Object
      * @param _rotation current rotation of Object
      */
-    function updatePosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3): void;
-    function updateBullet(_direction: ƒ.Vector3): void;
-    function spawnEnemy(_enemy: Enemy.Enemy, _id: number): void;
-    function updateEnemyPosition(_position: ƒ.Vector3, _id: number): void;
-    function removeEnemy(_id: number): void;
+    function updateAvatarPosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3): void;
+    function spawnBullet(_direction: ƒ.Vector3, _netId: number, _avatar: number): void;
+    function removeBullet(_netId: number): void;
+    function spawnBulletRequest(_direction: ƒ.Vector3): void;
+    function updateBullet(_position: ƒ.Vector3, _netId: number): void;
+    function spawnDamageUI(_position: ƒ.Vector3, _damage: number): void;
+    function spawnEnemy(_enemy: Enemy.Enemy, _netId: number): void;
+    function updateEnemyPosition(_position: ƒ.Vector3, _netId: number): void;
+    function removeEnemy(_netId: number): void;
     function idGenerator(): number;
     function popID(_id: number): void;
 }
@@ -248,12 +258,12 @@ declare namespace Player {
         collider: Collider.Collider;
         constructor(_name: string, _properties: Character);
         move(_direction: ƒ.Vector3): void;
-        attack(_direction: ƒ.Vector3): void;
+        attack(_direction: ƒ.Vector3, _netId?: number): Bullets.Bullet;
         cooldown(): void;
         collector(): void;
     }
     class Melee extends Player {
-        attack(_direction: ƒ.Vector3): void;
+        attack(_direction: ƒ.Vector3, _netId?: number): Bullets.Bullet;
     }
     class Ranged extends Player {
     }
