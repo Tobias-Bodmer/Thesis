@@ -42,6 +42,8 @@ namespace Bullets {
                 this.netId = _netId;
             }
 
+            // this.addComponent(new ƒ.ComponentLight(new ƒ.LightPoint(ƒ.Color.CSS("white"))));
+
             this.addComponent(new ƒ.ComponentTransform());
             this.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
             this.flyDirection = _direction;
@@ -66,40 +68,34 @@ namespace Bullets {
 
         async move() {
             this.cmpTransform.mtxLocal.translate(this.flyDirection);
-            let newPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
-            this.collider.position = newPosition;
-            this.collisionDetection();
 
+            this.time += Game.ƒ.Loop.timeFrameGame;
+
+            while (this.time >= 1) {
+                this.positions.push(new ƒ.Vector3(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.translation.z));
+                if (Game.connected) {
+                    Networking.updateBullet(this.cmpTransform.mtxLocal.translation, this.netId, this.tick);
+                }
+                this.tick++;
+                this.time -= 1;
+            }
 
             if (Networking.client.id != Networking.client.idHost) {
                 if (this.tick >= 1 && this.hostPositions[this.tick - 1] != undefined && this.positions[this.tick - 1] != undefined) {
                     if (this.hostPositions[this.tick - 1].x != this.positions[this.tick - 1].x || this.hostPositions[this.tick - 1].y != this.positions[this.tick - 1].y) {
-                        console.log("help!");
-                        console.log(this.positions[this.tick - 1]);
-                        console.log(this.hostPositions[this.tick - 1]);
                         this.correctPosition();
                     }
                 }
             }
 
-            this.time += Game.ƒ.Loop.timeFrameGame;
-
-            while (this.time >= 1) {
-                this.tick++;
-                if (Game.connected) {
-                    Networking.updateBullet(this.cmpTransform.mtxLocal.translation, this.netId, this.tick);
-                }
-                this.positions.push(new ƒ.Vector3(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.translation.z));
-                this.time -= 1;
-            }
+            let newPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
+            this.collider.position = newPosition;
+            this.collisionDetection();
         }
 
         async correctPosition() {
             if (this.hostPositions[this.tick] != undefined) {
-                console.log("fixed!");
                 this.cmpTransform.mtxLocal.translation = this.hostPositions[this.tick];
-                console.log(this.hostPositions[this.tick]);
-                console.log(this.cmpTransform.mtxLocal.translation.toVector2());
             } else {
                 setTimeout(() => { this.correctPosition }, 100);
             }

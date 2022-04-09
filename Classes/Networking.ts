@@ -113,7 +113,7 @@ namespace Networking {
                         if (message.content != undefined && message.content.text == FUNCTION.BULLETDIE.toString()) {
                             if (client.id != client.idHost) {
                                 let bullet = Game.bullets.find(element => element.netId == message.content.netId);
-                                Game.graph.removeChild(bullet);
+                                bullet.lifetime = 0;
                             }
                         }
 
