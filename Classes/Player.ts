@@ -74,17 +74,19 @@ namespace Player {
             }
         }
 
-        public attack(_direction: ƒ.Vector3, _netId?: number): Bullets.Bullet {
+        public attack(_direction: ƒ.Vector3, _netId?: number, sync?: boolean) {
             if (this.weapon.currentAttackCount > 0) {
                 _direction.normalize();
                 let bullet: Bullets.Bullet = new Bullets.Bullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, _netId);
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
                 Game.graph.addChild(bullet);
 
+                if (sync) {
+                    Networking.spawnBullet(_direction, bullet.netId);
+                }
+
                 this.weapon.currentAttackCount--;
-                return bullet;
             }
-            return null;
         }
 
         public cooldown() {
@@ -110,7 +112,7 @@ namespace Player {
     }
 
     export class Melee extends Player {
-        public attack(_direction: ƒ.Vector3, _netId?: number): Bullets.Bullet {
+        public attack(_direction: ƒ.Vector3, _netId?: number) {
             if (this.weapon.currentAttackCount > 0) {
                 _direction.normalize();
                 let bullet: Bullets.Bullet = new Bullets.MeleeBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, _netId);
@@ -118,9 +120,7 @@ namespace Player {
                 Game.graph.addChild(bullet);
 
                 this.weapon.currentAttackCount--;
-                return bullet;
             }
-            return null;
         }
     }
 

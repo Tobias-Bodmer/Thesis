@@ -87,14 +87,7 @@ namespace InputSystem {
                 //left mouse button player.attack
                 let direction: Game.ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(mousePosition, Game.avatar1.mtxLocal.translation)
                 rotateToMouse(e_);
-                if (Game.connected && Networking.client.id == Networking.client.idHost) {
-                    let bullet = Game.avatar1.attack(direction);
-                    if (bullet != null) {
-                        Networking.spawnBullet(direction, bullet.netId, 2);
-                    }
-                } else {
-                    Networking.spawnBulletRequest(direction);
-                }
+                Game.avatar1.attack(direction, null, true);
                 break;
             case 2:
                 //TODO: right mouse button player.charge or something like that

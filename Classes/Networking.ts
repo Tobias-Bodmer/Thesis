@@ -6,13 +6,11 @@ namespace Networking {
         SPAWN,
         TRANSFORM,
         SPAWNBULLET,
-        SPAWNBULLETREQUEST,
         BULLETTRANSFORM,
         BULLETDIE,
         SPAWNENEMY,
         ENEMYTRANSFORM,
-        ENEMYDIE,
-        SPAWNDAMAGEUI
+        ENEMYDIE
     }
 
     import ƒClient = FudgeNet.FudgeClient;
@@ -87,33 +85,14 @@ namespace Networking {
 
                         //Spawn bullet from host
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNBULLET.toString()) {
-                            console.log(message.content.netId);
-
-                            if (client.idHost != client.id && message.content.avatar == 2) {
-                                Game.avatar2.attack(new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]), message.content.netId);
-                            } else {
-                                Game.avatar1.attack(new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]), message.content.netId);
-                            }
-                        }
-
-                        //Spawn request for bullet from client
-                        if (message.content != undefined && message.content.text == FUNCTION.SPAWNBULLETREQUEST.toString()) {
-                            if (client.id == client.idHost) {
-                                let bullet = Game.avatar2.attack(new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]));
-                                if (bullet != null) {
-                                    spawnBullet(new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]), bullet.netId, 1);
-                                }
-                            }
+                            Game.avatar2.attack(new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]), message.content.netId);
                         }
 
                         //Sync bullet transform from host to client
                         if (message.content != undefined && message.content.text == FUNCTION.BULLETTRANSFORM.toString()) {
-                            let newPosition: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2])
-                            console.log(message.content.netId);
-                            console.log(Game.bullets.find(element => element.netId == message.content.netId) != null);
-                            let bullet = Game.bullets.find(element => element.netId == message.content.netId);
-                            if (bullet != null) {
-                                bullet.cmpTransform.mtxLocal.translation = newPosition;
+                            if (Game.bullets.find(element => element.netId == message.content.netId) != null) {
+                                let newPosition: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2])
+                                Game.bullets.find(element => element.netId == message.content.netId).hostPositions[message.content.tick] = newPosition;
                             }
                         }
 
@@ -123,12 +102,6 @@ namespace Networking {
                                 let bullet = Game.bullets.find(element => element.netId == message.content.netId);
                                 Game.graph.removeChild(bullet);
                             }
-                        }
-
-                        //Spawn damageUI at the client 
-                        if (message.content != undefined && message.content.text == FUNCTION.SPAWNDAMAGEUI.toString()) {
-                            let position: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2])
-                            Game.graph.addChild(new UI.DamageUI(position, message.content.damage));
                         }
 
                         //Spawn enemy at the client 
@@ -184,31 +157,21 @@ namespace Networking {
     //#endregion
 
     //#region bullet
-    export function spawnBullet(_direction: ƒ.Vector3, _netId: number, _avatar: number) {
+    export function spawnBullet(_direction: ƒ.Vector3, _netId: number) {
+        if (Game.connected) {
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNBULLET, direction: _direction, netId: _netId } })
+        }
+    }
+
+    export function updateBullet(_position: ƒ.Vector3, _netId: number, _tick?: number) {
         if (Game.connected && client.idHost == client.id) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNBULLET, direction: _direction, netId: _netId, avatar: _avatar } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.BULLETTRANSFORM, position: _position, netId: _netId, tick: _tick } })
         }
     }
 
     export function removeBullet(_netId: number) {
         if (Game.connected && client.idHost == client.id) {
             client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.BULLETDIE, netId: _netId } })
-        }
-    }
-
-    export function spawnBulletRequest(_direction: ƒ.Vector3) {
-        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNBULLETREQUEST, direction: _direction } })
-    }
-
-    export function updateBullet(_position: ƒ.Vector3, _netId: number) {
-        if (Game.connected) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.BULLETTRANSFORM, position: _position, netId: _netId } })
-        }
-    }
-
-    export function spawnDamageUI(_position: ƒ.Vector3, _damage: number) {
-        if (Game.connected && client.idHost == client.id) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNDAMAGEUI, position: _position, damage: _damage } })
         }
     }
     //#endregion

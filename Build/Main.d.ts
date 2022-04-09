@@ -142,6 +142,9 @@ declare namespace Bullets {
     let bulletTxt: ƒ.TextureImage;
     class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable {
         netId: number;
+        tick: number;
+        positions: ƒ.Vector3[];
+        hostPositions: ƒ.Vector3[];
         tag: Tag.Tag;
         flyDirection: ƒ.Vector3;
         collider: Collider.Collider;
@@ -152,6 +155,7 @@ declare namespace Bullets {
         lifespan(_graph: ƒ.Node): Promise<void>;
         constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
         move(): Promise<void>;
+        correctPosition(): Promise<void>;
         loadTexture(): void;
         collisionDetection(): Promise<void>;
     }
@@ -211,13 +215,11 @@ declare namespace Networking {
         SPAWN = 1,
         TRANSFORM = 2,
         SPAWNBULLET = 3,
-        SPAWNBULLETREQUEST = 4,
-        BULLETTRANSFORM = 5,
-        BULLETDIE = 6,
-        SPAWNENEMY = 7,
-        ENEMYTRANSFORM = 8,
-        ENEMYDIE = 9,
-        SPAWNDAMAGEUI = 10
+        BULLETTRANSFORM = 4,
+        BULLETDIE = 5,
+        SPAWNENEMY = 6,
+        ENEMYTRANSFORM = 7,
+        ENEMYDIE = 8
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -234,11 +236,9 @@ declare namespace Networking {
      * @param _rotation current rotation of Object
      */
     function updateAvatarPosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3): void;
-    function spawnBullet(_direction: ƒ.Vector3, _netId: number, _avatar: number): void;
+    function spawnBullet(_direction: ƒ.Vector3, _netId: number): void;
+    function updateBullet(_position: ƒ.Vector3, _netId: number, _tick?: number): void;
     function removeBullet(_netId: number): void;
-    function spawnBulletRequest(_direction: ƒ.Vector3): void;
-    function updateBullet(_position: ƒ.Vector3, _netId: number): void;
-    function spawnDamageUI(_position: ƒ.Vector3, _damage: number): void;
     function spawnEnemy(_enemy: Enemy.Enemy, _netId: number): void;
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number): void;
     function removeEnemy(_netId: number): void;
@@ -258,12 +258,12 @@ declare namespace Player {
         collider: Collider.Collider;
         constructor(_name: string, _properties: Character);
         move(_direction: ƒ.Vector3): void;
-        attack(_direction: ƒ.Vector3, _netId?: number): Bullets.Bullet;
+        attack(_direction: ƒ.Vector3, _netId?: number, sync?: boolean): void;
         cooldown(): void;
         collector(): void;
     }
     class Melee extends Player {
-        attack(_direction: ƒ.Vector3, _netId?: number): Bullets.Bullet;
+        attack(_direction: ƒ.Vector3, _netId?: number): void;
     }
     class Ranged extends Player {
     }

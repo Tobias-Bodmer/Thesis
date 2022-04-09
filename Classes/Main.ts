@@ -85,6 +85,7 @@ namespace Game {
             connected = true;
         }
 
+
         draw();
 
         cameraUpdate();
@@ -93,9 +94,6 @@ namespace Game {
 
         if (Game.connected) {
             avatar2.cooldown();
-        }
-
-        if (Game.connected) {
             Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
         }
         // Networking.spawnEnemy(bat, bat.id);
@@ -109,7 +107,7 @@ namespace Game {
         //#endregion
 
         bullets = <Bullets.Bullet[]>graph.getChildren().filter(element => (<Bullets.Bullet>element).tag == Tag.Tag.BULLET)
-        if (Game.connected && Networking.client.idHost == Networking.client.id) {
+        if (Game.connected) {
             bullets.forEach(element => {
                 element.move();
                 element.lifespan(graph);
