@@ -147,12 +147,16 @@ namespace Player {
     }
 
     export class Melee extends Player {
-        public attack(_direction: ƒ.Vector3, _netId?: number) {
+        public attack(_direction: ƒ.Vector3, _netId?: number, sync?: boolean) {
             if (this.weapon.currentAttackCount > 0) {
                 _direction.normalize();
                 let bullet: Bullets.Bullet = new Bullets.MeleeBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, _netId);
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
                 Game.graph.addChild(bullet);
+
+                if (sync) {
+                    Networking.spawnBullet(_direction, bullet.netId);
+                }
 
                 this.weapon.currentAttackCount--;
             }

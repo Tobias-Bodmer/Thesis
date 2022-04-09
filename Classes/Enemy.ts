@@ -56,15 +56,15 @@ namespace Enemy {
          * @param _aiType optional: standard ai = dumb
          */
 
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _id?: number) {
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number) {
             super(_name);
             this.addComponent(new ƒ.ComponentTransform());
             this.properties = _properties;
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
-            if (_id != undefined) {
+            if (_netId != undefined) {
                 Networking.popID(this.netId);
-                Networking.currentIDs.push(_id);
-                this.netId = _id;
+                Networking.currentIDs.push(_netId);
+                this.netId = _netId;
             }
             this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);
             Networking.spawnEnemy(this, this.netId);
@@ -202,7 +202,7 @@ namespace Enemy {
                 }
             });
 
-            let avatarColliders: Player.Player[] = [Game.avatar1, Game.avatar2];
+            let avatarColliders: Player.Player[] = <Player.Player[]>Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.PLAYER);
             avatarColliders.forEach((element) => {
                 if (this.collider.collides(element.collider)) {
                     let intersection = this.collider.getIntersection(element.collider);

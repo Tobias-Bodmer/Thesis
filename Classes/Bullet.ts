@@ -16,6 +16,7 @@ namespace Bullets {
         public speed: number = 20;
         lifetime: number = 1 * Game.frameRate;
 
+        time: number = 0;
         killcount: number = 1;
 
         async lifespan(_graph: ƒ.Node) {
@@ -23,7 +24,11 @@ namespace Bullets {
                 this.lifetime--;
                 if (this.lifetime < 0) {
                     _graph.removeChild(this);
+                    Networking.popID(this.netId);
                     Networking.removeBullet(this.netId);
+
+                    console.log(this.hostPositions);
+                    console.log(this.positions);
                 }
             }
         }
@@ -31,7 +36,9 @@ namespace Bullets {
         constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number) {
             super("normalBullet");
 
-            if (_netId != null) {
+            if (_netId != undefined) {
+                Networking.popID(this.netId);
+                Networking.currentIDs.push(_netId);
                 this.netId = _netId;
             }
 
@@ -47,37 +54,45 @@ namespace Bullets {
             let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(mtrSolidWhite);
             this.addComponent(cmpMaterial);
 
+            let newPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
+            this.collider = new Collider.Collider(newPosition, this.cmpTransform.mtxLocal.scaling.y / 1.5);
+
             this.loadTexture();
             this.mtxLocal.rotateZ(InputSystem.calcDegree(this.cmpTransform.mtxLocal.translation, ƒ.Vector3.SUM(_direction, this.cmpTransform.mtxLocal.translation)) + 90);
             this.cmpTransform.mtxLocal.scaleY(0.25);
             this.flyDirection = ƒ.Vector3.X();
-            this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);
         }
 
 
         async move() {
             this.cmpTransform.mtxLocal.translate(this.flyDirection);
-            this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
+            let newPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
+            this.collider.position = newPosition;
             this.collisionDetection();
 
 
             if (this.tick >= 2 && this.hostPositions[this.tick - 2] != undefined && this.positions[this.tick - 2] != undefined) {
-                if (this.hostPositions[this.tick - 2].x != this.positions[this.tick - 2].x) {
+                if (this.hostPositions[this.tick - 2].x != this.positions[this.tick - 2].x || this.hostPositions[this.tick - 2].y != this.positions[this.tick - 2].y) {
+                    console.log("help!");
                     this.correctPosition();
                 }
             }
 
-            this.positions.push(new ƒ.Vector3(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.translation.z));
+            this.time += Game.ƒ.Loop.timeFrameGame;
 
-            if (Game.connected) {
-                Networking.updateBullet(this.cmpTransform.mtxLocal.translation, this.netId, this.tick);
+            while (this.time >= 1) {
+                this.tick++;
+                if (Game.connected) {
+                    Networking.updateBullet(this.cmpTransform.mtxLocal.translation, this.netId, this.tick);
+                }
+                this.positions.push(new ƒ.Vector3(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.translation.z));
+                this.time -= 1;
             }
-
-            this.tick++;
         }
 
         async correctPosition() {
             if (this.hostPositions[this.tick] != undefined) {
+                console.log("fixed!");
                 this.cmpTransform.mtxLocal.translation = this.hostPositions[this.tick];
             } else {
                 setTimeout(() => { this.correctPosition }, 100);

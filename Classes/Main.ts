@@ -56,9 +56,6 @@ namespace Game {
             avatar1 = new Player.Ranged("Player1", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
         }
 
-        //#region init Items
-        item1 = new Items.InternalItem("cooldown reduction", "adds speed and shit", new ƒ.Vector3(0, 2, 0), new Player.Attributes(0, 0, 0, 100), Items.ITEMTYPE.PROCENTUAL, "./Resources/Image/Items");
-        //#endregion
 
         Generation.generateRooms();
 
@@ -68,14 +65,11 @@ namespace Game {
 
 
         graph.appendChild(avatar1);
-        graph.appendChild(item1);
-
 
         ƒAid.addStandardLightComponents(graph);
 
         cmpCamera.mtxPivot.translateZ(25);
         cmpCamera.mtxPivot.rotateY(180);
-
 
         viewport.initialize("Viewport", graph, cmpCamera, canvas);
 
@@ -88,10 +82,6 @@ namespace Game {
 
         if (Game.gamestate == Game.GAMESTATES.PLAYING) {
             InputSystem.move();
-
-            if (avatar2 != undefined && !connected) {
-                connected = true;
-            }
         }
 
         draw();
@@ -183,11 +173,22 @@ namespace Game {
 
 
     async function waitOnConnection() {
-        Networking.client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: Networking.FUNCTION.CONNECTED, value: Networking.client.id } })
-        if (Networking.clients.length > 1 && avatar1 != null) {
-            gamestate = GAMESTATES.PLAYING;
+        Networking.connected();
+        if (Networking.clients.filter(elem => elem.ready == true).length >= 2 && Networking.client.idHost != undefined) {
+            connected = true;
             await init();
+            gamestate = GAMESTATES.PLAYING;
             Networking.spawnPlayer(playerType);
+
+            //#region init Items
+            if (Networking.client.id == Networking.client.idHost) {
+                item1 = new Items.InternalItem("cooldown reduction", "adds speed and shit", new ƒ.Vector3(0, 2, 0), new Player.Attributes(0, 0, 0, 100), Items.ITEMTYPE.PROCENTUAL, "./Resources/Image/Items");
+                let item2 = new Items.InternalItem("cooldown reduction", "adds speed and shit", new ƒ.Vector3(0, -2, 0), new Player.Attributes(0, 0, 0, 100), Items.ITEMTYPE.PROCENTUAL, "./Resources/Image/Items");
+                graph.appendChild(item1);
+                graph.appendChild(item2);
+            }
+            //#endregion
+
         } else {
             setTimeout(waitOnConnection, 300);
         }
@@ -203,6 +204,17 @@ namespace Game {
             playerType = Player.PLAYERTYPE.MELEE;
         }
         document.getElementById("Lobbyscreen").style.visibility = "hidden";
+
+        readySate();
+
+        function readySate() {
+            if (Networking.client.idHost != undefined) {
+                Networking.setClientReady();
+            }
+            if (Networking.clients.filter(elem => elem.ready == true).length < 2) {
+                setTimeout(() => { readySate() }, 200);
+            }
+        }
     }
 
     function draw(): void {

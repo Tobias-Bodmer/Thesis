@@ -4,16 +4,23 @@ namespace Items {
         SUBSTRACT,
         PROCENTUAL
     }
-    export class Item extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+    export abstract class Item extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
         public tag: Tag.TAG = Tag.TAG.ITEM;
-        public id: number = Networking.idGenerator();
+        public netId: number = Networking.idGenerator();
         public description: string;
         public imgSrc: string;
         public collider: Game.ƒ.Rectangle;
         lifetime: number;
 
-        constructor(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc?: string, _lifetime?: number) {
+        constructor(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc?: string, _lifetime?: number, _netId?: number) {
             super(_name);
+
+            if (_netId != undefined) {
+                Networking.popID(this.netId);
+                Networking.currentIDs.push(_netId);
+                this.netId = _netId;
+            }
+
             this.description = _description;
             this.imgSrc = _imgSrc;
             this.lifetime = _lifetime;
@@ -28,7 +35,8 @@ namespace Items {
                 this.lifetime--;
                 if (this.lifetime < 0) {
                     _graph.removeChild(this);
-                    Networking.popID(this.id);
+                    Networking.popID(this.netId);
+                    Networking.removeItem(this.netId);
                 }
             }
         }
@@ -56,10 +64,12 @@ namespace Items {
          * @param _lifetime optional: how long is the item visible
          * @param _attributes define which attributes will change, compare with {@link Player.Attributes}
          */
-        constructor(_name: string, _description: string, _position: ƒ.Vector3, _attributes: Player.Attributes, _type: ITEMTYPE, _imgSrc?: string, _lifetime?: number) {
-            super(_name, _description, _position, _imgSrc, _lifetime);
+        constructor(_name: string, _description: string, _position: ƒ.Vector3, _attributes: Player.Attributes, _type: ITEMTYPE, _imgSrc?: string, _lifetime?: number, _netId?: number) {
+            super(_name, _description, _position, _imgSrc, _lifetime, _netId);
             this.attributes = _attributes;
             this.type = _type;
+
+            Networking.spawnItem(this.name, this.description, _position, this.imgSrc, this.lifetime, this.netId, this.attributes, this.type);
         }
 
         async collisionDetection(): Promise<void> {
@@ -67,6 +77,7 @@ namespace Items {
             colliders.forEach((element) => {
                 if (this.collider.collides(element.collider) && element.properties != undefined && (this.lifetime > 0 || this.lifetime == undefined)) {
                     (<Player.Player>element).properties.attributes.addAttribuesByItem(this.attributes, this.type);
+                    Networking.updateAvatarAttributes(this.attributes, this.type);
                     // console.log((<Enemy.Enemy>element).properties.attributes.healthPoints);
                     this.lifetime = 0;
                 }

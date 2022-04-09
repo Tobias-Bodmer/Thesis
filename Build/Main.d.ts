@@ -61,7 +61,7 @@ declare namespace Enemy {
          * @param _position position where to spawn
          * @param _aiType optional: standard ai = dumb
          */
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _id?: number);
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number);
         startSprite(): Promise<void>;
         loadSprites(): Promise<void>;
         generateSprites(_spritesheet: ƒ.CoatTextured): void;
@@ -102,14 +102,14 @@ declare namespace Items {
         SUBSTRACT = 1,
         PROCENTUAL = 2
     }
-    class Item extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+    abstract class Item extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
         tag: Tag.TAG;
-        id: number;
+        netId: number;
         description: string;
         imgSrc: string;
         collider: Game.ƒ.Rectangle;
         lifetime: number;
-        constructor(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc?: string, _lifetime?: number);
+        constructor(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc?: string, _lifetime?: number, _netId?: number);
         lifespan(_graph: ƒ.Node): void;
         collisionDetection(): Promise<void>;
     }
@@ -124,7 +124,7 @@ declare namespace Items {
          * @param _lifetime optional: how long is the item visible
          * @param _attributes define which attributes will change, compare with {@link Player.Attributes}
          */
-        constructor(_name: string, _description: string, _position: ƒ.Vector3, _attributes: Player.Attributes, _type: ITEMTYPE, _imgSrc?: string, _lifetime?: number);
+        constructor(_name: string, _description: string, _position: ƒ.Vector3, _attributes: Player.Attributes, _type: ITEMTYPE, _imgSrc?: string, _lifetime?: number, _netId?: number);
         collisionDetection(): Promise<void>;
     }
 }
@@ -156,6 +156,7 @@ declare namespace Bullets {
         hitPoints: number;
         speed: number;
         lifetime: number;
+        time: number;
         killcount: number;
         lifespan(_graph: ƒ.Node): Promise<void>;
         constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
@@ -217,24 +218,34 @@ declare namespace Level {
 declare namespace Networking {
     enum FUNCTION {
         CONNECTED = 0,
-        SPAWN = 1,
-        TRANSFORM = 2,
-        SPAWNBULLET = 3,
-        BULLETTRANSFORM = 4,
-        BULLETDIE = 5,
-        SPAWNENEMY = 6,
-        ENEMYTRANSFORM = 7,
-        ENEMYDIE = 8
+        SETREADY = 1,
+        SPAWN = 2,
+        TRANSFORM = 3,
+        SPAWNBULLET = 4,
+        BULLETTRANSFORM = 5,
+        BULLETDIE = 6,
+        SPAWNENEMY = 7,
+        ENEMYTRANSFORM = 8,
+        ENEMYDIE = 9,
+        SPAWNITEM = 10,
+        UPDATEATTRIBUTES = 11,
+        ITEMDIE = 12
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
-    let clients: string[];
+    let clients: Array<{
+        id: string;
+        ready: boolean;
+    }>;
     let posUpdate: ƒ.Vector3;
     let someoneIsHost: boolean;
     let enemy: Enemy.Enemy;
     let currentIDs: number[];
     function conneting(): void;
+    function setClientReady(): void;
+    function setHost(): void;
     function spawnPlayer(_type?: Player.PLAYERTYPE): void;
+    function connected(): void;
     /**
      * sends transform over network
      * @param __position current position of Object
@@ -247,6 +258,9 @@ declare namespace Networking {
     function spawnEnemy(_enemy: Enemy.Enemy, _netId: number): void;
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number): void;
     function removeEnemy(_netId: number): void;
+    function spawnItem(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime: number, _netId: number, _attributes?: Player.Attributes, _type?: Items.ITEMTYPE): void;
+    function updateAvatarAttributes(_attributes: Player.Attributes, _type: Items.ITEMTYPE): void;
+    function removeItem(_netId: number): void;
     function idGenerator(): number;
     function popID(_id: number): void;
 }
@@ -268,7 +282,7 @@ declare namespace Player {
         collector(): void;
     }
     class Melee extends Player {
-        attack(_direction: ƒ.Vector3, _netId?: number): void;
+        attack(_direction: ƒ.Vector3, _netId?: number, sync?: boolean): void;
     }
     class Ranged extends Player {
     }
