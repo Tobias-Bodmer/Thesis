@@ -1,11 +1,11 @@
 namespace Player {
-    export enum Type {
+    export enum PLAYERTYPE {
         RANGED,
         MELEE
     }
 
     export abstract class Player extends Game.ƒAid.NodeSprite {
-        public tag: Tag.Tag = Tag.Tag.PLAYER;
+        public tag: Tag.TAG = Tag.TAG.PLAYER;
         public items: Array<Items.Item> = [];
         public properties: Character;
         public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1);
@@ -28,7 +28,7 @@ namespace Player {
             _direction.scale((1 / 60 * this.properties.attributes.speed));
 
 
-            let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.Tag.ROOM)).walls;
+            let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.TAG.ROOM)).walls;
             colliders.forEach((element) => {
                 if (this.collider.collidesRect(element.collider)) {
                     let intersection = this.collider.getIntersectionRect(element.collider);

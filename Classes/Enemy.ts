@@ -35,7 +35,7 @@ namespace Enemy {
     }
 
     export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
-        public tag: Tag.Tag = Tag.Tag.ENEMY;
+        public tag: Tag.TAG = Tag.TAG.ENEMY;
         public netId: number = Networking.idGenerator();
         public properties: Player.Character;
         public collider: Collider.Collider;
@@ -164,7 +164,7 @@ namespace Enemy {
         getCanMoveXY(direction: ƒ.Vector3) {
             let canMoveX = true;
             let canMoveY = true;
-            let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.Tag.ROOM)).walls;
+            let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.TAG.ROOM)).walls;
             colliders.forEach((element) => {
                 if (this.collider.collidesRect(element.collider)) {
 

@@ -8,7 +8,7 @@ namespace Bullets {
         public tick: number = 0;
         public positions: ƒ.Vector3[] = [];
         public hostPositions: ƒ.Vector3[] = [];
-        public tag: Tag.Tag = Tag.Tag.BULLET;
+        public tag: Tag.TAG = Tag.TAG.BULLET;
         public flyDirection: ƒ.Vector3;
         public collider: Collider.Collider;
 
@@ -99,7 +99,7 @@ namespace Bullets {
         }
 
         async collisionDetection() {
-            let colliders: any[] = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.Tag.ENEMY);
+            let colliders: any[] = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY);
             colliders.forEach((element) => {
                 if (this.collider.collides(element.collider) && element.properties != undefined && this.killcount > 0) {
                     (<Enemy.Enemy>element).properties.attributes.healthPoints -= this.hitPoints;
@@ -110,7 +110,7 @@ namespace Bullets {
             })
 
             colliders = [];
-            colliders = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.Tag.ROOM)).walls;
+            colliders = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.TAG.ROOM)).walls;
             colliders.forEach((element) => {
                 if (this.collider.collidesRect(element.collider)) {
                     this.lifetime = 0;

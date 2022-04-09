@@ -4,6 +4,11 @@
 //#endregion "Imports"
 
 namespace Game {
+    export enum GAMESTATES {
+        PLAYING,
+        PAUSE
+    }
+
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
 
@@ -17,6 +22,7 @@ namespace Game {
     //#endregion "DomElements"
 
     //#region "PublicVariables"
+    export let gamestate: GAMESTATES = GAMESTATES.PAUSE;
     export let viewport: ƒ.Viewport = new ƒ.Viewport();
     export let graph: ƒ.Node = new ƒ.Node("Graph");
     export let avatar1: Player.Player;
@@ -33,7 +39,7 @@ namespace Game {
     //#region "PrivateVariables"
     let item1: Items.Item;
     let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
-    let playerType: Player.Type;
+    let playerType: Player.PLAYERTYPE;
     const damper: number = 3.5;
     //#endregion "PrivateVariables"
 
@@ -79,57 +85,61 @@ namespace Game {
     }
 
     function update(): void {
-        InputSystem.move();
 
-        if (avatar2 != undefined && !connected) {
-            connected = true;
+        if (Game.gamestate == Game.GAMESTATES.PLAYING) {
+            InputSystem.move();
+
+            if (avatar2 != undefined && !connected) {
+                connected = true;
+            }
         }
-
 
         draw();
 
-        cameraUpdate();
+        if (Game.gamestate == Game.GAMESTATES.PLAYING) {
+            cameraUpdate();
 
-        avatar1.cooldown();
+            avatar1.cooldown();
 
-        if (Game.connected) {
-            avatar2.cooldown();
-            Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
-        }
-        // Networking.spawnEnemy(bat, bat.id);
+            if (Game.connected) {
+                avatar2.cooldown();
+                Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
+            }
+            // Networking.spawnEnemy(bat, bat.id);
 
-        //#region count items
-        let items: Items.Item[] = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.Tag.ITEM)
-        items.forEach(element => {
-            element.lifespan(graph);
-            (<Items.InternalItem>element).collisionDetection();
-        });
-        //#endregion
-
-        bullets = <Bullets.Bullet[]>graph.getChildren().filter(element => (<Bullets.Bullet>element).tag == Tag.Tag.BULLET)
-        if (Game.connected) {
-            bullets.forEach(element => {
-                element.move();
+            //#region count items
+            let items: Items.Item[] = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.TAG.ITEM)
+            items.forEach(element => {
                 element.lifespan(graph);
-            })
-        }
+                (<Items.InternalItem>element).collisionDetection();
+            });
+            //#endregion
 
-        let damageUI: UI.DamageUI[] = <UI.DamageUI[]>graph.getChildren().filter(element => (<UI.DamageUI>element).tag == Tag.Tag.DAMAGEUI)
-        damageUI.forEach(element => {
-            element.move();
-            element.lifespan(graph);
-        })
+            bullets = <Bullets.Bullet[]>graph.getChildren().filter(element => (<Bullets.Bullet>element).tag == Tag.TAG.BULLET)
+            if (Game.connected) {
+                bullets.forEach(element => {
+                    element.move();
+                    element.lifespan(graph);
+                })
+            }
 
-        enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.Tag.ENEMY)
-        if (Game.connected && Networking.client.idHost == Networking.client.id) {
-            enemies.forEach(element => {
+            let damageUI: UI.DamageUI[] = <UI.DamageUI[]>graph.getChildren().filter(element => (<UI.DamageUI>element).tag == Tag.TAG.DAMAGEUI)
+            damageUI.forEach(element => {
                 element.move();
                 element.lifespan(graph);
             })
 
-            EnemySpawner.spawnEnemies();
+            enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY)
+            if (Game.connected && Networking.client.idHost == Networking.client.id) {
+                enemies.forEach(element => {
+                    element.move();
+                    element.lifespan(graph);
+                })
+
+                EnemySpawner.spawnEnemies();
+            }
+            UI.updateUI();
         }
-        UI.updateUI();
     }
 
     function start() {
@@ -175,6 +185,7 @@ namespace Game {
     async function waitOnConnection() {
         Networking.client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: Networking.FUNCTION.CONNECTED, value: Networking.client.id } })
         if (Networking.clients.length > 1 && avatar1 != null) {
+            gamestate = GAMESTATES.PLAYING;
             await init();
             Networking.spawnPlayer(playerType);
         } else {
@@ -185,11 +196,11 @@ namespace Game {
     function playerChoice(_e: Event) {
         if ((<HTMLButtonElement>_e.target).id == "Ranged") {
             avatar1 = new Player.Ranged("player", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
-            playerType = Player.Type.RANGED;
+            playerType = Player.PLAYERTYPE.RANGED;
         }
         if ((<HTMLButtonElement>_e.target).id == "Melee") {
             avatar1 = new Player.Melee("player", new Player.Character("Thor,", new Player.Attributes(10, 1, 5)));
-            playerType = Player.Type.MELEE;
+            playerType = Player.PLAYERTYPE.MELEE;
         }
         document.getElementById("Lobbyscreen").style.visibility = "hidden";
     }

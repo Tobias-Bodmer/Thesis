@@ -9,9 +9,11 @@ namespace InputSystem {
     let mousePosition: ƒ.Vector3;
 
     function rotateToMouse(_mouseEvent: MouseEvent): void {
-        let ray: ƒ.Ray = Game.viewport.getRayFromClient(new ƒ.Vector2(_mouseEvent.offsetX, _mouseEvent.offsetY));
-        mousePosition = ray.intersectPlane(new ƒ.Vector3(0, 0, 0), new ƒ.Vector3(0, 0, 1));
-        Game.avatar1.mtxLocal.rotation = new ƒ.Vector3(0, 0, calcDegree(Game.avatar1.mtxLocal.translation, mousePosition));
+        if (Game.gamestate == Game.GAMESTATES.PLAYING) {
+            let ray: ƒ.Ray = Game.viewport.getRayFromClient(new ƒ.Vector2(_mouseEvent.offsetX, _mouseEvent.offsetY));
+            mousePosition = ray.intersectPlane(new ƒ.Vector3(0, 0, 0), new ƒ.Vector3(0, 0, 1));
+            Game.avatar1.mtxLocal.rotation = new ƒ.Vector3(0, 0, calcDegree(Game.avatar1.mtxLocal.translation, mousePosition));
+        }
     }
 
     export function calcDegree(_center: ƒ.Vector3, _target: ƒ.Vector3): number {
@@ -42,13 +44,17 @@ namespace InputSystem {
     ]);
 
     function keyboardDownEvent(_e: KeyboardEvent) {
-        let key: string = _e.code.toUpperCase().substring(3);
-        controller.set(key, true);
+        if (Game.gamestate == Game.GAMESTATES.PLAYING) {
+            let key: string = _e.code.toUpperCase().substring(3);
+            controller.set(key, true);
+        }
     }
 
     function keyboardUpEvent(_e: KeyboardEvent) {
-        let key: string = _e.code.toUpperCase().substring(3);
-        controller.set(key, false);
+        if (Game.gamestate == Game.GAMESTATES.PLAYING) {
+            let key: string = _e.code.toUpperCase().substring(3);
+            controller.set(key, false);
+        }
     }
 
     export function move() {
@@ -80,22 +86,23 @@ namespace InputSystem {
 
     //#region attack
     function attack(e_: MouseEvent) {
+        if (Game.gamestate == Game.GAMESTATES.PLAYING) {
+            let mouseButton = e_.button;
+            switch (mouseButton) {
+                case 0:
+                    //left mouse button player.attack
+                    let direction: Game.ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(mousePosition, Game.avatar1.mtxLocal.translation)
+                    rotateToMouse(e_);
+                    Game.avatar1.attack(direction, null, true);
+                    break;
+                case 2:
+                    //TODO: right mouse button player.charge or something like that
 
-        let mouseButton = e_.button;
-        switch (mouseButton) {
-            case 0:
-                //left mouse button player.attack
-                let direction: Game.ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(mousePosition, Game.avatar1.mtxLocal.translation)
-                rotateToMouse(e_);
-                Game.avatar1.attack(direction, null, true);
-                break;
-            case 2:
-                //TODO: right mouse button player.charge or something like that
+                    break;
+                default:
 
-                break;
-            default:
-
-                break;
+                    break;
+            }
         }
     }
     //#endregion

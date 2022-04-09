@@ -58,12 +58,12 @@ namespace Networking {
 
                     //Spawn avatar2 as ranged or melee 
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
-                        if (message.content.type == Player.Type.MELEE) {
+                        if (message.content.type == Player.PLAYERTYPE.MELEE) {
                             Game.avatar2 = new Player.Melee("player2", new Player.Character(message.content.value.name, new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed)));
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                             Game.graph.appendChild(Game.avatar2);
                             Game.connected = true;
-                        } else if (message.content.type == Player.Type.RANGED) {
+                        } else if (message.content.type == Player.PLAYERTYPE.RANGED) {
                             Game.avatar2 = new Player.Ranged("player2", new Player.Character(message.content.value.name, new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed)));
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                             Game.graph.appendChild(Game.avatar2);
@@ -131,18 +131,18 @@ namespace Networking {
     }
 
     //#region player
-    export function spawnPlayer(_type?: Player.Type) {
+    export function spawnPlayer(_type?: Player.PLAYERTYPE) {
         if (client.idHost == undefined) {
             client.becomeHost();
             someoneIsHost = true;
         }
 
-        if (_type == Player.Type.MELEE) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.Type.MELEE, value: Game.avatar1.properties, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
-        } else if (_type == Player.Type.RANGED) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.Type.RANGED, value: Game.avatar1.properties, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
+        if (_type == Player.PLAYERTYPE.MELEE) {
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.MELEE, value: Game.avatar1.properties, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
+        } else if (_type == Player.PLAYERTYPE.RANGED) {
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.RANGED, value: Game.avatar1.properties, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
         } else {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.Type.RANGED, value: Game.avatar1.properties, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.RANGED, value: Game.avatar1.properties, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
         }
     }
 

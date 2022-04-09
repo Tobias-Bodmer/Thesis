@@ -9,7 +9,7 @@ namespace Generation {
     }
 
     export class Room extends ƒ.Node {
-        public tag: Tag.Tag = Tag.Tag.ROOM;
+        public tag: Tag.TAG = Tag.TAG.ROOM;
         public roomType: ROOMTYPE
         public coordinates: [number, number]; // X Y
         public walls: Wall[] = [];
@@ -71,7 +71,7 @@ namespace Generation {
     }
 
     export class Wall extends ƒ.Node {
-        public tag: Tag.Tag = Tag.Tag.WALL;
+        public tag: Tag.TAG = Tag.TAG.WALL;
         public collider: Game.ƒ.Rectangle;
         public wallThickness: number = 2;
 

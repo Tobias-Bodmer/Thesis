@@ -65,7 +65,7 @@ namespace UI {
     export let txtTen: ƒ.TextureImage = new ƒ.TextureImage();
 
     export class DamageUI extends ƒ.Node {
-        public tag: Tag.Tag = Tag.Tag.DAMAGEUI;
+        public tag: Tag.TAG = Tag.TAG.DAMAGEUI;
 
         lifetime: number = 0.5 * Game.frameRate;
 

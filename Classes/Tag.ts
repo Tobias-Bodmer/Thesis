@@ -1,5 +1,5 @@
 namespace Tag {
-    export enum Tag{
+    export enum TAG{
         PLAYER,
         ENEMY,
         BULLET,

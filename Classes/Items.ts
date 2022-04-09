@@ -5,7 +5,7 @@ namespace Items {
         PROCENTUAL
     }
     export class Item extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
-        public tag: Tag.Tag = Tag.Tag.ITEM;
+        public tag: Tag.TAG = Tag.TAG.ITEM;
         public id: number = Networking.idGenerator();
         public description: string;
         public imgSrc: string;
@@ -34,7 +34,7 @@ namespace Items {
         }
 
         async collisionDetection() {
-            let colliders: any[] = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.Tag.PLAYER);
+            let colliders: any[] = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.PLAYER);
             colliders.forEach((element) => {
                 if (this.collider.collides(element.collider) && element.properties != undefined) {
                     // (<Player.Player>element).properties.attributes.addAttribuesByItem(this);
@@ -63,7 +63,7 @@ namespace Items {
         }
 
         async collisionDetection(): Promise<void> {
-            let colliders: any[] = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.Tag.PLAYER);
+            let colliders: any[] = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.PLAYER);
             colliders.forEach((element) => {
                 if (this.collider.collides(element.collider) && element.properties != undefined && (this.lifetime > 0 || this.lifetime == undefined)) {
                     (<Player.Player>element).properties.attributes.addAttribuesByItem(this.attributes, this.type);

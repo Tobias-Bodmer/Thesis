@@ -2,9 +2,14 @@
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
+    enum GAMESTATES {
+        PLAYING = 0,
+        PAUSE = 1
+    }
     export import ƒ = FudgeCore;
     export import ƒAid = FudgeAid;
     let canvas: HTMLCanvasElement;
+    let gamestate: GAMESTATES;
     let viewport: ƒ.Viewport;
     let graph: ƒ.Node;
     let avatar1: Player.Player;
@@ -39,7 +44,7 @@ declare namespace Enemy {
     }
     import ƒAid = FudgeAid;
     export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
-        tag: Tag.Tag;
+        tag: Tag.TAG;
         netId: number;
         properties: Player.Character;
         collider: Collider.Collider;
@@ -98,7 +103,7 @@ declare namespace Items {
         PROCENTUAL = 2
     }
     class Item extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
-        tag: Tag.Tag;
+        tag: Tag.TAG;
         id: number;
         description: string;
         imgSrc: string;
@@ -145,7 +150,7 @@ declare namespace Bullets {
         tick: number;
         positions: ƒ.Vector3[];
         hostPositions: ƒ.Vector3[];
-        tag: Tag.Tag;
+        tag: Tag.TAG;
         flyDirection: ƒ.Vector3;
         collider: Collider.Collider;
         hitPoints: number;
@@ -229,7 +234,7 @@ declare namespace Networking {
     let enemy: Enemy.Enemy;
     let currentIDs: number[];
     function conneting(): void;
-    function spawnPlayer(_type?: Player.Type): void;
+    function spawnPlayer(_type?: Player.PLAYERTYPE): void;
     /**
      * sends transform over network
      * @param __position current position of Object
@@ -246,12 +251,12 @@ declare namespace Networking {
     function popID(_id: number): void;
 }
 declare namespace Player {
-    enum Type {
+    enum PLAYERTYPE {
         RANGED = 0,
         MELEE = 1
     }
     abstract class Player extends Game.ƒAid.NodeSprite {
-        tag: Tag.Tag;
+        tag: Tag.TAG;
         items: Array<Items.Item>;
         properties: Character;
         weapon: Weapons.Weapon;
@@ -278,7 +283,7 @@ declare namespace Generation {
         BOSS = 5
     }
     class Room extends ƒ.Node {
-        tag: Tag.Tag;
+        tag: Tag.TAG;
         roomType: ROOMTYPE;
         coordinates: [number, number];
         walls: Wall[];
@@ -297,7 +302,7 @@ declare namespace Generation {
         getRoomSize(): number;
     }
     class Wall extends ƒ.Node {
-        tag: Tag.Tag;
+        tag: Tag.TAG;
         collider: Game.ƒ.Rectangle;
         wallThickness: number;
         constructor(_position: Game.ƒ.Vector2, _width: number);
@@ -307,7 +312,7 @@ declare namespace Generation {
     function generateRooms(): void;
 }
 declare namespace Tag {
-    enum Tag {
+    enum TAG {
         PLAYER = 0,
         ENEMY = 1,
         BULLET = 2,
@@ -331,7 +336,7 @@ declare namespace UI {
     let txtNine: ƒ.TextureImage;
     let txtTen: ƒ.TextureImage;
     class DamageUI extends ƒ.Node {
-        tag: Tag.Tag;
+        tag: Tag.TAG;
         lifetime: number;
         lifespan(_graph: ƒ.Node): Promise<void>;
         constructor(_position: ƒ.Vector3, _damage: number);
