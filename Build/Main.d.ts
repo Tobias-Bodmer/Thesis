@@ -71,7 +71,7 @@ declare namespace Enemy {
         moveSimple(): void;
         moveAway(): void;
         lifespan(_graph: Game.ƒ.Node): void;
-        getCanMoveXY(direction: ƒ.Vector3): void;
+        getCanMoveXY(_direction: ƒ.Vector3): void;
     }
     export class EnemyDumb extends Enemy {
         private static instructions;

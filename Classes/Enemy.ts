@@ -161,7 +161,7 @@ namespace Enemy {
             }
         }
 
-        getCanMoveXY(direction: ƒ.Vector3) {
+        getCanMoveXY(_direction: ƒ.Vector3) {
             let canMoveX = true;
             let canMoveY = true;
             let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.TAG.ROOM)).walls;
@@ -172,7 +172,7 @@ namespace Enemy {
                     let areaBeforeMove = Math.round((intersection.height * intersection.width) * 1000) / 1000;
 
                     let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
-                    let newDirection = new Game.ƒ.Vector2(direction.x, 0)
+                    let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
                     this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
 
                     if (this.collider.getIntersectionRect(element.collider) != null) {
@@ -186,7 +186,7 @@ namespace Enemy {
                     }
 
                     this.collider.position = oldPosition;
-                    newDirection = new Game.ƒ.Vector2(0, direction.y);
+                    newDirection = new Game.ƒ.Vector2(0, _direction.y);
                     this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
 
                     if (this.collider.getIntersectionRect(element.collider) != null) {
@@ -201,14 +201,50 @@ namespace Enemy {
                     this.collider.position = oldPosition;
                 }
             });
+
+            let avatarColliders: Player.Player[] = [Game.avatar1, Game.avatar2];
+            avatarColliders.forEach((element) => {
+                if (this.collider.collides(element.collider)) {
+                    let intersection = this.collider.getIntersection(element.collider);
+                    let areaBeforeMove = Math.round((intersection) * 1000) / 1000;
+
+                    let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
+                    let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
+                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+
+                    if (this.collider.getIntersection(element.collider) != null) {
+                        let newIntersection = this.collider.getIntersection(element.collider);
+                        let areaAfterMove = Math.round((newIntersection) * 1000) / 1000;
+
+                        if (areaBeforeMove < areaAfterMove) {
+                            canMoveX = false;
+                        }
+                    }
+
+                    this.collider.position = oldPosition;
+                    newDirection = new Game.ƒ.Vector2(0, _direction.y);
+                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+
+                    if (this.collider.getIntersection(element.collider) != null) {
+                        let newIntersection = this.collider.getIntersection(element.collider);
+                        let areaAfterMove = Math.round((newIntersection) * 1000) / 1000;
+
+                        if (areaBeforeMove < areaAfterMove) {
+                            canMoveY = false;
+                        }
+                    }
+                    this.collider.position = oldPosition;
+                }
+            })
+
             if (canMoveX && canMoveY) {
-                this.cmpTransform.mtxLocal.translate(direction);
+                this.cmpTransform.mtxLocal.translate(_direction);
             } else if (canMoveX && !canMoveY) {
-                direction = new ƒ.Vector3(direction.x, 0, direction.z)
-                this.cmpTransform.mtxLocal.translate(direction);
+                _direction = new ƒ.Vector3(_direction.x, 0, _direction.z)
+                this.cmpTransform.mtxLocal.translate(_direction);
             } else if (!canMoveX && canMoveY) {
-                direction = new ƒ.Vector3(0, direction.y, direction.z)
-                this.cmpTransform.mtxLocal.translate(direction);
+                _direction = new ƒ.Vector3(0, _direction.y, _direction.z)
+                this.cmpTransform.mtxLocal.translate(_direction);
             }
         }
     }

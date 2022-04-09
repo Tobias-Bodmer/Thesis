@@ -63,6 +63,41 @@ namespace Player {
                 }
             })
 
+            let enemyColliders: Enemy.Enemy[] = Game.enemies;
+            enemyColliders.forEach((element) => {
+                if (this.collider.collides(element.collider)) {
+                    let intersection = this.collider.getIntersection(element.collider);
+                    let areaBeforeMove = Math.round((intersection) * 1000) / 1000;
+
+                    let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
+                    let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
+                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+
+                    if (this.collider.getIntersection(element.collider) != null) {
+                        let newIntersection = this.collider.getIntersection(element.collider);
+                        let areaAfterMove = Math.round((newIntersection) * 1000) / 1000;
+
+                        if (areaBeforeMove < areaAfterMove) {
+                            canMoveX = false;
+                        }
+                    }
+
+                    this.collider.position = oldPosition;
+                    newDirection = new Game.ƒ.Vector2(0, _direction.y);
+                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+
+                    if (this.collider.getIntersection(element.collider) != null) {
+                        let newIntersection = this.collider.getIntersection(element.collider);
+                        let areaAfterMove = Math.round((newIntersection) * 1000) / 1000;
+
+                        if (areaBeforeMove < areaAfterMove) {
+                            canMoveY = false;
+                        }
+                    }
+                    this.collider.position = oldPosition;
+                }
+            })
+
             if (canMoveX && canMoveY) {
                 this.cmpTransform.mtxLocal.translate(_direction, false);
             } else if (canMoveX && !canMoveY) {
