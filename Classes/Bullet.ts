@@ -71,10 +71,14 @@ namespace Bullets {
             this.collisionDetection();
 
 
-            if (this.tick >= 2 && this.hostPositions[this.tick - 2] != undefined && this.positions[this.tick - 2] != undefined) {
-                if (this.hostPositions[this.tick - 2].x != this.positions[this.tick - 2].x || this.hostPositions[this.tick - 2].y != this.positions[this.tick - 2].y) {
-                    console.log("help!");
-                    this.correctPosition();
+            if (Networking.client.id != Networking.client.idHost) {
+                if (this.tick >= 1 && this.hostPositions[this.tick - 1] != undefined && this.positions[this.tick - 1] != undefined) {
+                    if (this.hostPositions[this.tick - 1].x != this.positions[this.tick - 1].x || this.hostPositions[this.tick - 1].y != this.positions[this.tick - 1].y) {
+                        console.log("help!");
+                        console.log(this.positions[this.tick - 1]);
+                        console.log(this.hostPositions[this.tick - 1]);
+                        this.correctPosition();
+                    }
                 }
             }
 
@@ -94,6 +98,8 @@ namespace Bullets {
             if (this.hostPositions[this.tick] != undefined) {
                 console.log("fixed!");
                 this.cmpTransform.mtxLocal.translation = this.hostPositions[this.tick];
+                console.log(this.hostPositions[this.tick]);
+                console.log(this.cmpTransform.mtxLocal.translation.toVector2());
             } else {
                 setTimeout(() => { this.correctPosition }, 100);
             }

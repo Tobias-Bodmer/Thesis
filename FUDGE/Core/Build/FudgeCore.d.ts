@@ -846,7 +846,7 @@ declare namespace FudgeCore {
         * A cameraprojection with extremely narrow focus is used, so each pixel of the buffer would hold the same information from the node,
         * but the fragment shader renders only 1 pixel for each node into the render buffer, 1st node to 1st pixel, 2nd node to second pixel etc.
         */
-        protected static pick(_node: Node, _mtxMeshToWorld: Matrix4x4, _mtxWorldToView: Matrix4x4): void;
+        protected static pick(_node: Node, _mtxMeshToWorld: Matrix4x4, _cmpCamera: ComponentCamera): void;
         /**
          * Set light data in shaders
          */
@@ -854,7 +854,9 @@ declare namespace FudgeCore {
         /**
          * Draw a mesh buffer using the given infos and the complete projection matrix
          */
-        protected static drawMesh(_cmpMesh: ComponentMesh, cmpMaterial: ComponentMaterial, _cmpCamera: ComponentCamera): void;
+        protected static drawNode(_node: Node, _cmpCamera: ComponentCamera): void;
+        private static calcMeshToView;
+        private static getRenderBuffers;
     }
 }
 declare namespace FudgeCore {
@@ -1938,6 +1940,20 @@ declare namespace FudgeCore {
 }
 declare namespace FudgeCore {
     /**
+     * Makes the node face the camera when rendering, respecting restrictions for rotation around specific axis
+     * @authors Jirka Dell'Oro-Friedl, HFU, 2022
+     * @link https://github.com/JirkaDellOro/FUDGE/wiki/Component
+     */
+    class ComponentFaceCamera extends Component {
+        static readonly iSubclass: number;
+        upLocal: boolean;
+        up: Vector3;
+        restrict: boolean;
+        constructor();
+    }
+}
+declare namespace FudgeCore {
+    /**
      * Filters synchronization between a graph instance and the graph it is connected to. If active, no synchronization occurs.
      * Maybe more finegrained in the future...
      * @authors Jirka Dell'Oro-Friedl, HFU, 2022
@@ -1994,7 +2010,6 @@ declare namespace FudgeCore {
      * ```
      */
     class LightPoint extends Light {
-        range: number;
     }
     /**
      * Spot light emitting within a specified angle from its position, illuminating objects depending on their position and distance with its color
@@ -2119,16 +2134,6 @@ declare namespace FudgeCore {
         static readonly iSubclass: number;
         mtxLocal: Matrix4x4;
         constructor(_mtxInit?: Matrix4x4);
-        /**
-         * Adjusts the rotation to point the z-axis directly at the given target point in world space and tilts it to accord with the given up vector,
-         * respectively calculating yaw and pitch. If no up vector is given, the previous up-vector is used.
-         */
-        lookAt(_targetWorld: Vector3, _up?: Vector3): void;
-        /**
-         * Adjusts the rotation to match its y-axis with the given up-vector and facing its z-axis toward the given target at minimal angle,
-         * respectively calculating yaw only. If no up vector is given, the previous up-vector is used.
-         */
-        showTo(_targetWorld: Vector3, _up?: Vector3): void;
         /**
          * recalculates this local matrix to yield the identical world matrix based on the given node.
          * Use rebase before appending the container of this component to another node while preserving its transformation in the world.
@@ -2968,7 +2973,14 @@ declare namespace FudgeCore {
          * Return a copy of this
          */
         get clone(): Matrix3x3;
+        /**
+         * Resets the matrix to the identity-matrix and clears cache. Used by the recycler to reset.
+         */
         recycle(): void;
+        /**
+         * Resets the matrix to the identity-matrix and clears cache.
+         */
+        reset(): void;
         /**
          * Add a translation by the given {@link Vector2} to this matrix
          */
@@ -3077,12 +3089,11 @@ declare namespace FudgeCore {
          * Computes and returns a matrix with the given translation, its z-axis pointing directly at the given target,
          * and a minimal angle between its y-axis and the given up-{@link Vector3}, respetively calculating yaw and pitch.
          */
-        static LOOK_AT(_translation: Vector3, _target: Vector3, _up?: Vector3): Matrix4x4;
+        static LOOK_AT(_translation: Vector3, _target: Vector3, _up?: Vector3, _restrict?: boolean): Matrix4x4;
         /**
          * Computes and returns a matrix with the given translation, its y-axis matching the given up-{@link Vector3}
          * and its z-axis facing towards the given target at a minimal angle, respetively calculating yaw only.
          */
-        static SHOW_TO(_translation: Vector3, _target: Vector3, _up?: Vector3): Matrix4x4;
         /**
          * Returns a matrix that translates coordinates along the x-, y- and z-axis according to the given {@link Vector3}.
          */
@@ -3157,7 +3168,14 @@ declare namespace FudgeCore {
          * Return a copy of this
          */
         get clone(): Matrix4x4;
+        /**
+         * Resets the matrix to the identity-matrix and clears cache. Used by the recycler to reset.
+         */
         recycle(): void;
+        /**
+         * Resets the matrix to the identity-matrix and clears cache.
+         */
+        reset(): void;
         /**
          * Rotate this matrix by given {@link Vector3} in the order Z, Y, X. Right hand rotation is used, thumb points in axis direction, fingers curling indicate rotation
          * The rotation is appended to already applied transforms, thus multiplied from the right. Set _fromLeft to true to switch and put it in front.
@@ -3182,17 +3200,15 @@ declare namespace FudgeCore {
          * respectively calculating yaw and pitch. If no up-{@link Vector3} is given, the previous up-{@link Vector3} is used.
          * When _preserveScaling is false, a rotated identity matrix is the result.
          */
-        lookAt(_target: Vector3, _up?: Vector3, _preserveScaling?: boolean): void;
+        lookAt(_target: Vector3, _up?: Vector3, _restrict?: boolean): void;
         /**
          * Same as {@link Matrix4x4.lookAt}, but optimized and needs testing
          */
-        lookAtRotate(_target: Vector3, _up?: Vector3, _preserveScaling?: boolean): void;
         /**
          * Adjusts the rotation of this matrix to match its y-axis with the given up-{@link Vector3} and facing its z-axis toward the given target at minimal angle,
          * respectively calculating yaw only. If no up-{@link Vector3} is given, the previous up-{@link Vector3} is used.
          * When _preserveScaling is false, a rotated identity matrix is the result.
          */
-        showTo(_target: Vector3, _up?: Vector3, _preserveScaling?: boolean): void;
         /**
          * Add a translation by the given {@link Vector3} to this matrix.
          * If _local is true, translation occurs according to the current rotation and scaling of this matrix,
@@ -3231,11 +3247,11 @@ declare namespace FudgeCore {
          * Multiply this matrix with the given matrix
          */
         multiply(_matrix: Matrix4x4, _fromLeft?: boolean): void;
+        getEulerAngles(): Vector3;
         /**
          * Calculates and returns the euler-angles representing the current rotation of this matrix.
-         * **Caution!** Use immediately and readonly, since the vector is going to be reused by Recycler. Create a clone to keep longer and manipulate.
          */
-        getEulerAngles(): Vector3;
+        getEulerAnglesX(): Vector3;
         /**
          * Sets the elements of this matrix to the values of the given matrix
          */
@@ -3661,7 +3677,7 @@ declare namespace FudgeCore {
         get type(): string;
         get boundingBox(): Box;
         get radius(): number;
-        useRenderBuffers(_shader: typeof Shader, _mtxWorld: Matrix4x4, _mtxProjection: Matrix4x4, _id?: number): RenderBuffers;
+        useRenderBuffers(_shader: typeof Shader, _mtxMeshToWorld: Matrix4x4, _mtxMeshToView: Matrix4x4, _id?: number): RenderBuffers;
         getRenderBuffers(_shader: typeof Shader): RenderBuffers;
         deleteRenderBuffers(_shader: typeof Shader): void;
         clear(): void;
