@@ -1,40 +1,13 @@
 namespace Enemy {
     enum BEHAVIOUR {
-        FOLLOW, FLEE
+        IDLE, FOLLOW, FLEE
     }
     import ƒAid = FudgeAid;
 
 
-    class DumbInstructions {
-        public static get(): ƒAid.StateMachineInstructions<BEHAVIOUR> {
-            let setup: ƒAid.StateMachineInstructions<BEHAVIOUR> = new ƒAid.StateMachineInstructions();
-            setup.transitDefault = DumbInstructions.transitDefault;
-            setup.actDefault = DumbInstructions.actDefault;
-            setup.setAction(BEHAVIOUR.FOLLOW, this.stop);
-            return setup;
-        }
-        static async actDefault(_machine: ƒAid.StateMachine<BEHAVIOUR>) {
-            // console.log("defaulAction");
-            // _machine.transit(BEHAVIOUR.FOLLOW);
-            // _machine.act();
-        }
-
-        private static transitDefault(_machine: ƒAid.StateMachine<BEHAVIOUR>) {
-            // console.log("transition");
-        }
-
-        // private static transit(_machine: ƒAid.StateMachine<BEHAVIOUR>) {
-        //     console.log("transit transit");
-        // }
-
-        private static async stop(_machine: ƒAid.StateMachine<BEHAVIOUR>) {
-            // console.log("stop");
-            // _machine.transit(BEHAVIOUR.IDLE);
-            // // _machine.act();
-        }
-    }
 
     export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+        currentState: BEHAVIOUR;
         public tag: Tag.TAG = Tag.TAG.ENEMY;
         public netId: number = Networking.idGenerator();
         public properties: Player.Character;
@@ -250,14 +223,9 @@ namespace Enemy {
     }
 
     export class EnemyDumb extends Enemy {
-        private static instructions: ƒAid.StateMachineInstructions<BEHAVIOUR> = DumbInstructions.get();
-        stateMachine: ƒAid.ComponentStateMachine<BEHAVIOUR> = new ƒAid.ComponentStateMachine();
 
         constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2) {
             super(_name, _properties, _position);
-            this.stateMachine.instructions = EnemyDumb.instructions;
-            this.addComponent(this.stateMachine);
-            this.stateMachine.act();
         }
 
         move(): void {
@@ -271,19 +239,18 @@ namespace Enemy {
             let target = this.getTarget();
             let distance = ƒ.Vector3.DIFFERENCE(target, this.cmpTransform.mtxLocal.translation).magnitude;
             if (distance < 1) {
-                this.stateMachine.transit(BEHAVIOUR.FLEE);
-                this.stateMachine.act();
+                this.currentState = BEHAVIOUR.FLEE;
             }
             else if (distance > 5) {
-                this.stateMachine.transit(BEHAVIOUR.FOLLOW);
-                this.stateMachine.act();
+                this.currentState = BEHAVIOUR.FOLLOW
             }
 
         }
+
         moveBehaviour() {
 
             this.behaviour();
-            switch (this.stateMachine.stateCurrent) {
+            switch (this.currentState) {
                 case BEHAVIOUR.FLEE:
                     this.moveAway();
                     break;
