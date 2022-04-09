@@ -43,3 +43,10 @@ canvas {
     height: 10px;
     background-color: green;
 }
+
+#IMHOST{
+    width: 250px;
+    height: inherit;
+    font-size: 32px;
+    color: red;
+}
