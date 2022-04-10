@@ -12,17 +12,10 @@ namespace InputSystem {
         if (Game.gamestate == Game.GAMESTATES.PLAYING) {
             let ray: ƒ.Ray = Game.viewport.getRayFromClient(new ƒ.Vector2(_mouseEvent.offsetX, _mouseEvent.offsetY));
             mousePosition = ray.intersectPlane(new ƒ.Vector3(0, 0, 0), new ƒ.Vector3(0, 0, 1));
-            Game.avatar1.mtxLocal.rotation = new ƒ.Vector3(0, 0, calcDegree(Game.avatar1.mtxLocal.translation, mousePosition));
+            Game.avatar1.mtxLocal.rotation = new ƒ.Vector3(0, 0, Calculation.calcDegree(Game.avatar1.mtxLocal.translation, mousePosition));
         }
     }
 
-    export function calcDegree(_center: ƒ.Vector3, _target: ƒ.Vector3): number {
-        let xDistance: number = _target.x - _center.x;
-        let yDistance: number = _target.y - _center.y;
-        let degrees: number = Math.atan2(yDistance, xDistance) * (180 / Math.PI) - 90;
-        return degrees;
-
-    }
 
     export function calcPositionFromDegree(_degrees: number, _distance: number): ƒ.Vector2 {
         let distance = 5;

@@ -76,26 +76,10 @@ namespace Enemy {
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
         }
 
-        getTarget(): ƒ.Vector3 {
-            let target = Game.avatar1;
 
-            if (Game.connected) {
-                let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.avatar1.cmpTransform.mtxLocal.translation);
-                let distancePlayer2 = this.cmpTransform.mtxLocal.translation.getDistance(Game.avatar2.cmpTransform.mtxLocal.translation);
-
-                if (distancePlayer1 < distancePlayer2) {
-                    target = Game.avatar1;
-                }
-                else {
-                    target = Game.avatar2;
-                }
-            }
-
-            return target.cmpTransform.mtxLocal.translation;
-        }
 
         public moveSimple() {
-            this.target = this.getTarget();
+            this.target = Calculation.getVectorToAvatar(this.cmpTransform.mtxLocal.translation);
 
             let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.target, this.cmpTransform.mtxLocal.translation);
             direction.normalize();
@@ -113,7 +97,7 @@ namespace Enemy {
         }
 
         moveAway() {
-            this.target = this.getTarget();
+            this.target = Calculation.getVectorToAvatar(this.cmpTransform.mtxLocal.translation);
 
 
             let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.cmpTransform.mtxLocal.translation, this.target);
@@ -236,7 +220,7 @@ namespace Enemy {
         }
 
         behaviour() {
-            let target = this.getTarget();
+            let target = Calculation.getVectorToAvatar(this.cmpTransform.mtxLocal.translation);
             let distance = ƒ.Vector3.DIFFERENCE(target, this.cmpTransform.mtxLocal.translation).magnitude;
             if (distance < 1) {
                 this.currentState = BEHAVIOUR.FLEE;
@@ -303,7 +287,7 @@ namespace Enemy {
         }
 
         async moveCircle() {
-            this.target = this.getTarget();
+            this.target = Calculation.getVectorToAvatar(this.cmpTransform.mtxLocal.translation);
             console.log(this.target);
             let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.avatar1.cmpTransform.mtxLocal.translation);
             // let distancePlayer2 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player2.cmpTransform.mtxLocal.translation);
@@ -311,7 +295,7 @@ namespace Enemy {
                 this.moveSimple();
             }
             else {
-                let degree = InputSystem.calcDegree(this.cmpTransform.mtxLocal.translation, this.target)
+                let degree = Calculation.calcDegree(this.cmpTransform.mtxLocal.translation, this.target)
                 let add = 0;
 
                 // while (distancePlayer1 <= this.distance) {

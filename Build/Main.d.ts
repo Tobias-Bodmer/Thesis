@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -69,7 +69,6 @@ declare namespace Enemy {
         generateSprites(_spritesheet: ƒ.CoatTextured): void;
         move(): void;
         updateCollider(): void;
-        getTarget(): ƒ.Vector3;
         moveSimple(): void;
         moveAway(): void;
         lifespan(_graph: Game.ƒ.Node): void;
@@ -161,6 +160,8 @@ declare namespace Bullets {
         lifespan(_graph: ƒ.Node): Promise<void>;
         constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
         move(): Promise<void>;
+        updateRotation(_direction: ƒ.Vector3): void;
+        bulletPrediction(): void;
         correctPosition(): Promise<void>;
         loadTexture(): void;
         collisionDetection(): Promise<void>;
@@ -171,6 +172,13 @@ declare namespace Bullets {
     class MeleeBullet extends Bullet {
         constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
         loadTexture(): Promise<void>;
+    }
+    class HomingBullet extends Bullet {
+        target: ƒ.Vector3;
+        rotateSpeed: number;
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
+        move(): Promise<void>;
+        calculateHoming(): void;
     }
 }
 declare namespace Player {
@@ -205,8 +213,12 @@ declare namespace EnemySpawner {
         getSpawnPositions(_room: Generation.Room): ƒ.Vector2[];
     }
 }
-declare namespace InputSystem {
+declare namespace Calculation {
+    function getVectorToAvatar(_startPoint: ƒ.Vector3): ƒ.Vector3;
     function calcDegree(_center: ƒ.Vector3, _target: ƒ.Vector3): number;
+    function getRotatedVectorByAngle2D(_vectorToRotate: ƒ.Vector3, _angle: number): ƒ.Vector3;
+}
+declare namespace InputSystem {
     function calcPositionFromDegree(_degrees: number, _distance: number): ƒ.Vector2;
     function move(): void;
 }

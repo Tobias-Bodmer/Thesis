@@ -27,8 +27,8 @@ namespace Bullets {
                     Networking.popID(this.netId);
                     Networking.removeBullet(this.netId);
 
-                    console.log(this.hostPositions);
-                    console.log(this.positions);
+                    // console.log(this.hostPositions);
+                    // console.log(this.positions);
                 }
             }
         }
@@ -58,17 +58,24 @@ namespace Bullets {
 
             let newPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
             this.collider = new Collider.Collider(newPosition, this.cmpTransform.mtxLocal.scaling.y / 1.5);
-
+            this.updateRotation(_direction);
             this.loadTexture();
-            this.mtxLocal.rotateZ(InputSystem.calcDegree(this.cmpTransform.mtxLocal.translation, ƒ.Vector3.SUM(_direction, this.cmpTransform.mtxLocal.translation)) + 90);
-            this.cmpTransform.mtxLocal.scaleY(0.25);
+            // console.log(cmpMesh.mtxPivot.rotation);
             this.flyDirection = ƒ.Vector3.X();
         }
 
 
         async move() {
             this.cmpTransform.mtxLocal.translate(this.flyDirection);
+            this.bulletPrediction();
+            this.collisionDetection();
+        }
 
+        updateRotation(_direction: ƒ.Vector3) {
+            this.mtxLocal.rotateZ(Calculation.calcDegree(this.cmpTransform.mtxLocal.translation, ƒ.Vector3.SUM(_direction, this.cmpTransform.mtxLocal.translation)) + 90);
+        }
+
+        bulletPrediction() {
             this.time += Game.ƒ.Loop.timeFrameGame;
 
             while (this.time >= 1) {
@@ -87,10 +94,6 @@ namespace Bullets {
                     }
                 }
             }
-
-            let newPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
-            this.collider.position = newPosition;
-            this.collisionDetection();
         }
 
         async correctPosition() {
@@ -105,6 +108,7 @@ namespace Bullets {
             let newTxt: ƒ.TextureImage = new ƒ.TextureImage();
             let newCoat: ƒ.CoatRemissiveTextured = new ƒ.CoatRemissiveTextured();
             let newMtr: ƒ.Material = new ƒ.Material("mtr", ƒ.ShaderFlatTextured, newCoat);
+
             let oldComCoat: ƒ.ComponentMaterial = new ƒ.ComponentMaterial();
 
             oldComCoat = this.getComponent(ƒ.ComponentMaterial);
@@ -116,6 +120,8 @@ namespace Bullets {
         }
 
         async collisionDetection() {
+            let newPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
+            this.collider.position = newPosition;
             let colliders: any[] = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY);
             colliders.forEach((element) => {
                 if (this.collider.collides(element.collider) && element.properties != undefined && this.killcount > 0) {
@@ -156,6 +162,49 @@ namespace Bullets {
 
         async loadTexture() {
 
+        }
+    }
+
+    export class HomingBullet extends Bullet {
+        target: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
+        rotateSpeed: number = 5;
+        // targetVector: ƒ.Vector3 = Calculation.getVectorToAvatar(this.start);
+
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number) {
+            super(_position, _direction, _netId);
+            this.speed = 5;
+            this.hitPoints = 10;
+            this.lifetime = 5 * Game.frameRate;
+            this.killcount = 4;
+            // if (Game.enemies.length > 0) {
+            //     this.start = Game.enemies[0].cmpTransform.mtxLocal.translation;
+            // }
+        }
+        async move(): Promise<void> {
+            this.calculateHoming();
+            super.move()
+        }
+
+        calculateHoming() {
+
+            let newDirection = ƒ.Vector3.DIFFERENCE(this.target, this.mtxLocal.translation);
+            let normalized: ƒ.Vector3;
+            if (newDirection.x != 0 && newDirection.y != 0) {
+                newDirection.normalize();
+                normalized = ƒ.Vector3.NORMALIZATION(newDirection);
+            }
+            // let targetDirection: ƒ.Vector3 = ƒ.Vector3.NORMALIZATION(this.flyDirection);
+            // let rotateAmount: number = (ƒ.Vector3.CROSS(newDirection, ƒ.Vector3.Y()).z * 180) / Math.PI;
+            let rotateAmount2: number = ƒ.Vector3.CROSS(newDirection, ƒ.Vector3.X()).z;
+            // console.log(rotateAmount * -1);
+            // this.flyDirection = new ƒ.Vector3(this.flyDirection.x, this.flyDirection.y, ƒ.Vector3.SUM(this.flyDirection, rotateVector).z)
+            // console.log(this.flyDirection);
+            // this.flyDirection = Calculation.getRotatedVectorByAngle2D(this.flyDirection, 5);
+            this.mtxLocal.rotateZ(rotateAmount2 * this.rotateSpeed);
+            // console.log(rotateAmount2);
+
+
+            // this.flyDirection = ƒ.Vector3.X();
         }
     }
 }

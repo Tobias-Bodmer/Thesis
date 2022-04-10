@@ -155,7 +155,7 @@ namespace Game {
     }
 
     async function loadTextures() {
-        await Bullets.bulletTxt.load("./Resources/Image/arrow.png");
+        await Bullets.bulletTxt.load("./Resources/Image/arrow01.png");
 
         await UI.txtZero.load("./Resources/Image/0.png");
         await UI.txtOne.load("./Resources/Image/1.png");
