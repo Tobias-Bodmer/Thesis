@@ -126,11 +126,13 @@ namespace Bullets {
             let colliders: any[] = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY);
             colliders.forEach((element) => {
                 if (this.collider.collides(element.collider) && element.properties != undefined && this.killcount > 0) {
-                    (<Enemy.Enemy>element).properties.attributes.healthPoints -= this.hitPoints;
-                    (<Player.Player>this.avatar).doKnockback(element);
-                    Game.graph.addChild(new UI.DamageUI((<Enemy.Enemy>element).cmpTransform.mtxLocal.translation, this.hitPoints));
-                    this.lifetime = 0;
-                    this.killcount--;
+                    if ((<Enemy.Enemy>element).properties.attributes.healthPoints > 0) {
+                        (<Enemy.Enemy>element).properties.attributes.healthPoints -= this.hitPoints;
+                        (<Player.Player>this.avatar).doKnockback(element);
+                        Game.graph.addChild(new UI.DamageUI((<Enemy.Enemy>element).cmpTransform.mtxLocal.translation, this.hitPoints));
+                        this.lifetime = 0;
+                        this.killcount--;
+                    }
                 }
             })
 
@@ -173,7 +175,7 @@ namespace Bullets {
         targetDirection: ƒ.Vector3;
 
         constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _target: ƒ.Vector3, _avatar: Game.ƒAid.NodeSprite, _netId?: number) {
-            super(_position, _direction,_avatar, _netId);
+            super(_position, _direction, _avatar, _netId);
             this.speed = 20;
             this.hitPoints = 5;
             this.lifetime = 1 * Game.frameRate;

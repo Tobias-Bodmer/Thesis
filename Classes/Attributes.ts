@@ -31,6 +31,10 @@ namespace Player {
                     this.attackPoints += _attributes.attackPoints;
                     break; // calculate attributes by adding them
                 case Items.ITEMTYPE.SUBSTRACT:
+                    this.healthPoints -= _attributes.healthPoints;
+                    this.maxHealthPoints -= _attributes.maxHealthPoints;
+                    this.speed -= _attributes.speed;
+                    this.attackPoints -= _attributes.attackPoints;
                     break; // calculate attribes by substacting them
                 case Items.ITEMTYPE.PROCENTUAL:
                     this.healthPoints = this.healthPoints * ((100 + _attributes.healthPoints) / 100);
