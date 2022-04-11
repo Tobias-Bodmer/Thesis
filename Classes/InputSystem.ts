@@ -28,7 +28,7 @@ namespace InputSystem {
     }
     //#endregion
 
-    //#region move
+    //#region move and ability
     let controller = new Map<string, boolean>([
         ["W", false],
         ["A", false],
@@ -38,8 +38,12 @@ namespace InputSystem {
 
     function keyboardDownEvent(_e: KeyboardEvent) {
         if (Game.gamestate == Game.GAMESTATES.PLAYING) {
-            let key: string = _e.code.toUpperCase().substring(3);
-            controller.set(key, true);
+            if (_e.code.toUpperCase() != "SPACE") {
+                let key: string = _e.code.toUpperCase().substring(3);
+                controller.set(key, true);
+            } else {
+                ability();
+            }
         }
     }
 
@@ -74,6 +78,10 @@ namespace InputSystem {
         if (hasChanged && moveVector.magnitude != 0) {
             Game.avatar1.move(Game.ƒ.Vector3.NORMALIZATION(moveVector, 1));
         }
+    }
+
+    function ability() {
+        Game.avatar1.doAbility();
     }
     //#endregion
 

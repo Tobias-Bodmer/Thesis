@@ -302,16 +302,26 @@ declare namespace Player {
         collider: Collider.Collider;
         canMove: boolean;
         knockbackForce: number;
+        readonly abilityCount: number;
+        currentabilityCount: number;
+        readonly abilityCooldownTime: number;
+        currentabilityCooldownTime: number;
         constructor(_name: string, _properties: Character);
         move(_direction: ƒ.Vector3): void;
         attack(_direction: ƒ.Vector3, _netId?: number, sync?: boolean): void;
         doKnockback(_body: ƒAid.NodeSprite): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
+        doAbility(): void;
         cooldown(): void;
         collector(): void;
     }
     class Melee extends Player {
+        readonly abilityCount: number;
+        currentabilityCount: number;
+        readonly abilityCooldownTime: number;
+        currentabilityCooldownTime: number;
         attack(_direction: ƒ.Vector3, _netId?: number, sync?: boolean): void;
+        doAbility(): void;
     }
     class Ranged extends Player {
     }

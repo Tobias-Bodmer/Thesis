@@ -14,6 +14,11 @@ namespace Player {
         canMove: boolean = true;
         knockbackForce: number;
 
+        readonly abilityCount: number = 1;
+        currentabilityCount: number = this.abilityCount;
+        readonly abilityCooldownTime: number = 10;
+        currentabilityCooldownTime: number = this.abilityCooldownTime;
+
         constructor(_name: string, _properties: Character) {
             super(_name);
             this.addComponent(new ƒ.ComponentTransform());
@@ -148,6 +153,10 @@ namespace Player {
             }
         }
 
+        public doAbility() {
+
+        }
+
         public cooldown() {
 
             let specificCoolDownTime: number = this.weapon.cooldownTime * this.properties.attributes.coolDownReduction;
@@ -162,6 +171,15 @@ namespace Player {
                     this.weapon.currentCooldownTime--;
                 }
             }
+
+            if (this.currentabilityCount <= 0) {
+                if (this.currentabilityCooldownTime <= 0) {
+                    this.currentabilityCooldownTime = this.abilityCooldownTime;
+                    this.currentabilityCount = this.abilityCount;
+                } else {
+                    this.currentabilityCooldownTime--;
+                }
+            }
         }
 
         public collector() {
@@ -171,6 +189,12 @@ namespace Player {
     }
 
     export class Melee extends Player {
+
+        readonly abilityCount: number = 1;
+        currentabilityCount: number = this.abilityCount;
+        readonly abilityCooldownTime: number = 40;
+        currentabilityCooldownTime: number = this.abilityCooldownTime;
+
         public attack(_direction: ƒ.Vector3, _netId?: number, sync?: boolean) {
             if (this.weapon.currentAttackCount > 0) {
                 _direction.normalize();
@@ -183,6 +207,20 @@ namespace Player {
                 }
 
                 this.weapon.currentAttackCount--;
+            }
+        }
+
+        public doAbility() {
+            if (this.currentabilityCount > 0) {
+                this.properties.attributes.speed *= 4;
+
+                setTimeout(() => {
+                    this.properties.attributes.speed /= 2;
+                    setTimeout(() => {
+                        this.properties.attributes.speed /= 2;
+                    }, 100);
+                }, 300);
+                this.currentabilityCount--;
             }
         }
     }
