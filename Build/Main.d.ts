@@ -81,9 +81,11 @@ declare namespace Enemy {
         moveBehaviour(): void;
         lifespan(_graph: ƒ.Node): void;
     }
-    export class EnemyFlee extends Enemy {
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
+    export class EnemyShoot extends Enemy {
+        weapon: Weapons.Weapon;
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon);
         move(): void;
+        shoot(): void;
         lifespan(_graph: ƒ.Node): void;
     }
     export class EnemyCircle extends Enemy {
@@ -151,7 +153,6 @@ declare namespace Bullets {
         hostPositions: ƒ.Vector3[];
         tag: Tag.TAG;
         flyDirection: ƒ.Vector3;
-        targetDirection: ƒ.Vector3;
         collider: Collider.Collider;
         hitPoints: number;
         speed: number;
@@ -177,7 +178,8 @@ declare namespace Bullets {
     class HomingBullet extends Bullet {
         target: ƒ.Vector3;
         rotateSpeed: number;
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
+        targetDirection: ƒ.Vector3;
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _target: ƒ.Vector3, _netId?: number);
         move(): Promise<void>;
         calculateHoming(): void;
     }
@@ -215,7 +217,7 @@ declare namespace EnemySpawner {
     }
 }
 declare namespace Calculation {
-    function getVectorToAvatar(_startPoint: ƒ.Vector3): ƒ.Vector3;
+    function getCloserAvatarPosition(_startPoint: ƒ.Vector3): ƒ.Vector3;
     function calcDegree(_center: ƒ.Vector3, _target: ƒ.Vector3): number;
     function getRotatedVectorByAngle2D(_vectorToRotate: ƒ.Vector3, _angle: number): ƒ.Vector3;
 }

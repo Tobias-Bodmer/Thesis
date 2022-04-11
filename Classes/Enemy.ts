@@ -79,7 +79,7 @@ namespace Enemy {
 
 
         public moveSimple() {
-            this.target = Calculation.getVectorToAvatar(this.cmpTransform.mtxLocal.translation);
+            this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
 
             let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.target, this.cmpTransform.mtxLocal.translation);
             direction.normalize();
@@ -97,7 +97,7 @@ namespace Enemy {
         }
 
         moveAway() {
-            this.target = Calculation.getVectorToAvatar(this.cmpTransform.mtxLocal.translation);
+            this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
 
 
             let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.cmpTransform.mtxLocal.translation, this.target);
@@ -220,7 +220,7 @@ namespace Enemy {
         }
 
         behaviour() {
-            let target = Calculation.getVectorToAvatar(this.cmpTransform.mtxLocal.translation);
+            let target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
             let distance = ƒ.Vector3.DIFFERENCE(target, this.cmpTransform.mtxLocal.translation).magnitude;
             if (distance < 1) {
                 this.currentState = BEHAVIOUR.FLEE;
@@ -254,21 +254,41 @@ namespace Enemy {
 
 
     }
-
-    export class EnemyFlee extends Enemy {
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2) {
+    export class EnemyShoot extends Enemy {
+        weapon: Weapons.Weapon;
+        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon) {
             super(_name, _properties, _position);
+            this.weapon = _weapon;
         }
 
         move() {
             super.move();
-            this.moveAway();
+            this.shoot();
+        }
+
+        shoot() {
+            let target: ƒ.Vector3 = Calculation.getCloserAvatarPosition(this.mtxLocal.translation)
+            let _direction = ƒ.Vector3.DIFFERENCE(target, this.mtxLocal.translation);
+            if (this.weapon.currentAttackCount > 0) {
+                _direction.normalize();
+                let bullet: Bullets.Bullet = new Bullets.Bullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction);
+                bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
+                Game.graph.addChild(bullet);
+
+                // if (sync) {
+                //     Networking.spawnBullet(_direction, bullet.netId);
+                // }
+
+                this.weapon.currentAttackCount--;
+            }
         }
 
         lifespan(_graph: ƒ.Node): void {
             super.lifespan(_graph);
         }
     }
+
+
 
     export class EnemyCircle extends Enemy {
         distance: number = 5;
@@ -287,7 +307,7 @@ namespace Enemy {
         }
 
         async moveCircle() {
-            this.target = Calculation.getVectorToAvatar(this.cmpTransform.mtxLocal.translation);
+            this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
             console.log(this.target);
             let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.avatar1.cmpTransform.mtxLocal.translation);
             // let distancePlayer2 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player2.cmpTransform.mtxLocal.translation);

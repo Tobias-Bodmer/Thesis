@@ -112,7 +112,7 @@ namespace Player {
         public attack(_direction: ƒ.Vector3, _netId?: number, sync?: boolean) {
             if (this.weapon.currentAttackCount > 0) {
                 _direction.normalize();
-                let bullet: Bullets.HomingBullet = new Bullets.HomingBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, _netId);
+                let bullet: Bullets.Bullet = new Bullets.Bullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, _netId);
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
                 Game.graph.addChild(bullet);
 

@@ -1,5 +1,5 @@
 namespace Calculation {
-    export function getVectorToAvatar(_startPoint: ƒ.Vector3): ƒ.Vector3 {
+    export function getCloserAvatarPosition(_startPoint: ƒ.Vector3): ƒ.Vector3 {
         let target = Game.avatar1;
 
         if (Game.connected) {
