@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -92,7 +92,7 @@ declare namespace Enemy {
         weapon: Weapons.Weapon;
         constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _netId?: number);
         move(): void;
-        shoot(): void;
+        shoot(_netId?: number): void;
     }
     export {};
 }
@@ -146,6 +146,7 @@ declare namespace Player {
 declare namespace Bullets {
     let bulletTxt: ƒ.TextureImage;
     class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable {
+        owner: Tag.TAG;
         netId: number;
         tick: number;
         positions: ƒ.Vector3[];
@@ -237,14 +238,15 @@ declare namespace Networking {
         SPAWN = 2,
         TRANSFORM = 3,
         SPAWNBULLET = 4,
-        BULLETTRANSFORM = 5,
-        BULLETDIE = 6,
-        SPAWNENEMY = 7,
-        ENEMYTRANSFORM = 8,
-        ENEMYDIE = 9,
-        SPAWNITEM = 10,
-        UPDATEATTRIBUTES = 11,
-        ITEMDIE = 12
+        SPAWNBULLETENEMY = 5,
+        BULLETTRANSFORM = 6,
+        BULLETDIE = 7,
+        SPAWNENEMY = 8,
+        ENEMYTRANSFORM = 9,
+        ENEMYDIE = 10,
+        SPAWNITEM = 11,
+        UPDATEATTRIBUTES = 12,
+        ITEMDIE = 13
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -269,6 +271,7 @@ declare namespace Networking {
     function updateAvatarPosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3): void;
     function spawnBullet(_direction: ƒ.Vector3, _netId: number): void;
     function updateBullet(_position: ƒ.Vector3, _netId: number, _tick?: number): void;
+    function spawnBulletAtEnemy(_bulletNetId: number, _enemyNetId: number): Promise<void>;
     function removeBullet(_netId: number): void;
     function spawnEnemy(_enemy: Enemy.Enemy, _netId: number): void;
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number): void;
@@ -299,19 +302,18 @@ declare namespace Player {
         constructor(_name: string, _properties: Character);
         move(_direction: ƒ.Vector3): void;
         collids(_direction: Game.ƒ.Vector3): void;
-        attack(_direction: ƒ.Vector3, _netId?: number, sync?: boolean): void;
+        attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
         doKnockback(_body: ƒAid.NodeSprite): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
         doAbility(): void;
         cooldown(): void;
-        collector(): void;
     }
     class Melee extends Player {
         readonly abilityCount: number;
         currentabilityCount: number;
         readonly abilityCooldownTime: number;
         currentabilityCooldownTime: number;
-        attack(_direction: ƒ.Vector3, _netId?: number, sync?: boolean): void;
+        attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
         doAbility(): void;
     }
     class Ranged extends Player {
@@ -381,11 +383,12 @@ declare namespace UI {
     let txtTen: ƒ.TextureImage;
     class DamageUI extends ƒ.Node {
         tag: Tag.TAG;
+        up: number;
         lifetime: number;
         lifespan(_graph: ƒ.Node): Promise<void>;
         constructor(_position: ƒ.Vector3, _damage: number);
-        loadTexture(_texture: number): void;
         move(): Promise<void>;
+        loadTexture(_texture: number): void;
     }
 }
 declare namespace Weapons {
@@ -395,5 +398,6 @@ declare namespace Weapons {
         attackCount: number;
         currentAttackCount: number;
         constructor(_cooldownTime: number, _attackCount: number);
+        cooldown(_faktor: number): void;
     }
 }

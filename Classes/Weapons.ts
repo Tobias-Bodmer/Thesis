@@ -9,5 +9,21 @@ namespace Weapons {
             this.cooldownTime = _cooldownTime;
             this.attackCount = _attackCount;
         }
+
+
+        public cooldown(_faktor: number) {
+            let specificCoolDownTime = this.cooldownTime * _faktor;
+            if (this.currentAttackCount <= 0) {
+                if (this.currentCooldownTime <= 0) {
+                    this.currentCooldownTime = specificCoolDownTime;
+                    this.currentAttackCount = this.attackCount;
+                } else {
+                    // console.log(this.currentCooldownTime);
+
+                    this.currentCooldownTime--;
+                }
+            }
+
+        }
     }
 }

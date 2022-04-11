@@ -3,7 +3,7 @@ namespace Bullets {
     export let bulletTxt: ƒ.TextureImage = new ƒ.TextureImage();
 
     export class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable {
-
+        owner: Tag.TAG = Tag.TAG.PLAYER;
         public netId: number = Networking.idGenerator();
         public tick: number = 0;
         public positions: ƒ.Vector3[] = [];
@@ -123,7 +123,10 @@ namespace Bullets {
         async collisionDetection() {
             let newPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
             this.collider.position = newPosition;
-            let colliders: any[] = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY);
+            let colliders: any[] = [];
+            if (this.owner == Tag.TAG.PLAYER) {
+                colliders = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY);
+            }
             colliders.forEach((element) => {
                 if (this.collider.collides(element.collider) && element.properties != undefined && this.killcount > 0) {
                     if ((<Enemy.Enemy>element).properties.attributes.healthPoints > 0) {
@@ -135,6 +138,20 @@ namespace Bullets {
                     }
                 }
             })
+            if (this.owner == Tag.TAG.ENEMY) {
+                colliders = Game.graph.getChildren().filter(element => (<Player.Player>element).tag == Tag.TAG.PLAYER);
+                colliders.forEach((element) => {
+                    if (this.collider.collides(element.collider) && element.properties != undefined && this.killcount > 0) {
+                        if ((<Player.Player>element).properties.attributes.healthPoints > 0) {
+                            (<Player.Player>element).properties.attributes.healthPoints -= this.hitPoints;
+                            (<Enemy.Enemy>this.avatar).doKnockback(element);
+                            Game.graph.addChild(new UI.DamageUI((<Player.Player>element).cmpTransform.mtxLocal.translation, this.hitPoints));
+                            this.lifetime = 0;
+                            this.killcount--;
+                        }
+                    }
+                })
+            }
 
             colliders = [];
             colliders = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.TAG.ROOM)).walls;

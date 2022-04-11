@@ -125,14 +125,14 @@ namespace Player {
             }
         }
 
-        public attack(_direction: ƒ.Vector3, _netId?: number, sync?: boolean) {
+        public attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean) {
             if (this.weapon.currentAttackCount > 0) {
                 _direction.normalize();
                 let bullet: Bullets.Bullet = new Bullets.Bullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, this, _netId);
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
                 Game.graph.addChild(bullet);
 
-                if (sync) {
+                if (_sync) {
                     Networking.spawnBullet(_direction, bullet.netId);
                 }
 
@@ -180,19 +180,7 @@ namespace Player {
         }
 
         public cooldown() {
-
-            let specificCoolDownTime: number = this.weapon.cooldownTime * this.properties.attributes.coolDownReduction;
-            // console.log(this.properties.attributes.coolDownReduction);
-            if (this.weapon.currentAttackCount <= 0) {
-                if (this.weapon.currentCooldownTime <= 0) {
-                    this.weapon.currentCooldownTime = specificCoolDownTime;
-                    this.weapon.currentAttackCount = this.weapon.attackCount;
-                } else {
-                    // console.log(this.currentCooldownTime);
-
-                    this.weapon.currentCooldownTime--;
-                }
-            }
+            this.weapon.cooldown(this.properties.attributes.coolDownReduction);
 
             if (this.currentabilityCount <= 0) {
                 if (this.currentabilityCooldownTime <= 0) {
@@ -204,10 +192,6 @@ namespace Player {
             }
         }
 
-        public collector() {
-
-        }
-
     }
 
     export class Melee extends Player {
@@ -217,14 +201,14 @@ namespace Player {
         readonly abilityCooldownTime: number = 40;
         currentabilityCooldownTime: number = this.abilityCooldownTime;
 
-        public attack(_direction: ƒ.Vector3, _netId?: number, sync?: boolean) {
+        public attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean) {
             if (this.weapon.currentAttackCount > 0) {
                 _direction.normalize();
                 let bullet: Bullets.Bullet = new Bullets.MeleeBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, this, _netId);
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
                 Game.graph.addChild(bullet);
 
-                if (sync) {
+                if (_sync) {
                     Networking.spawnBullet(_direction, bullet.netId);
                 }
 

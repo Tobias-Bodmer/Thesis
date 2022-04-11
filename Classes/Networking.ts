@@ -7,6 +7,7 @@ namespace Networking {
         SPAWN,
         TRANSFORM,
         SPAWNBULLET,
+        SPAWNBULLETENEMY,
         BULLETTRANSFORM,
         BULLETDIE,
         SPAWNENEMY,
@@ -105,6 +106,18 @@ namespace Networking {
                             Game.avatar2.attack(new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]), message.content.netId);
                         }
 
+                        //Spawn bullet from enemy on host
+                        if (message.content != undefined && message.content.text == FUNCTION.SPAWNBULLETENEMY.toString()) {
+                            let enemy: Enemy.Enemy = Game.enemies.find(elem => elem.netId == message.content.enemyNetId);
+                            console.log(message.content.bulletNetId)
+                            if (enemy != null) {
+                                if (enemy instanceof Enemy.EnemyShoot && client.id != client.idHost) {
+                                    (<Enemy.EnemyShoot>enemy).shoot(message.content.bulletNetId);
+                                }
+                            }
+                        }
+
+
                         //Sync bullet transform from host to client
                         if (message.content != undefined && message.content.text == FUNCTION.BULLETTRANSFORM.toString()) {
                             if (Game.bullets.find(element => element.netId == message.content.netId) != null) {
@@ -187,6 +200,9 @@ namespace Networking {
             case Enemy.ENEMYNAME.BAT:
                 Game.graph.addChild(new Enemy.EnemyDumb(Enemy.ENEMYNAME.BAT, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed)), _position.toVector2(), _netId));
                 break;
+            case Enemy.ENEMYNAME.TICK:
+                let newEnem: Enemy.EnemyShoot = new Enemy.EnemyShoot(_id, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed)), _position.toVector2(), new Weapons.Weapon(10, 1), _netId);
+                Game.graph.addChild(newEnem);
         }
     }
 
@@ -200,6 +216,7 @@ namespace Networking {
         if (client.idHost == undefined) {
             client.becomeHost();
             someoneIsHost = true;
+            console.log("IM THE HOST IM THE HOST");
         } else {
             someoneIsHost = true;
         }
@@ -231,6 +248,7 @@ namespace Networking {
     //#region bullet
     export function spawnBullet(_direction: ƒ.Vector3, _netId: number) {
         if (Game.connected) {
+            6
             client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNBULLET, direction: _direction, netId: _netId } })
         }
     }
@@ -240,6 +258,13 @@ namespace Networking {
             client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.BULLETTRANSFORM, position: _position, netId: _netId, tick: _tick } })
         }
     }
+
+    export async function spawnBulletAtEnemy(_bulletNetId: number, _enemyNetId: number) {
+        if (Game.connected) {
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER_HOST, content: { text: FUNCTION.SPAWNBULLETENEMY, bulletNetId: _bulletNetId, enemyNetId: _enemyNetId } })
+        }
+    }
+
 
     export function removeBullet(_netId: number) {
         if (Game.connected && client.idHost == client.id) {
@@ -258,6 +283,8 @@ namespace Networking {
     export function updateEnemyPosition(_position: ƒ.Vector3, _netId: number) {
         client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.ENEMYTRANSFORM, position: _position, netId: _netId } })
     }
+
+
 
     export function removeEnemy(_netId: number) {
         client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.ENEMYDIE, netId: _netId } })

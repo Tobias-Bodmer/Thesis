@@ -65,7 +65,7 @@ namespace UI {
 
     export class DamageUI extends ƒ.Node {
         public tag: Tag.TAG = Tag.TAG.DAMAGEUI;
-
+        up: number = 0.15;
         lifetime: number = 0.5 * Game.frameRate;
 
         async lifespan(_graph: ƒ.Node) {
@@ -94,6 +94,10 @@ namespace UI {
             this.loadTexture(_damage);
         }
 
+        async move() {
+            this.cmpTransform.mtxLocal.translate(new ƒ.Vector3(0, this.up, 0));
+            this.cmpTransform.mtxLocal.scale(ƒ.Vector3.ONE(1.01));
+        }
         loadTexture(_texture: number) {
             let newTxt: ƒ.TextureImage = new ƒ.TextureImage();
             let newCoat: ƒ.CoatRemissiveTextured = new ƒ.CoatRemissiveTextured();
@@ -145,9 +149,6 @@ namespace UI {
             oldComCoat.material = newMtr;
         }
 
-        async move() {
-            this.cmpTransform.mtxLocal.translate(new ƒ.Vector3(0, 0.1, 0));
-            this.cmpTransform.mtxLocal.scale(ƒ.Vector3.ONE(1.02));
-        }
+
     }
 }

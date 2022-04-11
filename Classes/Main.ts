@@ -121,10 +121,14 @@ namespace Game {
                 enemies.forEach(element => {
                     element.move();
                     element.lifespan(graph);
+                    if (element instanceof Enemy.EnemyShoot) {
+                        (<Enemy.EnemyShoot>element).weapon.cooldown(element.properties.attributes.coolDownReduction);
+                    }
                 })
 
                 EnemySpawner.spawnEnemies();
             }
+
             UI.updateUI();
         }
     }

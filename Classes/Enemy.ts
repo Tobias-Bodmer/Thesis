@@ -297,7 +297,7 @@ namespace Enemy {
     export class EnemyShoot extends Enemy {
         weapon: Weapons.Weapon;
         constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _netId?: number) {
-            super(_id, _properties, _position);
+            super(_id, _properties, _position, _netId);
             this.weapon = _weapon;
         }
 
@@ -306,20 +306,21 @@ namespace Enemy {
             this.shoot();
         }
 
-        shoot() {
+        public shoot(_netId?: number) {
             let target: ƒ.Vector3 = Calculation.getCloserAvatarPosition(this.mtxLocal.translation)
             let _direction = ƒ.Vector3.DIFFERENCE(target, this.mtxLocal.translation);
             if (this.weapon.currentAttackCount > 0) {
                 _direction.normalize();
-                let bullet: Bullets.Bullet = new Bullets.Bullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, this);
+                let bullet: Bullets.Bullet = new Bullets.Bullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, this, _netId);
+                bullet.owner = this.tag;
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
                 Game.graph.addChild(bullet);
+                console.log("im shoooting baby");
+                if (Networking.client.id == Networking.client.idHost) {
+                    Networking.spawnBulletAtEnemy(bullet.netId, this.netId);
+                    this.weapon.currentAttackCount--;
+                }
 
-                // if (sync) {
-                //     Networking.spawnBullet(_direction, bullet.netId);
-                // }
-
-                this.weapon.currentAttackCount--;
             }
         }
     }
