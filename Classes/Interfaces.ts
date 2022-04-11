@@ -9,9 +9,7 @@ namespace Interfaces {
         doKnockback(_body: ƒAid.NodeSprite): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     }
-}
 
-namespace Player {
     export interface IKillable {
         onDeath(): void;
     }
@@ -19,7 +17,4 @@ namespace Player {
     export interface IDamageable {
         getDamage(): void;
     }
-
 }
-
-

@@ -13,6 +13,12 @@ namespace Generation {
         public roomType: ROOMTYPE
         public coordinates: [number, number]; // X Y
         public walls: Wall[] = [];
+        public doors: Door[] = [];
+        public finished: boolean = false;
+        neighbourN: Room;
+        neighbourE: Room;
+        neighbourS: Room;
+        neighbourW: Room;
         roomSize: number = 30;
         exits: [boolean, boolean, boolean, boolean] // N E S W
         mesh: ƒ.MeshQuad = new ƒ.MeshQuad;
@@ -59,10 +65,29 @@ namespace Generation {
             this.cmpTransform.mtxLocal.scale(new ƒ.Vector3(this.roomSize, this.roomSize, 0));
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(this.coordinates[0] * this.roomSize, this.coordinates[1] * this.roomSize, -0.02);
 
-            this.walls.push(new Wall(new ƒ.Vector2((this.roomSize / 2), 0), this.roomSize));
-            this.walls.push(new Wall(new ƒ.Vector2(-(this.roomSize / 2), 0), this.roomSize));
-            this.walls.push(new Wall(new ƒ.Vector2(0, (this.roomSize / 2)), this.roomSize));
-            this.walls.push(new Wall(new ƒ.Vector2(0, -(this.roomSize / 2)), this.roomSize));
+            this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, [true, false, false, false]));
+            this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, [false, true, false, false]));
+            this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, [false, false, true, false]));
+            this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, [false, false, false, true]));
+        }
+
+        public setDoors(): void {
+            if (this.exits[0]) {
+                this.doors.push(new Door(this, this.cmpTransform.mtxLocal.translation.toVector2(), [true, false, false, false], this.roomSize));
+            }
+            if (this.exits[1]) {
+                this.doors.push(new Door(this, this.cmpTransform.mtxLocal.translation.toVector2(), [false, true, false, false], this.roomSize));
+            }
+            if (this.exits[2]) {
+                this.doors.push(new Door(this, this.cmpTransform.mtxLocal.translation.toVector2(), [false, false, true, false], this.roomSize));
+            }
+            if (this.exits[3]) {
+                this.doors.push(new Door(this, this.cmpTransform.mtxLocal.translation.toVector2(), [false, false, false, true], this.roomSize));
+            }
+
+            for (let i = 0; i < this.doors.length; i++) {
+                this.addChild(this.doors[i]);
+            }
         }
 
         public getRoomSize(): number {
@@ -75,7 +100,7 @@ namespace Generation {
         public collider: Game.ƒ.Rectangle;
         public wallThickness: number = 2;
 
-        constructor(_position: Game.ƒ.Vector2, _width: number) {
+        constructor(_position: Game.ƒ.Vector2, _width: number, _direction: [boolean, boolean, boolean, boolean]) {
             super("Wall");
 
             this.addComponent(new ƒ.ComponentTransform());
@@ -84,22 +109,79 @@ namespace Generation {
 
             this.cmpTransform.mtxLocal.translation = _position.toVector3(0);
 
-            if (_position.x == 0) {
-                if (_position.y > 0) {
-                    this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(_width, this.wallThickness, 0);
-                    this.collider = new Game.ƒ.Rectangle(_position.x, _position.y, this.cmpTransform.mtxLocal.scaling.x, this.wallThickness, Game.ƒ.ORIGIN2D.CENTER);
-                } else {
-                    this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(_width, this.wallThickness, 0);
-                    this.collider = new Game.ƒ.Rectangle(_position.x, _position.y, this.cmpTransform.mtxLocal.scaling.x, this.wallThickness, Game.ƒ.ORIGIN2D.CENTER);
-                }
-            } else if (_position.y == 0) {
-                if (_position.x > 0) {
-                    this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(this.wallThickness, _width, 0);
-                    this.collider = new Game.ƒ.Rectangle(_position.x, _position.y, this.wallThickness, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
-                } else {
-                    this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(this.wallThickness, _width, 0);
-                    this.collider = new Game.ƒ.Rectangle(_position.x, _position.y, this.wallThickness, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
-                }
+
+            if (_direction[0]) {
+                this.cmpTransform.mtxLocal.translation.y += _width / 2 + this.wallThickness / 2;
+                this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(_width, this.wallThickness, 0);
+                this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.wallThickness, Game.ƒ.ORIGIN2D.CENTER);
+            }
+            if (_direction[1]) {
+                this.cmpTransform.mtxLocal.translation.x += _width / 2 + this.wallThickness / 2;
+                this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(this.wallThickness, _width, 0);
+                this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.wallThickness, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
+            }
+            if (_direction[2]) {
+                this.cmpTransform.mtxLocal.translation.y -= _width / 2 + this.wallThickness / 2;
+                this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(_width, this.wallThickness, 0);
+                this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.wallThickness, Game.ƒ.ORIGIN2D.CENTER);
+            }
+            if (_direction[3]) {
+                this.cmpTransform.mtxLocal.translation.x -= _width / 2 + this.wallThickness / 2;
+                this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(this.wallThickness, _width, 0);
+                this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.wallThickness, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
+            }
+
+        }
+    }
+
+    export class Door extends ƒ.Node {
+        public tag: Tag.TAG = Tag.TAG.DOOR;
+        public collider: Game.ƒ.Rectangle;
+        public doorWidth: number = 3;
+        public doorThickness: number = 1;
+        public parentRoom: Room;
+
+        direction: [boolean, boolean, boolean, boolean];
+
+        constructor(_parent: Room, _position: Game.ƒ.Vector2, _direction: [boolean, boolean, boolean, boolean], _roomSize: number) {
+            super("Door");
+
+            this.direction = _direction;
+            this.parentRoom = _parent;
+
+            this.addComponent(new ƒ.ComponentTransform());
+            this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshQuad));
+            this.addComponent(new ƒ.ComponentMaterial(new ƒ.Material("red", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("green")))));
+
+            this.cmpTransform.mtxLocal.translation = _position.toVector3(0.01);
+
+            if (_direction[0]) {
+                this.cmpTransform.mtxLocal.translation.y += _roomSize / 2;
+                this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(this.doorWidth, this.doorThickness, 0.001);
+                this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
+            }
+            if (_direction[1]) {
+                this.cmpTransform.mtxLocal.translation.x += _roomSize / 2;
+                this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(this.doorThickness, this.doorWidth, 0.001);
+                this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
+            }
+            if (_direction[2]) {
+                this.cmpTransform.mtxLocal.translation.y -= _roomSize / 2;
+                this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(this.doorWidth, this.doorThickness, 0.001);
+                this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
+            }
+            if (_direction[3]) {
+                this.cmpTransform.mtxLocal.translation.x -= _roomSize / 2;
+                this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(this.doorThickness, this.doorWidth, 0.001);
+                this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
+            }
+        }
+
+        public changeRoom() {
+            if (this.parentRoom.finished) {
+                console.log("collision!");
+
+                Generation.switchRoom(this.parentRoom, this.direction);
             }
         }
     }

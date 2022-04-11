@@ -93,7 +93,7 @@ namespace InputSystem {
             switch (mouseButton) {
                 case 0:
                     //left mouse button player.attack
-                    let direction: Game.ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(mousePosition, Game.avatar1.mtxLocal.translation)
+                    let direction: Game.ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(mousePosition, Game.avatar1.mtxLocal.translation);
                     rotateToMouse(e_);
                     Game.avatar1.attack(direction, null, true);
                     break;

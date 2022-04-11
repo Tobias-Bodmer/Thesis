@@ -45,7 +45,7 @@ namespace Enemy {
             this.id = _id;
             this.properties = _properties;
             this.addComponent(new ƒ.ComponentTransform());
-            this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
+            this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
             if (_netId != undefined) {
                 Networking.popID(this.netId);
                 Networking.currentIDs.push(_netId);
