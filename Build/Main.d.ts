@@ -33,8 +33,6 @@ declare namespace Interfaces {
         doKnockback(_body: ƒAid.NodeSprite): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     }
-}
-declare namespace Player {
     interface IKillable {
         onDeath(): void;
     }
@@ -331,6 +329,12 @@ declare namespace Generation {
         roomType: ROOMTYPE;
         coordinates: [number, number];
         walls: Wall[];
+        doors: Door[];
+        finished: boolean;
+        neighbourN: Room;
+        neighbourE: Room;
+        neighbourS: Room;
+        neighbourW: Room;
         roomSize: number;
         exits: [boolean, boolean, boolean, boolean];
         mesh: ƒ.MeshQuad;
@@ -343,17 +347,29 @@ declare namespace Generation {
         bossRoomMat: ƒ.Material;
         cmpMaterial: ƒ.ComponentMaterial;
         constructor(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: ROOMTYPE);
+        setDoors(): void;
         getRoomSize(): number;
     }
     class Wall extends ƒ.Node {
         tag: Tag.TAG;
         collider: Game.ƒ.Rectangle;
         wallThickness: number;
-        constructor(_position: Game.ƒ.Vector2, _width: number);
+        constructor(_position: Game.ƒ.Vector2, _width: number, _direction: [boolean, boolean, boolean, boolean]);
+    }
+    class Door extends ƒ.Node {
+        tag: Tag.TAG;
+        collider: Game.ƒ.Rectangle;
+        doorWidth: number;
+        doorThickness: number;
+        parentRoom: Room;
+        direction: [boolean, boolean, boolean, boolean];
+        constructor(_parent: Room, _position: Game.ƒ.Vector2, _direction: [boolean, boolean, boolean, boolean], _roomSize: number);
+        changeRoom(): void;
     }
 }
 declare namespace Generation {
     function generateRooms(): void;
+    function switchRoom(_currentRoom: Room, _direction: [boolean, boolean, boolean, boolean]): void;
 }
 declare namespace Tag {
     enum TAG {
@@ -363,7 +379,8 @@ declare namespace Tag {
         ITEM = 3,
         ROOM = 4,
         WALL = 5,
-        DAMAGEUI = 6
+        DOOR = 6,
+        DAMAGEUI = 7
     }
 }
 declare namespace UI {

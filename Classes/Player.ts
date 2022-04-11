@@ -23,6 +23,7 @@ namespace Player {
         constructor(_name: string, _properties: Character) {
             super(_name);
             this.addComponent(new ƒ.ComponentTransform());
+            this.cmpTransform.mtxLocal.translateZ(0.1);
             this.properties = _properties;
             this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);
         }
@@ -36,6 +37,13 @@ namespace Player {
             this.moveDirection.add(_direction);
 
             this.collids(this.moveDirection);
+
+            let doors: Generation.Door[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.TAG.ROOM)).doors;
+            doors.forEach((element) => {
+                if (this.collider.collidesRect(element.collider)) {
+                    (<Generation.Door>element).changeRoom();
+                }
+            });
 
             this.moveDirection.subtract(_direction);
         }

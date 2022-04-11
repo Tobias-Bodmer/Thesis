@@ -6,6 +6,7 @@ namespace Tag {
         ITEM,
         ROOM,
         WALL,
+        DOOR,
         DAMAGEUI
     }
 }
