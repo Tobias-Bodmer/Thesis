@@ -261,7 +261,7 @@ namespace Networking {
 
     export async function spawnBulletAtEnemy(_bulletNetId: number, _enemyNetId: number) {
         if (Game.connected) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER_HOST, content: { text: FUNCTION.SPAWNBULLETENEMY, bulletNetId: _bulletNetId, enemyNetId: _enemyNetId } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNBULLETENEMY, bulletNetId: _bulletNetId, enemyNetId: _enemyNetId } })
         }
     }
 
