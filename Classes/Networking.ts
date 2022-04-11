@@ -221,7 +221,7 @@ namespace Networking {
             someoneIsHost = true;
         }
     }
-    export function spawnPlayer(_type?: Player.PLAYERTYPE) {
+    export async function spawnPlayer(_type?: Player.PLAYERTYPE) {
         if (_type == Player.PLAYERTYPE.MELEE) {
             client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.MELEE, value: Game.avatar1.properties, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
         } else if (_type == Player.PLAYERTYPE.RANGED) {

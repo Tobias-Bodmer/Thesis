@@ -260,7 +260,7 @@ declare namespace Networking {
     function conneting(): void;
     function setClientReady(): void;
     function setHost(): void;
-    function spawnPlayer(_type?: Player.PLAYERTYPE): void;
+    function spawnPlayer(_type?: Player.PLAYERTYPE): Promise<void>;
     function connected(): void;
     /**
      * sends transform over network

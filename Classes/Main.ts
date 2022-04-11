@@ -187,7 +187,7 @@ namespace Game {
             connected = true;
             await init();
             gamestate = GAMESTATES.PLAYING;
-            Networking.spawnPlayer(playerType);
+            await Networking.spawnPlayer(playerType);
 
             //#region init Items
             if (Networking.client.id == Networking.client.idHost) {
