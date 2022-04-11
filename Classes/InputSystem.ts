@@ -42,6 +42,7 @@ namespace InputSystem {
                 let key: string = _e.code.toUpperCase().substring(3);
                 controller.set(key, true);
             } else {
+                //Do abilty from player
                 ability();
             }
         }
@@ -97,7 +98,7 @@ namespace InputSystem {
                     Game.avatar1.attack(direction, null, true);
                     break;
                 case 2:
-                    //TODO: right mouse button player.charge or something like that
+                    //TODO: right mouse button player.heavyAttack or something like that
 
                     break;
                 default:

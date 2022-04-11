@@ -4,10 +4,9 @@ namespace UI {
     let player2UI: HTMLDivElement = <HTMLDivElement>document.getElementById("Player2");
 
     export function updateUI() {
-        //Player1 UI
+        //Avatar1 UI
         (<HTMLDivElement>player1UI.querySelector("#HP")).style.width = (Game.avatar1.properties.attributes.healthPoints / Game.avatar1.properties.attributes.maxHealthPoints * 100) + "%";
 
-        //TODO: Needs testing
         //InventoryUI
         Game.avatar1.items.forEach((element) => {
             let exsist: boolean = false;
@@ -27,7 +26,7 @@ namespace UI {
             }
         });
 
-        //Player2 UI
+        //Avatar2 UI
         if (Game.connected) {
             (<HTMLDivElement>player2UI.querySelector("#HP")).style.width = (Game.avatar2.properties.attributes.healthPoints / Game.avatar2.properties.attributes.maxHealthPoints * 100) + "%";
 
@@ -148,7 +147,7 @@ namespace UI {
 
         async move() {
             this.cmpTransform.mtxLocal.translate(new ƒ.Vector3(0, 0.1, 0));
-            // this.cmpTransform.mtxLocal.scale(new ƒ.Vector3(0.1,0.1,0.1));
+            this.cmpTransform.mtxLocal.scale(ƒ.Vector3.ONE(1.02));
         }
     }
 }

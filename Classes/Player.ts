@@ -141,7 +141,6 @@ namespace Player {
         }
 
         public doKnockback(_body: ƒAid.NodeSprite): void {
-            //TODO: where to trigger this....
             (<Enemy.Enemy>_body).getKnockback(this.knockbackForce, this.cmpTransform.mtxLocal.translation);
         }
 

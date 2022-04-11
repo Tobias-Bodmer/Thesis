@@ -43,7 +43,6 @@ namespace Enemy {
             }
             this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);
             Networking.spawnEnemy(this, this.netId);
-            //TODO: add sprite animation
             this.startSprite();
         }
 
@@ -76,7 +75,6 @@ namespace Enemy {
         }
 
         public doKnockback(_body: ƒAid.NodeSprite): void {
-            //TODO: needs trigger....
             (<Player.Player>_body).getKnockback(this.knockbackForce, this.cmpTransform.mtxLocal.translation);
         }
 
@@ -123,15 +121,10 @@ namespace Enemy {
 
             direction.normalize();
 
-            // console.log(direction);
-
             direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
 
             this.moveDirection.add(direction)
 
-            // let canMove: [boolean, boolean] = this.getCanMoveXY(direction);
-            // let canMoveX: boolean = canMove[0];
-            // let canMoveY: boolean = canMove[1];
             this.getCanMoveXY(this.moveDirection);
             //TODO: in Funktion packen damit man von allem Enemies drauf zugreifen kann
 
@@ -141,15 +134,12 @@ namespace Enemy {
         moveAway() {
             this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
 
-
             let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.cmpTransform.mtxLocal.translation, this.target);
             direction.normalize();
 
             direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
-            // this.cmpTransform.mtxLocal.translate(direction, true);
 
             this.moveDirection.add(direction)
-
 
             this.getCanMoveXY(this.moveDirection);
 
@@ -260,8 +250,6 @@ namespace Enemy {
         }
 
         move(): void {
-
-            // this.moveSimple();
             super.move();
             this.moveBehaviour();
         }
@@ -297,10 +285,9 @@ namespace Enemy {
         lifespan(_graph: ƒ.Node): void {
             super.lifespan(_graph);
         }
-
-
-
     }
+
+
     export class EnemyShoot extends Enemy {
         weapon: Weapons.Weapon;
         constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon) {
