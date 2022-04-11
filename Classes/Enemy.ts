@@ -4,8 +4,6 @@ namespace Enemy {
     }
     import ƒAid = FudgeAid;
 
-
-
     export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
         currentState: BEHAVIOUR;
         public tag: Tag.TAG = Tag.TAG.ENEMY;
@@ -17,8 +15,9 @@ namespace Enemy {
         canMoveX: boolean = true;
         canMoveY: boolean = true;
 
-        canMove: boolean;
-        knockbackForce: number;
+        moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
+
+        knockbackForce: number = 6;
 
         //#region  animation
         animations: ƒAid.SpriteSheetAnimations;
@@ -72,10 +71,8 @@ namespace Enemy {
         }
 
         public move() {
-            if (this.canMove) {
-                this.updateCollider();
-                Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId);
-            }
+            this.updateCollider();
+            Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId);
         }
 
         public doKnockback(_body: ƒAid.NodeSprite): void {
@@ -84,21 +81,35 @@ namespace Enemy {
         }
 
         public getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void {
-            this.canMove = false;
 
-            let direction: Game.ƒ.Vector3 = Game.ƒ.Vector2.DIFFERENCE(_position.toVector2(), this.cmpTransform.mtxLocal.translation.toVector2()).toVector3(0);
+            let direction: Game.ƒ.Vector3 = Game.ƒ.Vector2.DIFFERENCE(this.cmpTransform.mtxLocal.translation.toVector2(), _position.toVector2()).toVector3(0);
 
             direction.normalize();
 
-            while (_knockbackForce > 0) {
-                direction.scale(_knockbackForce);
+            direction.scale(_knockbackForce * 1 / Game.frameRate);
 
-                this.cmpTransform.mtxLocal.translate(direction, false);
+            this.moveDirection.add(direction);
 
-                _knockbackForce -= 0.2;
+            helper(direction, this.moveDirection);
+
+            function helper(_direction: Game.ƒ.Vector3, _moveDirection: Game.ƒ.Vector3) {
+                if (_knockbackForce > 0.1) {
+                    setTimeout(() => {
+                        _moveDirection.subtract(direction);
+
+                        _knockbackForce /= 3;
+
+                        direction.scale(_knockbackForce * 1 / Game.frameRate);
+
+                        _moveDirection.add(direction);
+
+                        helper(_direction, _moveDirection);
+                    }, 200);
+                } else {
+                    _moveDirection.subtract(direction);
+                }
             }
 
-            this.canMove = true;
         }
 
         updateCollider() {
@@ -109,18 +120,22 @@ namespace Enemy {
             this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
 
             let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.target, this.cmpTransform.mtxLocal.translation);
+
             direction.normalize();
 
             // console.log(direction);
 
             direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
 
+            this.moveDirection.add(direction)
+
             // let canMove: [boolean, boolean] = this.getCanMoveXY(direction);
             // let canMoveX: boolean = canMove[0];
             // let canMoveY: boolean = canMove[1];
-            this.getCanMoveXY(direction);
+            this.getCanMoveXY(this.moveDirection);
             //TODO: in Funktion packen damit man von allem Enemies drauf zugreifen kann
 
+            this.moveDirection.subtract(direction);
         }
 
         moveAway() {
@@ -133,7 +148,12 @@ namespace Enemy {
             direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
             // this.cmpTransform.mtxLocal.translate(direction, true);
 
-            this.getCanMoveXY(direction);
+            this.moveDirection.add(direction)
+
+
+            this.getCanMoveXY(this.moveDirection);
+
+            this.moveDirection.subtract(direction);
         }
 
 
@@ -243,9 +263,7 @@ namespace Enemy {
 
             // this.moveSimple();
             super.move();
-            if (this.canMove) {
-                this.moveBehaviour();
-            }
+            this.moveBehaviour();
         }
 
         behaviour() {
@@ -300,7 +318,7 @@ namespace Enemy {
             let _direction = ƒ.Vector3.DIFFERENCE(target, this.mtxLocal.translation);
             if (this.weapon.currentAttackCount > 0) {
                 _direction.normalize();
-                let bullet: Bullets.Bullet = new Bullets.Bullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction);
+                let bullet: Bullets.Bullet = new Bullets.Bullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, this);
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
                 Game.graph.addChild(bullet);
 
