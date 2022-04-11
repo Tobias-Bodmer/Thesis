@@ -47,22 +47,9 @@ namespace Game {
 
     //#region "essential"
     async function init() {
-        if (Bullets.bulletTxt == null) {
-            loadTextures();
-        }
         await loadEnemiesJSON();
 
-        if (avatar1 == null) {
-            avatar1 = new Player.Ranged("Player1", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
-        }
-
-
         Generation.generateRooms();
-
-        // let enemy = new Enemy.EnemyCircle("sörkler", new Player.Character("sörki", new Player.Attributes(10, 2, 3)), new ƒ.Vector2(2, 3));
-        // graph.addChild(enemy);
-        //#region Testing objects
-
 
         graph.appendChild(avatar1);
 
@@ -75,7 +62,17 @@ namespace Game {
 
         draw();
 
-        ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, frameRate);
+        helper();
+
+        function helper() {
+            if (avatar2 != undefined) {
+                ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, frameRate);
+            } else {
+                setTimeout(() => {
+                    helper();
+                }, 100);
+            }
+        }
     }
 
     function update(): void {
@@ -220,8 +217,6 @@ namespace Game {
     function draw(): void {
         viewport.draw();
     }
-
-
 
     export function cameraUpdate() {
         let direction = ƒ.Vector2.DIFFERENCE(avatar1.cmpTransform.mtxLocal.translation.toVector2(), cmpCamera.mtxPivot.translation.toVector2());

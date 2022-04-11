@@ -29,7 +29,6 @@ declare namespace Interfaces {
         lifespan(_a: ƒ.Node): void;
     }
     interface IKnockbackable {
-        canMove: boolean;
         knockbackForce: number;
         doKnockback(_body: ƒAid.NodeSprite): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
@@ -66,7 +65,7 @@ declare namespace Enemy {
         lifetime: number;
         canMoveX: boolean;
         canMoveY: boolean;
-        canMove: boolean;
+        moveDirection: Game.ƒ.Vector3;
         knockbackForce: number;
         animations: ƒAid.SpriteSheetAnimations;
         private clrWhite;
@@ -159,8 +158,9 @@ declare namespace Bullets {
         lifetime: number;
         time: number;
         killcount: number;
+        avatar: Game.ƒAid.NodeSprite;
         lifespan(_graph: ƒ.Node): Promise<void>;
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _avatar: Game.ƒAid.NodeSprite, _netId?: number);
         move(): Promise<void>;
         updateRotation(_direction: ƒ.Vector3): void;
         bulletPrediction(): void;
@@ -169,17 +169,17 @@ declare namespace Bullets {
         collisionDetection(): Promise<void>;
     }
     class SlowBullet extends Bullet {
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _avatar: Game.ƒAid.NodeSprite, _netId?: number);
     }
     class MeleeBullet extends Bullet {
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _avatar: Game.ƒAid.NodeSprite, _netId?: number);
         loadTexture(): Promise<void>;
     }
     class HomingBullet extends Bullet {
         target: ƒ.Vector3;
         rotateSpeed: number;
         targetDirection: ƒ.Vector3;
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _target: ƒ.Vector3, _netId?: number);
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _target: ƒ.Vector3, _avatar: Game.ƒAid.NodeSprite, _netId?: number);
         move(): Promise<void>;
         calculateHoming(): void;
     }
@@ -290,7 +290,7 @@ declare namespace Player {
         properties: Character;
         weapon: Weapons.Weapon;
         collider: Collider.Collider;
-        canMove: boolean;
+        moveDirection: Game.ƒ.Vector3;
         knockbackForce: number;
         readonly abilityCount: number;
         currentabilityCount: number;
@@ -298,6 +298,7 @@ declare namespace Player {
         currentabilityCooldownTime: number;
         constructor(_name: string, _properties: Character);
         move(_direction: ƒ.Vector3): void;
+        collids(_direction: Game.ƒ.Vector3): void;
         attack(_direction: ƒ.Vector3, _netId?: number, sync?: boolean): void;
         doKnockback(_body: ƒAid.NodeSprite): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;

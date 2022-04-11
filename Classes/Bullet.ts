@@ -19,6 +19,8 @@ namespace Bullets {
         time: number = 0;
         killcount: number = 1;
 
+        avatar: Game.ƒAid.NodeSprite;
+
         async lifespan(_graph: ƒ.Node) {
             if (this.lifetime >= 0 && this.lifetime != null) {
                 this.lifetime--;
@@ -33,8 +35,10 @@ namespace Bullets {
             }
         }
 
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number) {
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _avatar: Game.ƒAid.NodeSprite, _netId?: number) {
             super("normalBullet");
+
+            this.avatar = _avatar;
 
             if (_netId != undefined) {
                 Networking.popID(this.netId);
@@ -123,6 +127,7 @@ namespace Bullets {
             colliders.forEach((element) => {
                 if (this.collider.collides(element.collider) && element.properties != undefined && this.killcount > 0) {
                     (<Enemy.Enemy>element).properties.attributes.healthPoints -= this.hitPoints;
+                    (<Player.Player>this.avatar).doKnockback(element);
                     Game.graph.addChild(new UI.DamageUI((<Enemy.Enemy>element).cmpTransform.mtxLocal.translation, this.hitPoints));
                     this.lifetime = 0;
                     this.killcount--;
@@ -140,8 +145,8 @@ namespace Bullets {
     }
 
     export class SlowBullet extends Bullet {
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number) {
-            super(_position, _direction, _netId);
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _avatar: Game.ƒAid.NodeSprite, _netId?: number) {
+            super(_position, _direction, _avatar, _netId);
             this.speed = 6;
             this.hitPoints = 10;
             this.lifetime = 5 * Game.frameRate;
@@ -149,8 +154,8 @@ namespace Bullets {
     }
 
     export class MeleeBullet extends Bullet {
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number) {
-            super(_position, _direction, _netId);
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _avatar: Game.ƒAid.NodeSprite, _netId?: number) {
+            super(_position, _direction, _avatar, _netId);
             this.speed = 6;
             this.hitPoints = 10;
             this.lifetime = 6;
@@ -167,8 +172,8 @@ namespace Bullets {
         rotateSpeed: number = 3;
         targetDirection: ƒ.Vector3;
 
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _target: ƒ.Vector3, _netId?: number) {
-            super(_position, _direction, _netId);
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _target: ƒ.Vector3, _avatar: Game.ƒAid.NodeSprite, _netId?: number) {
+            super(_position, _direction,_avatar, _netId);
             this.speed = 20;
             this.hitPoints = 5;
             this.lifetime = 1 * Game.frameRate;
