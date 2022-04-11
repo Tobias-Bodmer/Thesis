@@ -10,6 +10,7 @@ namespace Bullets {
         public hostPositions: ƒ.Vector3[] = [];
         public tag: Tag.TAG = Tag.TAG.BULLET;
         public flyDirection: ƒ.Vector3;
+        targetDirection: ƒ.Vector3;
         public collider: Collider.Collider;
 
         public hitPoints: number = 5;
@@ -46,7 +47,7 @@ namespace Bullets {
 
             this.addComponent(new ƒ.ComponentTransform());
             this.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
-            this.flyDirection = _direction;
+            this.targetDirection = _direction;
 
             let mesh: ƒ.MeshQuad = new ƒ.MeshQuad();
             let cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
@@ -167,14 +168,14 @@ namespace Bullets {
 
     export class HomingBullet extends Bullet {
         target: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
-        rotateSpeed: number = 5;
+        rotateSpeed: number = 3;
         // targetVector: ƒ.Vector3 = Calculation.getVectorToAvatar(this.start);
 
         constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number) {
             super(_position, _direction, _netId);
-            this.speed = 5;
+            this.speed = 20;
             this.hitPoints = 10;
-            this.lifetime = 5 * Game.frameRate;
+            this.lifetime = 1 * Game.frameRate;
             this.killcount = 4;
             // if (Game.enemies.length > 0) {
             //     this.start = Game.enemies[0].cmpTransform.mtxLocal.translation;
@@ -195,12 +196,12 @@ namespace Bullets {
             }
             // let targetDirection: ƒ.Vector3 = ƒ.Vector3.NORMALIZATION(this.flyDirection);
             // let rotateAmount: number = (ƒ.Vector3.CROSS(newDirection, ƒ.Vector3.Y()).z * 180) / Math.PI;
-            let rotateAmount2: number = ƒ.Vector3.CROSS(newDirection, ƒ.Vector3.X()).z;
-            // console.log(rotateAmount * -1);
+            let rotateAmount2: number = ƒ.Vector3.CROSS(newDirection, this.targetDirection).z;
+            // console.log(rotateAmount2);
             // this.flyDirection = new ƒ.Vector3(this.flyDirection.x, this.flyDirection.y, ƒ.Vector3.SUM(this.flyDirection, rotateVector).z)
-            // console.log(this.flyDirection);
             // this.flyDirection = Calculation.getRotatedVectorByAngle2D(this.flyDirection, 5);
-            this.mtxLocal.rotateZ(rotateAmount2 * this.rotateSpeed);
+            this.mtxLocal.rotateZ(-rotateAmount2 * this.rotateSpeed);
+            this.targetDirection = Calculation.getRotatedVectorByAngle2D(this.targetDirection, -rotateAmount2);
             // console.log(rotateAmount2);
 
 
