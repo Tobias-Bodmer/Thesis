@@ -187,12 +187,9 @@ namespace Bullets {
         }
 
         calculateHoming() {
-
             let newDirection = ƒ.Vector3.DIFFERENCE(this.target, this.mtxLocal.translation);
-            let normalized: ƒ.Vector3;
             if (newDirection.x != 0 && newDirection.y != 0) {
                 newDirection.normalize();
-                normalized = ƒ.Vector3.NORMALIZATION(newDirection);
             }
             // let targetDirection: ƒ.Vector3 = ƒ.Vector3.NORMALIZATION(this.flyDirection);
             // let rotateAmount: number = (ƒ.Vector3.CROSS(newDirection, ƒ.Vector3.Y()).z * 180) / Math.PI;
@@ -201,7 +198,7 @@ namespace Bullets {
             // this.flyDirection = new ƒ.Vector3(this.flyDirection.x, this.flyDirection.y, ƒ.Vector3.SUM(this.flyDirection, rotateVector).z)
             // this.flyDirection = Calculation.getRotatedVectorByAngle2D(this.flyDirection, 5);
             this.mtxLocal.rotateZ(-rotateAmount2 * this.rotateSpeed);
-            this.targetDirection = Calculation.getRotatedVectorByAngle2D(this.targetDirection, -rotateAmount2);
+            this.targetDirection = Calculation.getRotatedVectorByAngle2D(this.targetDirection, -rotateAmount2 * this.rotateSpeed);
             // console.log(rotateAmount2);
 
 
