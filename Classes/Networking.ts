@@ -123,7 +123,15 @@ namespace Networking {
 
                         //Spawn enemy at the client 
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNENEMY.toString()) {
-                            Game.graph.addChild(new Enemy.Enemy("normalEnemy", new Player.Character(message.content.enemy.name, new Player.Attributes(message.content.enemy.attributes.healthPoints, message.content.enemy.attributes.attackPoints, message.content.enemy.attributes.speed)), new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]), message.content.netId));
+                            console.log("enemy: " + message.content.properties.attributes);
+                            chooseEnemy(<Enemy.ENEMYNAME>message.content.id,
+                                new Player.Attributes(message.content.properties.attributes.healthPoints,
+                                    message.content.properties.attributes.attackPoints,
+                                    message.content.properties.attributes.speed),
+                                new ƒ.Vector3(message.content.position.data[0],
+                                    message.content.position.data[1],
+                                    message.content.position.data[2]),
+                                <number>message.content.netId);
                         }
 
                         //Sync enemy transform from host to client
@@ -169,6 +177,14 @@ namespace Networking {
                     }
                 }
             }
+        }
+    }
+
+    function chooseEnemy(_id: Enemy.ENEMYNAME, _properties: Player.Attributes, _position: ƒ.Vector3, _netId: number) {
+        switch (_id) {
+            case Enemy.ENEMYNAME.BAT:
+                Game.graph.addChild(new Enemy.EnemyDumb(Enemy.ENEMYNAME.BAT, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed)), _position.toVector2(), _netId));
+                break;
         }
     }
 
@@ -233,7 +249,7 @@ namespace Networking {
     //#region  enemy
     export function spawnEnemy(_enemy: Enemy.Enemy, _netId: number) {
         if (Game.connected && client.idHost == client.id) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNENEMY, enemy: _enemy.properties, position: _enemy.mtxLocal.translation, netId: _netId } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNENEMY, id: _enemy.id, properties: _enemy.properties, position: _enemy.mtxLocal.translation, netId: _netId } })
         }
     }
 

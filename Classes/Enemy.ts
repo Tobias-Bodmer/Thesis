@@ -1,4 +1,19 @@
 namespace Enemy {
+    export enum ENEMYNAME {
+        BAT,
+        TICK,
+
+    }
+
+    export function getNameByID(_id: ENEMYNAME) {
+        switch (_id) {
+            case ENEMYNAME.BAT:
+                return "bat";
+            case ENEMYNAME.TICK:
+                return "tick";
+
+        }
+    }
     enum BEHAVIOUR {
         IDLE, FOLLOW, FLEE
     }
@@ -9,6 +24,7 @@ namespace Enemy {
     export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
         currentState: BEHAVIOUR;
         public tag: Tag.TAG = Tag.TAG.ENEMY;
+        public id: number;
         public netId: number = Networking.idGenerator();
         public properties: Player.Character;
         public collider: Collider.Collider;
@@ -24,18 +40,12 @@ namespace Enemy {
         animations: ƒAid.SpriteSheetAnimations;
         private clrWhite: ƒ.Color = ƒ.Color.CSS("white");
         //#endregion
-        /**
-         * Creates an Enemy
-         * @param _name Name of the enemy
-         * @param _properties Properties, storing attributes and stuff
-         * @param _position position where to spawn
-         * @param _aiType optional: standard ai = dumb
-         */
 
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number) {
-            super(_name);
-            this.addComponent(new ƒ.ComponentTransform());
+        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number) {
+            super(getNameByID(_id));
+            this.id = _id;
             this.properties = _properties;
+            this.addComponent(new ƒ.ComponentTransform());
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
             if (_netId != undefined) {
                 Networking.popID(this.netId);
@@ -233,10 +243,11 @@ namespace Enemy {
         }
     }
 
+
     export class EnemyDumb extends Enemy {
 
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2) {
-            super(_name, _properties, _position);
+        constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number) {
+            super(_id, _properties, _position, _netId);
         }
 
         move(): void {
@@ -276,17 +287,11 @@ namespace Enemy {
             }
         }
 
-        lifespan(_graph: ƒ.Node): void {
-            super.lifespan(_graph);
-        }
-
-
-
     }
     export class EnemyShoot extends Enemy {
         weapon: Weapons.Weapon;
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon) {
-            super(_name, _properties, _position);
+        constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _netId?: number) {
+            super(_id, _properties, _position);
             this.weapon = _weapon;
         }
 
@@ -311,52 +316,48 @@ namespace Enemy {
                 this.weapon.currentAttackCount--;
             }
         }
-
-        lifespan(_graph: ƒ.Node): void {
-            super.lifespan(_graph);
-        }
     }
 
 
 
-    export class EnemyCircle extends Enemy {
-        distance: number = 5;
+    // export class EnemyCircle extends Enemy {
+    //     distance: number = 5;
 
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2) {
-            super(_name, _properties, _position);
-        }
+    //     constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2) {
+    //         super(_name, _properties, _position);
+    //     }
 
-        move(): void {
-            super.move();
-            this.moveCircle();
-        }
+    //     move(): void {
+    //         super.move();
+    //         this.moveCircle();
+    //     }
 
-        lifespan(_graph: ƒ.Node): void {
-            super.lifespan(_graph);
-        }
+    //     lifespan(_graph: ƒ.Node): void {
+    //         super.lifespan(_graph);
+    //     }
 
-        async moveCircle() {
-            this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
-            console.log(this.target);
-            let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.avatar1.cmpTransform.mtxLocal.translation);
-            // let distancePlayer2 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player2.cmpTransform.mtxLocal.translation);
-            if (distancePlayer1 > this.distance) {
-                this.moveSimple();
-            }
-            else {
-                let degree = Calculation.calcDegree(this.cmpTransform.mtxLocal.translation, this.target)
-                let add = 0;
+    //     async moveCircle() {
+    //         this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
+    //         console.log(this.target);
+    //         let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.avatar1.cmpTransform.mtxLocal.translation);
+    //         // let distancePlayer2 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player2.cmpTransform.mtxLocal.translation);
+    //         if (distancePlayer1 > this.distance) {
+    //             this.moveSimple();
+    //         }
+    //         else {
+    //             let degree = Calculation.calcDegree(this.cmpTransform.mtxLocal.translation, this.target)
+    //             let add = 0;
 
-                // while (distancePlayer1 <= this.distance) {
-                //     let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.cmpTransform.mtxLocal.translation, InputSystem.calcPositionFromDegree(degree + add, this.distance).toVector3(0));
-                //     direction.normalize();
+    //             // while (distancePlayer1 <= this.distance) {
+    //             //     let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.cmpTransform.mtxLocal.translation, InputSystem.calcPositionFromDegree(degree + add, this.distance).toVector3(0));
+    //             //     direction.normalize();
 
-                //     direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
-                //     this.cmpTransform.mtxLocal.translate(direction, true);
-                //     add += 5;
-                // }
+    //             //     direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
+    //             //     this.cmpTransform.mtxLocal.translate(direction, true);
+    //             //     add += 5;
+    //             // }
 
-            }
-        }
-    }
+    //         }
+    //     }
+    // }
 }

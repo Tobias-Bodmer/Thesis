@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -44,6 +44,11 @@ declare namespace Player {
     }
 }
 declare namespace Enemy {
+    export enum ENEMYNAME {
+        BAT = 0,
+        TICK = 1
+    }
+    export function getNameByID(_id: ENEMYNAME): "bat" | "tick";
     enum BEHAVIOUR {
         IDLE = 0,
         FOLLOW = 1,
@@ -53,6 +58,7 @@ declare namespace Enemy {
     export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
         currentState: BEHAVIOUR;
         tag: Tag.TAG;
+        id: number;
         netId: number;
         properties: Player.Character;
         collider: Collider.Collider;
@@ -64,14 +70,7 @@ declare namespace Enemy {
         knockbackForce: number;
         animations: ƒAid.SpriteSheetAnimations;
         private clrWhite;
-        /**
-         * Creates an Enemy
-         * @param _name Name of the enemy
-         * @param _properties Properties, storing attributes and stuff
-         * @param _position position where to spawn
-         * @param _aiType optional: standard ai = dumb
-         */
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number);
+        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number);
         startSprite(): Promise<void>;
         loadSprites(): Promise<void>;
         generateSprites(_spritesheet: ƒ.CoatTextured): void;
@@ -85,25 +84,16 @@ declare namespace Enemy {
         getCanMoveXY(_direction: ƒ.Vector3): void;
     }
     export class EnemyDumb extends Enemy {
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
+        constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number);
         move(): void;
         behaviour(): void;
         moveBehaviour(): void;
-        lifespan(_graph: ƒ.Node): void;
     }
     export class EnemyShoot extends Enemy {
         weapon: Weapons.Weapon;
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon);
+        constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _netId?: number);
         move(): void;
         shoot(): void;
-        lifespan(_graph: ƒ.Node): void;
-    }
-    export class EnemyCircle extends Enemy {
-        distance: number;
-        constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2);
-        move(): void;
-        lifespan(_graph: ƒ.Node): void;
-        moveCircle(): Promise<void>;
     }
     export {};
 }
