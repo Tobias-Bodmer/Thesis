@@ -19,7 +19,7 @@ declare namespace Game {
     let enemies: Enemy.Enemy[];
     let bullets: Bullets.Bullet[];
     let enemiesJSON: Player.Character[];
-    let itemsJSON: Player.Character[];
+    let itemsJSON: Items.Item[];
     let bat: Enemy.Enemy;
     function cameraUpdate(): void;
 }

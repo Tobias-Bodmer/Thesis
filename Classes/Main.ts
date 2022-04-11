@@ -32,7 +32,7 @@ namespace Game {
     export let enemies: Enemy.Enemy[] = [];
     export let bullets: Bullets.Bullet[];
     export let enemiesJSON: Player.Character[];
-    export let itemsJSON: Player.Character[];
+    export let itemsJSON: Items.Item[];
     export let bat: Enemy.Enemy;
     //#endregion "PublicVariables"
 
@@ -47,7 +47,7 @@ namespace Game {
 
     //#region "essential"
     async function init() {
-        await loadEnemiesJSON();
+        await loadJSON();
 
         Generation.generateRooms();
 
@@ -150,9 +150,13 @@ namespace Game {
 
         });
     }
-    async function loadEnemiesJSON() {
-        const load = await (await fetch("./Resources/EnemiesStorage.json")).json();
-        enemiesJSON = ((<Player.Character[]>load.enemies));
+    async function loadJSON() {
+        const loadEnemy = await (await fetch("./Resources/EnemiesStorage.json")).json();
+        enemiesJSON = (<Player.Character[]>loadEnemy.enemies);
+
+        const loadItem = await (await fetch("./Resources/ItemStorage.json")).json();
+        itemsJSON = (<Items.Item[]>loadItem.items);
+
     }
 
     async function loadTextures() {

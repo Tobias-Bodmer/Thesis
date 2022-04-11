@@ -9,11 +9,11 @@
             }
         },
         {
-            "name": "bat2",
+            "name": "tick",
             "attributes": {
                 "healthPoints": 10,
                 "attackPoints": 1,
-                "speed": 3
+                "speed": 4
             }
         }
     ]
