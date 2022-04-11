@@ -9,6 +9,7 @@ namespace Player {
         public items: Array<Items.Item> = [];
         public properties: Character;
         public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1);
+        hitable: boolean = true;
 
         collider: Collider.Collider;
         moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
@@ -36,7 +37,7 @@ namespace Player {
 
             this.moveDirection.add(_direction);
 
-            this.collids(this.moveDirection);
+            this.collide(this.moveDirection);
 
             let doors: Generation.Door[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.TAG.ROOM)).doors;
             doors.forEach((element) => {
@@ -48,7 +49,7 @@ namespace Player {
             this.moveDirection.subtract(_direction);
         }
 
-        collids(_direction: Game.ƒ.Vector3): void {
+        collide(_direction: Game.ƒ.Vector3): void {
             let canMoveX: boolean = true;
             let canMoveY: boolean = true;
 
@@ -226,12 +227,14 @@ namespace Player {
 
         public doAbility() {
             if (this.currentabilityCount > 0) {
-                this.properties.attributes.speed *= 4;
+                this.hitable = false;
+                this.properties.attributes.speed *= 2;
 
                 setTimeout(() => {
                     this.properties.attributes.speed /= 2;
                     setTimeout(() => {
-                        this.properties.attributes.speed /= 2;
+                        this.properties.attributes.speed /= 1;
+                        this.hitable = true;
                     }, 100);
                 }, 300);
                 this.currentabilityCount--;

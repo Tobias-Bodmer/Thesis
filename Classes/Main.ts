@@ -158,6 +158,7 @@ namespace Game {
     async function loadTextures() {
         await Bullets.bulletTxt.load("./Resources/Image/arrow01.png");
 
+        //UI
         await UI.txtZero.load("./Resources/Image/0.png");
         await UI.txtOne.load("./Resources/Image/1.png");
         await UI.txtTow.load("./Resources/Image/2.png");
@@ -169,6 +170,9 @@ namespace Game {
         await UI.txtEight.load("./Resources/Image/8.png");
         await UI.txtNine.load("./Resources/Image/9.png");
         await UI.txtTen.load("./Resources/Image/10.png");
+
+        //ENEMY
+        await Enemy.txtTick.load("./Resources/Image/Enemies/spinni.png");
     }
 
 

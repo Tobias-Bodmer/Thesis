@@ -1,10 +1,11 @@
 namespace Enemy {
+    export let txtTick: ƒ.TextureImage = new ƒ.TextureImage();
+
     export enum ENEMYNAME {
         BAT,
         TICK,
 
     }
-
     export function getNameByID(_id: ENEMYNAME) {
         switch (_id) {
             case ENEMYNAME.BAT:
@@ -64,10 +65,7 @@ namespace Enemy {
         }
 
         async loadSprites(): Promise<void> {
-            let imgSpriteSheet: ƒ.TextureImage = new ƒ.TextureImage();
-            await imgSpriteSheet.load("./Resources/Image/Enemies/spinni.png");
-
-            let spriteSheet: ƒ.CoatTextured = new ƒ.CoatTextured(this.clrWhite, imgSpriteSheet);
+            let spriteSheet: ƒ.CoatTextured = new ƒ.CoatTextured(this.clrWhite, txtTick);
             this.generateSprites(spriteSheet);
         }
 
@@ -311,11 +309,10 @@ namespace Enemy {
             let _direction = ƒ.Vector3.DIFFERENCE(target, this.mtxLocal.translation);
             if (this.weapon.currentAttackCount > 0) {
                 _direction.normalize();
-                let bullet: Bullets.Bullet = new Bullets.Bullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, this, _netId);
+                let bullet: Bullets.Bullet = new Bullets.HomingBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, Calculation.getCloserAvatarPosition(this.mtxLocal.translation), this, _netId);
                 bullet.owner = this.tag;
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
                 Game.graph.addChild(bullet);
-                console.log("im shoooting baby");
                 if (Networking.client.id == Networking.client.idHost) {
                     Networking.spawnBulletAtEnemy(bullet.netId, this.netId);
                     this.weapon.currentAttackCount--;

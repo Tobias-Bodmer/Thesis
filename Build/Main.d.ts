@@ -41,6 +41,7 @@ declare namespace Interfaces {
     }
 }
 declare namespace Enemy {
+    export let txtTick: ƒ.TextureImage;
     export enum ENEMYNAME {
         BAT = 0,
         TICK = 1
@@ -290,6 +291,7 @@ declare namespace Player {
         items: Array<Items.Item>;
         properties: Character;
         weapon: Weapons.Weapon;
+        hitable: boolean;
         collider: Collider.Collider;
         moveDirection: Game.ƒ.Vector3;
         knockbackForce: number;
@@ -299,7 +301,7 @@ declare namespace Player {
         currentabilityCooldownTime: number;
         constructor(_name: string, _properties: Character);
         move(_direction: ƒ.Vector3): void;
-        collids(_direction: Game.ƒ.Vector3): void;
+        collide(_direction: Game.ƒ.Vector3): void;
         attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
         doKnockback(_body: ƒAid.NodeSprite): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
