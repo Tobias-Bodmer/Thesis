@@ -6,7 +6,7 @@ namespace Enemy {
 
 
 
-    export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+    export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
         currentState: BEHAVIOUR;
         public tag: Tag.TAG = Tag.TAG.ENEMY;
         public netId: number = Networking.idGenerator();
@@ -16,6 +16,9 @@ namespace Enemy {
         lifetime: number;
         canMoveX: boolean = true;
         canMoveY: boolean = true;
+
+        canMove: boolean;
+        knockbackForce: number;
 
         //#region  animation
         animations: ƒAid.SpriteSheetAnimations;
@@ -44,6 +47,7 @@ namespace Enemy {
             //TODO: add sprite animation
             this.startSprite();
         }
+
         async startSprite() {
             await this.loadSprites();
             this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["fly"]);
@@ -68,15 +72,38 @@ namespace Enemy {
         }
 
         public move() {
-            this.updateCollider();
-            Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId);
+            if (this.canMove) {
+                this.updateCollider();
+                Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId);
+            }
+        }
+
+        public doKnockback(_body: ƒAid.NodeSprite): void {
+            //TODO: needs trigger....
+            (<Player.Player>_body).getKnockback(this.knockbackForce, this.cmpTransform.mtxLocal.translation);
+        }
+
+        public getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void {
+            this.canMove = false;
+
+            let direction: Game.ƒ.Vector3 = Game.ƒ.Vector2.DIFFERENCE(_position.toVector2(), this.cmpTransform.mtxLocal.translation.toVector2()).toVector3(0);
+
+            direction.normalize();
+
+            while (_knockbackForce > 0) {
+                direction.scale(_knockbackForce);
+
+                this.cmpTransform.mtxLocal.translate(direction, false);
+
+                _knockbackForce -= 0.2;
+            }
+
+            this.canMove = true;
         }
 
         updateCollider() {
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
         }
-
-
 
         public moveSimple() {
             this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
@@ -216,7 +243,9 @@ namespace Enemy {
 
             // this.moveSimple();
             super.move();
-            this.moveBehaviour();
+            if (this.canMove) {
+                this.moveBehaviour();
+            }
         }
 
         behaviour() {

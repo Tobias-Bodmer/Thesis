@@ -4,13 +4,15 @@ namespace Player {
         MELEE
     }
 
-    export abstract class Player extends Game.ƒAid.NodeSprite {
+    export abstract class Player extends Game.ƒAid.NodeSprite implements Interfaces.IKnockbackable {
         public tag: Tag.TAG = Tag.TAG.PLAYER;
         public items: Array<Items.Item> = [];
         public properties: Character;
         public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1);
 
         collider: Collider.Collider;
+        canMove: boolean = true;
+        knockbackForce: number;
 
         constructor(_name: string, _properties: Character) {
             super(_name);
@@ -20,92 +22,94 @@ namespace Player {
         }
 
         public move(_direction: ƒ.Vector3) {
-            let canMoveX: boolean = true;
-            let canMoveY: boolean = true;
+            if (this.canMove) {
+                let canMoveX: boolean = true;
+                let canMoveY: boolean = true;
 
-            this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
+                this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
 
-            _direction.scale((1 / 60 * this.properties.attributes.speed));
+                _direction.scale((1 / 60 * this.properties.attributes.speed));
 
 
-            let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.TAG.ROOM)).walls;
-            colliders.forEach((element) => {
-                if (this.collider.collidesRect(element.collider)) {
-                    let intersection = this.collider.getIntersectionRect(element.collider);
-                    let areaBeforeMove = Math.round((intersection.height * intersection.width) * 1000) / 1000;
+                let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.TAG.ROOM)).walls;
+                colliders.forEach((element) => {
+                    if (this.collider.collidesRect(element.collider)) {
+                        let intersection = this.collider.getIntersectionRect(element.collider);
+                        let areaBeforeMove = Math.round((intersection.height * intersection.width) * 1000) / 1000;
 
-                    let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
-                    let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
-                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+                        let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
+                        let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
+                        this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
 
-                    if (this.collider.getIntersectionRect(element.collider) != null) {
-                        let newIntersection = this.collider.getIntersectionRect(element.collider);
-                        let areaAfterMove = Math.round((newIntersection.height * newIntersection.width) * 1000) / 1000;
+                        if (this.collider.getIntersectionRect(element.collider) != null) {
+                            let newIntersection = this.collider.getIntersectionRect(element.collider);
+                            let areaAfterMove = Math.round((newIntersection.height * newIntersection.width) * 1000) / 1000;
 
-                        if (areaBeforeMove < areaAfterMove) {
-                            canMoveX = false;
+                            if (areaBeforeMove < areaAfterMove) {
+                                canMoveX = false;
+                            }
                         }
-                    }
 
-                    this.collider.position = oldPosition;
-                    newDirection = new Game.ƒ.Vector2(0, _direction.y);
-                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+                        this.collider.position = oldPosition;
+                        newDirection = new Game.ƒ.Vector2(0, _direction.y);
+                        this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
 
-                    if (this.collider.getIntersectionRect(element.collider) != null) {
-                        let newIntersection = this.collider.getIntersectionRect(element.collider);
-                        let areaAfterMove = Math.round((newIntersection.height * newIntersection.width) * 1000) / 1000;
+                        if (this.collider.getIntersectionRect(element.collider) != null) {
+                            let newIntersection = this.collider.getIntersectionRect(element.collider);
+                            let areaAfterMove = Math.round((newIntersection.height * newIntersection.width) * 1000) / 1000;
 
-                        if (areaBeforeMove < areaAfterMove) {
-                            canMoveY = false;
+                            if (areaBeforeMove < areaAfterMove) {
+                                canMoveY = false;
+                            }
                         }
+                        this.collider.position = oldPosition;
                     }
-                    this.collider.position = oldPosition;
+                })
+
+                let enemyColliders: Enemy.Enemy[] = Game.enemies;
+                enemyColliders.forEach((element) => {
+                    if (this.collider.collides(element.collider)) {
+                        let intersection = this.collider.getIntersection(element.collider);
+                        let areaBeforeMove = Math.round((intersection) * 1000) / 1000;
+
+                        let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
+                        let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
+                        this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+
+                        if (this.collider.getIntersection(element.collider) != null) {
+                            let newIntersection = this.collider.getIntersection(element.collider);
+                            let areaAfterMove = Math.round((newIntersection) * 1000) / 1000;
+
+                            if (areaBeforeMove < areaAfterMove) {
+                                canMoveX = false;
+                            }
+                        }
+
+                        this.collider.position = oldPosition;
+                        newDirection = new Game.ƒ.Vector2(0, _direction.y);
+                        this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+
+                        if (this.collider.getIntersection(element.collider) != null) {
+                            let newIntersection = this.collider.getIntersection(element.collider);
+                            let areaAfterMove = Math.round((newIntersection) * 1000) / 1000;
+
+                            if (areaBeforeMove < areaAfterMove) {
+                                canMoveY = false;
+                            }
+                        }
+                        this.collider.position = oldPosition;
+                    }
+                })
+
+                if (canMoveX && canMoveY) {
+                    this.cmpTransform.mtxLocal.translate(_direction, false);
+                } else if (canMoveX && !canMoveY) {
+                    _direction = new ƒ.Vector3(_direction.x, 0, _direction.z)
+                    this.cmpTransform.mtxLocal.translate(_direction, false);
+                } else if (!canMoveX && canMoveY) {
+                    _direction = new ƒ.Vector3(0, _direction.y, _direction.z)
+                    this.cmpTransform.mtxLocal.translate(_direction, false);
                 }
-            })
-
-            let enemyColliders: Enemy.Enemy[] = Game.enemies;
-            enemyColliders.forEach((element) => {
-                if (this.collider.collides(element.collider)) {
-                    let intersection = this.collider.getIntersection(element.collider);
-                    let areaBeforeMove = Math.round((intersection) * 1000) / 1000;
-
-                    let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
-                    let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
-                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
-
-                    if (this.collider.getIntersection(element.collider) != null) {
-                        let newIntersection = this.collider.getIntersection(element.collider);
-                        let areaAfterMove = Math.round((newIntersection) * 1000) / 1000;
-
-                        if (areaBeforeMove < areaAfterMove) {
-                            canMoveX = false;
-                        }
-                    }
-
-                    this.collider.position = oldPosition;
-                    newDirection = new Game.ƒ.Vector2(0, _direction.y);
-                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
-
-                    if (this.collider.getIntersection(element.collider) != null) {
-                        let newIntersection = this.collider.getIntersection(element.collider);
-                        let areaAfterMove = Math.round((newIntersection) * 1000) / 1000;
-
-                        if (areaBeforeMove < areaAfterMove) {
-                            canMoveY = false;
-                        }
-                    }
-                    this.collider.position = oldPosition;
-                }
-            })
-
-            if (canMoveX && canMoveY) {
-                this.cmpTransform.mtxLocal.translate(_direction, false);
-            } else if (canMoveX && !canMoveY) {
-                _direction = new ƒ.Vector3(_direction.x, 0, _direction.z)
-                this.cmpTransform.mtxLocal.translate(_direction, false);
-            } else if (!canMoveX && canMoveY) {
-                _direction = new ƒ.Vector3(0, _direction.y, _direction.z)
-                this.cmpTransform.mtxLocal.translate(_direction, false);
             }
         }
 
@@ -121,6 +125,26 @@ namespace Player {
                 }
 
                 this.weapon.currentAttackCount--;
+            }
+        }
+
+        public doKnockback(_body: ƒAid.NodeSprite): void {
+            //TODO: where to trigger this....
+            (<Enemy.Enemy>_body).getKnockback(this.knockbackForce, this.cmpTransform.mtxLocal.translation);
+        }
+
+        public getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void {
+            this.canMove = false;
+
+            let direction: Game.ƒ.Vector3 = Game.ƒ.Vector2.DIFFERENCE(_position.toVector2(), this.cmpTransform.mtxLocal.translation.toVector2()).toVector3(0);
+
+            direction.normalize();
+            while (_knockbackForce > 0) {
+                direction.scale(_knockbackForce);
+
+                this.cmpTransform.mtxLocal.translate(direction, false);
+
+                _knockbackForce -= 0.2;
             }
         }
 

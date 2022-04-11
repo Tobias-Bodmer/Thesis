@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -28,12 +28,18 @@ declare namespace Interfaces {
         lifetime?: number;
         lifespan(_a: ƒ.Node): void;
     }
+    interface IKnockbackable {
+        canMove: boolean;
+        knockbackForce: number;
+        doKnockback(_body: ƒAid.NodeSprite): void;
+        getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
+    }
 }
 declare namespace Player {
     interface IKillable {
         onDeath(): void;
     }
-    interface IDamagble {
+    interface IDamageable {
         getDamage(): void;
     }
 }
@@ -44,7 +50,7 @@ declare namespace Enemy {
         FLEE = 2
     }
     import ƒAid = FudgeAid;
-    export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+    export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
         currentState: BEHAVIOUR;
         tag: Tag.TAG;
         netId: number;
@@ -54,6 +60,8 @@ declare namespace Enemy {
         lifetime: number;
         canMoveX: boolean;
         canMoveY: boolean;
+        canMove: boolean;
+        knockbackForce: number;
         animations: ƒAid.SpriteSheetAnimations;
         private clrWhite;
         /**
@@ -68,6 +76,8 @@ declare namespace Enemy {
         loadSprites(): Promise<void>;
         generateSprites(_spritesheet: ƒ.CoatTextured): void;
         move(): void;
+        doKnockback(_body: ƒAid.NodeSprite): void;
+        getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
         updateCollider(): void;
         moveSimple(): void;
         moveAway(): void;
@@ -284,15 +294,19 @@ declare namespace Player {
         RANGED = 0,
         MELEE = 1
     }
-    abstract class Player extends Game.ƒAid.NodeSprite {
+    abstract class Player extends Game.ƒAid.NodeSprite implements Interfaces.IKnockbackable {
         tag: Tag.TAG;
         items: Array<Items.Item>;
         properties: Character;
         weapon: Weapons.Weapon;
         collider: Collider.Collider;
+        canMove: boolean;
+        knockbackForce: number;
         constructor(_name: string, _properties: Character);
         move(_direction: ƒ.Vector3): void;
         attack(_direction: ƒ.Vector3, _netId?: number, sync?: boolean): void;
+        doKnockback(_body: ƒAid.NodeSprite): void;
+        getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
         cooldown(): void;
         collector(): void;
     }
