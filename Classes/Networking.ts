@@ -196,6 +196,7 @@ namespace Networking {
     }
 
     function chooseEnemy(_id: Enemy.ENEMYNAME, _properties: Player.Attributes, _position: ƒ.Vector3, _netId: number) {
+        console.log(_id);
         switch (_id) {
             case Enemy.ENEMYNAME.BAT:
                 Game.graph.addChild(new Enemy.EnemyDumb(Enemy.ENEMYNAME.BAT, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed)), _position.toVector2(), _netId));

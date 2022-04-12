@@ -136,15 +136,13 @@ declare namespace AnimationGeneration {
         id: Enemy.ENEMYNAME;
         spriteSheetIdle: ƒ.CoatTextured;
         spriteSheetWalk: ƒ.CoatTextured;
-        idleDimensions: ƒ.Vector2;
-        walkDimensions: ƒ.Vector2;
         idleNumberOfFrames: number;
         walkNumberOfFrames: number;
         idleFrameRate: number;
         walkFrameRate: number;
         clrWhite: ƒ.Color;
         animations: ƒAid.SpriteSheetAnimations;
-        constructor(_id: Enemy.ENEMYNAME, _idleDimensions: ƒ.Vector2, _txtIdle: ƒ.TextureImage, _idleNumberOfFrames: number, _idleFrameRate: number, _txtWalk?: ƒ.TextureImage, _walkNumberOfFrames?: number, _walkDimensions?: ƒ.Vector2, _walkFrameRate?: number);
+        constructor(_id: Enemy.ENEMYNAME, _txtIdle: ƒ.TextureImage, _idleNumberOfFrames: number, _idleFrameRate: number, _txtWalk?: ƒ.TextureImage, _walkNumberOfFrames?: number, _walkFrameRate?: number);
     }
     export let sheetArray: MyAnimationClass[];
     export function getAnimationById(_id: Enemy.ENEMYNAME): MyAnimationClass;
