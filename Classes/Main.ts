@@ -140,8 +140,34 @@ namespace Game {
         document.getElementById("StartGame").addEventListener("click", () => {
             Networking.conneting();
             document.getElementById("Startscreen").style.visibility = "hidden";
-            document.getElementById("Lobbyscreen").style.visibility = "visible";
+
             waitOnConnection();
+
+            waitForHost();
+
+            waitForLobby();
+
+            function waitForLobby() {
+                if (Networking.clients.length >= 2 && Networking.client.idHost != undefined && (Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id].dataChannel != undefined &&
+                    (Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id].dataChannel.readyState == "open"))) {
+                    document.getElementById("Lobbyscreen").style.visibility = "visible";
+                    connected = true;
+                } else {
+                    setTimeout(() => {
+                        waitForLobby();
+                    }, 200);
+                }
+            }
+
+            function waitForHost() {
+                if (Networking.clients.length >= 2 && Networking.client.idHost == undefined) {
+                    Networking.setHost();
+                } else {
+                    setTimeout(() => {
+                        waitForHost();
+                    }, 200);
+                }
+            }
         });
         document.getElementById("Option").addEventListener("click", () => {
 
@@ -186,12 +212,12 @@ namespace Game {
 
 
     async function waitOnConnection() {
-        Networking.connected();
+        Networking.setClient();
         if (Networking.clients.filter(elem => elem.ready == true).length >= 2 && Networking.client.idHost != undefined) {
             await init();
             gamestate = GAMESTATES.PLAYING;
             await Networking.spawnPlayer(playerType);
-            
+
 
             //#region init Items
             if (Networking.client.id == Networking.client.idHost) {
@@ -201,7 +227,6 @@ namespace Game {
                 graph.appendChild(item2);
             }
             //#endregion
-
         } else {
             setTimeout(waitOnConnection, 300);
         }
@@ -221,7 +246,7 @@ namespace Game {
         readySate();
 
         function readySate() {
-            if (Networking.client.idHost != undefined) {
+            if (Networking.clients.length >= 2 && Networking.client.idHost != undefined) {
                 Networking.setClientReady();
             }
             if (Networking.clients.filter(elem => elem.ready == true).length < 2) {

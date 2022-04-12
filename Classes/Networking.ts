@@ -3,6 +3,7 @@
 namespace Networking {
     export enum FUNCTION {
         CONNECTED,
+        HOST,
         SETREADY,
         SPAWN,
         TRANSFORM,
@@ -47,6 +48,7 @@ namespace Networking {
                 setTimeout(addClientID, 300);
             }
         }
+
     }
 
 
@@ -58,9 +60,6 @@ namespace Networking {
                     //Add new client to array clients
                     if (message.content != undefined && message.content.text == FUNCTION.CONNECTED.toString()) {
                         if (message.content.value != client.id && clients.find(element => element == message.content.value) == undefined) {
-                            if (client.idHost == undefined) {
-                                setHost();
-                            }
                             clients.push({ id: message.content.value, ready: false });
                         }
                     }
@@ -167,6 +166,7 @@ namespace Networking {
 
                         //Spawn item from host
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNITEM.toString()) {
+                            console.log("empfangen!!!!");
                             if (client.id != client.idHost) {
                                 if (message.content.attributes != null) {
                                     let attributes = new Player.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.coolDownReduction);
@@ -188,6 +188,10 @@ namespace Networking {
                             let item = Game.graph.getChildren().find(enem => (<Items.Item>enem).netId == message.content.netId);
                             Game.graph.removeChild(item);
                             popID(message.content.netId);
+                        }
+
+                        if (message.content != undefined && message.content.text == FUNCTION.HOST.toString()) {
+                            someoneIsHost = true;
                         }
                     }
                 }
@@ -214,9 +218,12 @@ namespace Networking {
     //#region player
     export function setHost() {
         if (client.idHost == undefined) {
-            client.becomeHost();
-            someoneIsHost = true;
-            console.log("IM THE HOST IM THE HOST");
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.HOST, id: client.id } });
+            if (!someoneIsHost) {
+                client.becomeHost();
+                someoneIsHost = true;
+                console.log("IM THE HOST IM THE HOST");
+            }
         } else {
             someoneIsHost = true;
         }
@@ -229,10 +236,9 @@ namespace Networking {
         } else {
             client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.RANGED, value: Game.avatar1.properties, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
         }
-        Game.connected = true;
     }
 
-    export function connected() {
+    export function setClient() {
         Networking.client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: Networking.FUNCTION.CONNECTED, value: Networking.client.id } });
     }
 
@@ -294,10 +300,10 @@ namespace Networking {
     //#endregion
 
     //#region Items
-    export function spawnItem(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime: number, _netId: number, _attributes?: Player.Attributes, _type?: Items.ITEMTYPE) {
+    export async function spawnItem(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime: number, _netId: number, _attributes?: Player.Attributes, _type?: Items.ITEMTYPE) {
         if (Game.connected && client.idHost == client.id) {
             console.log(_attributes);
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNITEM, name: _name, description: _description, position: _position, imgSrc: _imgSrc, lifetime: _lifetime, netId: _netId, attributes: _attributes, type: _type } });
+            await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNITEM, name: _name, description: _description, position: _position, imgSrc: _imgSrc, lifetime: _lifetime, netId: _netId, attributes: _attributes, type: _type } });
         }
     }
 

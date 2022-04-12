@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -257,19 +257,20 @@ declare namespace Level {
 declare namespace Networking {
     enum FUNCTION {
         CONNECTED = 0,
-        SETREADY = 1,
-        SPAWN = 2,
-        TRANSFORM = 3,
-        SPAWNBULLET = 4,
-        SPAWNBULLETENEMY = 5,
-        BULLETTRANSFORM = 6,
-        BULLETDIE = 7,
-        SPAWNENEMY = 8,
-        ENEMYTRANSFORM = 9,
-        ENEMYDIE = 10,
-        SPAWNITEM = 11,
-        UPDATEATTRIBUTES = 12,
-        ITEMDIE = 13
+        HOST = 1,
+        SETREADY = 2,
+        SPAWN = 3,
+        TRANSFORM = 4,
+        SPAWNBULLET = 5,
+        SPAWNBULLETENEMY = 6,
+        BULLETTRANSFORM = 7,
+        BULLETDIE = 8,
+        SPAWNENEMY = 9,
+        ENEMYTRANSFORM = 10,
+        ENEMYDIE = 11,
+        SPAWNITEM = 12,
+        UPDATEATTRIBUTES = 13,
+        ITEMDIE = 14
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -285,7 +286,7 @@ declare namespace Networking {
     function setClientReady(): void;
     function setHost(): void;
     function spawnPlayer(_type?: Player.PLAYERTYPE): Promise<void>;
-    function connected(): void;
+    function setClient(): void;
     /**
      * sends transform over network
      * @param __position current position of Object
@@ -299,7 +300,7 @@ declare namespace Networking {
     function spawnEnemy(_enemy: Enemy.Enemy, _netId: number): void;
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number): void;
     function removeEnemy(_netId: number): void;
-    function spawnItem(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime: number, _netId: number, _attributes?: Player.Attributes, _type?: Items.ITEMTYPE): void;
+    function spawnItem(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime: number, _netId: number, _attributes?: Player.Attributes, _type?: Items.ITEMTYPE): Promise<void>;
     function updateAvatarAttributes(_attributes: Player.Attributes, _type: Items.ITEMTYPE): void;
     function removeItem(_netId: number): void;
     function idGenerator(): number;
