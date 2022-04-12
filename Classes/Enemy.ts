@@ -25,14 +25,14 @@ namespace Enemy {
         IDLE, FOLLOW, FLEE
     }
 
-    enum STATES {
+    export enum ANIMATIONSTATES {
         IDLE, WALK
     }
     import ƒAid = FudgeAid;
 
     export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
         currentState: BEHAVIOUR = BEHAVIOUR.IDLE;
-        currentAnimation: STATES;
+        currentAnimation: ANIMATIONSTATES;
         public tag: Tag.TAG = Tag.TAG.ENEMY;
         public id: number;
         public netId: number = Networking.idGenerator();
@@ -69,13 +69,14 @@ namespace Enemy {
             this.mtxLocal.scale(new ƒ.Vector3(this.scale, this.scale, 0));
             this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / this.sizeDivideFactor);
             this.animations = AnimationGeneration.getAnimationById(this.id).animations;
+            this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
             Networking.spawnEnemy(this, this.netId);
         }
 
         public enemyUpdate() {
             this.updateCollider();
             this.mtxLocal.translate(this.moveDirection);
-            Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId);
+            Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId, this.currentAnimation);
         }
 
         public doKnockback(_body: ƒAid.NodeSprite): void {
@@ -276,21 +277,23 @@ namespace Enemy {
             this.behaviour();
             switch (this.currentState) {
                 case BEHAVIOUR.IDLE:
-                    if (this.currentAnimation != STATES.IDLE) {
+                    if (this.currentAnimation != ANIMATIONSTATES.IDLE) {
                         this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
                         this.setFrameDirection(1);
                         this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
-                        this.currentAnimation = STATES.IDLE;
+                        this.currentAnimation = ANIMATIONSTATES.IDLE;
+                        Networking.updateEnemyState(this.currentAnimation, this.netId);
                     }
                     this.setFrameDirection(1);
                     this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
                     break;
                 case BEHAVIOUR.FOLLOW:
-                    if (this.currentAnimation != STATES.WALK) {
+                    if (this.currentAnimation != ANIMATIONSTATES.WALK) {
                         this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["walk"]);
                         this.setFrameDirection(1);
                         this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
-                        this.currentAnimation = STATES.WALK;
+                        this.currentAnimation = ANIMATIONSTATES.WALK;
+                        Networking.updateEnemyState(this.currentAnimation, this.netId);
                     }
                     this.moveSimple()
                     break;

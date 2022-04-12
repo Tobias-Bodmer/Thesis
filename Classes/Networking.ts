@@ -13,6 +13,7 @@ namespace Networking {
         BULLETDIE,
         SPAWNENEMY,
         ENEMYTRANSFORM,
+        ENEMYSTATE,
         ENEMYDIE,
         SPAWNITEM,
         UPDATEATTRIBUTES,
@@ -156,6 +157,22 @@ namespace Networking {
                                 enemy.updateCollider();
                             }
                         }
+                        //Sync animation state
+                        if (message.content != undefined && message.content.text == FUNCTION.ENEMYSTATE.toString()) {
+                            let enemy = Game.enemies.find(enem => enem.netId == message.content.netId);
+                            if (enemy != undefined) {
+                                switch (message.content.state) {
+                                    case Enemy.ANIMATIONSTATES.IDLE:
+                                        enemy.setAnimation(<ƒAid.SpriteSheetAnimation>enemy.animations["idle"]);
+                                        enemy.currentAnimation = Enemy.ANIMATIONSTATES.IDLE;
+                                        break;
+                                    case Enemy.ANIMATIONSTATES.WALK:
+                                        enemy.setAnimation(<ƒAid.SpriteSheetAnimation>enemy.animations["walk"]);
+                                        enemy.currentAnimation = Enemy.ANIMATIONSTATES.WALK;
+                                        break;
+                                }
+                            }
+                        }
 
                         //Kill enemy at the client from host
                         if (message.content != undefined && message.content.text == FUNCTION.ENEMYDIE.toString()) {
@@ -236,6 +253,7 @@ namespace Networking {
         client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SETREADY, netId: client.id } });
     }
 
+
     //#region player
     export function setHost() {
         if (client.idHost == undefined) {
@@ -257,20 +275,16 @@ namespace Networking {
             client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.RANGED, value: Game.avatar1.properties, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
         }
     }
-
     export function setClient() {
         Networking.client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: Networking.FUNCTION.CONNECTED, value: Networking.client.id } });
     }
-
-    /**
-     * sends transform over network
-     * @param __position current position of Object
-     * @param _rotation current rotation of Object
-     */
     export function updateAvatarPosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3) {
         client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.TRANSFORM, value: _position, rotation: _rotation } })
     }
     //#endregion
+
+
+
 
     //#region bullet
     export function spawnBullet(_direction: ƒ.Vector3, _netId: number) {
@@ -278,27 +292,25 @@ namespace Networking {
             client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNBULLET, direction: _direction, netId: _netId } })
         }
     }
-
     export function updateBullet(_position: ƒ.Vector3, _netId: number, _tick?: number) {
         if (Game.connected && client.idHost == client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.BULLETTRANSFORM, position: _position, netId: _netId, tick: _tick } })
         }
     }
-
     export async function spawnBulletAtEnemy(_bulletNetId: number, _enemyNetId: number) {
         if (Game.connected) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNBULLETENEMY, bulletNetId: _bulletNetId, enemyNetId: _enemyNetId } })
 
         }
     }
-
-
     export function removeBullet(_netId: number) {
         if (Game.connected && client.idHost == client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.BULLETDIE, netId: _netId } })
         }
     }
     //#endregion
+
+
 
     //#region enemy
     function chooseEnemy(_id: Enemy.ENEMYNAME, _properties: Player.Attributes, _position: ƒ.Vector3, _netId: number) {
@@ -312,24 +324,23 @@ namespace Networking {
                 break;
         }
     }
-
     export function spawnEnemy(_enemy: Enemy.Enemy, _netId: number) {
         if (Game.connected && client.idHost == client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, id: _enemy.id, properties: _enemy.properties, position: _enemy.mtxLocal.translation, netId: _netId } })
         }
     }
-
-    export function updateEnemyPosition(_position: ƒ.Vector3, _netId: number) {
-        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ENEMYTRANSFORM, position: _position, netId: _netId } })
+    export function updateEnemyPosition(_position: ƒ.Vector3, _netId: number, _state: Enemy.ANIMATIONSTATES) {
+        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ENEMYTRANSFORM, position: _position, netId: _netId, animation: _state } })
     }
-
-
-
+    export function updateEnemyState(_state: Enemy.ANIMATIONSTATES, _netId: number) {
+        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ENEMYSTATE, state: _state, netId: _netId } })
+    }
     export function removeEnemy(_netId: number) {
         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ENEMYDIE, netId: _netId } })
-
     }
     //#endregion
+
+
 
     //#region items
     export async function spawnItem(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime: number, _netId: number, _attributes?: Player.Attributes, _type?: Items.ITEMTYPE) {
@@ -337,16 +348,15 @@ namespace Networking {
             await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNITEM, name: _name, description: _description, position: _position, imgSrc: _imgSrc, lifetime: _lifetime, netId: _netId, attributes: _attributes, type: _type } });
         }
     }
-
     export function updateAvatarAttributes(_attributes: Player.Attributes, _type: Items.ITEMTYPE) {
         client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.UPDATEATTRIBUTES, attributes: _attributes, type: _type } });
     }
-
-
     export function removeItem(_netId: number) {
         client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.ITEMDIE, netId: _netId } })
     }
     //#endregion
+
+
 
     //#region room
     export function sendRoom(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: Generation.ROOMTYPE) {
@@ -354,13 +364,15 @@ namespace Networking {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SENDROOM, name: _name, coordiantes: _coordiantes, exits: _exits, roomType: _roomType } })
         }
     }
-
     export function switchRoomRequest(_coordiantes: [number, number], _direction: [boolean, boolean, boolean, boolean]) {
         if (Game.connected && client.idHost != client.id) {
             client.dispatch({ route: undefined, idTarget: client.idHost, content: { text: FUNCTION.SWITCHROOMREQUEST, coordiantes: _coordiantes, direction: _direction } })
         }
     }
     //#endregion
+
+
+
 
     export function idGenerator(): number {
         let id = Math.floor(Math.random() * 1000);

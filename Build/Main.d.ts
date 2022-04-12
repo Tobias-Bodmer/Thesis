@@ -53,14 +53,14 @@ declare namespace Enemy {
         FOLLOW = 1,
         FLEE = 2
     }
-    enum STATES {
+    export enum ANIMATIONSTATES {
         IDLE = 0,
         WALK = 1
     }
     import ƒAid = FudgeAid;
     export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
         currentState: BEHAVIOUR;
-        currentAnimation: STATES;
+        currentAnimation: ANIMATIONSTATES;
         tag: Tag.TAG;
         id: number;
         netId: number;
@@ -270,12 +270,13 @@ declare namespace Networking {
         BULLETDIE = 8,
         SPAWNENEMY = 9,
         ENEMYTRANSFORM = 10,
-        ENEMYDIE = 11,
-        SPAWNITEM = 12,
-        UPDATEATTRIBUTES = 13,
-        ITEMDIE = 14,
-        SENDROOM = 15,
-        SWITCHROOMREQUEST = 16
+        ENEMYSTATE = 11,
+        ENEMYDIE = 12,
+        SPAWNITEM = 13,
+        UPDATEATTRIBUTES = 14,
+        ITEMDIE = 15,
+        SENDROOM = 16,
+        SWITCHROOMREQUEST = 17
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -292,18 +293,14 @@ declare namespace Networking {
     function setHost(): void;
     function spawnPlayer(_type?: Player.PLAYERTYPE): Promise<void>;
     function setClient(): void;
-    /**
-     * sends transform over network
-     * @param __position current position of Object
-     * @param _rotation current rotation of Object
-     */
     function updateAvatarPosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3): void;
     function spawnBullet(_direction: ƒ.Vector3, _netId: number): void;
     function updateBullet(_position: ƒ.Vector3, _netId: number, _tick?: number): void;
     function spawnBulletAtEnemy(_bulletNetId: number, _enemyNetId: number): Promise<void>;
     function removeBullet(_netId: number): void;
     function spawnEnemy(_enemy: Enemy.Enemy, _netId: number): void;
-    function updateEnemyPosition(_position: ƒ.Vector3, _netId: number): void;
+    function updateEnemyPosition(_position: ƒ.Vector3, _netId: number, _state: Enemy.ANIMATIONSTATES): void;
+    function updateEnemyState(_state: Enemy.ANIMATIONSTATES, _netId: number): void;
     function removeEnemy(_netId: number): void;
     function spawnItem(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime: number, _netId: number, _attributes?: Player.Attributes, _type?: Items.ITEMTYPE): Promise<void>;
     function updateAvatarAttributes(_attributes: Player.Attributes, _type: Items.ITEMTYPE): void;
