@@ -6,7 +6,6 @@ namespace Enemy {
         REDTICK,
         SMALLTICK,
         SKELETON
-
     }
     export function getNameByID(_id: ENEMYNAME) {
         switch (_id) {
@@ -18,7 +17,6 @@ namespace Enemy {
                 return "smallTick";
             case ENEMYNAME.SKELETON:
                 return "skeleton";
-
         }
     }
     enum BEHAVIOUR {
@@ -44,7 +42,6 @@ namespace Enemy {
         lifetime: number;
         canMoveX: boolean = true;
         canMoveY: boolean = true;
-
         moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
 
         knockbackForce: number = 6;
@@ -53,9 +50,10 @@ namespace Enemy {
         animations: ƒAid.SpriteSheetAnimations;
         //#endregion
 
-        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number) {
+        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _scale: number, _netId?: number) {
             super(getNameByID(_id));
             this.id = _id;
+            this.scale = _scale;
             this.properties = _properties;
             this.properties.attributes.healthPoints = this.properties.attributes.healthPoints * this.scale * 0.5;
             this.properties.attributes.speed /= this.scale;
@@ -70,6 +68,7 @@ namespace Enemy {
             this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / this.sizeDivideFactor);
             this.animations = AnimationGeneration.getAnimationById(this.id).animations;
             this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
+
             Networking.spawnEnemy(this, this.netId);
         }
 
@@ -251,8 +250,8 @@ namespace Enemy {
 
     export class EnemyDumb extends Enemy {
 
-        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number) {
-            super(_id, _properties, _position, _netId);
+        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _scale: number, _netId?: number) {
+            super(_id, _properties, _position, _scale, _netId);
         }
 
         enemyUpdate(): void {
@@ -307,8 +306,8 @@ namespace Enemy {
     export class EnemyShoot extends Enemy {
         weapon: Weapons.Weapon;
         viewRadius: number = 3;
-        constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _netId?: number) {
-            super(_id, _properties, _position, _netId);
+        constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _scale: number, _netId?: number) {
+            super(_id, _properties, _position, _scale, _netId);
             this.weapon = _weapon;
         }
 

@@ -146,6 +146,7 @@ namespace Networking {
                                 new ƒ.Vector3(message.content.position.data[0],
                                     message.content.position.data[1],
                                     message.content.position.data[2]),
+                                <number>message.content.scale,
                                 <number>message.content.netId);
                         }
 
@@ -205,11 +206,11 @@ namespace Networking {
                             Game.graph.removeChild(item);
                             popID(message.content.netId);
                         }
-
+                        // send is hostMessage
                         if (message.content != undefined && message.content.text == FUNCTION.HOST.toString()) {
                             someoneIsHost = true;
                         }
-
+                        //send room 
                         if (message.content != undefined && message.content.text == FUNCTION.SENDROOM.toString()) {
                             let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => (<any>elem).tag != Tag.TAG.PLAYER);
 
@@ -234,7 +235,7 @@ namespace Networking {
 
                             Game.avatar1.cmpTransform.mtxLocal.translation = room.cmpTransform.mtxLocal.translation;
                         }
-
+                        //send request to switch rooms
                         if (message.content != undefined && message.content.text == FUNCTION.SWITCHROOMREQUEST.toString()) {
                             let currentroom = Generation.rooms.find(elem => elem.coordinates[0] == (<[number, number]>message.content.coordiantes)[0] &&
                                 elem.coordinates[1] == (<[number, number]>message.content.coordiantes)[1]);
@@ -313,20 +314,20 @@ namespace Networking {
 
 
     //#region enemy
-    function chooseEnemy(_id: Enemy.ENEMYNAME, _properties: Player.Attributes, _position: ƒ.Vector3, _netId: number) {
+    function chooseEnemy(_id: Enemy.ENEMYNAME, _properties: Player.Attributes, _position: ƒ.Vector3, _scale: number, _netId: number) {
         switch (_id) {
             case Enemy.ENEMYNAME.BAT:
-                Game.graph.addChild(new Enemy.EnemyDumb(Enemy.ENEMYNAME.BAT, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed)), _position.toVector2(), _netId));
+                Game.graph.addChild(new Enemy.EnemyDumb(Enemy.ENEMYNAME.BAT, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed)), _position.toVector2(), _scale, _netId));
                 break;
             case Enemy.ENEMYNAME.REDTICK:
-                let newEnem: Enemy.EnemyDumb = new Enemy.EnemyDumb(Enemy.ENEMYNAME.REDTICK, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed)), _position.toVector2(), _netId);
+                let newEnem: Enemy.EnemyDumb = new Enemy.EnemyDumb(Enemy.ENEMYNAME.REDTICK, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed)), _position.toVector2(), _scale, _netId);
                 Game.graph.addChild(newEnem);
                 break;
         }
     }
     export function spawnEnemy(_enemy: Enemy.Enemy, _netId: number) {
         if (Game.connected && client.idHost == client.id) {
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, id: _enemy.id, properties: _enemy.properties, position: _enemy.mtxLocal.translation, netId: _netId } })
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, id: _enemy.id, properties: _enemy.properties, position: _enemy.mtxLocal.translation, scale: _enemy.scale, netId: _netId } })
         }
     }
     export function updateEnemyPosition(_position: ƒ.Vector3, _netId: number, _state: Enemy.ANIMATIONSTATES) {

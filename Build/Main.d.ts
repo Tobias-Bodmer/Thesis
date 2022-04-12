@@ -75,7 +75,7 @@ declare namespace Enemy {
         moveDirection: Game.ƒ.Vector3;
         knockbackForce: number;
         animations: ƒAid.SpriteSheetAnimations;
-        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number);
+        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _scale: number, _netId?: number);
         enemyUpdate(): void;
         doKnockback(_body: ƒAid.NodeSprite): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
@@ -86,7 +86,7 @@ declare namespace Enemy {
         getCanMoveXY(_direction: ƒ.Vector3): void;
     }
     export class EnemyDumb extends Enemy {
-        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number);
+        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _scale: number, _netId?: number);
         enemyUpdate(): void;
         behaviour(): void;
         moveBehaviour(): void;
@@ -94,7 +94,7 @@ declare namespace Enemy {
     export class EnemyShoot extends Enemy {
         weapon: Weapons.Weapon;
         viewRadius: number;
-        constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _netId?: number);
+        constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _scale: number, _netId?: number);
         enemyUpdate(): void;
         shoot(_netId?: number): void;
     }

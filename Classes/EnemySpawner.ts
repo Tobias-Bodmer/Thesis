@@ -1,7 +1,7 @@
 namespace EnemySpawner {
     let spawnTime: number = 1 * Game.frameRate;
     let currentTime: number = spawnTime;
-    let maxEnemies: number = 1;
+    let maxEnemies: number = 40;
 
     export function spawnEnemies(): void {
         if (Game.enemies.length < maxEnemies) {
@@ -9,7 +9,7 @@ namespace EnemySpawner {
             if (currentTime == spawnTime) {
                 const ref = Game.enemiesJSON.find(elem => elem.name == "tick");
                 // Game.graph.addChild(new Enemy.EnemyShoot(Enemy.ENEMYNAME.BAT, new Player.Character(ref.name, new Player.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed)), new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2)), new Weapons.Weapon(60, 1)));
-                Game.graph.addChild(new Enemy.EnemyDumb(Enemy.ENEMYNAME.REDTICK, new Player.Character(ref.name, new Player.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed)), new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2))));
+                Game.graph.addChild(new Enemy.EnemyDumb(Enemy.ENEMYNAME.REDTICK, new Player.Character(ref.name, new Player.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed)), new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2)), Math.random() + 1));
 
             }
             currentTime--;
