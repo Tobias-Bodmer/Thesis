@@ -177,6 +177,10 @@ namespace Game {
 
         //ENEMY
         await Enemy.txtTick.load("./Resources/Image/Enemies/spinni.png");
+        await AnimationGeneration.txtBatIdle.load("./Resources/Image/Enemies/fledi.png");
+
+        AnimationGeneration.createAllAnimations();
+
     }
 
 
@@ -184,10 +188,10 @@ namespace Game {
     async function waitOnConnection() {
         Networking.connected();
         if (Networking.clients.filter(elem => elem.ready == true).length >= 2 && Networking.client.idHost != undefined) {
-            connected = true;
             await init();
             gamestate = GAMESTATES.PLAYING;
             await Networking.spawnPlayer(playerType);
+            
 
             //#region init Items
             if (Networking.client.id == Networking.client.idHost) {

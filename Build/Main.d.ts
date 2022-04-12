@@ -44,9 +44,10 @@ declare namespace Enemy {
     export let txtTick: ƒ.TextureImage;
     export enum ENEMYNAME {
         BAT = 0,
-        TICK = 1
+        TICK = 1,
+        SKELETON = 2
     }
-    export function getNameByID(_id: ENEMYNAME): "bat" | "tick";
+    export function getNameByID(_id: ENEMYNAME): "bat" | "tick" | "skeleton";
     enum BEHAVIOUR {
         IDLE = 0,
         FOLLOW = 1,
@@ -89,6 +90,7 @@ declare namespace Enemy {
     }
     export class EnemyShoot extends Enemy {
         weapon: Weapons.Weapon;
+        viewRadius: number;
         constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _netId?: number);
         move(): void;
         shoot(_netId?: number): void;
@@ -126,6 +128,28 @@ declare namespace Items {
         constructor(_name: string, _description: string, _position: ƒ.Vector3, _attributes: Player.Attributes, _type: ITEMTYPE, _imgSrc?: string, _lifetime?: number, _netId?: number);
         collisionDetection(): Promise<void>;
     }
+}
+declare namespace AnimationGeneration {
+    export let txtBatIdle: ƒ.TextureImage;
+    export import ƒAid = FudgeAid;
+    class MyAnimationClass {
+        id: Enemy.ENEMYNAME;
+        spriteSheetIdle: ƒ.CoatTextured;
+        spriteSheetWalk: ƒ.CoatTextured;
+        idleDimensions: ƒ.Vector2;
+        walkDimensions: ƒ.Vector2;
+        idleNumberOfFrames: number;
+        walkNumberOfFrames: number;
+        idleFrameRate: number;
+        walkFrameRate: number;
+        clrWhite: ƒ.Color;
+        animations: ƒAid.SpriteSheetAnimations;
+        constructor(_id: Enemy.ENEMYNAME, _idleDimensions: ƒ.Vector2, _txtIdle: ƒ.TextureImage, _idleNumberOfFrames: number, _idleFrameRate: number, _txtWalk?: ƒ.TextureImage, _walkNumberOfFrames?: number, _walkDimensions?: ƒ.Vector2, _walkFrameRate?: number);
+    }
+    export let sheetArray: MyAnimationClass[];
+    export function getAnimationById(_id: Enemy.ENEMYNAME): MyAnimationClass;
+    export function createAllAnimations(): void;
+    export {};
 }
 declare namespace Player {
     class Attributes {

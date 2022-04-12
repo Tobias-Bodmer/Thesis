@@ -4,6 +4,7 @@ namespace Enemy {
     export enum ENEMYNAME {
         BAT,
         TICK,
+        SKELETON
 
     }
     export function getNameByID(_id: ENEMYNAME) {
@@ -12,6 +13,8 @@ namespace Enemy {
                 return "bat";
             case ENEMYNAME.TICK:
                 return "tick";
+            case ENEMYNAME.SKELETON:
+                return "skeleton";
 
         }
     }
@@ -53,13 +56,17 @@ namespace Enemy {
                 this.netId = _netId;
             }
             this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);
+            // this.startSprite();
+            this.animations = AnimationGeneration.getAnimationById(this.id).animations;
+            this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
+            this.setFrameDirection(1);
+            this.framerate = AnimationGeneration.getAnimationById(this.id).idleFrameRate;
             Networking.spawnEnemy(this, this.netId);
-            this.startSprite();
         }
 
         async startSprite() {
             await this.loadSprites();
-            this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["fly"]);
+            this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
             this.setFrameDirection(1);
             this.framerate = 12;
         }
@@ -71,9 +78,9 @@ namespace Enemy {
 
         generateSprites(_spritesheet: ƒ.CoatTextured): void {
             this.animations = {};
-            let name: string = "fly";
+            let name: string = "idle";
             let sprite: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation(name, _spritesheet);
-            sprite.generateByGrid(ƒ.Rectangle.GET(0, 0, 18, 14), 4, 22, ƒ.ORIGIN2D.BOTTOMCENTER, ƒ.Vector2.X(18));
+            sprite.generateByGrid(ƒ.Rectangle.GET(0, 0, 18, 14), 4, 32, ƒ.ORIGIN2D.BOTTOMCENTER, ƒ.Vector2.X(18));
             this.animations[name] = sprite;
         }
 
@@ -294,6 +301,7 @@ namespace Enemy {
     }
     export class EnemyShoot extends Enemy {
         weapon: Weapons.Weapon;
+        viewRadius: number = 3;
         constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _netId?: number) {
             super(_id, _properties, _position, _netId);
             this.weapon = _weapon;
@@ -307,7 +315,7 @@ namespace Enemy {
         public shoot(_netId?: number) {
             let target: ƒ.Vector3 = Calculation.getCloserAvatarPosition(this.mtxLocal.translation)
             let _direction = ƒ.Vector3.DIFFERENCE(target, this.mtxLocal.translation);
-            if (this.weapon.currentAttackCount > 0) {
+            if (this.weapon.currentAttackCount > 0 && _direction.magnitude < this.viewRadius) {
                 _direction.normalize();
                 let bullet: Bullets.Bullet = new Bullets.HomingBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, Calculation.getCloserAvatarPosition(this.mtxLocal.translation), this, _netId);
                 bullet.owner = this.tag;

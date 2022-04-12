@@ -138,7 +138,7 @@ namespace Networking {
 
                         //Spawn enemy at the client 
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNENEMY.toString()) {
-                            console.log("enemy: " + message.content.properties.attributes);
+                            // console.log("enemy: " + message.content.properties.attributes);
                             chooseEnemy(<Enemy.ENEMYNAME>message.content.id,
                                 new Player.Attributes(message.content.properties.attributes.healthPoints,
                                     message.content.properties.attributes.attackPoints,
@@ -229,6 +229,7 @@ namespace Networking {
         } else {
             client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.RANGED, value: Game.avatar1.properties, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
         }
+        Game.connected = true;
     }
 
     export function connected() {
