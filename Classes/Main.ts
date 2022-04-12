@@ -206,7 +206,7 @@ namespace Game {
 
         //ENEMY
         await Enemy.txtTick.load("./Resources/Image/Enemies/spinni.png");
-        await AnimationGeneration.txtBatIdle.load("./Resources/Image/Enemies/fledi.png");
+        await AnimationGeneration.txtBatIdle.load("./Resources/Image/Enemies/spinni.png");
 
         AnimationGeneration.createAllAnimations();
 

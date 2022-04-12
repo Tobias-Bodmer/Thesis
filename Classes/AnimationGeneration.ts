@@ -5,8 +5,6 @@ namespace AnimationGeneration {
         public id: Enemy.ENEMYNAME;
         public spriteSheetIdle: ƒ.CoatTextured;
         public spriteSheetWalk: ƒ.CoatTextured;
-        idleDimensions: ƒ.Vector2; // width, height
-        walkDimensions: ƒ.Vector2 // widht, height
         idleNumberOfFrames: number;
         walkNumberOfFrames: number;
         idleFrameRate: number;
@@ -15,28 +13,24 @@ namespace AnimationGeneration {
         clrWhite: ƒ.Color = ƒ.Color.CSS("white");
         animations: ƒAid.SpriteSheetAnimations = {};
 
-        constructor(_id: Enemy.ENEMYNAME, _idleDimensions: ƒ.Vector2,
+        constructor(_id: Enemy.ENEMYNAME,
             _txtIdle: ƒ.TextureImage,
             _idleNumberOfFrames: number,
             _idleFrameRate: number,
             _txtWalk?: ƒ.TextureImage,
             _walkNumberOfFrames?: number,
-            _walkDimensions?: ƒ.Vector2,
             _walkFrameRate?: number) {
             this.id = _id;
             this.spriteSheetIdle = new ƒ.CoatTextured(this.clrWhite, _txtIdle);
-            this.idleDimensions = _idleDimensions;
             this.idleFrameRate = _idleFrameRate;
             this.idleNumberOfFrames = _idleNumberOfFrames;
             if (_txtWalk != undefined) {
                 this.spriteSheetWalk = new ƒ.CoatTextured(this.clrWhite, _txtWalk);
-                this.walkDimensions = _walkDimensions;
                 this.walkFrameRate = _walkFrameRate;
                 this.walkNumberOfFrames = _walkNumberOfFrames;
             }
             else {
                 this.spriteSheetWalk = new ƒ.CoatTextured(this.clrWhite, _txtIdle);
-                this.walkDimensions = _idleDimensions;
                 this.walkFrameRate = _idleFrameRate;
                 this.walkNumberOfFrames = _idleNumberOfFrames;
             }
@@ -45,9 +39,9 @@ namespace AnimationGeneration {
     }
 
     export let sheetArray: MyAnimationClass[] = [];
-    //#region bat
+    //#region animation
 
-    let batAnimation: MyAnimationClass = new MyAnimationClass(Enemy.ENEMYNAME.BAT, new ƒ.Vector2(31, 19), txtBatIdle, 4, 12);
+    let batAnimation: MyAnimationClass = new MyAnimationClass(Enemy.ENEMYNAME.BAT, txtBatIdle, 4, 12);
     //#endregion
 
 
@@ -65,8 +59,12 @@ namespace AnimationGeneration {
         sheetArray.push(batAnimation);
 
         sheetArray.forEach(obj => {
-            generateAnimationFromGrid(obj.spriteSheetIdle, obj.animations, "idle", obj.idleDimensions.x, obj.idleDimensions.y, obj.idleNumberOfFrames, obj.idleFrameRate, 32);
-            generateAnimationFromGrid(obj.spriteSheetWalk, obj.animations, "walk", obj.walkDimensions.x, obj.walkDimensions.y, obj.walkNumberOfFrames, obj.walkFrameRate, 32);
+            let idleWidth: number = obj.spriteSheetIdle.texture.texImageSource.width / obj.idleNumberOfFrames;
+            let idleHeigth: number = obj.spriteSheetIdle.texture.texImageSource.height;
+            let walkWidth: number = obj.spriteSheetWalk.texture.texImageSource.width / obj.idleNumberOfFrames;
+            let walkHeigth: number = obj.spriteSheetWalk.texture.texImageSource.height;
+            generateAnimationFromGrid(obj.spriteSheetIdle, obj.animations, "idle", idleWidth, idleHeigth, obj.idleNumberOfFrames, obj.idleFrameRate, 32);
+            generateAnimationFromGrid(obj.spriteSheetWalk, obj.animations, "walk", walkWidth, walkHeigth, obj.walkNumberOfFrames, obj.walkFrameRate, 32);
         })
     }
 
