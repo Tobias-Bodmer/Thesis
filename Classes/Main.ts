@@ -49,7 +49,9 @@ namespace Game {
     async function init() {
         await loadJSON();
 
-        Generation.generateRooms();
+        if(Networking.client.id == Networking.client.idHost) {
+            Generation.generateRooms();
+        }
 
         graph.appendChild(avatar1);
 
@@ -176,6 +178,7 @@ namespace Game {
 
         });
     }
+
     async function loadJSON() {
         const loadEnemy = await (await fetch("./Resources/EnemiesStorage.json")).json();
         enemiesJSON = (<Player.Character[]>loadEnemy.enemies);
@@ -209,12 +212,10 @@ namespace Game {
 
     }
 
-
-
     async function waitOnConnection() {
         Networking.setClient();
         if (Networking.clients.filter(elem => elem.ready == true).length >= 2 && Networking.client.idHost != undefined) {
-            if (Networking.client.id != Networking.client.idHost) {
+            if (Networking.client.id == Networking.client.idHost) {
                 document.getElementById("IMHOST").style.visibility = "visible";
             }
 

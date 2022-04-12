@@ -2,7 +2,7 @@ namespace Generation {
 
     let numberOfRooms: number = 3;
     let usedPositions: [number, number][] = [];
-    let rooms: Room[] = [];
+    export let rooms: Room[] = [];
 
     //spawn chances
     let challengeRoomSpawnChance: number = 20;
@@ -38,6 +38,12 @@ namespace Generation {
         for (let i = 0; i < rooms[0].doors.length; i++) {
             Game.graph.addChild(rooms[0].doors[i]);
         }
+
+        sendRoom(rooms[0]);
+    }
+
+    function sendRoom(_room: Room) {
+        Networking.sendRoom(_room.name, _room.coordinates, _room.exits, _room.roomType);
     }
 
     function addRoom(_currentRoom: Room, _roomType: Generation.ROOMTYPE): void {
@@ -53,6 +59,7 @@ namespace Generation {
                 newRoom = new Room("roomNormal", (newRoomPosition), calcPathExits(newRoomPosition), _roomType);
                 rooms.push(newRoom);
                 _currentRoom.neighbourN = newRoom;
+                newRoom.neighbourS = _currentRoom;
                 usedPositions.push(newRoomPosition);
                 break;
             case 1: // east
@@ -60,6 +67,7 @@ namespace Generation {
                 newRoom = new Room("roomNormal", (newRoomPosition), calcPathExits(newRoomPosition), _roomType);
                 rooms.push(newRoom);
                 _currentRoom.neighbourE = newRoom;
+                newRoom.neighbourW = _currentRoom;
                 usedPositions.push(newRoomPosition);
                 break;
             case 2: // south
@@ -67,6 +75,7 @@ namespace Generation {
                 newRoom = new Room("roomNormal", (newRoomPosition), calcPathExits(newRoomPosition), _roomType);
                 rooms.push(newRoom);
                 _currentRoom.neighbourS = newRoom;
+                newRoom.neighbourN = _currentRoom;
                 usedPositions.push(newRoomPosition);
                 break;
             case 3: //west
@@ -74,6 +83,7 @@ namespace Generation {
                 newRoom = new Room("roomNormal", (newRoomPosition), calcPathExits(newRoomPosition), _roomType);
                 rooms.push(newRoom);
                 _currentRoom.neighbourW = newRoom;
+                newRoom.neighbourE = _currentRoom;
                 usedPositions.push(newRoomPosition);
                 break;
 
@@ -217,59 +227,31 @@ namespace Generation {
         });
 
         if (_direction[0]) {
-            Game.graph.addChild(_currentRoom.neighbourN);
-            Game.graph.appendChild(_currentRoom.neighbourN.walls[0]);
-            Game.graph.appendChild(_currentRoom.neighbourN.walls[1]);
-            Game.graph.appendChild(_currentRoom.neighbourN.walls[2]);
-            Game.graph.appendChild(_currentRoom.neighbourN.walls[3]);
-
-            Game.avatar1.cmpTransform.mtxLocal.translation = _currentRoom.neighbourN.cmpTransform.mtxLocal.translation;
-            Game.avatar2.cmpTransform.mtxLocal.translation = _currentRoom.neighbourN.cmpTransform.mtxLocal.translation;
-
-            for (let i = 0; i < _currentRoom.neighbourN.doors.length; i++) {
-                Game.graph.addChild(_currentRoom.neighbourN.doors[i]);
-            }
+            addRoomToGraph(_currentRoom.neighbourN);
         }
         if (_direction[1]) {
-            Game.graph.addChild(_currentRoom.neighbourE);
-            Game.graph.appendChild(_currentRoom.neighbourE.walls[0]);
-            Game.graph.appendChild(_currentRoom.neighbourE.walls[1]);
-            Game.graph.appendChild(_currentRoom.neighbourE.walls[2]);
-            Game.graph.appendChild(_currentRoom.neighbourE.walls[3]);
-
-            Game.avatar1.cmpTransform.mtxLocal.translation = _currentRoom.neighbourE.cmpTransform.mtxLocal.translation;
-            Game.avatar2.cmpTransform.mtxLocal.translation = _currentRoom.neighbourE.cmpTransform.mtxLocal.translation;
-
-            for (let i = 0; i < _currentRoom.neighbourE.doors.length; i++) {
-                Game.graph.addChild(_currentRoom.neighbourE.doors[i]);
-            }
+            addRoomToGraph(_currentRoom.neighbourE);
         }
         if (_direction[2]) {
-            Game.graph.addChild(_currentRoom.neighbourS);
-            Game.graph.appendChild(_currentRoom.neighbourS.walls[0]);
-            Game.graph.appendChild(_currentRoom.neighbourS.walls[1]);
-            Game.graph.appendChild(_currentRoom.neighbourS.walls[2]);
-            Game.graph.appendChild(_currentRoom.neighbourS.walls[3]);
+            addRoomToGraph(_currentRoom.neighbourS);
 
-            Game.avatar1.cmpTransform.mtxLocal.translation = _currentRoom.neighbourS.cmpTransform.mtxLocal.translation;
-            Game.avatar2.cmpTransform.mtxLocal.translation = _currentRoom.neighbourS.cmpTransform.mtxLocal.translation;
-
-            for (let i = 0; i < _currentRoom.neighbourS.doors.length; i++) {
-                Game.graph.addChild(_currentRoom.neighbourS.doors[i]);
-            }
         }
         if (_direction[3]) {
-            Game.graph.addChild(_currentRoom.neighbourW);
-            Game.graph.appendChild(_currentRoom.neighbourW.walls[0]);
-            Game.graph.appendChild(_currentRoom.neighbourW.walls[1]);
-            Game.graph.appendChild(_currentRoom.neighbourW.walls[2]);
-            Game.graph.appendChild(_currentRoom.neighbourW.walls[3]);
+            addRoomToGraph(_currentRoom.neighbourW);
+        }
 
-            Game.avatar1.cmpTransform.mtxLocal.translation = _currentRoom.neighbourW.cmpTransform.mtxLocal.translation;
-            Game.avatar2.cmpTransform.mtxLocal.translation = _currentRoom.neighbourW.cmpTransform.mtxLocal.translation;
+        function addRoomToGraph(_room: Room) {
+            sendRoom(_room);
+            Game.graph.addChild(_room);
+            Game.graph.appendChild(_room.walls[0]);
+            Game.graph.appendChild(_room.walls[1]);
+            Game.graph.appendChild(_room.walls[2]);
+            Game.graph.appendChild(_room.walls[3]);
 
-            for (let i = 0; i < _currentRoom.neighbourW.doors.length; i++) {
-                Game.graph.addChild(_currentRoom.neighbourW.doors[i]);
+            Game.avatar1.cmpTransform.mtxLocal.translation = _room.cmpTransform.mtxLocal.translation;
+
+            for (let i = 0; i < _room.doors.length; i++) {
+                Game.graph.addChild(_room.doors[i]);
             }
         }
     }

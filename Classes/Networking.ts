@@ -16,7 +16,9 @@ namespace Networking {
         ENEMYDIE,
         SPAWNITEM,
         UPDATEATTRIBUTES,
-        ITEMDIE
+        ITEMDIE,
+        SENDROOM,
+        SWITCHROOMREQUEST
     }
 
     import ƒClient = FudgeNet.FudgeClient;
@@ -108,7 +110,6 @@ namespace Networking {
                         //Spawn bullet from enemy on host
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNBULLETENEMY.toString()) {
                             let enemy: Enemy.Enemy = Game.enemies.find(elem => elem.netId == message.content.enemyNetId);
-                            // console.log(message.content.bulletNetId)
                             if (enemy != null) {
                                 if (enemy instanceof Enemy.EnemyShoot && client.id != client.idHost) {
                                     (<Enemy.EnemyShoot>enemy).shoot(message.content.bulletNetId);
@@ -137,7 +138,6 @@ namespace Networking {
 
                         //Spawn enemy at the client 
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNENEMY.toString()) {
-                            // console.log("enemy: " + message.content.properties.attributes);
                             chooseEnemy(<Enemy.ENEMYNAME>message.content.id,
                                 new Player.Attributes(message.content.properties.attributes.healthPoints,
                                     message.content.properties.attributes.attackPoints,
@@ -166,7 +166,6 @@ namespace Networking {
 
                         //Spawn item from host
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNITEM.toString()) {
-                            console.log("empfangen!!!!");
                             if (client.id != client.idHost) {
                                 if (message.content.attributes != null) {
                                     let attributes = new Player.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.coolDownReduction);
@@ -193,22 +192,44 @@ namespace Networking {
                         if (message.content != undefined && message.content.text == FUNCTION.HOST.toString()) {
                             someoneIsHost = true;
                         }
+
+                        if (message.content != undefined && message.content.text == FUNCTION.SENDROOM.toString()) {
+                            let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => (<any>elem).tag != Tag.TAG.PLAYER);
+
+                            oldObjects.forEach((elem) => {
+                                Game.graph.removeChild(elem);
+                            });
+
+
+                            let room: Generation.Room = new Generation.Room(message.content.name, message.content.coordiantes, message.content.exits, message.content.roomType);
+
+                            room.setDoors();
+
+                            Game.graph.addChild(room);
+                            Game.graph.appendChild(room.walls[0]);
+                            Game.graph.appendChild(room.walls[1]);
+                            Game.graph.appendChild(room.walls[2]);
+                            Game.graph.appendChild(room.walls[3]);
+
+                            for (let i = 0; i < room.doors.length; i++) {
+                                Game.graph.addChild(room.doors[i]);
+                            }
+
+                            Game.avatar1.cmpTransform.mtxLocal.translation = room.cmpTransform.mtxLocal.translation;
+                        }
+
+                        if (message.content != undefined && message.content.text == FUNCTION.SWITCHROOMREQUEST.toString()) {
+                            let currentroom = Generation.rooms.find(elem => elem.coordinates[0] == (<[number, number]>message.content.coordiantes)[0] &&
+                                elem.coordinates[1] == (<[number, number]>message.content.coordiantes)[1]);
+
+                            Generation.switchRoom(currentroom, message.content.direction);
+                        }
                     }
                 }
             }
         }
     }
 
-    function chooseEnemy(_id: Enemy.ENEMYNAME, _properties: Player.Attributes, _position: ƒ.Vector3, _netId: number) {
-        switch (_id) {
-            case Enemy.ENEMYNAME.BAT:
-                Game.graph.addChild(new Enemy.EnemyDumb(Enemy.ENEMYNAME.BAT, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed)), _position.toVector2(), _netId));
-                break;
-            case Enemy.ENEMYNAME.TICK:
-                let newEnem: Enemy.EnemyShoot = new Enemy.EnemyShoot(_id, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed)), _position.toVector2(), new Weapons.Weapon(10, 1), _netId);
-                Game.graph.addChild(newEnem);
-        }
-    }
 
     export function setClientReady() {
         clients.find(element => element.id == client.id).ready = true;
@@ -222,7 +243,6 @@ namespace Networking {
             if (!someoneIsHost) {
                 client.becomeHost();
                 someoneIsHost = true;
-                console.log("IM THE HOST IM THE HOST");
             }
         } else {
             someoneIsHost = true;
@@ -280,7 +300,18 @@ namespace Networking {
     }
     //#endregion
 
-    //#region  enemy
+    //#region enemy
+    function chooseEnemy(_id: Enemy.ENEMYNAME, _properties: Player.Attributes, _position: ƒ.Vector3, _netId: number) {
+        switch (_id) {
+            case Enemy.ENEMYNAME.BAT:
+                Game.graph.addChild(new Enemy.EnemyDumb(Enemy.ENEMYNAME.BAT, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed)), _position.toVector2(), _netId));
+                break;
+            case Enemy.ENEMYNAME.TICK:
+                let newEnem: Enemy.EnemyShoot = new Enemy.EnemyShoot(_id, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed)), _position.toVector2(), new Weapons.Weapon(10, 1), _netId);
+                Game.graph.addChild(newEnem);
+        }
+    }
+
     export function spawnEnemy(_enemy: Enemy.Enemy, _netId: number) {
         if (Game.connected && client.idHost == client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, id: _enemy.id, properties: _enemy.properties, position: _enemy.mtxLocal.translation, netId: _netId } })
@@ -299,10 +330,9 @@ namespace Networking {
     }
     //#endregion
 
-    //#region Items
+    //#region items
     export async function spawnItem(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime: number, _netId: number, _attributes?: Player.Attributes, _type?: Items.ITEMTYPE) {
         if (Game.connected && client.idHost == client.id) {
-            console.log(_attributes);
             await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNITEM, name: _name, description: _description, position: _position, imgSrc: _imgSrc, lifetime: _lifetime, netId: _netId, attributes: _attributes, type: _type } });
         }
     }
@@ -314,6 +344,20 @@ namespace Networking {
 
     export function removeItem(_netId: number) {
         client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.ITEMDIE, netId: _netId } })
+    }
+    //#endregion
+
+    //#region room
+    export function sendRoom(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: Generation.ROOMTYPE) {
+        if (Game.connected && client.idHost == client.id) {
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SENDROOM, name: _name, coordiantes: _coordiantes, exits: _exits, roomType: _roomType } })
+        }
+    }
+
+    export function switchRoomRequest(_coordiantes: [number, number], _direction: [boolean, boolean, boolean, boolean]) {
+        if (Game.connected && client.idHost != client.id) {
+            client.dispatch({ route: undefined, idTarget: client.idHost, content: { text: FUNCTION.SWITCHROOMREQUEST, coordiantes: _coordiantes, direction: _direction } })
+        }
     }
     //#endregion
 

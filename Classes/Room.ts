@@ -14,7 +14,7 @@ namespace Generation {
         public coordinates: [number, number]; // X Y
         public walls: Wall[] = [];
         public doors: Door[] = [];
-        public finished: boolean = false;
+        public finished: boolean = true;
         neighbourN: Room;
         neighbourE: Room;
         neighbourS: Room;
@@ -179,9 +179,11 @@ namespace Generation {
 
         public changeRoom() {
             if (this.parentRoom.finished) {
-                console.log("collision!");
-
-                Generation.switchRoom(this.parentRoom, this.direction);
+                if (Networking.client.id == Networking.client.idHost) {
+                    Generation.switchRoom(this.parentRoom, this.direction);
+                } else {
+                    Networking.switchRoomRequest(this.parentRoom.coordinates, this.direction);
+                }
             }
         }
     }

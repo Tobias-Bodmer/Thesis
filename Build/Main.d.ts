@@ -270,7 +270,9 @@ declare namespace Networking {
         ENEMYDIE = 11,
         SPAWNITEM = 12,
         UPDATEATTRIBUTES = 13,
-        ITEMDIE = 14
+        ITEMDIE = 14,
+        SENDROOM = 15,
+        SWITCHROOMREQUEST = 16
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -303,6 +305,8 @@ declare namespace Networking {
     function spawnItem(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime: number, _netId: number, _attributes?: Player.Attributes, _type?: Items.ITEMTYPE): Promise<void>;
     function updateAvatarAttributes(_attributes: Player.Attributes, _type: Items.ITEMTYPE): void;
     function removeItem(_netId: number): void;
+    function sendRoom(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: Generation.ROOMTYPE): void;
+    function switchRoomRequest(_coordiantes: [number, number], _direction: [boolean, boolean, boolean, boolean]): void;
     function idGenerator(): number;
     function popID(_id: number): void;
 }
@@ -397,6 +401,7 @@ declare namespace Generation {
     }
 }
 declare namespace Generation {
+    let rooms: Room[];
     function generateRooms(): void;
     function switchRoom(_currentRoom: Room, _direction: [boolean, boolean, boolean, boolean]): void;
 }
