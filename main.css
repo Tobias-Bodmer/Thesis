@@ -49,4 +49,5 @@ canvas {
     height: inherit;
     font-size: 32px;
     color: red;
+    font-style: bold;
 }

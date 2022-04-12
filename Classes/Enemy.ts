@@ -38,7 +38,7 @@ namespace Enemy {
         public netId: number = Networking.idGenerator();
         public properties: Player.Character;
         public collider: Collider.Collider;
-        scale: number = 5;
+        scale: number = 1;
         sizeDivideFactor: number = 2;
         target: ƒ.Vector3;
         lifetime: number;
