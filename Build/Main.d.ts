@@ -20,7 +20,6 @@ declare namespace Game {
     let bullets: Bullets.Bullet[];
     let enemiesJSON: Player.Character[];
     let itemsJSON: Items.Item[];
-    let bat: Enemy.Enemy;
     function cameraUpdate(): void;
 }
 declare namespace Interfaces {
@@ -44,23 +43,31 @@ declare namespace Enemy {
     export let txtTick: ƒ.TextureImage;
     export enum ENEMYNAME {
         BAT = 0,
-        TICK = 1,
-        SKELETON = 2
+        REDTICK = 1,
+        SMALLTICK = 2,
+        SKELETON = 3
     }
-    export function getNameByID(_id: ENEMYNAME): "bat" | "tick" | "skeleton";
+    export function getNameByID(_id: ENEMYNAME): "bat" | "redTick" | "smallTick" | "skeleton";
     enum BEHAVIOUR {
         IDLE = 0,
         FOLLOW = 1,
         FLEE = 2
     }
+    enum STATES {
+        IDLE = 0,
+        WALK = 1
+    }
     import ƒAid = FudgeAid;
     export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
         currentState: BEHAVIOUR;
+        currentAnimation: STATES;
         tag: Tag.TAG;
         id: number;
         netId: number;
         properties: Player.Character;
         collider: Collider.Collider;
+        scale: number;
+        sizeDivideFactor: number;
         target: ƒ.Vector3;
         lifetime: number;
         canMoveX: boolean;
@@ -68,12 +75,8 @@ declare namespace Enemy {
         moveDirection: Game.ƒ.Vector3;
         knockbackForce: number;
         animations: ƒAid.SpriteSheetAnimations;
-        private clrWhite;
         constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number);
-        startSprite(): Promise<void>;
-        loadSprites(): Promise<void>;
-        generateSprites(_spritesheet: ƒ.CoatTextured): void;
-        move(): void;
+        enemyUpdate(): void;
         doKnockback(_body: ƒAid.NodeSprite): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
         updateCollider(): void;
@@ -83,8 +86,8 @@ declare namespace Enemy {
         getCanMoveXY(_direction: ƒ.Vector3): void;
     }
     export class EnemyDumb extends Enemy {
-        constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number);
-        move(): void;
+        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number);
+        enemyUpdate(): void;
         behaviour(): void;
         moveBehaviour(): void;
     }
@@ -92,7 +95,7 @@ declare namespace Enemy {
         weapon: Weapons.Weapon;
         viewRadius: number;
         constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _netId?: number);
-        move(): void;
+        enemyUpdate(): void;
         shoot(_netId?: number): void;
     }
     export {};
@@ -130,6 +133,8 @@ declare namespace Items {
     }
 }
 declare namespace AnimationGeneration {
+    export let txtRedTickIdle: ƒ.TextureImage;
+    export let txtRedTickWalk: ƒ.TextureImage;
     export let txtBatIdle: ƒ.TextureImage;
     export import ƒAid = FudgeAid;
     class MyAnimationClass {

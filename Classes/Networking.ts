@@ -306,9 +306,10 @@ namespace Networking {
             case Enemy.ENEMYNAME.BAT:
                 Game.graph.addChild(new Enemy.EnemyDumb(Enemy.ENEMYNAME.BAT, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed)), _position.toVector2(), _netId));
                 break;
-            case Enemy.ENEMYNAME.TICK:
-                let newEnem: Enemy.EnemyShoot = new Enemy.EnemyShoot(_id, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed)), _position.toVector2(), new Weapons.Weapon(10, 1), _netId);
+            case Enemy.ENEMYNAME.REDTICK:
+                let newEnem: Enemy.EnemyDumb = new Enemy.EnemyDumb(Enemy.ENEMYNAME.REDTICK, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed)), _position.toVector2(), _netId);
                 Game.graph.addChild(newEnem);
+                break;
         }
     }
 

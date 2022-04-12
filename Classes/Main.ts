@@ -33,7 +33,6 @@ namespace Game {
     export let bullets: Bullets.Bullet[];
     export let enemiesJSON: Player.Character[];
     export let itemsJSON: Items.Item[];
-    export let bat: Enemy.Enemy;
     //#endregion "PublicVariables"
 
     //#region "PrivateVariables"
@@ -49,7 +48,7 @@ namespace Game {
     async function init() {
         await loadJSON();
 
-        if(Networking.client.id == Networking.client.idHost) {
+        if (Networking.client.id == Networking.client.idHost) {
             Generation.generateRooms();
         }
 
@@ -121,7 +120,7 @@ namespace Game {
             enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY)
             if (Game.connected && Networking.client.idHost == Networking.client.id) {
                 enemies.forEach(element => {
-                    element.move();
+                    element.enemyUpdate();
                     element.lifespan(graph);
                     if (element instanceof Enemy.EnemyShoot) {
                         (<Enemy.EnemyShoot>element).weapon.cooldown(element.properties.attributes.coolDownReduction);
@@ -205,8 +204,10 @@ namespace Game {
         await UI.txtTen.load("./Resources/Image/10.png");
 
         //ENEMY
-        await Enemy.txtTick.load("./Resources/Image/Enemies/spinni.png");
-        await AnimationGeneration.txtBatIdle.load("./Resources/Image/Enemies/spinni.png");
+        await AnimationGeneration.txtBatIdle.load("./Resources/Image/Enemies/bat/batIdle.png");
+
+        await AnimationGeneration.txtRedTickIdle.load("./Resources/Image/Enemies/tick/redTickIdle.png");
+        await AnimationGeneration.txtRedTickWalk.load("./Resources/Image/Enemies/tick/redTickWalk.png")
 
         AnimationGeneration.createAllAnimations();
 
