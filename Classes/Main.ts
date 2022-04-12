@@ -214,6 +214,10 @@ namespace Game {
     async function waitOnConnection() {
         Networking.setClient();
         if (Networking.clients.filter(elem => elem.ready == true).length >= 2 && Networking.client.idHost != undefined) {
+            if (Networking.client.id != Networking.client.idHost) {
+                document.getElementById("IMHOST").style.visibility = "visible";
+            }
+
             await init();
             gamestate = GAMESTATES.PLAYING;
             await Networking.spawnPlayer(playerType);
