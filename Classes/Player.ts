@@ -225,6 +225,24 @@ namespace Player {
             }
         }
 
+        //Block
+        public doAbility() {
+            if (this.currentabilityCount > 0) {
+                this.hitable = false;
+
+                setTimeout(() => {
+                    this.hitable = true;
+                }, 600);
+
+                this.currentabilityCount--;
+            }
+        }
+    }
+
+    export class Ranged extends Player {
+
+
+        //Dash
         public doAbility() {
             if (this.currentabilityCount > 0) {
                 this.hitable = false;
@@ -240,9 +258,5 @@ namespace Player {
                 this.currentabilityCount--;
             }
         }
-    }
-
-    export class Ranged extends Player {
-
     }
 }
