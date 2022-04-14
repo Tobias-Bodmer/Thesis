@@ -35,6 +35,7 @@ namespace Enemy {
             this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), (this.mtxLocal.scaling.x * this.idleScale)/2)
             Networking.spawnEnemy(this, this.netId);
+
         }
 
         public update() {
@@ -132,8 +133,17 @@ namespace Enemy {
                         }
                     }
                     this.collider.position = oldPosition;
+
+                    if (element == Game.avatar1) {
+                        element.getKnockback(this.attributes.knockbackForce, this.mtxLocal.translation);
+                    }
+                    if (element == Game.avatar2) {
+                        Networking.knockbackPush(this.attributes.knockbackForce, this.mtxLocal.translation);
+                    }
                 }
             })
+
+
 
             if (this.canMoveX && this.canMoveY) {
                 this.cmpTransform.mtxLocal.translate(_direction);
@@ -162,7 +172,8 @@ namespace Enemy {
         behaviour() {
             let target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
             let distance = ƒ.Vector3.DIFFERENCE(target, this.cmpTransform.mtxLocal.translation).magnitude;
-            if (distance > 3) {
+            //TODO: set to 3 after testing
+            if (distance > -1) {
                 this.currentState = BEHAVIOUR.FOLLOW
             }
             else {

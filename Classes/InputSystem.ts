@@ -76,9 +76,7 @@ namespace InputSystem {
             hasChanged = true;
         }
 
-        if (hasChanged && moveVector.magnitude != 0) {
-            Game.avatar1.move(Game.ƒ.Vector3.NORMALIZATION(moveVector, 1));
-        }
+        Game.avatar1.move(moveVector);
     }
 
     function ability() {

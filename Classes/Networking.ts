@@ -7,6 +7,8 @@ namespace Networking {
         SETREADY,
         SPAWN,
         TRANSFORM,
+        KNOCKBACKREQUEST,
+        KNOCKBACKPUSH,
         SPAWNBULLET,
         SPAWNBULLETENEMY,
         BULLETTRANSFORM,
@@ -95,11 +97,28 @@ namespace Networking {
 
                         //Sync avatar2 position and rotation
                         if (message.content != undefined && message.content.text == FUNCTION.TRANSFORM.toString()) {
-                            let moveVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.value.data[0], message.content.value.data[1], message.content.value.data[2])
-                            let rotateVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.rotation.data[0], message.content.rotation.data[1], message.content.rotation.data[2])
+                            let moveVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.value.data[0], message.content.value.data[1], message.content.value.data[2]);
+                            let rotateVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.rotation.data[0], message.content.rotation.data[1], message.content.rotation.data[2]);
 
                             Game.avatar2.mtxLocal.translation = moveVector;
                             Game.avatar2.mtxLocal.rotation = rotateVector;
+                        }
+
+                        //Client request for move knockback
+                        if (message.content != undefined && message.content.text == FUNCTION.KNOCKBACKREQUEST.toString()) {
+                            let position: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
+                            let enemy: Enemy.Enemy = Game.enemies.find(elem => elem.netId == message.content.netId);
+
+                            enemy.getKnockback(message.content.knockbackForce, position);
+                        }
+
+                        //Host push move knockback from enemy
+                        if (message.content != undefined && message.content.text == FUNCTION.KNOCKBACKPUSH.toString()) {
+                            if (client.id != client.idHost) {
+                                let position: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
+
+                                Game.avatar1.getKnockback(message.content.knockbackForce, position);
+                            }
                         }
 
                         //Spawn bullet from host
@@ -121,7 +140,7 @@ namespace Networking {
                         //Sync bullet transform from host to client
                         if (message.content != undefined && message.content.text == FUNCTION.BULLETTRANSFORM.toString()) {
                             if (Game.bullets.find(element => element.netId == message.content.netId) != null) {
-                                let newPosition: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2])
+                                let newPosition: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                                 Game.bullets.find(element => element.netId == message.content.netId).hostPositions[message.content.tick] = newPosition;
                             }
                         }
@@ -282,7 +301,15 @@ namespace Networking {
         Networking.client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: Networking.FUNCTION.CONNECTED, value: Networking.client.id } });
     }
     export function updateAvatarPosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3) {
-        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.TRANSFORM, value: _position, rotation: _rotation } })
+        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.TRANSFORM, value: _position, rotation: _rotation } })
+    }
+
+    export function knockbackRequest(_netId: number, _knockbackForce: number, _position: Game.ƒ.Vector3) {
+        client.dispatch({ route: undefined, idTarget: client.idHost, content: { text: FUNCTION.KNOCKBACKREQUEST, netId: _netId, knockbackForce: _knockbackForce, position: _position } })
+    }
+
+    export function knockbackPush(_knockbackForce: number, _position: Game.ƒ.Vector3) {
+        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.KNOCKBACKPUSH, knockbackForce: _knockbackForce, position: _position } })
     }
     //#endregion
 

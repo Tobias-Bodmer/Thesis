@@ -20,6 +20,11 @@ namespace Player {
         }
 
         public move(_direction: ƒ.Vector3) {
+
+            if (_direction.magnitude != 0) {
+                _direction = Game.ƒ.Vector3.NORMALIZATION(_direction, 1)
+            }
+
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
 
             _direction.scale((1 / 60 * this.attributes.speed));
@@ -74,7 +79,11 @@ namespace Player {
                     }
                     this.collider.position = oldPosition;
                     //TODO: Sync knockback correctly over network
-                    // element.getKnockback(this.attributes.knockbackForce, this.mtxLocal.translation);
+                    if (Networking.client.id == Networking.client.idHost) {
+                        element.getKnockback(this.attributes.knockbackForce, this.mtxLocal.translation);
+                    } else {
+                        Networking.knockbackRequest(element.netId, this.attributes.knockbackForce, this.mtxLocal.translation);
+                    }
                 }
             })
 
