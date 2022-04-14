@@ -78,13 +78,13 @@ namespace Networking {
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
                         if (message.content.type == Player.PLAYERTYPE.MELEE) {
                             Game.avatar2 = new Player.Melee("player2", new Player.Character(message.content.value.name,
-                                new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed)));
+                                new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed, message.content.value.attributes.speed)));
 
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                             Game.graph.appendChild(Game.avatar2);
                         } else if (message.content.type == Player.PLAYERTYPE.RANGED) {
                             Game.avatar2 = new Player.Ranged("player2", new Player.Character(message.content.value.name,
-                                new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed)));
+                                new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed, message.content.value.attributes.scale)));
 
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                             Game.graph.appendChild(Game.avatar2);
@@ -142,11 +142,10 @@ namespace Networking {
                             chooseEnemy(<Enemy.ENEMYNAME>message.content.id,
                                 new Player.Attributes(message.content.properties.attributes.healthPoints,
                                     message.content.properties.attributes.attackPoints,
-                                    message.content.properties.attributes.speed),
+                                    message.content.properties.attributes.speed, message.content.properties.attributes.scale),
                                 new ƒ.Vector3(message.content.position.data[0],
                                     message.content.position.data[1],
                                     message.content.position.data[2]),
-                                <number>message.content.scale,
                                 <number>message.content.netId);
                         }
 
@@ -314,20 +313,20 @@ namespace Networking {
 
 
     //#region enemy
-    function chooseEnemy(_id: Enemy.ENEMYNAME, _properties: Player.Attributes, _position: ƒ.Vector3, _scale: number, _netId: number) {
+    function chooseEnemy(_id: Enemy.ENEMYNAME, _properties: Player.Attributes, _position: ƒ.Vector3, _netId: number) {
         switch (_id) {
             case Enemy.ENEMYNAME.BAT:
-                Game.graph.addChild(new Enemy.EnemyDumb(Enemy.ENEMYNAME.BAT, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed)), _position.toVector2(), _scale, _netId));
+                Game.graph.addChild(new Enemy.EnemyDumb(Enemy.ENEMYNAME.BAT, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed, _properties.scale)), _position.toVector2(), _netId));
                 break;
             case Enemy.ENEMYNAME.REDTICK:
-                let newEnem: Enemy.EnemyDumb = new Enemy.EnemyDumb(Enemy.ENEMYNAME.REDTICK, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed)), _position.toVector2(), _scale, _netId);
+                let newEnem: Enemy.EnemyDumb = new Enemy.EnemyDumb(Enemy.ENEMYNAME.REDTICK, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed, _properties.scale)), _position.toVector2(), _netId);
                 Game.graph.addChild(newEnem);
                 break;
         }
     }
     export function spawnEnemy(_enemy: Enemy.Enemy, _netId: number) {
         if (Game.connected && client.idHost == client.id) {
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, id: _enemy.id, properties: _enemy.properties, position: _enemy.mtxLocal.translation, scale: _enemy.scale, netId: _netId } })
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, id: _enemy.id, properties: _enemy.properties, position: _enemy.mtxLocal.translation, netId: _netId } })
         }
     }
     export function updateEnemyPosition(_position: ƒ.Vector3, _netId: number, _state: Enemy.ANIMATIONSTATES) {

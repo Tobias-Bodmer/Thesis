@@ -36,7 +36,6 @@ namespace Enemy {
         public netId: number = Networking.idGenerator();
         public properties: Player.Character;
         public collider: Collider.Collider;
-        scale: number = 1;
         sizeDivideFactor: number = 2;
         target: ƒ.Vector3;
         lifetime: number;
@@ -44,19 +43,14 @@ namespace Enemy {
         canMoveY: boolean = true;
         moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
 
-        knockbackForce: number = 6;
-
         //#region  animation
         animations: ƒAid.SpriteSheetAnimations;
         //#endregion
 
-        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _scale: number, _netId?: number) {
+        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number) {
             super(getNameByID(_id));
             this.id = _id;
-            this.scale = _scale;
             this.properties = _properties;
-            this.properties.attributes.healthPoints = this.properties.attributes.healthPoints * this.scale * 0.5;
-            this.properties.attributes.speed /= this.scale;
             this.addComponent(new ƒ.ComponentTransform());
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
             if (_netId != undefined) {
@@ -64,7 +58,7 @@ namespace Enemy {
                 Networking.currentIDs.push(_netId);
                 this.netId = _netId;
             }
-            this.mtxLocal.scale(new ƒ.Vector3(this.scale, this.scale, 0));
+            this.mtxLocal.scale(new ƒ.Vector3(this.properties.attributes.scale, this.properties.attributes.scale, 0));
             this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / this.sizeDivideFactor);
             this.animations = AnimationGeneration.getAnimationById(this.id).animations;
             this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
@@ -79,33 +73,35 @@ namespace Enemy {
         }
 
         public doKnockback(_body: ƒAid.NodeSprite): void {
-            (<Player.Player>_body).getKnockback(this.knockbackForce, this.cmpTransform.mtxLocal.translation);
+            (<Player.Player>_body).getKnockback(this.properties.attributes.knockbackForce, this.cmpTransform.mtxLocal.translation);
         }
 
         public getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void {
-
+            //TODO: apply scaling correct for knockback
             let direction: Game.ƒ.Vector3 = Game.ƒ.Vector2.DIFFERENCE(this.cmpTransform.mtxLocal.translation.toVector2(), _position.toVector2()).toVector3(0);
+            let knockBackScaling: number = Game.frameRate * this.properties.attributes.scale;
 
             direction.normalize();
 
-            direction.scale(_knockbackForce * 1 / (Game.frameRate * this.scale));
+            direction.scale(_knockbackForce * 1 / knockBackScaling);
 
             this.moveDirection.add(direction);
 
-            helper(direction, this.moveDirection);
+            reduceKnockback(direction, this.moveDirection);
 
-            function helper(_direction: Game.ƒ.Vector3, _moveDirection: Game.ƒ.Vector3) {
+            function reduceKnockback(_direction: Game.ƒ.Vector3, _moveDirection: Game.ƒ.Vector3) {
+                // _knockbackForce = _knockbackForce / knockBackScaling;
                 if (_knockbackForce > 0.1) {
                     setTimeout(() => {
                         _moveDirection.subtract(direction);
 
                         _knockbackForce /= 3;
 
-                        direction.scale(_knockbackForce * 1 / Game.frameRate);
+                        direction.scale(_knockbackForce * (1 / knockBackScaling));
 
                         _moveDirection.add(direction);
 
-                        helper(_direction, _moveDirection);
+                        reduceKnockback(_direction, _moveDirection);
                     }, 200);
                 } else {
                     _moveDirection.subtract(direction);
@@ -130,7 +126,6 @@ namespace Enemy {
             this.moveDirection.add(direction)
 
             this.getCanMoveXY(this.moveDirection);
-            //TODO: in Funktion packen damit man von allem Enemies drauf zugreifen kann
 
             this.moveDirection.subtract(direction);
         }
@@ -250,8 +245,8 @@ namespace Enemy {
 
     export class EnemyDumb extends Enemy {
 
-        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _scale: number, _netId?: number) {
-            super(_id, _properties, _position, _scale, _netId);
+        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number) {
+            super(_id, _properties, _position, _netId);
         }
 
         enemyUpdate(): void {
@@ -306,8 +301,8 @@ namespace Enemy {
     export class EnemyShoot extends Enemy {
         weapon: Weapons.Weapon;
         viewRadius: number = 3;
-        constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _scale: number, _netId?: number) {
-            super(_id, _properties, _position, _scale, _netId);
+        constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _netId?: number) {
+            super(_id, _properties, _position, _netId);
             this.weapon = _weapon;
         }
 

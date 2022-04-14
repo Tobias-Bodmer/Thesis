@@ -3,16 +3,19 @@ namespace Player {
 
         public healthPoints: number;
         maxHealthPoints: number;
+        knockbackForce: number = 6;
         public speed: number;
         public attackPoints: number;
         public coolDownReduction: number = 1;
+        public scale: number;
 
 
-        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _cooldownReduction?: number) {
-            this.healthPoints = _healthPoints;
-            this.maxHealthPoints = _healthPoints;
-            this.attackPoints = _attackPoints;
-            this.speed = _speed;
+        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _cooldownReduction?: number) {
+            this.scale = _scale;
+            this.healthPoints = _healthPoints * this.scale;
+            this.maxHealthPoints = this.healthPoints;
+            this.attackPoints = _attackPoints * this.scale;
+            this.speed = _speed / this.scale;
             if (_cooldownReduction != undefined) {
                 this.coolDownReduction = _cooldownReduction;
             }

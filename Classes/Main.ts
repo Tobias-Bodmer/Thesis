@@ -240,11 +240,11 @@ namespace Game {
 
     function playerChoice(_e: Event) {
         if ((<HTMLButtonElement>_e.target).id == "Ranged") {
-            avatar1 = new Player.Ranged("player", new Player.Character("Thor,", new Player.Attributes(10, 5, 5)));
+            avatar1 = new Player.Ranged("player", new Player.Character("Thor,", new Player.Attributes(10, 5, 5, 1)));
             playerType = Player.PLAYERTYPE.RANGED;
         }
         if ((<HTMLButtonElement>_e.target).id == "Melee") {
-            avatar1 = new Player.Melee("player", new Player.Character("Thor,", new Player.Attributes(10, 1, 5)));
+            avatar1 = new Player.Melee("player", new Player.Character("Thor,", new Player.Attributes(10, 1, 5, 1)));
             playerType = Player.PLAYERTYPE.MELEE;
         }
         document.getElementById("Lobbyscreen").style.visibility = "hidden";

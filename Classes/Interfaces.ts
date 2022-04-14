@@ -5,7 +5,6 @@ namespace Interfaces {
     }
 
     export interface IKnockbackable {
-        knockbackForce: number;
         doKnockback(_body: ƒAid.NodeSprite): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     }

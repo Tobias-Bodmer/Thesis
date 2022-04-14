@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -28,7 +28,6 @@ declare namespace Interfaces {
         lifespan(_a: ƒ.Node): void;
     }
     interface IKnockbackable {
-        knockbackForce: number;
         doKnockback(_body: ƒAid.NodeSprite): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     }
@@ -66,16 +65,14 @@ declare namespace Enemy {
         netId: number;
         properties: Player.Character;
         collider: Collider.Collider;
-        scale: number;
         sizeDivideFactor: number;
         target: ƒ.Vector3;
         lifetime: number;
         canMoveX: boolean;
         canMoveY: boolean;
         moveDirection: Game.ƒ.Vector3;
-        knockbackForce: number;
         animations: ƒAid.SpriteSheetAnimations;
-        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _scale: number, _netId?: number);
+        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number);
         enemyUpdate(): void;
         doKnockback(_body: ƒAid.NodeSprite): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
@@ -86,7 +83,7 @@ declare namespace Enemy {
         getCanMoveXY(_direction: ƒ.Vector3): void;
     }
     export class EnemyDumb extends Enemy {
-        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _scale: number, _netId?: number);
+        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number);
         enemyUpdate(): void;
         behaviour(): void;
         moveBehaviour(): void;
@@ -94,7 +91,7 @@ declare namespace Enemy {
     export class EnemyShoot extends Enemy {
         weapon: Weapons.Weapon;
         viewRadius: number;
-        constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _scale: number, _netId?: number);
+        constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _netId?: number);
         enemyUpdate(): void;
         shoot(_netId?: number): void;
     }
@@ -158,10 +155,12 @@ declare namespace Player {
     class Attributes {
         healthPoints: number;
         maxHealthPoints: number;
+        knockbackForce: number;
         speed: number;
         attackPoints: number;
         coolDownReduction: number;
-        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _cooldownReduction?: number);
+        scale: number;
+        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _cooldownReduction?: number);
         /**
          * adds Attributes to the Player Attributes
          * @param _attributes incoming attributes
