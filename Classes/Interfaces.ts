@@ -1,7 +1,7 @@
 namespace Interfaces {
     export interface ISpawnable {
         lifetime?: number;
-        lifespan(_a: ƒ.Node): void;
+        die(_a: ƒ.Node): void;
     }
 
     export interface IKnockbackable {

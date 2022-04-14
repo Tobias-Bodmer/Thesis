@@ -98,7 +98,7 @@ namespace Game {
             //#region count items
             let items: Items.Item[] = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.TAG.ITEM)
             items.forEach(element => {
-                element.lifespan(graph);
+                element.die(graph);
                 (<Items.InternalItem>element).collisionDetection();
             });
             //#endregion
@@ -106,8 +106,7 @@ namespace Game {
             bullets = <Bullets.Bullet[]>graph.getChildren().filter(element => (<Bullets.Bullet>element).tag == Tag.TAG.BULLET)
             if (Game.connected) {
                 bullets.forEach(element => {
-                    element.move();
-                    element.lifespan(graph);
+                    element.update();
                 })
             }
 
@@ -120,8 +119,7 @@ namespace Game {
             enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY)
             if (Game.connected && Networking.client.idHost == Networking.client.id) {
                 enemies.forEach(element => {
-                    element.enemyUpdate();
-                    element.lifespan(graph);
+                    element.update();
                     if (element instanceof Enemy.EnemyShoot) {
                         (<Enemy.EnemyShoot>element).weapon.cooldown(element.attributes.coolDownReduction);
                     }
@@ -240,11 +238,11 @@ namespace Game {
 
     function playerChoice(_e: Event) {
         if ((<HTMLButtonElement>_e.target).id == "Ranged") {
-            avatar1 = new Player.Ranged("player", new Entity.Attributes(10, 5, 5, 1));
+            avatar1 = new Player.Ranged(Entity.ID.PLAYER1, new Entity.Attributes(10, 5, 5, 1));
             playerType = Player.PLAYERTYPE.RANGED;
         }
         if ((<HTMLButtonElement>_e.target).id == "Melee") {
-            avatar1 = new Player.Melee("player", new Entity.Attributes(10, 1, 5, 1));
+            avatar1 = new Player.Melee(Entity.ID.PLAYER1, new Entity.Attributes(10, 1, 5, 1));
             playerType = Player.PLAYERTYPE.MELEE;
         }
         document.getElementById("Lobbyscreen").style.visibility = "hidden";

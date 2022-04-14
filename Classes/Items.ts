@@ -30,7 +30,7 @@ namespace Items {
             this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
         }
 
-        public lifespan(_graph: ƒ.Node): void {
+        public die(_graph: ƒ.Node): void {
             if (this.lifetime >= 0 && this.lifetime != null) {
                 this.lifetime--;
                 if (this.lifetime < 0) {

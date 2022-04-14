@@ -6,7 +6,7 @@ namespace AnimationGeneration {
 
     export import ƒAid = FudgeAid;
     class MyAnimationClass {
-        public id: Enemy.ENEMYNAME;
+        public id: Entity.ID;
         public spriteSheetIdle: ƒ.CoatTextured;
         public spriteSheetWalk: ƒ.CoatTextured;
         idleNumberOfFrames: number;
@@ -17,7 +17,7 @@ namespace AnimationGeneration {
         clrWhite: ƒ.Color = ƒ.Color.CSS("white");
         animations: ƒAid.SpriteSheetAnimations = {};
 
-        constructor(_id: Enemy.ENEMYNAME,
+        constructor(_id: Entity.ID,
             _txtIdle: ƒ.TextureImage,
             _idleNumberOfFrames: number,
             _idleFrameRate: number,
@@ -45,16 +45,16 @@ namespace AnimationGeneration {
     export let sheetArray: MyAnimationClass[] = [];
     //#region animation
 
-    let batAnimation: MyAnimationClass = new MyAnimationClass(Enemy.ENEMYNAME.BAT, txtBatIdle, 4, 12);
-    let redTickAnimation: MyAnimationClass = new MyAnimationClass(Enemy.ENEMYNAME.REDTICK, txtRedTickIdle, 6, 12, txtRedTickWalk, 4, 12);
+    let batAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.BAT, txtBatIdle, 4, 12);
+    let redTickAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.REDTICK, txtRedTickIdle, 6, 12, txtRedTickWalk, 4, 12);
     //#endregion
 
 
-    export function getAnimationById(_id: Enemy.ENEMYNAME): MyAnimationClass {
+    export function getAnimationById(_id: Entity.ID): MyAnimationClass {
         switch (_id) {
-            case Enemy.ENEMYNAME.BAT:
+            case Entity.ID.BAT:
                 return batAnimation;
-            case Enemy.ENEMYNAME.REDTICK:
+            case Entity.ID.REDTICK:
                 return redTickAnimation;
             default:
                 return null;

@@ -2,7 +2,7 @@ namespace Bullets {
 
     export let bulletTxt: ƒ.TextureImage = new ƒ.TextureImage();
 
-    export class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable {
+    export class Bullet extends Game.ƒ.Node {
         owner: Tag.TAG = Tag.TAG.PLAYER;
         public netId: number = Networking.idGenerator();
         public tick: number = 0;
@@ -21,14 +21,13 @@ namespace Bullets {
 
         avatar: Game.ƒAid.NodeSprite;
 
-        async lifespan(_graph: ƒ.Node) {
+        async die() {
             if (this.lifetime >= 0 && this.lifetime != null) {
                 this.lifetime--;
                 if (this.lifetime < 0) {
-                    _graph.removeChild(this);
                     Networking.popID(this.netId);
                     Networking.removeBullet(this.netId);
-
+                    Game.graph.removeChild(this);
                     // console.log(this.hostPositions);
                     // console.log(this.positions);
                 }
@@ -66,10 +65,11 @@ namespace Bullets {
         }
 
 
-        async move() {
+        async update() {
             this.cmpTransform.mtxLocal.translate(this.flyDirection);
             this.bulletPrediction();
             this.collisionDetection();
+            this.die();
         }
 
         updateRotation(_direction: ƒ.Vector3) {
@@ -143,7 +143,7 @@ namespace Bullets {
                 colliders.forEach((element) => {
                     if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
                         if ((<Player.Player>element).attributes.healthPoints > 0 && (<Player.Player>element).attributes.hitable) {
-                            (<Player.Player>element).attributes.healthPoints -= this.hitPoints;
+                            (<Player.Player>element).getDamage(this.hitPoints);
                             (<Enemy.Enemy>this.avatar).doKnockback(element);
                             Game.graph.addChild(new UI.DamageUI((<Player.Player>element).cmpTransform.mtxLocal.translation, this.hitPoints));
                             this.lifetime = 0;
@@ -200,9 +200,9 @@ namespace Bullets {
             this.target = _target;
             this.targetDirection = _direction;
         }
-        async move(): Promise<void> {
+        async update(): Promise<void> {
             this.calculateHoming();
-            super.move()
+            super.update()
         }
 
         calculateHoming() {

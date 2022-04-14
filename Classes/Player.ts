@@ -8,8 +8,6 @@ namespace Player {
         public items: Array<Items.Item> = [];
         public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1);
 
-        moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
-
         knockbackForce: number = 6;
 
         readonly abilityCount: number = 1;
@@ -17,16 +15,13 @@ namespace Player {
         readonly abilityCooldownTime: number = 10;
         currentabilityCooldownTime: number = this.abilityCooldownTime;
 
-        constructor(_name: string, _attributes: Entity.Attributes) {
-            super(_name, _attributes);
+        constructor(_id: Entity.ID, _attributes: Entity.Attributes) {
+            super(_id, _attributes);
             this.tag = Tag.TAG.PLAYER;
-            this.addComponent(new ƒ.ComponentTransform());
             this.cmpTransform.mtxLocal.translateZ(0.1);
-            this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);
         }
 
         public move(_direction: ƒ.Vector3) {
-
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
 
             _direction.scale((1 / 60 * this.attributes.speed));
@@ -46,43 +41,7 @@ namespace Player {
         }
 
         collide(_direction: Game.ƒ.Vector3): void {
-            let canMoveX: boolean = true;
-            let canMoveY: boolean = true;
-
-            let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.TAG.ROOM)).walls;
-            colliders.forEach((element) => {
-                if (this.collider.collidesRect(element.collider)) {
-                    let intersection = this.collider.getIntersectionRect(element.collider);
-                    let areaBeforeMove = Math.round((intersection.height * intersection.width) * 1000) / 1000;
-
-                    let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
-                    let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
-                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
-
-                    if (this.collider.getIntersectionRect(element.collider) != null) {
-                        let newIntersection = this.collider.getIntersectionRect(element.collider);
-                        let areaAfterMove = Math.round((newIntersection.height * newIntersection.width) * 1000) / 1000;
-
-                        if (areaBeforeMove < areaAfterMove) {
-                            canMoveX = false;
-                        }
-                    }
-
-                    this.collider.position = oldPosition;
-                    newDirection = new Game.ƒ.Vector2(0, _direction.y);
-                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
-
-                    if (this.collider.getIntersectionRect(element.collider) != null) {
-                        let newIntersection = this.collider.getIntersectionRect(element.collider);
-                        let areaAfterMove = Math.round((newIntersection.height * newIntersection.width) * 1000) / 1000;
-
-                        if (areaBeforeMove < areaAfterMove) {
-                            canMoveY = false;
-                        }
-                    }
-                    this.collider.position = oldPosition;
-                }
-            })
+            super.collide(_direction);
 
             let enemyColliders: Enemy.Enemy[] = Game.enemies;
             enemyColliders.forEach((element) => {
@@ -99,7 +58,7 @@ namespace Player {
                         let areaAfterMove = Math.round((newIntersection) * 1000) / 1000;
 
                         if (areaBeforeMove < areaAfterMove) {
-                            canMoveX = false;
+                            this.canMoveX = false;
                         }
                     }
 
@@ -112,19 +71,19 @@ namespace Player {
                         let areaAfterMove = Math.round((newIntersection) * 1000) / 1000;
 
                         if (areaBeforeMove < areaAfterMove) {
-                            canMoveY = false;
+                            this.canMoveY = false;
                         }
                     }
                     this.collider.position = oldPosition;
                 }
             })
 
-            if (canMoveX && canMoveY) {
+            if (this.canMoveX && this.canMoveY) {
                 this.cmpTransform.mtxLocal.translate(_direction, false);
-            } else if (canMoveX && !canMoveY) {
+            } else if (this.canMoveX && !this.canMoveY) {
                 _direction = new ƒ.Vector3(_direction.x, 0, _direction.z)
                 this.cmpTransform.mtxLocal.translate(_direction, false);
-            } else if (!canMoveX && canMoveY) {
+            } else if (!this.canMoveX && this.canMoveY) {
                 _direction = new ƒ.Vector3(0, _direction.y, _direction.z)
                 this.cmpTransform.mtxLocal.translate(_direction, false);
             }
@@ -149,35 +108,8 @@ namespace Player {
             (<Enemy.Enemy>_body).getKnockback(this.knockbackForce, this.cmpTransform.mtxLocal.translation);
         }
 
-        public getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void {
-            let direction: Game.ƒ.Vector3 = Game.ƒ.Vector2.DIFFERENCE(this.cmpTransform.mtxLocal.translation.toVector2(), _position.toVector2()).toVector3(0);
-
-            direction.normalize();
-
-            direction.scale(_knockbackForce * 1 / Game.frameRate);
-
-            this.moveDirection.add(direction);
-
-
-            helper(direction, this.moveDirection);
-
-            function helper(_direction: Game.ƒ.Vector3, _moveDirection: Game.ƒ.Vector3) {
-                if (_knockbackForce > 0.1) {
-                    setTimeout(() => {
-                        _moveDirection.subtract(direction);
-
-                        _knockbackForce /= 3;
-
-                        direction.scale(_knockbackForce * 1 / Game.frameRate);
-
-                        _moveDirection.add(direction);
-
-                        helper(_direction, _moveDirection);
-                    }, 200);
-                } else {
-                    _moveDirection.subtract(direction);
-                }
-            }
+        public getKnockback(_knockbackForce: number, _position: ƒ.Vector3): void {
+            super.getKnockback(_knockbackForce, _position);
         }
 
         public doAbility() {
