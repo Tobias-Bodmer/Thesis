@@ -22,6 +22,11 @@ namespace Player {
         }
 
         public move(_direction: ƒ.Vector3) {
+
+            if (_direction.magnitude != 0) {
+                _direction = Game.ƒ.Vector3.NORMALIZATION(_direction, 1)
+            }
+
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
 
             _direction.scale((1 / 60 * this.attributes.speed));

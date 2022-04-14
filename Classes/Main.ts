@@ -91,6 +91,7 @@ namespace Game {
 
             if (Game.connected) {
                 avatar2.cooldown();
+                avatar2.collider.position = avatar2.mtxLocal.translation.toVector2();
                 Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
             }
             // Networking.spawnEnemy(bat, bat.id);

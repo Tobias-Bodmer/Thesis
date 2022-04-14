@@ -274,19 +274,20 @@ declare namespace Networking {
         SPAWN = 3,
         TRANSFORM = 4,
         KNOCKBACKREQUEST = 5,
-        SPAWNBULLET = 6,
-        SPAWNBULLETENEMY = 7,
-        BULLETTRANSFORM = 8,
-        BULLETDIE = 9,
-        SPAWNENEMY = 10,
-        ENEMYTRANSFORM = 11,
-        ENEMYSTATE = 12,
-        ENEMYDIE = 13,
-        SPAWNITEM = 14,
-        UPDATEATTRIBUTES = 15,
-        ITEMDIE = 16,
-        SENDROOM = 17,
-        SWITCHROOMREQUEST = 18
+        KNOCKBACKPUSH = 6,
+        SPAWNBULLET = 7,
+        SPAWNBULLETENEMY = 8,
+        BULLETTRANSFORM = 9,
+        BULLETDIE = 10,
+        SPAWNENEMY = 11,
+        ENEMYTRANSFORM = 12,
+        ENEMYSTATE = 13,
+        ENEMYDIE = 14,
+        SPAWNITEM = 15,
+        UPDATEATTRIBUTES = 16,
+        ITEMDIE = 17,
+        SENDROOM = 18,
+        SWITCHROOMREQUEST = 19
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -305,6 +306,7 @@ declare namespace Networking {
     function setClient(): void;
     function updateAvatarPosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3): void;
     function knockbackRequest(_netId: number, _knockbackForce: number, _position: Game.ƒ.Vector3): void;
+    function knockbackPush(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function spawnBullet(_direction: ƒ.Vector3, _netId: number): void;
     function updateBullet(_position: ƒ.Vector3, _netId: number, _tick?: number): void;
     function spawnBulletAtEnemy(_bulletNetId: number, _enemyNetId: number): Promise<void>;
