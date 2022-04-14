@@ -106,34 +106,36 @@ namespace Enemy {
             avatarColliders.forEach((element) => {
                 if (this.collider.collides(element.collider)) {
                     let intersection = this.collider.getIntersection(element.collider);
-                    let areaBeforeMove = Math.round((intersection) * 1000) / 1000;
+                    let areaBeforeMove = intersection;
 
-                    let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
-                    let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
-                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+                    if (areaBeforeMove < this.collider.radius + element.collider.radius) {
+                        let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
+                        let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
+                        this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
 
-                    if (this.collider.getIntersection(element.collider) != null) {
-                        let newIntersection = this.collider.getIntersection(element.collider);
-                        let areaAfterMove = Math.round((newIntersection) * 1000) / 1000;
+                        if (this.collider.getIntersection(element.collider) != null) {
+                            let newIntersection = this.collider.getIntersection(element.collider);
+                            let areaAfterMove = newIntersection;
 
-                        if (areaBeforeMove < areaAfterMove) {
-                            this.canMoveX = false;
+                            if (areaBeforeMove < areaAfterMove) {
+                                this.canMoveX = false;
+                            }
                         }
-                    }
 
-                    this.collider.position = oldPosition;
-                    newDirection = new Game.ƒ.Vector2(0, _direction.y);
-                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+                        this.collider.position = oldPosition;
+                        newDirection = new Game.ƒ.Vector2(0, _direction.y);
+                        this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
 
-                    if (this.collider.getIntersection(element.collider) != null) {
-                        let newIntersection = this.collider.getIntersection(element.collider);
-                        let areaAfterMove = Math.round((newIntersection) * 1000) / 1000;
+                        if (this.collider.getIntersection(element.collider) != null) {
+                            let newIntersection = this.collider.getIntersection(element.collider);
+                            let areaAfterMove = newIntersection;
 
-                        if (areaBeforeMove < areaAfterMove) {
-                            this.canMoveY = false;
+                            if (areaBeforeMove < areaAfterMove) {
+                                this.canMoveY = false;
+                            }
                         }
+                        this.collider.position = oldPosition;
                     }
-                    this.collider.position = oldPosition;
 
                     if (Networking.client.id == Networking.client.idHost) {
                         if (element == Game.avatar1) {
