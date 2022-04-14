@@ -33,6 +33,7 @@ namespace Game {
     export let bullets: Bullets.Bullet[];
     export let enemiesJSON: Entity.Entity[];
     export let itemsJSON: Items.Item[];
+    export let bulletsJSON: Bullets.Bullet[];
     //#endregion "PublicVariables"
 
     //#region "PrivateVariables"
@@ -182,6 +183,9 @@ namespace Game {
 
         const loadItem = await (await fetch("./Resources/ItemStorage.json")).json();
         itemsJSON = (<Items.Item[]>loadItem.items);
+
+        const loadBullets = await (await fetch("./Resources/BulletStorage.json")).json();
+        bulletsJSON = (<Bullets.Bullet[]>loadBullets.standardBullets);
 
     }
 

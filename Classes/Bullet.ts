@@ -1,22 +1,32 @@
 namespace Bullets {
 
+    export enum NORMALBULLETS {
+        STANDARD,
+        HIGHSPEED,
+        SLOW,
+        MELEE
+    }
     export let bulletTxt: ƒ.TextureImage = new ƒ.TextureImage();
 
     export class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
-        owner: Tag.TAG = Tag.TAG.PLAYER;
+        public tag: Tag.TAG = Tag.TAG.BULLET;
+        owner: Tag.TAG;
         public netId: number = Networking.idGenerator();
+
         public tick: number = 0;
         public positions: ƒ.Vector3[] = [];
         public hostPositions: ƒ.Vector3[] = [];
-        public tag: Tag.TAG = Tag.TAG.BULLET;
+
         public flyDirection: ƒ.Vector3;
         direction: ƒ.Vector3;
+
         public collider: Collider.Collider;
 
         public hitPoints: number = 5;
         public speed: number = 20;
         lifetime: number = 1 * Game.frameRate;
         knockbackForce: number = 4;
+        type: NORMALBULLETS;
 
         time: number = 0;
         killcount: number = 1;
@@ -34,14 +44,20 @@ namespace Bullets {
             }
         }
 
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number) {
-            super("normalBullet");
+        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number) {
+            super(_name);
 
             if (_netId != undefined) {
                 Networking.popID(this.netId);
                 Networking.currentIDs.push(_netId);
                 this.netId = _netId;
             }
+
+            this.speed = _speed;
+            this.hitPoints = _hitPoints;
+            this.lifetime = _lifetime;
+            this.knockbackForce = _knockbackForce;
+            this.killcount = _killcount;
 
             // this.addComponent(new ƒ.ComponentLight(new ƒ.LightPoint(ƒ.Color.CSS("white"))));
 
@@ -170,18 +186,9 @@ namespace Bullets {
         }
     }
 
-    export class SlowBullet extends Bullet {
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number) {
-            super(_position, _direction, _netId);
-            this.speed = 6;
-            this.hitPoints = 10;
-            this.lifetime = 5 * Game.frameRate;
-        }
-    }
-
     export class MeleeBullet extends Bullet {
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number) {
-            super(_position, _direction, _netId);
+        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number) {
+            super(_name, _speed, _hitPoints, _lifetime, _knockbackForce, _killcount, _position, _direction, _netId);
             this.speed = 6;
             this.hitPoints = 10;
             this.lifetime = 6;
@@ -195,11 +202,11 @@ namespace Bullets {
 
     export class HomingBullet extends Bullet {
         target: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
-        rotateSpeed: number = 3;
+        rotateSpeed: number = 2;
         targetDirection: ƒ.Vector3;
 
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _target?: ƒ.Vector3, _netId?: number) {
-            super(_position, _direction, _netId);
+        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _target?: ƒ.Vector3, _netId?: number) {
+            super(_name, _speed, _hitPoints, _lifetime, _knockbackForce, _killcount, _position, _direction, _netId);
             this.speed = 20;
             this.hitPoints = 5;
             this.lifetime = 1 * Game.frameRate;

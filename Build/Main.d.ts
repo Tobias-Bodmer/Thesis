@@ -20,6 +20,7 @@ declare namespace Game {
     let bullets: Bullets.Bullet[];
     let enemiesJSON: Entity.Entity[];
     let itemsJSON: Items.Item[];
+    let bulletsJSON: Bullets.Bullet[];
     function cameraUpdate(): void;
 }
 declare namespace Entity {
@@ -34,6 +35,7 @@ declare namespace Entity {
         moveDirection: Game.ƒ.Vector3;
         animations: ƒAid.SpriteSheetAnimations;
         performKnockback: boolean;
+        idleScale: number;
         constructor(_id: Entity.ID, _attributes: Attributes);
         update(): void;
         updateCollider(): void;
@@ -156,6 +158,8 @@ declare namespace AnimationGeneration {
         walkFrameRate: number;
         clrWhite: ƒ.Color;
         animations: ƒAid.SpriteSheetAnimations;
+        idleScale: number;
+        walkScale: number;
         constructor(_id: Entity.ID, _txtIdle: ƒ.TextureImage, _idleNumberOfFrames: number, _idleFrameRate: number, _txtWalk?: ƒ.TextureImage, _walkNumberOfFrames?: number, _walkFrameRate?: number);
     }
     export let sheetArray: MyAnimationClass[];
@@ -182,14 +186,20 @@ declare namespace Entity {
     }
 }
 declare namespace Bullets {
+    enum NORMALBULLETS {
+        STANDARD = 0,
+        HIGHSPEED = 1,
+        SLOW = 2,
+        MELEE = 3
+    }
     let bulletTxt: ƒ.TextureImage;
     class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
+        tag: Tag.TAG;
         owner: Tag.TAG;
         netId: number;
         tick: number;
         positions: ƒ.Vector3[];
         hostPositions: ƒ.Vector3[];
-        tag: Tag.TAG;
         flyDirection: ƒ.Vector3;
         direction: ƒ.Vector3;
         collider: Collider.Collider;
@@ -197,10 +207,11 @@ declare namespace Bullets {
         speed: number;
         lifetime: number;
         knockbackForce: number;
+        type: NORMALBULLETS;
         time: number;
         killcount: number;
         despawn(): Promise<void>;
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
+        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
         update(): Promise<void>;
         doKnockback(_body: ƒAid.NodeSprite): void;
         getKnockback(_knockbackForce: number, _position: ƒ.Vector3): void;
@@ -210,18 +221,15 @@ declare namespace Bullets {
         loadTexture(): void;
         collisionDetection(): Promise<void>;
     }
-    class SlowBullet extends Bullet {
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
-    }
     class MeleeBullet extends Bullet {
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
+        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
         loadTexture(): Promise<void>;
     }
     class HomingBullet extends Bullet {
         target: ƒ.Vector3;
         rotateSpeed: number;
         targetDirection: ƒ.Vector3;
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _target?: ƒ.Vector3, _netId?: number);
+        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _target?: ƒ.Vector3, _netId?: number);
         update(): Promise<void>;
         calculateHoming(): void;
     }
@@ -245,13 +253,6 @@ declare namespace EnemySpawner {
     function spawnEnemies(): void;
     function spawnByID(_id: Entity.ID, _position: ƒ.Vector2, _attributes?: Entity.Attributes, _netID?: number): void;
     function networkSpawnById(_id: Entity.ID, _position: ƒ.Vector2, _attributes: Entity.Attributes, _netID: number): void;
-    class EnemySpawnes {
-        spawnPositions: ƒ.Vector2[];
-        numberOfENemies: number;
-        spawnOffset: number;
-        constructor(_roomSize: number, _numberOfEnemies: number);
-        getSpawnPositions(_room: Generation.Room): ƒ.Vector2[];
-    }
 }
 declare namespace Calculation {
     function getCloserAvatarPosition(_startPoint: ƒ.Vector3): ƒ.Vector3;
@@ -332,7 +333,6 @@ declare namespace Player {
     abstract class Player extends Entity.Entity implements Interfaces.IKnockbackable {
         items: Array<Items.Item>;
         weapon: Weapons.Weapon;
-        knockbackForce: number;
         readonly abilityCount: number;
         currentabilityCount: number;
         readonly abilityCooldownTime: number;
@@ -351,6 +351,7 @@ declare namespace Player {
         currentabilityCount: number;
         readonly abilityCooldownTime: number;
         currentabilityCooldownTime: number;
+        weapon: Weapons.Weapon;
         attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
         doAbility(): void;
     }
@@ -459,18 +460,13 @@ declare namespace Weapons {
         currentCooldownTime: number;
         attackCount: number;
         currentAttackCount: number;
-        bulletType: BULLETS;
+        bulletType: Bullets.NORMALBULLETS;
         projectileAmount: number;
-        constructor(_cooldownTime: number, _attackCount: number, _bulletType: BULLETS, _projectileAmount: number);
-        shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
-        fire(_magazine: Bullets.Bullet[], _sync?: boolean): void;
+        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.NORMALBULLETS, _projectileAmount: number);
+        shoot(_owner: Tag.TAG, _position: ƒ.Vector2, _direciton: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
+        fire(_owner: Tag.TAG, _magazine: Bullets.Bullet[], _sync?: boolean): void;
         setBulletDirection(_magazine: Bullets.Bullet[]): Bullets.Bullet[];
-        loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: BULLETS, _amount: number, _netId?: number): Bullets.Bullet[];
+        loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.NORMALBULLETS, _amount: number, _netId?: number): Bullets.Bullet[];
         cooldown(_faktor: number): void;
-    }
-    enum BULLETS {
-        NORMAL = 0,
-        HIGHSPEED = 1,
-        HOMING = 2
     }
 }
