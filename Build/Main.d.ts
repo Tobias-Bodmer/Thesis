@@ -190,6 +190,7 @@ declare namespace Bullets {
         hostPositions: ƒ.Vector3[];
         tag: Tag.TAG;
         flyDirection: ƒ.Vector3;
+        direction: ƒ.Vector3;
         collider: Collider.Collider;
         hitPoints: number;
         speed: number;
@@ -454,7 +455,9 @@ declare namespace Weapons {
         projectileAmount: number;
         constructor(_cooldownTime: number, _attackCount: number);
         shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
-        loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: BULLETS, amount: number, _netId?: number): Bullets.Bullet[];
+        fire(_magazine: Bullets.Bullet[], _sync?: boolean): void;
+        setBulletDirection(_magazine: Bullets.Bullet[]): Bullets.Bullet[];
+        loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: BULLETS, _amount: number, _netId?: number): Bullets.Bullet[];
         cooldown(_faktor: number): void;
     }
     enum BULLETS {

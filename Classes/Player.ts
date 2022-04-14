@@ -92,18 +92,7 @@ namespace Player {
         }
 
         public attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean) {
-            if (this.weapon.currentAttackCount > 0) {
-                _direction.normalize();
-                let bullet: Bullets.Bullet = new Bullets.Bullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, _netId);
-                bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
-                Game.graph.addChild(bullet);
-
-                if (_sync) {
-                    Networking.spawnBullet(_direction, bullet.netId);
-                }
-
-                this.weapon.currentAttackCount--;
-            }
+            this.weapon.shoot(this.mtxLocal.translation.toVector2(), _direction, _netId, _sync);
         }
 
         public doKnockback(_body: Entity.Entity): void {

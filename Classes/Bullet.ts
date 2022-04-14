@@ -10,6 +10,7 @@ namespace Bullets {
         public hostPositions: ƒ.Vector3[] = [];
         public tag: Tag.TAG = Tag.TAG.BULLET;
         public flyDirection: ƒ.Vector3;
+        direction: ƒ.Vector3;
         public collider: Collider.Collider;
 
         public hitPoints: number = 5;
@@ -59,6 +60,7 @@ namespace Bullets {
             this.updateRotation(_direction);
             this.loadTexture();
             this.flyDirection = ƒ.Vector3.X();
+            this.direction = _direction;
         }
 
 
