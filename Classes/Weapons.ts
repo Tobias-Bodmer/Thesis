@@ -4,29 +4,30 @@ namespace Weapons {
         public currentCooldownTime: number = this.cooldownTime;
         attackCount: number = 1;
         public currentAttackCount: number = this.attackCount;
-        bulletType: BULLETS = BULLETS.NORMAL;
+        bulletType: Bullets.NORMALBULLETS = Bullets.NORMALBULLETS.STANDARD;
         projectileAmount: number = 2;
 
-        constructor(_cooldownTime: number, _attackCount: number, _bulletType: BULLETS, _projectileAmount: number) {
+        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.NORMALBULLETS, _projectileAmount: number) {
             this.cooldownTime = _cooldownTime;
             this.attackCount = _attackCount;
             this.bulletType = _bulletType;
             this.projectileAmount = _projectileAmount;
         }
 
-        public shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _netId?: number, _sync?: boolean) {
+        public shoot(_owner: Tag.TAG, _position: ƒ.Vector2, _direciton: ƒ.Vector3, _netId?: number, _sync?: boolean) {
             if (this.currentAttackCount > 0) {
                 _direciton.normalize();
                 let magazine: Bullets.Bullet[] = this.loadMagazine(_position, _direciton, this.bulletType, this.projectileAmount, _netId);
                 this.setBulletDirection(magazine);
-                this.fire(magazine, _sync);
+                this.fire(_owner, magazine, _sync);
                 this.currentAttackCount--;
             }
         }
 
-        fire(_magazine: Bullets.Bullet[], _sync?: boolean) {
+        fire(_owner: Tag.TAG, _magazine: Bullets.Bullet[], _sync?: boolean) {
             _magazine.forEach(bullet => {
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed)
+                bullet.owner = _owner;
                 Game.graph.addChild(bullet);
                 if (_sync) {
                     Networking.spawnBullet(bullet.direction, bullet.netId);
@@ -50,15 +51,22 @@ namespace Weapons {
             }
         }
 
-        loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: BULLETS, _amount: number, _netId?: number): Bullets.Bullet[] {
+        loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.NORMALBULLETS, _amount: number, _netId?: number): Bullets.Bullet[] {
             let magazine: Bullets.Bullet[] = [];
             for (let i = 0; i < _amount; i++) {
                 switch (_bulletType) {
-                    case BULLETS.NORMAL:
-                        magazine.push(new Bullets.Bullet(_position, _direction, _netId))
+                    case Bullets.NORMALBULLETS.STANDARD:
+                        const standardRef = Game.bulletsJSON.find(bullet => bullet.type == Bullets.NORMALBULLETS.STANDARD);
+                        magazine.push(new Bullets.Bullet(standardRef.name, standardRef.speed, standardRef.hitPoints, standardRef.lifetime, standardRef.knockbackForce, standardRef.killcount, _position, _direction, _netId))
                         break;
-                    case BULLETS.HOMING:
-                        magazine.push(new Bullets.HomingBullet(_position, _direction, null, _netId))
+                    case Bullets.NORMALBULLETS.SLOW:
+                        const slowRef = Game.bulletsJSON.find(bullet => bullet.type == Bullets.NORMALBULLETS.SLOW);
+                        magazine.push(new Bullets.Bullet(slowRef.name, slowRef.speed, slowRef.hitPoints, slowRef.lifetime, slowRef.knockbackForce, slowRef.killcount, _position, _direction, _netId));
+                        break;
+                    case Bullets.NORMALBULLETS.MELEE:
+                        const meleeRef = Game.bulletsJSON.find(bullet => bullet.type == Bullets.NORMALBULLETS.MELEE);
+                        magazine.push(new Bullets.Bullet(meleeRef.name, meleeRef.speed, meleeRef.hitPoints, meleeRef.lifetime, meleeRef.knockbackForce, meleeRef.killcount, _position, _direction, _netId));
+                        break;
                 }
             }
             return magazine;
@@ -81,9 +89,4 @@ namespace Weapons {
         }
     }
 
-    export enum BULLETS {
-        NORMAL,
-        HIGHSPEED,
-        HOMING
-    }
 }

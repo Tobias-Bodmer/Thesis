@@ -1,0 +1,40 @@
+{
+    "standardBullets": [
+        {
+            "name": "normalBullet",
+            "type": 0,
+            "speed": 20,
+            "hitPoints": 5,
+            "lifetime": 60,
+            "knockbackForce": 4,
+            "killcount": 1
+        },
+        {
+            "name": "highspeedBullet",
+            "type": 1,
+            "speed": 30,
+            "hitPoints": 12,
+            "lifetime": 30,
+            "knockbackForce": 8,
+            "killcount": 2
+        },
+        {
+            "name": "slowBullet",
+            "type": 2,
+            "speed": 6,
+            "hitPoints": 10,
+            "lifetime": 360,
+            "knockbackForce": 4,
+            "killcount": 8
+        },
+        {
+            "name": "meeleBullet",
+            "type": 3,
+            "speed": 6,
+            "hitPoints": 10,
+            "lifetime": 6,
+            "knockbackForce": 4,
+            "killcount": 8
+        }
+    ]
+}

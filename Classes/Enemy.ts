@@ -33,7 +33,7 @@ namespace Enemy {
             }
             this.mtxLocal.scale(new ƒ.Vector3(this.attributes.scale, this.attributes.scale, 0));
             this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
-
+            this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), (this.mtxLocal.scaling.x * this.idleScale)/2)
             Networking.spawnEnemy(this, this.netId);
         }
 
@@ -219,18 +219,19 @@ namespace Enemy {
         public shoot(_netId?: number) {
             let target: ƒ.Vector3 = Calculation.getCloserAvatarPosition(this.mtxLocal.translation)
             let _direction = ƒ.Vector3.DIFFERENCE(target, this.mtxLocal.translation);
-            if (this.weapon.currentAttackCount > 0 && _direction.magnitude < this.viewRadius) {
-                _direction.normalize();
-                let bullet: Bullets.Bullet = new Bullets.HomingBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, Calculation.getCloserAvatarPosition(this.mtxLocal.translation), _netId);
-                bullet.owner = this.tag;
-                bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
-                Game.graph.addChild(bullet);
-                if (Networking.client.id == Networking.client.idHost) {
-                    Networking.spawnBulletAtEnemy(bullet.netId, this.netId);
-                    this.weapon.currentAttackCount--;
-                }
+            // if (this.weapon.currentAttackCount > 0 && _direction.magnitude < this.viewRadius) {
+            //     _direction.normalize();
+            //     // let bullet: Bullets.Bullet = new Bullets.HomingBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, Calculation.getCloserAvatarPosition(this.mtxLocal.translation), _netId);
+            //     bullet.owner = this.tag;
+            //     bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
+            //     Game.graph.addChild(bullet);
+            //     if (Networking.client.id == Networking.client.idHost) {
+            //         Networking.spawnBulletAtEnemy(bullet.netId, this.netId);
+            //         this.weapon.currentAttackCount--;
+            //     }
 
-            }
+            // }
+            this.weapon.shoot(this.tag, this.mtxLocal.translation.toVector2(), _direction, _netId);
         }
     }
 

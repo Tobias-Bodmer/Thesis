@@ -16,6 +16,8 @@ namespace AnimationGeneration {
 
         clrWhite: ƒ.Color = ƒ.Color.CSS("white");
         animations: ƒAid.SpriteSheetAnimations = {};
+        idleScale: number;
+        walkScale: number;
 
         constructor(_id: Entity.ID,
             _txtIdle: ƒ.TextureImage,
@@ -47,6 +49,7 @@ namespace AnimationGeneration {
 
     let batAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.BAT, txtBatIdle, 4, 12);
     let redTickAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.REDTICK, txtRedTickIdle, 6, 12, txtRedTickWalk, 4, 12);
+    (<ƒAid.SpriteSheetAnimation>batAnimation.animations[""])
     //#endregion
 
 
@@ -72,9 +75,17 @@ namespace AnimationGeneration {
             let walkHeigth: number = obj.spriteSheetWalk.texture.texImageSource.height;
             generateAnimationFromGrid(obj.spriteSheetIdle, obj.animations, "idle", idleWidth, idleHeigth, obj.idleNumberOfFrames, obj.idleFrameRate, 22);
             generateAnimationFromGrid(obj.spriteSheetWalk, obj.animations, "walk", walkWidth, walkHeigth, obj.walkNumberOfFrames, obj.walkFrameRate, 22);
-            console.log(obj.spriteSheetIdle);
-            console.log(obj.spriteSheetWalk);
+            obj.idleScale = getPixelRatio(idleHeigth, idleWidth);
+            obj.walkScale = getPixelRatio(walkHeigth, walkWidth);
         })
+    }
+
+    function getPixelRatio(_width: number, _height: number): number {
+        let max = Math.max(_width, _height);
+        let min = Math.min(_width, _height);
+
+        let scale = 1 / max * min;
+        return scale;
     }
 
     function generateAnimationFromGrid(_spritesheet: ƒ.CoatTextured, _animationsheet: ƒAid.SpriteSheetAnimations, _animationName: string, _width: number, _height: number, _numberOfFrames: number, _frameRate: number, _resolution: number) {

@@ -9,13 +9,16 @@ namespace Entity {
         canMoveY: boolean = true;
         moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
         animations: ƒAid.SpriteSheetAnimations = {};
+        idleScale: number;
 
         constructor(_id: Entity.ID, _attributes: Attributes) {
             super(getNameById(_id));
             this.id = _id;
             this.attributes = _attributes;
             if (AnimationGeneration.getAnimationById(this.id) != null) {
-                this.animations = AnimationGeneration.getAnimationById(this.id).animations;
+                let ani = AnimationGeneration.getAnimationById(this.id);
+                this.animations = ani.animations;
+                this.idleScale = ani.idleScale;
             }
             this.addComponent(new ƒ.ComponentTransform());
             this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);

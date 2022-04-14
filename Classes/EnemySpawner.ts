@@ -1,7 +1,7 @@
 namespace EnemySpawner {
     let spawnTime: number = 1 * Game.frameRate;
     let currentTime: number = spawnTime;
-    let maxEnemies: number = 40;
+    let maxEnemies: number = 1;
 
     export function spawnEnemies(): void {
         if (Game.enemies.length < maxEnemies) {
@@ -15,7 +15,7 @@ namespace EnemySpawner {
             }
         }
     }
-  
+
 
     export function spawnByID(_id: Entity.ID, _position: ƒ.Vector2, _attributes?: Entity.Attributes, _netID?: number) {
         let enemy: Enemy.Enemy;
@@ -53,21 +53,9 @@ namespace EnemySpawner {
 
 
 
-    export class EnemySpawnes {
-        spawnPositions: ƒ.Vector2[] = [];
-        numberOfENemies: number;
-        spawnOffset: number = 5;
 
 
-
-        constructor(_roomSize: number, _numberOfEnemies: number) {
-            this.numberOfENemies = _numberOfEnemies;
-        }
-
-
-        getSpawnPositions(_room: Generation.Room): ƒ.Vector2[] {
-            return [new ƒ.Vector2(0 + this.spawnOffset, 0 + this.spawnOffset), new ƒ.Vector2(_room.getRoomSize() - this.spawnOffset, _room.getRoomSize() + this.spawnOffset)]
-        }
+    function getSpawnPositions(_room: Generation.Room) {
 
     }
 }

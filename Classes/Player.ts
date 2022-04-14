@@ -6,9 +6,7 @@ namespace Player {
 
     export abstract class Player extends Entity.Entity implements Interfaces.IKnockbackable {
         public items: Array<Items.Item> = [];
-        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Weapons.BULLETS.HOMING, 2);
-
-        knockbackForce: number = 6;
+        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.NORMALBULLETS.STANDARD, 2);
 
         readonly abilityCount: number = 1;
         currentabilityCount: number = this.abilityCount;
@@ -129,19 +127,11 @@ namespace Player {
         readonly abilityCooldownTime: number = 40;
         currentabilityCooldownTime: number = this.abilityCooldownTime;
 
+        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.NORMALBULLETS.MELEE, 2);
+
+
         public attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean) {
-            if (this.weapon.currentAttackCount > 0) {
-                _direction.normalize();
-                let bullet: Bullets.Bullet = new Bullets.MeleeBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, _netId);
-                bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
-                Game.graph.addChild(bullet);
-
-                if (_sync) {
-                    Networking.spawnBullet(_direction, bullet.netId);
-                }
-
-                this.weapon.currentAttackCount--;
-            }
+            this.weapon.shoot(this.tag, this.mtxLocal.translation.toVector2(), _direction, _netId, _sync);
         }
 
         //Block
@@ -157,7 +147,6 @@ namespace Player {
             }
         }
     }
-
     export class Ranged extends Player {
 
         //Dash
