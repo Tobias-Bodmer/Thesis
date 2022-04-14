@@ -220,7 +220,7 @@ declare namespace Bullets {
         target: ƒ.Vector3;
         rotateSpeed: number;
         targetDirection: ƒ.Vector3;
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _target: ƒ.Vector3, _netId?: number);
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _target?: ƒ.Vector3, _netId?: number);
         update(): Promise<void>;
         calculateHoming(): void;
     }
@@ -446,14 +446,14 @@ declare namespace UI {
     }
 }
 declare namespace Weapons {
-    export class Weapon {
+    class Weapon {
         cooldownTime: number;
         currentCooldownTime: number;
         attackCount: number;
         currentAttackCount: number;
         bulletType: BULLETS;
         projectileAmount: number;
-        constructor(_cooldownTime: number, _attackCount: number);
+        constructor(_cooldownTime: number, _attackCount: number, _bulletType: BULLETS, _projectileAmount: number);
         shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
         fire(_magazine: Bullets.Bullet[], _sync?: boolean): void;
         setBulletDirection(_magazine: Bullets.Bullet[]): Bullets.Bullet[];
@@ -465,5 +465,4 @@ declare namespace Weapons {
         HIGHSPEED = 1,
         HOMING = 2
     }
-    export {};
 }

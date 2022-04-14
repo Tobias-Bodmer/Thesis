@@ -7,9 +7,11 @@ namespace Weapons {
         bulletType: BULLETS = BULLETS.NORMAL;
         projectileAmount: number = 2;
 
-        constructor(_cooldownTime: number, _attackCount: number) {
+        constructor(_cooldownTime: number, _attackCount: number, _bulletType: BULLETS, _projectileAmount: number) {
             this.cooldownTime = _cooldownTime;
             this.attackCount = _attackCount;
+            this.bulletType = _bulletType;
+            this.projectileAmount = _projectileAmount;
         }
 
         public shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _netId?: number, _sync?: boolean) {
@@ -39,6 +41,10 @@ namespace Weapons {
                 case 2:
                     _magazine[0].mtxLocal.rotateZ(45 / 2);
                     _magazine[1].mtxLocal.rotateZ(45 / 2 * -1);
+                    return _magazine;
+                case 3:
+                    _magazine[0].mtxLocal.rotateZ(45 / 2);
+                    _magazine[1].mtxLocal.rotateZ(45 / 2 * -1);
                 default:
                     return _magazine;
             }
@@ -51,6 +57,8 @@ namespace Weapons {
                     case BULLETS.NORMAL:
                         magazine.push(new Bullets.Bullet(_position, _direction, _netId))
                         break;
+                    case BULLETS.HOMING:
+                        magazine.push(new Bullets.HomingBullet(_position, _direction, null, _netId))
                 }
             }
             return magazine;
@@ -73,7 +81,7 @@ namespace Weapons {
         }
     }
 
-    enum BULLETS {
+    export enum BULLETS {
         NORMAL,
         HIGHSPEED,
         HOMING

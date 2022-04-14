@@ -198,13 +198,18 @@ namespace Bullets {
         rotateSpeed: number = 3;
         targetDirection: ƒ.Vector3;
 
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _target: ƒ.Vector3, _netId?: number) {
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _target?: ƒ.Vector3, _netId?: number) {
             super(_position, _direction, _netId);
             this.speed = 20;
             this.hitPoints = 5;
             this.lifetime = 1 * Game.frameRate;
             this.killcount = 1;
-            this.target = _target;
+            if (_target != null) {
+                this.target = _target;
+            }
+            else {
+                this.target = ƒ.Vector3.SUM(this.mtxLocal.translation, _direction);
+            }
             this.targetDirection = _direction;
         }
         async update(): Promise<void> {

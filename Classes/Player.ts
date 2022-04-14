@@ -6,7 +6,7 @@ namespace Player {
 
     export abstract class Player extends Entity.Entity implements Interfaces.IKnockbackable {
         public items: Array<Items.Item> = [];
-        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1);
+        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Weapons.BULLETS.HOMING, 2);
 
         knockbackForce: number = 6;
 
