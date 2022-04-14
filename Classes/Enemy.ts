@@ -19,23 +19,12 @@ namespace Enemy {
                 return "skeleton";
         }
     }
-    enum BEHAVIOUR {
-        IDLE, FOLLOW, FLEE
-    }
 
-    export enum ANIMATIONSTATES {
-        IDLE, WALK
-    }
     import ƒAid = FudgeAid;
 
-    export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
-        currentState: BEHAVIOUR = BEHAVIOUR.IDLE;
-        currentAnimation: ANIMATIONSTATES;
-        public tag: Tag.TAG = Tag.TAG.ENEMY;
+    export class Enemy extends Entity.Entity implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
         public id: number;
         public netId: number = Networking.idGenerator();
-        public properties: Player.Character;
-        public collider: Collider.Collider;
         sizeDivideFactor: number = 2;
         target: ƒ.Vector3;
         lifetime: number;
@@ -43,14 +32,15 @@ namespace Enemy {
         canMoveY: boolean = true;
         moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
 
-        //#region  animation
-        animations: ƒAid.SpriteSheetAnimations;
-        //#endregion
 
-        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number) {
-            super(getNameByID(_id));
+        constructor(_id: ENEMYNAME, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
+            super(getNameByID(_id), _attributes);
             this.id = _id;
-            this.properties = _properties;
+            this.attributes = _attributes;
+            this.currentState = Entity.BEHAVIOUR.IDLE;
+            this.currentAnimation = Entity.ANIMATIONSTATES.IDLE;
+            this.tag = Tag.TAG.ENEMY;
+
             this.addComponent(new ƒ.ComponentTransform());
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
             if (_netId != undefined) {
@@ -58,7 +48,7 @@ namespace Enemy {
                 Networking.currentIDs.push(_netId);
                 this.netId = _netId;
             }
-            this.mtxLocal.scale(new ƒ.Vector3(this.properties.attributes.scale, this.properties.attributes.scale, 0));
+            this.mtxLocal.scale(new ƒ.Vector3(this.attributes.scale, this.attributes.scale, 0));
             this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / this.sizeDivideFactor);
             this.animations = AnimationGeneration.getAnimationById(this.id).animations;
             this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
@@ -73,13 +63,13 @@ namespace Enemy {
         }
 
         public doKnockback(_body: ƒAid.NodeSprite): void {
-            (<Player.Player>_body).getKnockback(this.properties.attributes.knockbackForce, this.cmpTransform.mtxLocal.translation);
+            (<Player.Player>_body).getKnockback(this.attributes.knockbackForce, this.cmpTransform.mtxLocal.translation);
         }
 
         public getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void {
             //TODO: apply scaling correct for knockback
             let direction: Game.ƒ.Vector3 = Game.ƒ.Vector2.DIFFERENCE(this.cmpTransform.mtxLocal.translation.toVector2(), _position.toVector2()).toVector3(0);
-            let knockBackScaling: number = Game.frameRate * this.properties.attributes.scale;
+            let knockBackScaling: number = Game.frameRate * this.attributes.scale;
 
             direction.normalize();
 
@@ -121,7 +111,7 @@ namespace Enemy {
 
             direction.normalize();
 
-            direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
+            direction.scale((1 / Game.frameRate * this.attributes.speed));
 
             this.moveDirection.add(direction)
 
@@ -136,7 +126,7 @@ namespace Enemy {
             let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.cmpTransform.mtxLocal.translation, this.target);
             direction.normalize();
 
-            direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
+            direction.scale((1 / Game.frameRate * this.attributes.speed));
 
             this.moveDirection.add(direction)
 
@@ -144,10 +134,14 @@ namespace Enemy {
 
             this.moveDirection.subtract(direction);
         }
-
+        public getDamage(_damage: number) {
+            if (_damage != null && this.attributes.hitable) {
+                this.attributes.healthPoints -= _damage;
+            }
+        }
 
         lifespan(_graph: Game.ƒ.Node) {
-            if (this.properties.attributes.healthPoints <= 0) {
+            if (this.attributes.healthPoints <= 0) {
                 Networking.removeEnemy(this.netId);
                 Networking.popID(this.netId);
                 _graph.removeChild(this);
@@ -245,8 +239,8 @@ namespace Enemy {
 
     export class EnemyDumb extends Enemy {
 
-        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number) {
-            super(_id, _properties, _position, _netId);
+        constructor(_id: ENEMYNAME, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
+            super(_id, _attributes, _position, _netId);
         }
 
         enemyUpdate(): void {
@@ -258,10 +252,10 @@ namespace Enemy {
             let target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
             let distance = ƒ.Vector3.DIFFERENCE(target, this.cmpTransform.mtxLocal.translation).magnitude;
             if (distance > 3) {
-                this.currentState = BEHAVIOUR.FOLLOW
+                this.currentState = Entity.BEHAVIOUR.FOLLOW
             }
             else {
-                this.currentState = BEHAVIOUR.IDLE;
+                this.currentState = Entity.BEHAVIOUR.IDLE;
             }
 
         }
@@ -270,23 +264,23 @@ namespace Enemy {
 
             this.behaviour();
             switch (this.currentState) {
-                case BEHAVIOUR.IDLE:
-                    if (this.currentAnimation != ANIMATIONSTATES.IDLE) {
+                case Entity.BEHAVIOUR.IDLE:
+                    if (this.currentAnimation != Entity.ANIMATIONSTATES.IDLE) {
                         this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
                         this.setFrameDirection(1);
                         this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
-                        this.currentAnimation = ANIMATIONSTATES.IDLE;
+                        this.currentAnimation = Entity.ANIMATIONSTATES.IDLE;
                         Networking.updateEnemyState(this.currentAnimation, this.netId);
                     }
                     this.setFrameDirection(1);
                     this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
                     break;
-                case BEHAVIOUR.FOLLOW:
-                    if (this.currentAnimation != ANIMATIONSTATES.WALK) {
+                case Entity.BEHAVIOUR.FOLLOW:
+                    if (this.currentAnimation != Entity.ANIMATIONSTATES.WALK) {
                         this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["walk"]);
                         this.setFrameDirection(1);
                         this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
-                        this.currentAnimation = ANIMATIONSTATES.WALK;
+                        this.currentAnimation = Entity.ANIMATIONSTATES.WALK;
                         Networking.updateEnemyState(this.currentAnimation, this.netId);
                     }
                     this.moveSimple()
@@ -301,8 +295,8 @@ namespace Enemy {
     export class EnemyShoot extends Enemy {
         weapon: Weapons.Weapon;
         viewRadius: number = 3;
-        constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _netId?: number) {
-            super(_id, _properties, _position, _netId);
+        constructor(_id: number, _attributes: Entity.Attributes, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _netId?: number) {
+            super(_id, _attributes, _position, _netId);
             this.weapon = _weapon;
         }
 

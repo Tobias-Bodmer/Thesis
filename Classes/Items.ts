@@ -54,7 +54,7 @@ namespace Items {
     }
 
     export class InternalItem extends Item {
-        public attributes: Player.Attributes;
+        public attributes: Entity.Attributes;
         public type: ITEMTYPE;
         /**
          * Creates an item that can change Attributes of the player
@@ -64,7 +64,7 @@ namespace Items {
          * @param _lifetime optional: how long is the item visible
          * @param _attributes define which attributes will change, compare with {@link Player.Attributes}
          */
-        constructor(_name: string, _description: string, _position: ƒ.Vector3, _attributes: Player.Attributes, _type: ITEMTYPE, _imgSrc?: string, _lifetime?: number, _netId?: number) {
+        constructor(_name: string, _description: string, _position: ƒ.Vector3, _attributes: Entity.Attributes, _type: ITEMTYPE, _imgSrc?: string, _lifetime?: number, _netId?: number) {
             super(_name, _description, _position, _imgSrc, _lifetime, _netId);
             this.attributes = _attributes;
             this.type = _type;
@@ -76,7 +76,7 @@ namespace Items {
             let colliders: any[] = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.PLAYER);
             colliders.forEach((element) => {
                 if (this.collider.collides(element.collider) && element.properties != undefined && (this.lifetime > 0 || this.lifetime == undefined)) {
-                    (<Player.Player>element).properties.attributes.addAttribuesByItem(this.attributes, this.type);
+                    (<Player.Player>element).attributes.addAttribuesByItem(this.attributes, this.type);
                     Networking.updateAvatarAttributes(this.attributes, this.type);
                     // console.log((<Enemy.Enemy>element).properties.attributes.healthPoints);
                     this.lifetime = 0;

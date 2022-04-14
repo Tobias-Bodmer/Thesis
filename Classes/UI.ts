@@ -5,7 +5,7 @@ namespace UI {
 
     export function updateUI() {
         //Avatar1 UI
-        (<HTMLDivElement>player1UI.querySelector("#HP")).style.width = (Game.avatar1.properties.attributes.healthPoints / Game.avatar1.properties.attributes.maxHealthPoints * 100) + "%";
+        (<HTMLDivElement>player1UI.querySelector("#HP")).style.width = (Game.avatar1.attributes.healthPoints / Game.avatar1.attributes.maxHealthPoints * 100) + "%";
 
         //InventoryUI
         Game.avatar1.items.forEach((element) => {
@@ -28,7 +28,7 @@ namespace UI {
 
         //Avatar2 UI
         if (Game.connected) {
-            (<HTMLDivElement>player2UI.querySelector("#HP")).style.width = (Game.avatar2.properties.attributes.healthPoints / Game.avatar2.properties.attributes.maxHealthPoints * 100) + "%";
+            (<HTMLDivElement>player2UI.querySelector("#HP")).style.width = (Game.avatar2.attributes.healthPoints / Game.avatar2.attributes.maxHealthPoints * 100) + "%";
 
             //InventoryUI
             Game.avatar2.items.forEach((element) => {

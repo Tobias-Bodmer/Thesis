@@ -31,7 +31,7 @@ namespace Game {
     export let frameRate: number = 60;
     export let enemies: Enemy.Enemy[] = [];
     export let bullets: Bullets.Bullet[];
-    export let enemiesJSON: Player.Character[];
+    export let enemiesJSON: Entity.Entity[];
     export let itemsJSON: Items.Item[];
     //#endregion "PublicVariables"
 
@@ -123,7 +123,7 @@ namespace Game {
                     element.enemyUpdate();
                     element.lifespan(graph);
                     if (element instanceof Enemy.EnemyShoot) {
-                        (<Enemy.EnemyShoot>element).weapon.cooldown(element.properties.attributes.coolDownReduction);
+                        (<Enemy.EnemyShoot>element).weapon.cooldown(element.attributes.coolDownReduction);
                     }
                 })
 
@@ -180,7 +180,7 @@ namespace Game {
 
     async function loadJSON() {
         const loadEnemy = await (await fetch("./Resources/EnemiesStorage.json")).json();
-        enemiesJSON = (<Player.Character[]>loadEnemy.enemies);
+        enemiesJSON = (<Entity.Entity[]>loadEnemy.enemies);
 
         const loadItem = await (await fetch("./Resources/ItemStorage.json")).json();
         itemsJSON = (<Items.Item[]>loadItem.items);
@@ -227,8 +227,8 @@ namespace Game {
 
             //#region init Items
             if (Networking.client.id == Networking.client.idHost) {
-                item1 = new Items.InternalItem("cooldown reduction", "adds speed and shit", new ƒ.Vector3(0, 2, 0), new Player.Attributes(0, 0, 0, 100), Items.ITEMTYPE.PROCENTUAL, "./Resources/Image/Items");
-                let item2 = new Items.InternalItem("cooldown reduction", "adds speed and shit", new ƒ.Vector3(0, -2, 0), new Player.Attributes(0, 0, 0, 100), Items.ITEMTYPE.PROCENTUAL, "./Resources/Image/Items");
+                item1 = new Items.InternalItem("cooldown reduction", "adds speed and shit", new ƒ.Vector3(0, 2, 0), new Entity.Attributes(0, 0, 0, 100), Items.ITEMTYPE.PROCENTUAL, "./Resources/Image/Items");
+                let item2 = new Items.InternalItem("cooldown reduction", "adds speed and shit", new ƒ.Vector3(0, -2, 0), new Entity.Attributes(0, 0, 0, 100), Items.ITEMTYPE.PROCENTUAL, "./Resources/Image/Items");
                 graph.appendChild(item1);
                 graph.appendChild(item2);
             }
@@ -240,11 +240,11 @@ namespace Game {
 
     function playerChoice(_e: Event) {
         if ((<HTMLButtonElement>_e.target).id == "Ranged") {
-            avatar1 = new Player.Ranged("player", new Player.Character("Thor,", new Player.Attributes(10, 5, 5, 1)));
+            avatar1 = new Player.Ranged("player", new Entity.Attributes(10, 5, 5, 1));
             playerType = Player.PLAYERTYPE.RANGED;
         }
         if ((<HTMLButtonElement>_e.target).id == "Melee") {
-            avatar1 = new Player.Melee("player", new Player.Character("Thor,", new Player.Attributes(10, 1, 5, 1)));
+            avatar1 = new Player.Melee("player", new Entity.Attributes(10, 1, 5, 1));
             playerType = Player.PLAYERTYPE.MELEE;
         }
         document.getElementById("Lobbyscreen").style.visibility = "hidden";

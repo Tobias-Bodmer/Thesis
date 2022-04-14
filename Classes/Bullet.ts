@@ -128,9 +128,9 @@ namespace Bullets {
                 colliders = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY);
             }
             colliders.forEach((element) => {
-                if (this.collider.collides(element.collider) && element.properties != undefined && this.killcount > 0) {
-                    if ((<Enemy.Enemy>element).properties.attributes.healthPoints > 0) {
-                        (<Enemy.Enemy>element).properties.attributes.healthPoints -= this.hitPoints;
+                if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
+                    if ((<Enemy.Enemy>element).attributes.healthPoints > 0) {
+                        (<Enemy.Enemy>element).getDamage(this.hitPoints);
                         (<Player.Player>this.avatar).doKnockback(element);
                         Game.graph.addChild(new UI.DamageUI((<Enemy.Enemy>element).cmpTransform.mtxLocal.translation, this.hitPoints));
                         this.lifetime = 0;
@@ -141,9 +141,9 @@ namespace Bullets {
             if (this.owner == Tag.TAG.ENEMY) {
                 colliders = Game.graph.getChildren().filter(element => (<Player.Player>element).tag == Tag.TAG.PLAYER);
                 colliders.forEach((element) => {
-                    if (this.collider.collides(element.collider) && element.properties != undefined && this.killcount > 0) {
-                        if ((<Player.Player>element).properties.attributes.healthPoints > 0 && (<Player.Player>element).hitable) {
-                            (<Player.Player>element).properties.attributes.healthPoints -= this.hitPoints;
+                    if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
+                        if ((<Player.Player>element).attributes.healthPoints > 0 && (<Player.Player>element).attributes.hitable) {
+                            (<Player.Player>element).attributes.healthPoints -= this.hitPoints;
                             (<Enemy.Enemy>this.avatar).doKnockback(element);
                             Game.graph.addChild(new UI.DamageUI((<Player.Player>element).cmpTransform.mtxLocal.translation, this.hitPoints));
                             this.lifetime = 0;

@@ -77,14 +77,13 @@ namespace Networking {
                     //Spawn avatar2 as ranged or melee 
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
                         if (message.content.type == Player.PLAYERTYPE.MELEE) {
-                            Game.avatar2 = new Player.Melee("player2", new Player.Character(message.content.value.name,
-                                new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed, message.content.value.attributes.speed)));
+                            Game.avatar2 = new Player.Melee("player2",
+                                new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.speed));
 
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                             Game.graph.appendChild(Game.avatar2);
                         } else if (message.content.type == Player.PLAYERTYPE.RANGED) {
-                            Game.avatar2 = new Player.Ranged("player2", new Player.Character(message.content.value.name,
-                                new Player.Attributes(message.content.value.attributes.healthPoints, message.content.value.attributes.attackPoints, message.content.value.attributes.speed, message.content.value.attributes.scale)));
+                            Game.avatar2 = new Player.Ranged("player2", new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale));
 
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                             Game.graph.appendChild(Game.avatar2);
@@ -139,14 +138,18 @@ namespace Networking {
 
                         //Spawn enemy at the client 
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNENEMY.toString()) {
-                            chooseEnemy(<Enemy.ENEMYNAME>message.content.id,
-                                new Player.Attributes(message.content.properties.attributes.healthPoints,
-                                    message.content.properties.attributes.attackPoints,
-                                    message.content.properties.attributes.speed, message.content.properties.attributes.scale),
-                                new ƒ.Vector3(message.content.position.data[0],
-                                    message.content.position.data[1],
-                                    message.content.position.data[2]),
-                                <number>message.content.netId);
+                            EnemySpawner.networkSpawnById(
+                                message.content.id,
+                                new ƒ.Vector2(
+                                    message.content.position.data[0],
+                                    message.content.position.data[1]),
+                                new Entity.Attributes(
+                                    message.content.attributes.healthPoints,
+                                    message.content.attributes.attackPoints,
+                                    message.content.attributes.speed,
+                                    message.content.attributes.scale
+                                )
+                                , message.content.netId);
                         }
 
                         //Sync enemy transform from host to client
@@ -162,13 +165,13 @@ namespace Networking {
                             let enemy = Game.enemies.find(enem => enem.netId == message.content.netId);
                             if (enemy != undefined) {
                                 switch (message.content.state) {
-                                    case Enemy.ANIMATIONSTATES.IDLE:
+                                    case Entity.ANIMATIONSTATES.IDLE:
                                         enemy.setAnimation(<ƒAid.SpriteSheetAnimation>enemy.animations["idle"]);
-                                        enemy.currentAnimation = Enemy.ANIMATIONSTATES.IDLE;
+                                        enemy.currentAnimation = Entity.ANIMATIONSTATES.IDLE;
                                         break;
-                                    case Enemy.ANIMATIONSTATES.WALK:
+                                    case Entity.ANIMATIONSTATES.WALK:
                                         enemy.setAnimation(<ƒAid.SpriteSheetAnimation>enemy.animations["walk"]);
-                                        enemy.currentAnimation = Enemy.ANIMATIONSTATES.WALK;
+                                        enemy.currentAnimation = Entity.ANIMATIONSTATES.WALK;
                                         break;
                                 }
                             }
@@ -185,7 +188,7 @@ namespace Networking {
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNITEM.toString()) {
                             if (client.id != client.idHost) {
                                 if (message.content.attributes != null) {
-                                    let attributes = new Player.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.coolDownReduction);
+                                    let attributes = new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.coolDownReduction);
                                     Game.graph.addChild(new Items.InternalItem(message.content.name, message.content.description, new ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]), attributes, message.content.type, message.content.imgSrc, message.content.lifetime, message.content.netId));
                                 }
 
@@ -195,8 +198,8 @@ namespace Networking {
 
                         //Spawn item from host
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEATTRIBUTES.toString()) {
-                            let attributes = new Player.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.coolDownReduction);
-                            Game.avatar2.properties.attributes.addAttribuesByItem(attributes, message.content.type);
+                            let attributes = new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.coolDownReduction);
+                            Game.avatar2.attributes.addAttribuesByItem(attributes, message.content.type);
                         }
 
                         //Kill item from host
@@ -268,11 +271,11 @@ namespace Networking {
     }
     export async function spawnPlayer(_type?: Player.PLAYERTYPE) {
         if (_type == Player.PLAYERTYPE.MELEE) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.MELEE, value: Game.avatar1.properties, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.MELEE, attributes: Game.avatar1.attributes, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
         } else if (_type == Player.PLAYERTYPE.RANGED) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.RANGED, value: Game.avatar1.properties, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.RANGED, attributes: Game.avatar1.attributes, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
         } else {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.RANGED, value: Game.avatar1.properties, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.RANGED, attributes: Game.avatar1.attributes, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
         }
     }
     export function setClient() {
@@ -313,26 +316,15 @@ namespace Networking {
 
 
     //#region enemy
-    function chooseEnemy(_id: Enemy.ENEMYNAME, _properties: Player.Attributes, _position: ƒ.Vector3, _netId: number) {
-        switch (_id) {
-            case Enemy.ENEMYNAME.BAT:
-                Game.graph.addChild(new Enemy.EnemyDumb(Enemy.ENEMYNAME.BAT, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed, _properties.scale)), _position.toVector2(), _netId));
-                break;
-            case Enemy.ENEMYNAME.REDTICK:
-                let newEnem: Enemy.EnemyDumb = new Enemy.EnemyDumb(Enemy.ENEMYNAME.REDTICK, new Player.Character(Enemy.getNameByID(_id), new Player.Attributes(_properties.healthPoints, _properties.attackPoints, _properties.speed, _properties.scale)), _position.toVector2(), _netId);
-                Game.graph.addChild(newEnem);
-                break;
-        }
-    }
     export function spawnEnemy(_enemy: Enemy.Enemy, _netId: number) {
         if (Game.connected && client.idHost == client.id) {
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, id: _enemy.id, properties: _enemy.properties, position: _enemy.mtxLocal.translation, netId: _netId } })
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, id: _enemy.id, attributes: _enemy.attributes, position: _enemy.mtxLocal.translation, netId: _netId } })
         }
     }
-    export function updateEnemyPosition(_position: ƒ.Vector3, _netId: number, _state: Enemy.ANIMATIONSTATES) {
+    export function updateEnemyPosition(_position: ƒ.Vector3, _netId: number, _state: Entity.ANIMATIONSTATES) {
         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ENEMYTRANSFORM, position: _position, netId: _netId, animation: _state } })
     }
-    export function updateEnemyState(_state: Enemy.ANIMATIONSTATES, _netId: number) {
+    export function updateEnemyState(_state: Entity.ANIMATIONSTATES, _netId: number) {
         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ENEMYSTATE, state: _state, netId: _netId } })
     }
     export function removeEnemy(_netId: number) {
@@ -343,12 +335,12 @@ namespace Networking {
 
 
     //#region items
-    export async function spawnItem(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime: number, _netId: number, _attributes?: Player.Attributes, _type?: Items.ITEMTYPE) {
+    export async function spawnItem(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime: number, _netId: number, _attributes?: Entity.Attributes, _type?: Items.ITEMTYPE) {
         if (Game.connected && client.idHost == client.id) {
             await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNITEM, name: _name, description: _description, position: _position, imgSrc: _imgSrc, lifetime: _lifetime, netId: _netId, attributes: _attributes, type: _type } });
         }
     }
-    export function updateAvatarAttributes(_attributes: Player.Attributes, _type: Items.ITEMTYPE) {
+    export function updateAvatarAttributes(_attributes: Entity.Attributes, _type: Items.ITEMTYPE) {
         client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.UPDATEATTRIBUTES, attributes: _attributes, type: _type } });
     }
     export function removeItem(_netId: number) {

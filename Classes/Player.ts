@@ -4,14 +4,10 @@ namespace Player {
         MELEE
     }
 
-    export abstract class Player extends Game.ƒAid.NodeSprite implements Interfaces.IKnockbackable {
-        public tag: Tag.TAG = Tag.TAG.PLAYER;
+    export abstract class Player extends Entity.Entity implements Interfaces.IKnockbackable {
         public items: Array<Items.Item> = [];
-        public properties: Character;
         public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1);
-        hitable: boolean = true;
 
-        collider: Collider.Collider;
         moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
 
         knockbackForce: number = 6;
@@ -21,11 +17,11 @@ namespace Player {
         readonly abilityCooldownTime: number = 10;
         currentabilityCooldownTime: number = this.abilityCooldownTime;
 
-        constructor(_name: string, _properties: Character) {
-            super(_name);
+        constructor(_name: string, _attributes: Entity.Attributes) {
+            super(_name, _attributes);
+            this.tag = Tag.TAG.PLAYER;
             this.addComponent(new ƒ.ComponentTransform());
             this.cmpTransform.mtxLocal.translateZ(0.1);
-            this.properties = _properties;
             this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);
         }
 
@@ -33,7 +29,7 @@ namespace Player {
 
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
 
-            _direction.scale((1 / 60 * this.properties.attributes.speed));
+            _direction.scale((1 / 60 * this.attributes.speed));
 
             this.moveDirection.add(_direction);
 
@@ -189,7 +185,7 @@ namespace Player {
         }
 
         public cooldown() {
-            this.weapon.cooldown(this.properties.attributes.coolDownReduction);
+            this.weapon.cooldown(this.attributes.coolDownReduction);
 
             if (this.currentabilityCount <= 0) {
                 if (this.currentabilityCooldownTime <= 0) {
@@ -228,10 +224,10 @@ namespace Player {
         //Block
         public doAbility() {
             if (this.currentabilityCount > 0) {
-                this.hitable = false;
+                this.attributes.hitable = false;
 
                 setTimeout(() => {
-                    this.hitable = true;
+                    this.attributes.hitable = true;
                 }, 600);
 
                 this.currentabilityCount--;
@@ -241,18 +237,17 @@ namespace Player {
 
     export class Ranged extends Player {
 
-
         //Dash
         public doAbility() {
             if (this.currentabilityCount > 0) {
-                this.hitable = false;
-                this.properties.attributes.speed *= 2;
+                this.attributes.hitable = false;
+                this.attributes.speed *= 2;
 
                 setTimeout(() => {
-                    this.properties.attributes.speed /= 2;
+                    this.attributes.speed /= 2;
                     setTimeout(() => {
-                        this.properties.attributes.speed /= 1;
-                        this.hitable = true;
+                        this.attributes.speed /= 1;
+                        this.attributes.hitable = true;
                     }, 100);
                 }, 300);
                 this.currentabilityCount--;

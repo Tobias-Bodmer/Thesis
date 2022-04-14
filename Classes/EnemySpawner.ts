@@ -7,16 +7,47 @@ namespace EnemySpawner {
         if (Game.enemies.length < maxEnemies) {
             // console.log(Game.enemies.length);
             if (currentTime == spawnTime) {
-                const ref = Game.enemiesJSON.find(elem => elem.name == "tick");
-                // Game.graph.addChild(new Enemy.EnemyShoot(Enemy.ENEMYNAME.BAT, new Player.Character(ref.name, new Player.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed)), new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2)), new Weapons.Weapon(60, 1)));
-                Game.graph.addChild(new Enemy.EnemyDumb(Enemy.ENEMYNAME.REDTICK, new Player.Character(ref.name, new Player.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, Math.random() * 3 + 0.5)), new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2))));
-
+                spawnByID(Enemy.ENEMYNAME.REDTICK, new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2)));
             }
             currentTime--;
             if (currentTime <= 0) {
                 currentTime = spawnTime;
             }
         }
+    }
+
+    export function spawnByID(_id: Enemy.ENEMYNAME, _position: ƒ.Vector2, _attributes?: Entity.Attributes, _netID?: number) {
+        let enemy: Enemy.Enemy;
+        switch (_id) {
+            case Enemy.ENEMYNAME.BAT:
+                if (_attributes == null && _netID == null) {
+                    const bat = Game.enemiesJSON.find(enemy => enemy.name == "bat");
+                    enemy = new Enemy.EnemyDumb(Enemy.ENEMYNAME.BAT, new Entity.Attributes(bat.attributes.healthPoints, bat.attributes.attackPoints, bat.attributes.speed, Math.random() * 3 + 0.5), null, null);
+                } else {
+                    enemy = new Enemy.EnemyDumb(Enemy.ENEMYNAME.BAT, _attributes, _position, _netID);
+                }
+                break;
+            case Enemy.ENEMYNAME.REDTICK:
+                if (_attributes == null && _netID == null) {
+                    const redtick = Game.enemiesJSON.find(enemy => enemy.name == "redtick");
+                    enemy = new Enemy.EnemyDumb(Enemy.ENEMYNAME.REDTICK, new Entity.Attributes(redtick.attributes.healthPoints, redtick.attributes.attackPoints, redtick.attributes.speed, Math.random() * 3 + 0.5), _position, _netID);
+                }
+                else {
+                    enemy = new Enemy.EnemyDumb(Enemy.ENEMYNAME.REDTICK, _attributes, _position, _netID);
+                }
+                break;
+            case Enemy.ENEMYNAME.SMALLTICK:
+                break;
+            case Enemy.ENEMYNAME.SKELETON:
+                break;
+        }
+        if (enemy != null) {
+            Game.graph.addChild(enemy);
+        }
+    }
+
+    export function networkSpawnById(_id: Enemy.ENEMYNAME, _position: ƒ.Vector2, _attributes: Entity.Attributes, _netID: number) {
+        spawnByID(_id, _position, _attributes, _netID);
     }
 
 

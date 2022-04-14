@@ -10,7 +10,7 @@
             }
         },
         {
-            "name": "tick",
+            "name": "redtick",
             "attributes": {
                 "healthPoints": 10,
                 "attackPoints": 1,

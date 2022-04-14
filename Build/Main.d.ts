@@ -18,9 +18,76 @@ declare namespace Game {
     let frameRate: number;
     let enemies: Enemy.Enemy[];
     let bullets: Bullets.Bullet[];
-    let enemiesJSON: Player.Character[];
+    let enemiesJSON: Entity.Entity[];
     let itemsJSON: Items.Item[];
     function cameraUpdate(): void;
+}
+declare namespace Entity {
+    class Entity extends Game.ƒAid.NodeSprite {
+        currentState: BEHAVIOUR;
+        currentAnimation: ANIMATIONSTATES;
+        tag: Tag.TAG;
+        attributes: Attributes;
+        collider: Collider.Collider;
+        canMoveX: boolean;
+        canMoveY: boolean;
+        moveDirection: Game.ƒ.Vector3;
+        animations: ƒAid.SpriteSheetAnimations;
+        constructor(_name: string, _attributes: Attributes);
+    }
+    enum ANIMATIONSTATES {
+        IDLE = 0,
+        WALK = 1
+    }
+    enum BEHAVIOUR {
+        IDLE = 0,
+        FOLLOW = 1,
+        FLEE = 2
+    }
+}
+declare namespace Enemy {
+    let txtTick: ƒ.TextureImage;
+    enum ENEMYNAME {
+        BAT = 0,
+        REDTICK = 1,
+        SMALLTICK = 2,
+        SKELETON = 3
+    }
+    function getNameByID(_id: ENEMYNAME): "bat" | "redTick" | "smallTick" | "skeleton";
+    import ƒAid = FudgeAid;
+    class Enemy extends Entity.Entity implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
+        id: number;
+        netId: number;
+        sizeDivideFactor: number;
+        target: ƒ.Vector3;
+        lifetime: number;
+        canMoveX: boolean;
+        canMoveY: boolean;
+        moveDirection: Game.ƒ.Vector3;
+        constructor(_id: ENEMYNAME, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
+        enemyUpdate(): void;
+        doKnockback(_body: ƒAid.NodeSprite): void;
+        getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
+        updateCollider(): void;
+        moveSimple(): void;
+        moveAway(): void;
+        getDamage(_damage: number): void;
+        lifespan(_graph: Game.ƒ.Node): void;
+        getCanMoveXY(_direction: ƒ.Vector3): void;
+    }
+    class EnemyDumb extends Enemy {
+        constructor(_id: ENEMYNAME, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
+        enemyUpdate(): void;
+        behaviour(): void;
+        moveBehaviour(): void;
+    }
+    class EnemyShoot extends Enemy {
+        weapon: Weapons.Weapon;
+        viewRadius: number;
+        constructor(_id: number, _attributes: Entity.Attributes, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _netId?: number);
+        enemyUpdate(): void;
+        shoot(_netId?: number): void;
+    }
 }
 declare namespace Interfaces {
     interface ISpawnable {
@@ -37,65 +104,6 @@ declare namespace Interfaces {
     interface IDamageable {
         getDamage(): void;
     }
-}
-declare namespace Enemy {
-    export let txtTick: ƒ.TextureImage;
-    export enum ENEMYNAME {
-        BAT = 0,
-        REDTICK = 1,
-        SMALLTICK = 2,
-        SKELETON = 3
-    }
-    export function getNameByID(_id: ENEMYNAME): "bat" | "redTick" | "smallTick" | "skeleton";
-    enum BEHAVIOUR {
-        IDLE = 0,
-        FOLLOW = 1,
-        FLEE = 2
-    }
-    export enum ANIMATIONSTATES {
-        IDLE = 0,
-        WALK = 1
-    }
-    import ƒAid = FudgeAid;
-    export class Enemy extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
-        currentState: BEHAVIOUR;
-        currentAnimation: ANIMATIONSTATES;
-        tag: Tag.TAG;
-        id: number;
-        netId: number;
-        properties: Player.Character;
-        collider: Collider.Collider;
-        sizeDivideFactor: number;
-        target: ƒ.Vector3;
-        lifetime: number;
-        canMoveX: boolean;
-        canMoveY: boolean;
-        moveDirection: Game.ƒ.Vector3;
-        animations: ƒAid.SpriteSheetAnimations;
-        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number);
-        enemyUpdate(): void;
-        doKnockback(_body: ƒAid.NodeSprite): void;
-        getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
-        updateCollider(): void;
-        moveSimple(): void;
-        moveAway(): void;
-        lifespan(_graph: Game.ƒ.Node): void;
-        getCanMoveXY(_direction: ƒ.Vector3): void;
-    }
-    export class EnemyDumb extends Enemy {
-        constructor(_id: ENEMYNAME, _properties: Player.Character, _position: ƒ.Vector2, _netId?: number);
-        enemyUpdate(): void;
-        behaviour(): void;
-        moveBehaviour(): void;
-    }
-    export class EnemyShoot extends Enemy {
-        weapon: Weapons.Weapon;
-        viewRadius: number;
-        constructor(_id: number, _properties: Player.Character, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _netId?: number);
-        enemyUpdate(): void;
-        shoot(_netId?: number): void;
-    }
-    export {};
 }
 declare namespace Items {
     enum ITEMTYPE {
@@ -115,7 +123,7 @@ declare namespace Items {
         collisionDetection(): Promise<void>;
     }
     class InternalItem extends Item {
-        attributes: Player.Attributes;
+        attributes: Entity.Attributes;
         type: ITEMTYPE;
         /**
          * Creates an item that can change Attributes of the player
@@ -125,7 +133,7 @@ declare namespace Items {
          * @param _lifetime optional: how long is the item visible
          * @param _attributes define which attributes will change, compare with {@link Player.Attributes}
          */
-        constructor(_name: string, _description: string, _position: ƒ.Vector3, _attributes: Player.Attributes, _type: ITEMTYPE, _imgSrc?: string, _lifetime?: number, _netId?: number);
+        constructor(_name: string, _description: string, _position: ƒ.Vector3, _attributes: Entity.Attributes, _type: ITEMTYPE, _imgSrc?: string, _lifetime?: number, _netId?: number);
         collisionDetection(): Promise<void>;
     }
 }
@@ -151,11 +159,12 @@ declare namespace AnimationGeneration {
     export function createAllAnimations(): void;
     export {};
 }
-declare namespace Player {
+declare namespace Entity {
     class Attributes {
         healthPoints: number;
         maxHealthPoints: number;
         knockbackForce: number;
+        hitable: boolean;
         speed: number;
         attackPoints: number;
         coolDownReduction: number;
@@ -165,7 +174,7 @@ declare namespace Player {
          * adds Attributes to the Player Attributes
          * @param _attributes incoming attributes
          */
-        addAttribuesByItem(_attributes: Player.Attributes, _itemType: Items.ITEMTYPE): void;
+        addAttribuesByItem(_attributes: Entity.Attributes, _itemType: Items.ITEMTYPE): void;
     }
 }
 declare namespace Bullets {
@@ -210,13 +219,6 @@ declare namespace Bullets {
         calculateHoming(): void;
     }
 }
-declare namespace Player {
-    class Character {
-        name: string;
-        attributes: Attributes;
-        constructor(_name: string, _attributes: Attributes);
-    }
-}
 declare namespace Collider {
     class Collider {
         radius: number;
@@ -234,6 +236,8 @@ declare namespace Collider {
 }
 declare namespace EnemySpawner {
     function spawnEnemies(): void;
+    function spawnByID(_id: Enemy.ENEMYNAME, _position: ƒ.Vector2, _attributes?: Entity.Attributes, _netID?: number): void;
+    function networkSpawnById(_id: Enemy.ENEMYNAME, _position: ƒ.Vector2, _attributes: Entity.Attributes, _netID: number): void;
     class EnemySpawnes {
         spawnPositions: ƒ.Vector2[];
         numberOfENemies: number;
@@ -298,11 +302,11 @@ declare namespace Networking {
     function spawnBulletAtEnemy(_bulletNetId: number, _enemyNetId: number): Promise<void>;
     function removeBullet(_netId: number): void;
     function spawnEnemy(_enemy: Enemy.Enemy, _netId: number): void;
-    function updateEnemyPosition(_position: ƒ.Vector3, _netId: number, _state: Enemy.ANIMATIONSTATES): void;
-    function updateEnemyState(_state: Enemy.ANIMATIONSTATES, _netId: number): void;
+    function updateEnemyPosition(_position: ƒ.Vector3, _netId: number, _state: Entity.ANIMATIONSTATES): void;
+    function updateEnemyState(_state: Entity.ANIMATIONSTATES, _netId: number): void;
     function removeEnemy(_netId: number): void;
-    function spawnItem(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime: number, _netId: number, _attributes?: Player.Attributes, _type?: Items.ITEMTYPE): Promise<void>;
-    function updateAvatarAttributes(_attributes: Player.Attributes, _type: Items.ITEMTYPE): void;
+    function spawnItem(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime: number, _netId: number, _attributes?: Entity.Attributes, _type?: Items.ITEMTYPE): Promise<void>;
+    function updateAvatarAttributes(_attributes: Entity.Attributes, _type: Items.ITEMTYPE): void;
     function removeItem(_netId: number): void;
     function sendRoom(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: Generation.ROOMTYPE): void;
     function switchRoomRequest(_coordiantes: [number, number], _direction: [boolean, boolean, boolean, boolean]): void;
@@ -314,20 +318,16 @@ declare namespace Player {
         RANGED = 0,
         MELEE = 1
     }
-    abstract class Player extends Game.ƒAid.NodeSprite implements Interfaces.IKnockbackable {
-        tag: Tag.TAG;
+    abstract class Player extends Entity.Entity implements Interfaces.IKnockbackable {
         items: Array<Items.Item>;
-        properties: Character;
         weapon: Weapons.Weapon;
-        hitable: boolean;
-        collider: Collider.Collider;
         moveDirection: Game.ƒ.Vector3;
         knockbackForce: number;
         readonly abilityCount: number;
         currentabilityCount: number;
         readonly abilityCooldownTime: number;
         currentabilityCooldownTime: number;
-        constructor(_name: string, _properties: Character);
+        constructor(_name: string, _attributes: Entity.Attributes);
         move(_direction: ƒ.Vector3): void;
         collide(_direction: Game.ƒ.Vector3): void;
         attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
