@@ -76,7 +76,11 @@ namespace Player {
                     }
                     this.collider.position = oldPosition;
                     //TODO: Sync knockback correctly over network
-                    // element.getKnockback(this.attributes.knockbackForce, this.mtxLocal.translation);
+                    if (Networking.client.id == Networking.client.idHost) {
+                        element.getKnockback(this.attributes.knockbackForce, this.mtxLocal.translation);
+                    } else {
+                        Networking.knockbackRequest(element.netId, this.attributes.knockbackForce, this.mtxLocal.translation);
+                    }
                 }
             })
 
