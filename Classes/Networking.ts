@@ -80,7 +80,7 @@ namespace Networking {
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
                         if (message.content.type == Player.PLAYERTYPE.MELEE) {
                             Game.avatar2 = new Player.Melee(Entity.ID.PLAYER2,
-                                new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.speed));
+                                new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale));
 
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                             Game.graph.appendChild(Game.avatar2);
@@ -100,6 +100,7 @@ namespace Networking {
                             let moveVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.value.data[0], message.content.value.data[1], message.content.value.data[2]);
                             let rotateVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.rotation.data[0], message.content.rotation.data[1], message.content.rotation.data[2]);
 
+                            Game.avatar2.collider.position = moveVector.toVector2();
                             Game.avatar2.mtxLocal.translation = moveVector;
                             Game.avatar2.mtxLocal.rotation = rotateVector;
                         }

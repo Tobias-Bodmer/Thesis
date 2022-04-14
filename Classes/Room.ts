@@ -98,7 +98,7 @@ namespace Generation {
     export class Wall extends ƒ.Node {
         public tag: Tag.TAG = Tag.TAG.WALL;
         public collider: Game.ƒ.Rectangle;
-        public wallThickness: number = 2;
+        public wallThickness: number = 30;
 
         constructor(_position: Game.ƒ.Vector2, _width: number, _direction: [boolean, boolean, boolean, boolean]) {
             super("Wall");
@@ -112,7 +112,7 @@ namespace Generation {
 
             if (_direction[0]) {
                 this.cmpTransform.mtxLocal.translation.y += _width / 2 + this.wallThickness / 2;
-                this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(_width, this.wallThickness, 0);
+                this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(_width + this.wallThickness * 2, this.wallThickness, 0);
                 this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.wallThickness, Game.ƒ.ORIGIN2D.CENTER);
             }
             if (_direction[1]) {
@@ -122,7 +122,7 @@ namespace Generation {
             }
             if (_direction[2]) {
                 this.cmpTransform.mtxLocal.translation.y -= _width / 2 + this.wallThickness / 2;
-                this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(_width, this.wallThickness, 0);
+                this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(_width + this.wallThickness * 2, this.wallThickness, 0);
                 this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.wallThickness, Game.ƒ.ORIGIN2D.CENTER);
             }
             if (_direction[3]) {

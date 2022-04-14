@@ -9,6 +9,7 @@ namespace Entity {
         canMoveY: boolean = true;
         moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
         animations: ƒAid.SpriteSheetAnimations = {};
+        performKnockback: boolean = false;
 
         constructor(_id: Entity.ID, _attributes: Attributes) {
             super(getNameById(_id));
@@ -38,32 +39,40 @@ namespace Entity {
                     let intersection = this.collider.getIntersectionRect(element.collider);
                     let areaBeforeMove = Math.round((intersection.height * intersection.width) * 1000) / 1000;
 
-                    let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
-                    let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
-                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+                    if (areaBeforeMove < this.mtxLocal.scaling.x * this.mtxLocal.scaling.y) {
+                        let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
+                        let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
+                        this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
 
-                    if (this.collider.getIntersectionRect(element.collider) != null) {
-                        let newIntersection = this.collider.getIntersectionRect(element.collider);
-                        let areaAfterMove = Math.round((newIntersection.height * newIntersection.width) * 1000) / 1000;
+                        if (this.collider.getIntersectionRect(element.collider) != null) {
+                            let newIntersection = this.collider.getIntersectionRect(element.collider);
+                            let areaAfterMove = Math.round((newIntersection.height * newIntersection.width) * 1000) / 1000;
 
-                        if (areaBeforeMove < areaAfterMove) {
-                            this.canMoveX = false;
+                            if (areaBeforeMove < areaAfterMove) {
+                                this.canMoveX = false;
+                            }
                         }
+
+
+
+                        this.collider.position = oldPosition;
+                        newDirection = new Game.ƒ.Vector2(0, _direction.y);
+                        this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+
+                        if (this.collider.getIntersectionRect(element.collider) != null) {
+                            let newIntersection = this.collider.getIntersectionRect(element.collider);
+                            let areaAfterMove = Math.round((newIntersection.height * newIntersection.width) * 1000) / 1000;
+
+                            if (areaBeforeMove < areaAfterMove) {
+                                this.canMoveY = false;
+                            }
+                        }
+                        this.collider.position = oldPosition;
+                    } else {
+                        this.canMoveX = false;
+                        this.canMoveY = false;
                     }
 
-                    this.collider.position = oldPosition;
-                    newDirection = new Game.ƒ.Vector2(0, _direction.y);
-                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
-
-                    if (this.collider.getIntersectionRect(element.collider) != null) {
-                        let newIntersection = this.collider.getIntersectionRect(element.collider);
-                        let areaAfterMove = Math.round((newIntersection.height * newIntersection.width) * 1000) / 1000;
-
-                        if (areaBeforeMove < areaAfterMove) {
-                            this.canMoveY = false;
-                        }
-                    }
-                    this.collider.position = oldPosition;
                 }
             })
         }
@@ -79,33 +88,39 @@ namespace Entity {
         }
 
         public getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3) {
-            let direction: Game.ƒ.Vector3 = Game.ƒ.Vector2.DIFFERENCE(this.cmpTransform.mtxLocal.translation.toVector2(), _position.toVector2()).toVector3(0);
-            let knockBackScaling: number = Game.frameRate * this.attributes.scale;
+            if (!this.performKnockback) {
+                this.performKnockback = true;
+                let direction: Game.ƒ.Vector3 = Game.ƒ.Vector2.DIFFERENCE(this.cmpTransform.mtxLocal.translation.toVector2(), _position.toVector2()).toVector3(0);
+                let knockBackScaling: number = Game.frameRate * this.attributes.scale;
 
-            direction.normalize();
+                direction.normalize();
 
-            direction.scale(_knockbackForce * 1 / knockBackScaling);
+                direction.scale(_knockbackForce * 1 / knockBackScaling);
 
-            this.moveDirection.add(direction);
+                this.moveDirection.add(direction);
 
-            reduceKnockback(direction, this.moveDirection);
+                console.log(this.moveDirection.magnitude);
 
-            function reduceKnockback(_direction: Game.ƒ.Vector3, _moveDirection: Game.ƒ.Vector3) {
-                // _knockbackForce = _knockbackForce / knockBackScaling;
-                if (_knockbackForce > 0.1) {
-                    setTimeout(() => {
+                reduceKnockback(this, direction, this.moveDirection);
+
+                function reduceKnockback(_elem: Entity, _direction: Game.ƒ.Vector3, _moveDirection: Game.ƒ.Vector3) {
+                    // _knockbackForce = _knockbackForce / knockBackScaling;
+                    if (_knockbackForce > 0.1) {
+                        setTimeout(() => {
+                            _moveDirection.subtract(direction);
+
+                            _knockbackForce /= 3;
+
+                            direction.scale(_knockbackForce * (1 / knockBackScaling));
+
+                            _moveDirection.add(direction);
+
+                            reduceKnockback(_elem, _direction, _moveDirection);
+                        }, 200);
+                    } else {
                         _moveDirection.subtract(direction);
-
-                        _knockbackForce /= 3;
-
-                        direction.scale(_knockbackForce * (1 / knockBackScaling));
-
-                        _moveDirection.add(direction);
-
-                        reduceKnockback(_direction, _moveDirection);
-                    }, 200);
-                } else {
-                    _moveDirection.subtract(direction);
+                        _elem.performKnockback = false;
+                    }
                 }
             }
         }

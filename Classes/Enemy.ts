@@ -35,7 +35,6 @@ namespace Enemy {
             this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
 
             Networking.spawnEnemy(this, this.netId);
-
         }
 
         public update() {
@@ -134,11 +133,13 @@ namespace Enemy {
                     }
                     this.collider.position = oldPosition;
 
-                    if (element == Game.avatar1) {
-                        element.getKnockback(this.attributes.knockbackForce, this.mtxLocal.translation);
-                    }
-                    if (element == Game.avatar2) {
-                        Networking.knockbackPush(this.attributes.knockbackForce, this.mtxLocal.translation);
+                    if (Networking.client.id == Networking.client.idHost) {
+                        if (element == Game.avatar1) {
+                            element.getKnockback(this.attributes.knockbackForce, this.mtxLocal.translation);
+                        }
+                        if (element == Game.avatar2) {
+                            Networking.knockbackPush(this.attributes.knockbackForce, this.mtxLocal.translation);
+                        }
                     }
                 }
             })

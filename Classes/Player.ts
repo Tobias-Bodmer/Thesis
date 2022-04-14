@@ -169,9 +169,23 @@ namespace Player {
 
     export class Ranged extends Player {
 
+        performAbility: boolean = false;
+        lastMoveDirection: Game.ƒ.Vector3;
+
+        public move(_direction: ƒ.Vector3) {
+            if (this.performAbility) {
+                super.move(this.lastMoveDirection);
+            } else {
+                super.move(_direction);
+                this.lastMoveDirection = _direction;
+            }
+        }
+
+
         //Dash
         public doAbility() {
             if (this.currentabilityCount > 0) {
+                this.performAbility = true;
                 this.attributes.hitable = false;
                 this.attributes.speed *= 2;
 
@@ -180,6 +194,7 @@ namespace Player {
                     setTimeout(() => {
                         this.attributes.speed /= 1;
                         this.attributes.hitable = true;
+                        this.performAbility = false;
                     }, 100);
                 }, 300);
                 this.currentabilityCount--;

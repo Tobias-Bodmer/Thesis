@@ -33,6 +33,7 @@ declare namespace Entity {
         canMoveY: boolean;
         moveDirection: Game.ƒ.Vector3;
         animations: ƒAid.SpriteSheetAnimations;
+        performKnockback: boolean;
         constructor(_id: Entity.ID, _attributes: Attributes);
         update(): void;
         updateCollider(): void;
@@ -354,6 +355,9 @@ declare namespace Player {
         doAbility(): void;
     }
     class Ranged extends Player {
+        performAbility: boolean;
+        lastMoveDirection: Game.ƒ.Vector3;
+        move(_direction: ƒ.Vector3): void;
         doAbility(): void;
     }
 }
