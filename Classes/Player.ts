@@ -90,7 +90,7 @@ namespace Player {
         }
 
         public attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean) {
-            this.weapon.shoot(this.mtxLocal.translation.toVector2(), _direction, _netId, _sync);
+            this.weapon.shoot(this.tag, this.mtxLocal.translation.toVector2(), _direction, _netId, _sync);
         }
 
         public doKnockback(_body: Entity.Entity): void {
