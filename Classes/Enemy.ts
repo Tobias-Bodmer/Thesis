@@ -43,8 +43,8 @@ namespace Enemy {
             Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId, this.currentAnimation);
         }
 
-        public doKnockback(_body: ƒAid.NodeSprite): void {
-            (<Player.Player>_body).getKnockback(this.attributes.knockbackForce, this.cmpTransform.mtxLocal.translation);
+        public doKnockback(_body: Entity.Entity): void {
+            // (<Player.Player>_body).getKnockback(this.attributes.knockbackForce, this.cmpTransform.mtxLocal.translation);
         }
 
         public getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void {
@@ -221,7 +221,7 @@ namespace Enemy {
             let _direction = ƒ.Vector3.DIFFERENCE(target, this.mtxLocal.translation);
             if (this.weapon.currentAttackCount > 0 && _direction.magnitude < this.viewRadius) {
                 _direction.normalize();
-                let bullet: Bullets.Bullet = new Bullets.HomingBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, Calculation.getCloserAvatarPosition(this.mtxLocal.translation), this, _netId);
+                let bullet: Bullets.Bullet = new Bullets.HomingBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, Calculation.getCloserAvatarPosition(this.mtxLocal.translation), _netId);
                 bullet.owner = this.tag;
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
                 Game.graph.addChild(bullet);

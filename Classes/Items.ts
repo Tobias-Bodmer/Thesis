@@ -30,11 +30,11 @@ namespace Items {
             this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
         }
 
-        public die(_graph: ƒ.Node): void {
+        public despawn(): void {
             if (this.lifetime >= 0 && this.lifetime != null) {
                 this.lifetime--;
                 if (this.lifetime < 0) {
-                    _graph.removeChild(this);
+                    Game.graph.removeChild(this);
                     Networking.popID(this.netId);
                     Networking.removeItem(this.netId);
                 }

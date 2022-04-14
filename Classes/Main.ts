@@ -98,7 +98,7 @@ namespace Game {
             //#region count items
             let items: Items.Item[] = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.TAG.ITEM)
             items.forEach(element => {
-                element.die(graph);
+                element.despawn();
                 (<Items.InternalItem>element).collisionDetection();
             });
             //#endregion

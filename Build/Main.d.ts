@@ -62,7 +62,6 @@ declare namespace Enemy {
         FOLLOW = 1,
         FLEE = 2
     }
-    import ƒAid = FudgeAid;
     class Enemy extends Entity.Entity implements Interfaces.IKnockbackable {
         currentState: BEHAVIOUR;
         netId: number;
@@ -71,7 +70,7 @@ declare namespace Enemy {
         moveDirection: Game.ƒ.Vector3;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
         update(): void;
-        doKnockback(_body: ƒAid.NodeSprite): void;
+        doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
         moveSimple(): void;
         moveAway(): void;
@@ -96,10 +95,10 @@ declare namespace Enemy {
 declare namespace Interfaces {
     interface ISpawnable {
         lifetime?: number;
-        die(_a: ƒ.Node): void;
+        despawn(): void;
     }
     interface IKnockbackable {
-        doKnockback(_body: ƒAid.NodeSprite): void;
+        doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     }
     interface IKillable {
@@ -123,7 +122,7 @@ declare namespace Items {
         collider: Game.ƒ.Rectangle;
         lifetime: number;
         constructor(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc?: string, _lifetime?: number, _netId?: number);
-        die(_graph: ƒ.Node): void;
+        despawn(): void;
         collisionDetection(): Promise<void>;
     }
     class InternalItem extends Item {
@@ -183,7 +182,7 @@ declare namespace Entity {
 }
 declare namespace Bullets {
     let bulletTxt: ƒ.TextureImage;
-    class Bullet extends Game.ƒ.Node {
+    class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
         owner: Tag.TAG;
         netId: number;
         tick: number;
@@ -195,12 +194,14 @@ declare namespace Bullets {
         hitPoints: number;
         speed: number;
         lifetime: number;
+        knockbackForce: number;
         time: number;
         killcount: number;
-        avatar: Game.ƒAid.NodeSprite;
-        die(): Promise<void>;
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _avatar: Game.ƒAid.NodeSprite, _netId?: number);
+        despawn(): Promise<void>;
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
         update(): Promise<void>;
+        doKnockback(_body: ƒAid.NodeSprite): void;
+        getKnockback(_knockbackForce: number, _position: ƒ.Vector3): void;
         updateRotation(_direction: ƒ.Vector3): void;
         bulletPrediction(): void;
         correctPosition(): Promise<void>;
@@ -208,17 +209,17 @@ declare namespace Bullets {
         collisionDetection(): Promise<void>;
     }
     class SlowBullet extends Bullet {
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _avatar: Game.ƒAid.NodeSprite, _netId?: number);
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
     }
     class MeleeBullet extends Bullet {
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _avatar: Game.ƒAid.NodeSprite, _netId?: number);
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
         loadTexture(): Promise<void>;
     }
     class HomingBullet extends Bullet {
         target: ƒ.Vector3;
         rotateSpeed: number;
         targetDirection: ƒ.Vector3;
-        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _target: ƒ.Vector3, _avatar: Game.ƒAid.NodeSprite, _netId?: number);
+        constructor(_position: ƒ.Vector2, _direction: ƒ.Vector3, _target: ƒ.Vector3, _netId?: number);
         update(): Promise<void>;
         calculateHoming(): void;
     }
@@ -334,7 +335,7 @@ declare namespace Player {
         move(_direction: ƒ.Vector3): void;
         collide(_direction: Game.ƒ.Vector3): void;
         attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
-        doKnockback(_body: ƒAid.NodeSprite): void;
+        doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: ƒ.Vector3): void;
         doAbility(): void;
         cooldown(): void;
@@ -444,12 +445,22 @@ declare namespace UI {
     }
 }
 declare namespace Weapons {
-    class Weapon {
+    export class Weapon {
         cooldownTime: number;
         currentCooldownTime: number;
         attackCount: number;
         currentAttackCount: number;
+        bulletType: BULLETS;
+        projectileAmount: number;
         constructor(_cooldownTime: number, _attackCount: number);
+        shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
+        loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: BULLETS, amount: number, _netId?: number): Bullets.Bullet[];
         cooldown(_faktor: number): void;
     }
+    enum BULLETS {
+        NORMAL = 0,
+        HIGHSPEED = 1,
+        HOMING = 2
+    }
+    export {};
 }

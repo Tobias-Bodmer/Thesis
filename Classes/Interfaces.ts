@@ -1,11 +1,11 @@
 namespace Interfaces {
     export interface ISpawnable {
         lifetime?: number;
-        die(_a: ƒ.Node): void;
+        despawn(): void;
     }
 
     export interface IKnockbackable {
-        doKnockback(_body: ƒAid.NodeSprite): void;
+        doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     }
 

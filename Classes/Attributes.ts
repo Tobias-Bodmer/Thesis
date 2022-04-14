@@ -3,7 +3,7 @@ namespace Entity {
 
         public healthPoints: number;
         maxHealthPoints: number;
-        knockbackForce: number = 6;
+        knockbackForce: number = 2;
         hitable: boolean = true;
         public speed: number;
         public attackPoints: number;
