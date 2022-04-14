@@ -1,7 +1,7 @@
 namespace EnemySpawner {
     let spawnTime: number = 1 * Game.frameRate;
     let currentTime: number = spawnTime;
-    let maxEnemies: number = 1;
+    let maxEnemies: number = 40;
 
     export function spawnEnemies(): void {
         if (Game.enemies.length < maxEnemies) {

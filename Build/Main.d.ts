@@ -275,21 +275,22 @@ declare namespace Networking {
         SETREADY = 2,
         SPAWN = 3,
         TRANSFORM = 4,
-        KNOCKBACKREQUEST = 5,
-        KNOCKBACKPUSH = 6,
-        SPAWNBULLET = 7,
-        SPAWNBULLETENEMY = 8,
-        BULLETTRANSFORM = 9,
-        BULLETDIE = 10,
-        SPAWNENEMY = 11,
-        ENEMYTRANSFORM = 12,
-        ENEMYSTATE = 13,
-        ENEMYDIE = 14,
-        SPAWNITEM = 15,
-        UPDATEATTRIBUTES = 16,
-        ITEMDIE = 17,
-        SENDROOM = 18,
-        SWITCHROOMREQUEST = 19
+        AVATARPREDICTION = 5,
+        KNOCKBACKREQUEST = 6,
+        KNOCKBACKPUSH = 7,
+        SPAWNBULLET = 8,
+        SPAWNBULLETENEMY = 9,
+        BULLETTRANSFORM = 10,
+        BULLETDIE = 11,
+        SPAWNENEMY = 12,
+        ENEMYTRANSFORM = 13,
+        ENEMYSTATE = 14,
+        ENEMYDIE = 15,
+        SPAWNITEM = 16,
+        UPDATEATTRIBUTES = 17,
+        ITEMDIE = 18,
+        SENDROOM = 19,
+        SWITCHROOMREQUEST = 20
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -307,6 +308,7 @@ declare namespace Networking {
     function spawnPlayer(_type?: Player.PLAYERTYPE): Promise<void>;
     function setClient(): void;
     function updateAvatarPosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3): void;
+    function avatarPrediction(_position: Game.ƒ.Vector3, _tick: number): void;
     function knockbackRequest(_netId: number, _knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function knockbackPush(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function spawnBullet(_direction: ƒ.Vector3, _netId: number): void;
@@ -333,6 +335,10 @@ declare namespace Player {
     abstract class Player extends Entity.Entity implements Interfaces.IKnockbackable {
         items: Array<Items.Item>;
         weapon: Weapons.Weapon;
+        tick: number;
+        positions: ƒ.Vector3[];
+        hostPositions: ƒ.Vector3[];
+        time: number;
         readonly abilityCount: number;
         currentabilityCount: number;
         readonly abilityCooldownTime: number;
@@ -340,6 +346,8 @@ declare namespace Player {
         constructor(_id: Entity.ID, _attributes: Entity.Attributes);
         move(_direction: ƒ.Vector3): void;
         collide(_direction: Game.ƒ.Vector3): void;
+        avatarPrediction(): void;
+        correctPosition(): Promise<void>;
         attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
         doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: ƒ.Vector3): void;

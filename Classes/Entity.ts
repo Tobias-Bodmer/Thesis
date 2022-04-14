@@ -40,7 +40,7 @@ namespace Entity {
             colliders.forEach((element) => {
                 if (this.collider.collidesRect(element.collider)) {
                     let intersection = this.collider.getIntersectionRect(element.collider);
-                    let areaBeforeMove = Math.round((intersection.height * intersection.width) * 1000) / 1000;
+                    let areaBeforeMove = intersection.height * intersection.width;
 
                     if (areaBeforeMove < this.mtxLocal.scaling.x * this.mtxLocal.scaling.y) {
                         let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
@@ -49,7 +49,7 @@ namespace Entity {
 
                         if (this.collider.getIntersectionRect(element.collider) != null) {
                             let newIntersection = this.collider.getIntersectionRect(element.collider);
-                            let areaAfterMove = Math.round((newIntersection.height * newIntersection.width) * 1000) / 1000;
+                            let areaAfterMove = newIntersection.height * newIntersection.width;
 
                             if (areaBeforeMove < areaAfterMove) {
                                 this.canMoveX = false;
@@ -64,7 +64,7 @@ namespace Entity {
 
                         if (this.collider.getIntersectionRect(element.collider) != null) {
                             let newIntersection = this.collider.getIntersectionRect(element.collider);
-                            let areaAfterMove = Math.round((newIntersection.height * newIntersection.width) * 1000) / 1000;
+                            let areaAfterMove = newIntersection.height * newIntersection.width;
 
                             if (areaBeforeMove < areaAfterMove) {
                                 this.canMoveY = false;
@@ -101,8 +101,6 @@ namespace Entity {
                 direction.scale(_knockbackForce * 1 / knockBackScaling);
 
                 this.moveDirection.add(direction);
-
-                console.log(this.moveDirection.magnitude);
 
                 reduceKnockback(this, direction, this.moveDirection);
 

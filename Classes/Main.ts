@@ -89,10 +89,16 @@ namespace Game {
             cameraUpdate();
 
             avatar1.cooldown();
+            if (Networking.client.id != Networking.client.idHost) {
+                avatar1.avatarPrediction();
+            }
 
             if (Game.connected) {
                 avatar2.cooldown();
                 Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
+                if (Networking.client.id == Networking.client.idHost) {
+                    avatar2.avatarPrediction();
+                }
             }
             // Networking.spawnEnemy(bat, bat.id);
 

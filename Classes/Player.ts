@@ -8,6 +8,11 @@ namespace Player {
         public items: Array<Items.Item> = [];
         public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.NORMALBULLETS.STANDARD, 2);
 
+        public tick: number = 0;
+        public positions: ƒ.Vector3[] = [];
+        public hostPositions: ƒ.Vector3[] = [];
+        time: number = 0;
+
         readonly abilityCount: number = 1;
         currentabilityCount: number = this.abilityCount;
         readonly abilityCooldownTime: number = 10;
@@ -16,7 +21,6 @@ namespace Player {
         constructor(_id: Entity.ID, _attributes: Entity.Attributes) {
             super(_id, _attributes);
             this.tag = Tag.TAG.PLAYER;
-            this.cmpTransform.mtxLocal.translateZ(0.1);
         }
 
         public move(_direction: ƒ.Vector3) {
@@ -50,34 +54,39 @@ namespace Player {
             enemyColliders.forEach((element) => {
                 if (this.collider.collides(element.collider)) {
                     let intersection = this.collider.getIntersection(element.collider);
-                    let areaBeforeMove = Math.round((intersection) * 1000) / 1000;
+                    let areaBeforeMove = intersection;
 
-                    let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
-                    let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
-                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+                    if (areaBeforeMove < this.collider.radius + element.collider.radius) {
+                        let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
+                        let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
+                        this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
 
-                    if (this.collider.getIntersection(element.collider) != null) {
-                        let newIntersection = this.collider.getIntersection(element.collider);
-                        let areaAfterMove = Math.round((newIntersection) * 1000) / 1000;
+                        if (this.collider.getIntersection(element.collider) != null) {
+                            let newIntersection = this.collider.getIntersection(element.collider);
+                            let areaAfterMove = newIntersection;
 
-                        if (areaBeforeMove < areaAfterMove) {
-                            this.canMoveX = false;
+                            if (areaBeforeMove < areaAfterMove) {
+                                this.canMoveX = false;
+                            }
                         }
-                    }
 
-                    this.collider.position = oldPosition;
-                    newDirection = new Game.ƒ.Vector2(0, _direction.y);
-                    this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+                        this.collider.position = oldPosition;
+                        newDirection = new Game.ƒ.Vector2(0, _direction.y);
+                        this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
 
-                    if (this.collider.getIntersection(element.collider) != null) {
-                        let newIntersection = this.collider.getIntersection(element.collider);
-                        let areaAfterMove = Math.round((newIntersection) * 1000) / 1000;
+                        if (this.collider.getIntersection(element.collider) != null) {
+                            let newIntersection = this.collider.getIntersection(element.collider);
+                            let areaAfterMove = newIntersection;
 
-                        if (areaBeforeMove < areaAfterMove) {
-                            this.canMoveY = false;
+                            if (areaBeforeMove < areaAfterMove) {
+                                this.canMoveY = false;
+                            }
                         }
+                        this.collider.position = oldPosition;
+                    } else {
+                        this.canMoveX = false;
+                        this.canMoveY = false;
                     }
-                    this.collider.position = oldPosition;
                     //TODO: Sync knockback correctly over network
                     if (Networking.client.id == Networking.client.idHost) {
                         element.getKnockback(this.attributes.knockbackForce, this.mtxLocal.translation);
@@ -95,6 +104,39 @@ namespace Player {
             } else if (!this.canMoveX && this.canMoveY) {
                 _direction = new ƒ.Vector3(0, _direction.y, _direction.z)
                 this.cmpTransform.mtxLocal.translate(_direction, false);
+            }
+        }
+
+        avatarPrediction() {
+            this.time += Game.ƒ.Loop.timeFrameGame;
+
+            while (this.time >= 1) {
+                this.positions.push(new ƒ.Vector3(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.translation.z));
+                if (Game.connected) {
+                    Networking.avatarPrediction(this.cmpTransform.mtxLocal.translation, this.tick);
+                }
+                this.tick++;
+                this.time -= 1;
+            }
+
+            if (Networking.client.id != Networking.client.idHost) {
+                if (this.tick >= 1 && this.hostPositions[this.tick - 1] != undefined && this.positions[this.tick - 1] != undefined) {
+                    if (this.hostPositions[this.tick - 1].x != this.positions[this.tick - 1].x || this.hostPositions[this.tick - 1].y != this.positions[this.tick - 1].y) {
+                        console.log(this.positions);
+                        console.log(this.hostPositions);
+
+                        console.log("correct");
+                        this.correctPosition();
+                    }
+                }
+            }
+        }
+
+        async correctPosition() {
+            if (this.hostPositions[this.tick] != undefined) {
+                this.cmpTransform.mtxLocal.translation = this.hostPositions[this.tick];
+            } else {
+                setTimeout(() => { this.correctPosition }, 100);
             }
         }
 

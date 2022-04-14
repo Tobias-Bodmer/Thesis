@@ -7,6 +7,7 @@ namespace Networking {
         SETREADY,
         SPAWN,
         TRANSFORM,
+        AVATARPREDICTION,
         KNOCKBACKREQUEST,
         KNOCKBACKPUSH,
         SPAWNBULLET,
@@ -105,6 +106,13 @@ namespace Networking {
                             Game.avatar2.mtxLocal.rotation = rotateVector;
                         }
 
+                        if (message.content != undefined && message.content.text == FUNCTION.AVATARPREDICTION.toString()) {
+                            if (client.id != client.idHost) {
+                                let newPosition: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
+                                Game.avatar1.hostPositions[message.content.tick] = newPosition;
+                            }
+                        }
+
                         //Client request for move knockback
                         if (message.content != undefined && message.content.text == FUNCTION.KNOCKBACKREQUEST.toString()) {
                             let position: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
@@ -136,7 +144,6 @@ namespace Networking {
                                 }
                             }
                         }
-
 
                         //Sync bullet transform from host to client
                         if (message.content != undefined && message.content.text == FUNCTION.BULLETTRANSFORM.toString()) {
@@ -289,6 +296,7 @@ namespace Networking {
             someoneIsHost = true;
         }
     }
+
     export async function spawnPlayer(_type?: Player.PLAYERTYPE) {
         if (_type == Player.PLAYERTYPE.MELEE) {
             client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.MELEE, attributes: Game.avatar1.attributes, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
@@ -298,11 +306,19 @@ namespace Networking {
             client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.RANGED, attributes: Game.avatar1.attributes, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
         }
     }
+
     export function setClient() {
         Networking.client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: Networking.FUNCTION.CONNECTED, value: Networking.client.id } });
     }
+
     export function updateAvatarPosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3) {
         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.TRANSFORM, value: _position, rotation: _rotation } })
+    }
+
+    export function avatarPrediction(_position: Game.ƒ.Vector3, _tick: number) {
+        if (Game.connected && client.idHost == client.id) {
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.AVATARPREDICTION, position: _position, tick: _tick } })
+        }
     }
 
     export function knockbackRequest(_netId: number, _knockbackForce: number, _position: Game.ƒ.Vector3) {
