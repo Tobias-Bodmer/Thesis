@@ -80,12 +80,12 @@ namespace Networking {
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
                         if (message.content.type == Player.PLAYERTYPE.MELEE) {
                             Game.avatar2 = new Player.Melee(Entity.ID.PLAYER2,
-                                new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale));
+                                new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale, message.content.attributes.knockbackForce));
 
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                             Game.graph.appendChild(Game.avatar2);
                         } else if (message.content.type == Player.PLAYERTYPE.RANGED) {
-                            Game.avatar2 = new Player.Ranged(Entity.ID.PLAYER2, new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale));
+                            Game.avatar2 = new Player.Ranged(Entity.ID.PLAYER2, new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale, message.content.attributes.knockbackForce));
 
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                             Game.graph.appendChild(Game.avatar2);
@@ -167,7 +167,8 @@ namespace Networking {
                                     message.content.attributes.healthPoints,
                                     message.content.attributes.attackPoints,
                                     message.content.attributes.speed,
-                                    message.content.attributes.scale
+                                    message.content.attributes.scale,
+                                    message.content.attributes.knockbackForce
                                 )
                                 , message.content.netId);
                         }
@@ -208,7 +209,7 @@ namespace Networking {
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNITEM.toString()) {
                             if (client.id != client.idHost) {
                                 if (message.content.attributes != null) {
-                                    let attributes = new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.coolDownReduction);
+                                    let attributes = new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale, message.content.attributes.knockbackForce, message.content.attributes.coolDownReduction);
                                     Game.graph.addChild(new Items.InternalItem(message.content.name, message.content.description, new ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]), attributes, message.content.type, message.content.imgSrc, message.content.lifetime, message.content.netId));
                                 }
 
@@ -218,7 +219,7 @@ namespace Networking {
 
                         //Spawn item from host
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEATTRIBUTES.toString()) {
-                            let attributes = new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.coolDownReduction);
+                            let attributes = new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale, message.content.attributes.knockbackForce, message.content.attributes.coolDownReduction);
                             Game.avatar2.attributes.addAttribuesByItem(attributes, message.content.type);
                         }
 

@@ -33,7 +33,7 @@ namespace Enemy {
             }
             this.mtxLocal.scale(new ƒ.Vector3(this.attributes.scale, this.attributes.scale, 0));
             this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
-            this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), (this.mtxLocal.scaling.x * this.idleScale)/2)
+            this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), (this.mtxLocal.scaling.x * this.idleScale) / 2)
             Networking.spawnEnemy(this, this.netId);
         }
 
@@ -86,9 +86,11 @@ namespace Enemy {
             super.getDamage(_value);
 
             if (this.attributes.healthPoints <= 0) {
-                Networking.removeEnemy(this.netId);
-                Networking.popID(this.netId);
-                this.die();
+                if (Networking.client.idHost == Networking.client.id) {
+                    Networking.removeEnemy(this.netId);
+                    Networking.popID(this.netId);
+                    this.die();
+                }
             }
         }
 

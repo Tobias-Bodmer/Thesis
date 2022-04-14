@@ -1,7 +1,7 @@
 namespace EnemySpawner {
     let spawnTime: number = 1 * Game.frameRate;
     let currentTime: number = spawnTime;
-    let maxEnemies: number = 1;
+    let maxEnemies: number = 20;
 
     export function spawnEnemies(): void {
         if (Game.enemies.length < maxEnemies) {
@@ -23,7 +23,7 @@ namespace EnemySpawner {
             case Entity.ID.BAT:
                 if (_attributes == null && _netID == null) {
                     const bat = Game.enemiesJSON.find(enemy => enemy.name == "bat");
-                    enemy = new Enemy.EnemyDumb(Entity.ID.BAT, new Entity.Attributes(bat.attributes.healthPoints, bat.attributes.attackPoints, bat.attributes.speed, Math.random() * 3 + 0.5), null, null);
+                    enemy = new Enemy.EnemyDumb(Entity.ID.BAT, new Entity.Attributes(bat.attributes.healthPoints, bat.attributes.attackPoints, bat.attributes.speed, bat.attributes.scale, Math.random() * bat.attributes.knockbackForce + 0.5), _position, _netID);
                 } else {
                     enemy = new Enemy.EnemyDumb(Entity.ID.BAT, _attributes, _position, _netID);
                 }
@@ -31,7 +31,7 @@ namespace EnemySpawner {
             case Entity.ID.REDTICK:
                 if (_attributes == null && _netID == null) {
                     const redtick = Game.enemiesJSON.find(enemy => enemy.name == "redtick");
-                    enemy = new Enemy.EnemyDumb(Entity.ID.REDTICK, new Entity.Attributes(redtick.attributes.healthPoints, redtick.attributes.attackPoints, redtick.attributes.speed, Math.random() * 3 + 0.5), _position, _netID);
+                    enemy = new Enemy.EnemyDumb(Entity.ID.REDTICK, new Entity.Attributes(redtick.attributes.healthPoints, redtick.attributes.attackPoints, redtick.attributes.speed, redtick.attributes.scale, Math.random() * redtick.attributes.knockbackForce + 0.5), _position, _netID);
                 }
                 else {
                     enemy = new Enemy.EnemyDumb(Entity.ID.REDTICK, _attributes, _position, _netID);

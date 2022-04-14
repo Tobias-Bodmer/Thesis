@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -177,7 +177,7 @@ declare namespace Entity {
         attackPoints: number;
         coolDownReduction: number;
         scale: number;
-        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _cooldownReduction?: number);
+        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _cooldownReduction?: number);
         /**
          * adds Attributes to the Player Attributes
          * @param _attributes incoming attributes

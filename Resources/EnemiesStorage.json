@@ -6,7 +6,8 @@
                 "healthPoints": 10,
                 "attackPoints": 1,
                 "speed": 2,
-                "scale": 1
+                "scale": 1,
+                "knockbackForce": 0.1
             }
         },
         {
@@ -15,7 +16,8 @@
                 "healthPoints": 10,
                 "attackPoints": 1,
                 "speed": 3,
-                "scale": 1
+                "scale": 2,
+                "knockbackForce": 0.1
             }
         }
     ]
