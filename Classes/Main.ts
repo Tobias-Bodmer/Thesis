@@ -34,6 +34,7 @@ namespace Game {
     export let items: Items.Item[] = [];
     export let enemiesJSON: Entity.Entity[];
     export let itemsJSON: Items.Item[];
+    export let internalItemStatsJSON: Items.InternalItem[];
     export let bulletsJSON: Bullets.Bullet[];
     //#endregion "PublicVariables"
 
@@ -192,7 +193,7 @@ namespace Game {
 
         const loadItem = await (await fetch("./Resources/ItemStorage.json")).json();
         itemsJSON = (<Items.Item[]>loadItem.items);
-        console.log(itemsJSON);
+        internalItemStatsJSON = (<Items.InternalItem[]>loadItem.internalStats);
 
         const loadBullets = await (await fetch("./Resources/BulletStorage.json")).json();
         bulletsJSON = (<Bullets.Bullet[]>loadBullets.standardBullets);
@@ -239,8 +240,8 @@ namespace Game {
 
             //#region init Items
             if (Networking.client.id == Networking.client.idHost) {
-                item1 = new Items.InternalItem(Items.ITEMID.COOLDOWN, 0.1, new ƒ.Vector2(0, 2), null);
-                let item2 = new Items.CooldDownDown(Items.ITEMID.COOLDOWN, 0.1, new ƒ.Vector2(0, -2), null);
+                item1 = new Items.CooldDownDown(Items.ITEMID.COOLDOWN, new ƒ.Vector2(0, 2), null);
+                let item2 = new Items.CooldDownDown(Items.ITEMID.COOLDOWN, new ƒ.Vector2(0, -2), null);
                 graph.appendChild(item1);
                 graph.appendChild(item2);
             }

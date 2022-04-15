@@ -19,7 +19,6 @@ namespace Networking {
         ENEMYSTATE,
         ENEMYDIE,
         SPAWNINTERNALITEM,
-        REQUESTATTRIBUTES,
         UPDATEATTRIBUTES,
         ITEMDIE,
         SENDROOM,
@@ -218,7 +217,7 @@ namespace Networking {
                             if (client.id != client.idHost) {
                                 switch (message.content.id) {
                                     case Items.ITEMID.COOLDOWN:
-                                        Game.graph.addChild(new Items.CooldDownDown(message.content.id, message.content.value, new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]), message.content.netId));
+                                        Game.graph.addChild(new Items.CooldDownDown(message.content.id, new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]), message.content.netId));
                                         break;
                                 }
 
@@ -228,17 +227,9 @@ namespace Networking {
                         }
 
                         //apply item attributes
-                        if (message.content != undefined && message.content.text == FUNCTION.REQUESTATTRIBUTES.toString()) {
-                            switch (message.content.id) {
-                                case Items.ITEMID.COOLDOWN:
-                                    Game.avatar2.attributes.coolDownReduction -= message.content.value;
-                            }
-                        }
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEATTRIBUTES.toString()) {
-                            switch (message.content.id) {
-                                case Items.ITEMID.COOLDOWN:
-                                    Game.avatar2.attributes.coolDownReduction -= message.content.value;
-                            }
+                            let temp: Entity.Attributes = new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale, message.content.attributes.knockbackForce, message.content.attributes.coolDownReduction);
+                            Game.avatar2.attributes = temp;
                         }
 
                         //Kill item from host
@@ -391,19 +382,28 @@ namespace Networking {
 
 
     //#region items
-    export async function spawnInternalItem(_id: number, _value: number, _position: ƒ.Vector2, _netId: number) {
+    export async function spawnInternalItem(_id: number, _position: ƒ.Vector2, _netId: number) {
         if (Game.connected && client.idHost == client.id) {
-            await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNINTERNALITEM, id: _id, value: _value, position: _position, netId: _netId } });
+            await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNINTERNALITEM, id: _id, position: _position, netId: _netId } });
         }
     }
-    export function requestAvatarAttributes(_attributes: Entity.Attributes, _value: number, _id: Items.ITEMID) {
-        client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.REQUESTATTRIBUTES, attributes: _attributes, value: _value, id: _id } });
+    export function updateAvatarAttributes(_attributes: Entity.Attributes) {
+        if (client.idHost != client.id) {
+            client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.UPDATEATTRIBUTES, attributes: _attributes } });
+        }
+        else {
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEATTRIBUTES, attributes: _attributes } });
+        }
     }
-    export function updateAvatarAttributes(_attributes: Entity.Attributes, _value: number, _id: Items.ITEMID) {
-        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEATTRIBUTES, attributes: _attributes, value: _value, id: _id } });
-    }
+
     export function removeItem(_netId: number) {
-        client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.ITEMDIE, netId: _netId } })
+        if (client.idHost != client.id) {
+            client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.ITEMDIE, netId: _netId } })
+        }
+        else {
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ITEMDIE, netId: _netId } })
+
+        }
     }
     //#endregion
 

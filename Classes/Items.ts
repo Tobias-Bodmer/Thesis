@@ -37,35 +37,17 @@ namespace Items {
             Networking.removeItem(this.netId);
             Game.graph.removeChild(this);
         }
-
-        // async collisionDetection() {
-        //     let colliders: any[] = Game.graph.getChildren().filter(element => (<Entity.Entity>element).tag == Tag.TAG.PLAYER);
-        //     colliders.forEach((element) => {
-        //         if (this.collider.collides(element.collider) && element.properties != undefined) {
-        //             // (<Player.Player>element).properties.attributes.addAttribuesByItem(this);
-        //             // console.log((<Enemy.Enemy>element).properties.attributes.healthPoints);
-        //             this.lifetime = 0;
-        //         }
-        //     })
-        // }
     }
 
-    export class InternalItem extends Item {
+    export abstract class InternalItem extends Item {
         value: number;
-        constructor(_id: ITEMID, _value: number, _position: ƒ.Vector2, _netId?: number) {
+        constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _position, _netId);
-            this.value = _value;
-            Networking.spawnInternalItem(_id, _value, _position, this.netId);
+            this.value = getInternalValueById(_id);
+            Networking.spawnInternalItem(this.id, _position, this.netId);
         }
 
         setValues(_attributes: Entity.Attributes) {
-            if (Networking.client.idHost != Networking.client.id) {
-                Networking.requestAvatarAttributes(_attributes, this.value, this.id)
-            }
-            else {
-                Networking.updateAvatarAttributes(_attributes, this.value, this.id)
-            }
-            this.despawn();
         }
 
 
@@ -74,14 +56,18 @@ namespace Items {
     export class CooldDownDown extends InternalItem {
 
         setValues(_attributes: Entity.Attributes) {
-            _attributes.coolDownReduction -= this.value;
-            console.log(_attributes.coolDownReduction);
-            super.setValues(_attributes);
+            _attributes.coolDownReduction = _attributes.coolDownReduction * (100 / (100 + this.value));
+            Networking.updateAvatarAttributes(_attributes);
+            this.despawn();
         }
     }
 
     export function getItemById(_id: ITEMID): Items.Item {
         return Game.itemsJSON.find(item => item.id == _id);
+    }
+
+    function getInternalValueById(_id: ITEMID): number {
+        return Game.internalItemStatsJSON.find(item => item.id == _id).value;
     }
 
 }

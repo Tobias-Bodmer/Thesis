@@ -21,6 +21,7 @@ declare namespace Game {
     let items: Items.Item[];
     let enemiesJSON: Entity.Entity[];
     let itemsJSON: Items.Item[];
+    let internalItemStatsJSON: Items.InternalItem[];
     let bulletsJSON: Bullets.Bullet[];
     function cameraUpdate(): void;
 }
@@ -127,9 +128,9 @@ declare namespace Items {
         setPosition(_position: ƒ.Vector2): void;
         despawn(): void;
     }
-    class InternalItem extends Item {
+    abstract class InternalItem extends Item {
         value: number;
-        constructor(_id: ITEMID, _value: number, _position: ƒ.Vector2, _netId?: number);
+        constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
         setValues(_attributes: Entity.Attributes): void;
     }
     class CooldDownDown extends InternalItem {
@@ -276,11 +277,10 @@ declare namespace Networking {
         ENEMYSTATE = 14,
         ENEMYDIE = 15,
         SPAWNINTERNALITEM = 16,
-        REQUESTATTRIBUTES = 17,
-        UPDATEATTRIBUTES = 18,
-        ITEMDIE = 19,
-        SENDROOM = 20,
-        SWITCHROOMREQUEST = 21
+        UPDATEATTRIBUTES = 17,
+        ITEMDIE = 18,
+        SENDROOM = 19,
+        SWITCHROOMREQUEST = 20
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -309,9 +309,8 @@ declare namespace Networking {
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number, _state: Entity.ANIMATIONSTATES): void;
     function updateEnemyState(_state: Entity.ANIMATIONSTATES, _netId: number): void;
     function removeEnemy(_netId: number): void;
-    function spawnInternalItem(_id: number, _value: number, _position: ƒ.Vector2, _netId: number): Promise<void>;
-    function requestAvatarAttributes(_attributes: Entity.Attributes, _value: number, _id: Items.ITEMID): void;
-    function updateAvatarAttributes(_attributes: Entity.Attributes, _value: number, _id: Items.ITEMID): void;
+    function spawnInternalItem(_id: number, _position: ƒ.Vector2, _netId: number): Promise<void>;
+    function updateAvatarAttributes(_attributes: Entity.Attributes): void;
     function removeItem(_netId: number): void;
     function sendRoom(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: Generation.ROOMTYPE): void;
     function switchRoomRequest(_coordiantes: [number, number], _direction: [boolean, boolean, boolean, boolean]): void;

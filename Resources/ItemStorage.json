@@ -6,5 +6,11 @@
             "id": 0,
             "imgSrc": "./Resources/Image/Items"
         }
+    ],
+    "internalStats": [
+        {
+            "id": 0,
+            "value": 10
+        }
     ]
 }

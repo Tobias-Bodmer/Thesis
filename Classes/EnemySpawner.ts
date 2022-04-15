@@ -51,11 +51,4 @@ namespace EnemySpawner {
         spawnByID(_id, _position, _attributes, _netID);
     }
 
-
-
-
-
-    function getSpawnPositions(_room: Generation.Room) {
-
-    }
 }
