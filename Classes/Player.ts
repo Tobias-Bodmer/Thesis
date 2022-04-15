@@ -50,8 +50,17 @@ namespace Player {
         collide(_direction: Game.ƒ.Vector3): void {
             super.collide(_direction);
 
+            let itemCollider: Items.Item[] = Game.items;
+            itemCollider.forEach(item => {
+                if (this.collider.collides(item.collider)) {
+                    if (item instanceof Items.InternalItem) {
+                        item.setValues(this.attributes);
+                    }
+                }
+            })
+
             let enemyColliders: Enemy.Enemy[] = Game.enemies;
-            enemyColliders.forEach((element) => {
+            enemyColliders.forEach(element => {
                 if (this.collider.collides(element.collider)) {
                     let intersection = this.collider.getIntersection(element.collider);
                     let areaBeforeMove = intersection;
@@ -88,11 +97,11 @@ namespace Player {
                         this.canMoveY = false;
                     }
                     //TODO: Sync knockback correctly over network
-                    if (Networking.client.id == Networking.client.idHost) {
-                        element.getKnockback(this.attributes.knockbackForce, this.mtxLocal.translation);
-                    } else {
-                        Networking.knockbackRequest(element.netId, this.attributes.knockbackForce, this.mtxLocal.translation);
-                    }
+                    // if (Networking.client.id == Networking.client.idHost) {
+                    //     element.getKnockback(this.attributes.knockbackForce, this.mtxLocal.translation);
+                    // } else {
+                    //     Networking.knockbackRequest(element.netId, this.attributes.knockbackForce, this.mtxLocal.translation);
+                    // }
                 }
             })
 

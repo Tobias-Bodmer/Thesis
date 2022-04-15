@@ -23,34 +23,5 @@ namespace Entity {
                 this.coolDownReduction = _cooldownReduction;
             }
         }
-
-        /**
-         * adds Attributes to the Player Attributes
-         * @param _attributes incoming attributes
-         */
-        public addAttribuesByItem(_attributes: Entity.Attributes, _itemType: Items.ITEMTYPE): void {
-            switch (_itemType) {
-                case Items.ITEMTYPE.ADD:
-                    this.healthPoints += _attributes.healthPoints;
-                    this.maxHealthPoints += _attributes.maxHealthPoints;
-                    this.speed += _attributes.speed;
-                    this.attackPoints += _attributes.attackPoints;
-                    break; // calculate attributes by adding them
-                case Items.ITEMTYPE.SUBSTRACT:
-                    this.healthPoints -= _attributes.healthPoints;
-                    this.maxHealthPoints -= _attributes.maxHealthPoints;
-                    this.speed -= _attributes.speed;
-                    this.attackPoints -= _attributes.attackPoints;
-                    break; // calculate attribes by substacting them
-                case Items.ITEMTYPE.PROCENTUAL:
-                    this.healthPoints = this.healthPoints * ((100 + _attributes.healthPoints) / 100);
-                    this.attackPoints = this.attackPoints * ((100 + _attributes.attackPoints) / 100);
-                    this.speed = this.speed * ((100 + _attributes.speed) / 100);
-                    console.log(this.coolDownReduction);
-                    this.coolDownReduction = this.coolDownReduction * Math.fround((100 / (100 + _attributes.coolDownReduction)));
-                    console.log(this.coolDownReduction);
-                    break; // calculate attributes by giving spefic %
-            }
-        }
     }
 }

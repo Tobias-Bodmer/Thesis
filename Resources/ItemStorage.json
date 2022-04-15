@@ -1,27 +1,9 @@
 {
     "items": [
         {
-            "name": "dmgUp",
+            "name": "coolDown",
             "description": "upps the damage",
-            "attributes": {
-                "healthPoints": 0,
-                "attackPoints": 10,
-                "speed": 0,
-                "coolDownReduction": 0
-            },
-            "type": "PROCENTUAL",
-            "imgSrc": "./Resources/Image/Items"
-        },
-        {
-            "name": "coolDownDown",
-            "description": "icecold cooldown",
-            "attributes": {
-                "healthPoints": 0,
-                "attackPoints": 0,
-                "speed": 0,
-                "coolDownReduction": 5
-            },
-            "type": "PROCENTUAL",
+            "id": 0,
             "imgSrc": "./Resources/Image/Items"
         }
     ]

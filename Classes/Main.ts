@@ -31,6 +31,7 @@ namespace Game {
     export let frameRate: number = 60;
     export let enemies: Enemy.Enemy[] = [];
     export let bullets: Bullets.Bullet[];
+    export let items: Items.Item[] = [];
     export let enemiesJSON: Entity.Entity[];
     export let itemsJSON: Items.Item[];
     export let bulletsJSON: Bullets.Bullet[];
@@ -47,7 +48,6 @@ namespace Game {
 
     //#region "essential"
     async function init() {
-        await loadJSON();
 
         if (Networking.client.id == Networking.client.idHost) {
             Generation.generateRooms();
@@ -90,24 +90,25 @@ namespace Game {
 
             avatar1.cooldown();
             if (Networking.client.id != Networking.client.idHost) {
-                avatar1.avatarPrediction();
+                // avatar1.avatarPrediction();
             }
 
             if (Game.connected) {
                 avatar2.cooldown();
                 Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
                 if (Networking.client.id == Networking.client.idHost) {
-                    avatar2.avatarPrediction();
+                    // avatar2.avatarPrediction();
                 }
             }
-            // Networking.spawnEnemy(bat, bat.id);
 
             //#region count items
-            let items: Items.Item[] = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.TAG.ITEM)
-            items.forEach(element => {
-                element.despawn();
-                (<Items.InternalItem>element).collisionDetection();
-            });
+            items = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.TAG.ITEM)
+            if (Game.connected && Networking.client.idHost == Networking.client.id) {
+                items.forEach(element => {
+                    // element.despawn();
+                    // (<Items.InternalItem>element).collisionDetection();
+                });
+            }
             //#endregion
 
             bullets = <Bullets.Bullet[]>graph.getChildren().filter(element => (<Bullets.Bullet>element).tag == Tag.TAG.BULLET)
@@ -141,6 +142,8 @@ namespace Game {
 
     function start() {
         loadTextures();
+        loadJSON();
+
         //add sprite to graphe for startscreen
         document.getElementById("Startscreen").style.visibility = "visible";
         document.getElementById("StartGame").addEventListener("click", () => {
@@ -189,6 +192,7 @@ namespace Game {
 
         const loadItem = await (await fetch("./Resources/ItemStorage.json")).json();
         itemsJSON = (<Items.Item[]>loadItem.items);
+        console.log(itemsJSON);
 
         const loadBullets = await (await fetch("./Resources/BulletStorage.json")).json();
         bulletsJSON = (<Bullets.Bullet[]>loadBullets.standardBullets);
@@ -235,8 +239,8 @@ namespace Game {
 
             //#region init Items
             if (Networking.client.id == Networking.client.idHost) {
-                item1 = new Items.InternalItem("cooldown reduction", "adds speed and shit", new ƒ.Vector3(0, 2, 0), new Entity.Attributes(0, 0, 0, 0, 0, 100), Items.ITEMTYPE.PROCENTUAL, "./Resources/Image/Items");
-                let item2 = new Items.InternalItem("cooldown reduction", "adds speed and shit", new ƒ.Vector3(0, -2, 0), new Entity.Attributes(0, 0, 0, 0, 0, 100), Items.ITEMTYPE.PROCENTUAL, "./Resources/Image/Items");
+                item1 = new Items.InternalItem(Items.ITEMID.COOLDOWN, 0.1, new ƒ.Vector2(0, 2), null);
+                let item2 = new Items.CooldDownDown(Items.ITEMID.COOLDOWN, 0.1, new ƒ.Vector2(0, -2), null);
                 graph.appendChild(item1);
                 graph.appendChild(item2);
             }
