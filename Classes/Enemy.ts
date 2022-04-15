@@ -83,10 +83,10 @@ namespace Enemy {
         }
 
         public getDamage(_value: number): void {
-            super.getDamage(_value);
+            if (Networking.client.idHost == Networking.client.id) {
+                super.getDamage(_value);
+                if (this.attributes.healthPoints <= 0) {
 
-            if (this.attributes.healthPoints <= 0) {
-                if (Networking.client.idHost == Networking.client.id) {
                     Networking.removeEnemy(this.netId);
                     Networking.popID(this.netId);
                     this.die();
