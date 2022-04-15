@@ -18,7 +18,7 @@ namespace Networking {
         ENEMYTRANSFORM,
         ENEMYSTATE,
         ENEMYDIE,
-        SPAWNITEM,
+        SPAWNINTERNALITEM,
         UPDATEATTRIBUTES,
         ITEMDIE,
         SENDROOM,
@@ -213,21 +213,23 @@ namespace Networking {
                         }
 
                         //Spawn item from host
-                        if (message.content != undefined && message.content.text == FUNCTION.SPAWNITEM.toString()) {
+                        if (message.content != undefined && message.content.text == FUNCTION.SPAWNINTERNALITEM.toString()) {
                             if (client.id != client.idHost) {
-                                if (message.content.attributes != null) {
-                                    let attributes = new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale, message.content.attributes.knockbackForce, message.content.attributes.coolDownReduction);
-                                    Game.graph.addChild(new Items.InternalItem(message.content.name, message.content.description, new ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]), attributes, message.content.type, message.content.imgSrc, message.content.lifetime, message.content.netId));
+                                switch (message.content.id) {
+                                    case Items.ITEMID.COOLDOWN:
+                                        Game.graph.addChild(new Items.CooldDownDown(message.content.id, new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]), message.content.netId));
+                                        break;
                                 }
+
 
                                 //TODO: external Item
                             }
                         }
 
-                        //Spawn item from host
+                        //apply item attributes
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEATTRIBUTES.toString()) {
-                            let attributes = new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale, message.content.attributes.knockbackForce, message.content.attributes.coolDownReduction);
-                            Game.avatar2.attributes.addAttribuesByItem(attributes, message.content.type);
+                            let temp: Entity.Attributes = new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale, message.content.attributes.knockbackForce, message.content.attributes.coolDownReduction);
+                            Game.avatar2.attributes = temp;
                         }
 
                         //Kill item from host
@@ -380,16 +382,28 @@ namespace Networking {
 
 
     //#region items
-    export async function spawnItem(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime: number, _netId: number, _attributes?: Entity.Attributes, _type?: Items.ITEMTYPE) {
+    export async function spawnInternalItem(_id: number, _position: ƒ.Vector2, _netId: number) {
         if (Game.connected && client.idHost == client.id) {
-            await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNITEM, name: _name, description: _description, position: _position, imgSrc: _imgSrc, lifetime: _lifetime, netId: _netId, attributes: _attributes, type: _type } });
+            await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNINTERNALITEM, id: _id, position: _position, netId: _netId } });
         }
     }
-    export function updateAvatarAttributes(_attributes: Entity.Attributes, _type: Items.ITEMTYPE) {
-        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.UPDATEATTRIBUTES, attributes: _attributes, type: _type } });
+    export function updateAvatarAttributes(_attributes: Entity.Attributes) {
+        if (client.idHost != client.id) {
+            client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.UPDATEATTRIBUTES, attributes: _attributes } });
+        }
+        else {
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEATTRIBUTES, attributes: _attributes } });
+        }
     }
+
     export function removeItem(_netId: number) {
-        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.ITEMDIE, netId: _netId } })
+        if (client.idHost != client.id) {
+            client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.ITEMDIE, netId: _netId } })
+        }
+        else {
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ITEMDIE, netId: _netId } })
+
+        }
     }
     //#endregion
 

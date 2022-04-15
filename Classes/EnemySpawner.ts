@@ -1,7 +1,7 @@
 namespace EnemySpawner {
-    let spawnTime: number = 1 * Game.frameRate;
+    let spawnTime: number = 0.1 * Game.frameRate;
     let currentTime: number = spawnTime;
-    let maxEnemies: number = 40;
+    let maxEnemies: number = 0;
 
     export function spawnEnemies(): void {
         if (Game.enemies.length < maxEnemies) {
@@ -51,11 +51,4 @@ namespace EnemySpawner {
         spawnByID(_id, _position, _attributes, _netID);
     }
 
-
-
-
-
-    function getSpawnPositions(_room: Generation.Room) {
-
-    }
 }

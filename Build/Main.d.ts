@@ -18,8 +18,10 @@ declare namespace Game {
     let frameRate: number;
     let enemies: Enemy.Enemy[];
     let bullets: Bullets.Bullet[];
+    let items: Items.Item[];
     let enemiesJSON: Entity.Entity[];
     let itemsJSON: Items.Item[];
+    let internalItemStatsJSON: Items.InternalItem[];
     let bulletsJSON: Bullets.Bullet[];
     function cameraUpdate(): void;
 }
@@ -112,36 +114,29 @@ declare namespace Interfaces {
     }
 }
 declare namespace Items {
-    enum ITEMTYPE {
-        ADD = 0,
-        SUBSTRACT = 1,
-        PROCENTUAL = 2
+    enum ITEMID {
+        COOLDOWN = 0
     }
-    abstract class Item extends Game.ƒAid.NodeSprite implements Interfaces.ISpawnable {
+    abstract class Item extends Game.ƒAid.NodeSprite {
         tag: Tag.TAG;
+        id: ITEMID;
         netId: number;
         description: string;
         imgSrc: string;
-        collider: Game.ƒ.Rectangle;
-        lifetime: number;
-        constructor(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc?: string, _lifetime?: number, _netId?: number);
+        collider: Collider.Collider;
+        constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
+        setPosition(_position: ƒ.Vector2): void;
         despawn(): void;
-        collisionDetection(): Promise<void>;
     }
-    class InternalItem extends Item {
-        attributes: Entity.Attributes;
-        type: ITEMTYPE;
-        /**
-         * Creates an item that can change Attributes of the player
-         * @param _name name of the Item
-         * @param _description Descirption of the item
-         * @param _position Position where to spawn
-         * @param _lifetime optional: how long is the item visible
-         * @param _attributes define which attributes will change, compare with {@link Player.Attributes}
-         */
-        constructor(_name: string, _description: string, _position: ƒ.Vector3, _attributes: Entity.Attributes, _type: ITEMTYPE, _imgSrc?: string, _lifetime?: number, _netId?: number);
-        collisionDetection(): Promise<void>;
+    abstract class InternalItem extends Item {
+        value: number;
+        constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
+        setValues(_attributes: Entity.Attributes): void;
     }
+    class CooldDownDown extends InternalItem {
+        setValues(_attributes: Entity.Attributes): void;
+    }
+    function getItemById(_id: ITEMID): Items.Item;
 }
 declare namespace AnimationGeneration {
     export let txtRedTickIdle: ƒ.TextureImage;
@@ -178,11 +173,6 @@ declare namespace Entity {
         coolDownReduction: number;
         scale: number;
         constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _cooldownReduction?: number);
-        /**
-         * adds Attributes to the Player Attributes
-         * @param _attributes incoming attributes
-         */
-        addAttribuesByItem(_attributes: Entity.Attributes, _itemType: Items.ITEMTYPE): void;
     }
 }
 declare namespace Bullets {
@@ -286,7 +276,7 @@ declare namespace Networking {
         ENEMYTRANSFORM = 13,
         ENEMYSTATE = 14,
         ENEMYDIE = 15,
-        SPAWNITEM = 16,
+        SPAWNINTERNALITEM = 16,
         UPDATEATTRIBUTES = 17,
         ITEMDIE = 18,
         SENDROOM = 19,
@@ -319,8 +309,8 @@ declare namespace Networking {
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number, _state: Entity.ANIMATIONSTATES): void;
     function updateEnemyState(_state: Entity.ANIMATIONSTATES, _netId: number): void;
     function removeEnemy(_netId: number): void;
-    function spawnItem(_name: string, _description: string, _position: ƒ.Vector3, _imgSrc: string, _lifetime: number, _netId: number, _attributes?: Entity.Attributes, _type?: Items.ITEMTYPE): Promise<void>;
-    function updateAvatarAttributes(_attributes: Entity.Attributes, _type: Items.ITEMTYPE): void;
+    function spawnInternalItem(_id: number, _position: ƒ.Vector2, _netId: number): Promise<void>;
+    function updateAvatarAttributes(_attributes: Entity.Attributes): void;
     function removeItem(_netId: number): void;
     function sendRoom(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: Generation.ROOMTYPE): void;
     function switchRoomRequest(_coordiantes: [number, number], _direction: [boolean, boolean, boolean, boolean]): void;
