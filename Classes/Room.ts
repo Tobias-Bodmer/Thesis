@@ -14,7 +14,8 @@ namespace Generation {
         public coordinates: [number, number]; // X Y
         public walls: Wall[] = [];
         public doors: Door[] = [];
-        public finished: boolean = true;
+        public finished: boolean = false;
+        public enemyCount: number;
         neighbourN: Room;
         neighbourE: Room;
         neighbourS: Room;
@@ -40,21 +41,30 @@ namespace Generation {
             this.roomType = _roomType;
             switch (_roomType) {
                 case ROOMTYPE.START:
+                    this.enemyCount = 0;
+                    this.finished = true;
                     this.cmpMaterial = new ƒ.ComponentMaterial(this.startRoomMat);
                     break;
                 case ROOMTYPE.NORMAL:
+                    this.enemyCount = Math.round(Math.random() * 10) + 20;
                     this.cmpMaterial = new ƒ.ComponentMaterial(this.normalRoomMat);
                     break;
                 case ROOMTYPE.MERCHANT:
+                    this.enemyCount = 0;
+                    this.finished = true;
                     this.cmpMaterial = new ƒ.ComponentMaterial(this.merchantRoomMat);
                     break;
                 case ROOMTYPE.TREASURE:
+                    this.enemyCount = 0;
+                    this.finished = true;
                     this.cmpMaterial = new ƒ.ComponentMaterial(this.treasureRoomMat);
                     break;
                 case ROOMTYPE.CHALLENGE:
+                    this.enemyCount = Math.round(Math.random() * 20) + 30;
                     this.cmpMaterial = new ƒ.ComponentMaterial(this.challengeRoomMat);
                     break;
                 case ROOMTYPE.BOSS:
+                    this.enemyCount = 0;
                     this.cmpMaterial = new ƒ.ComponentMaterial(this.bossRoomMat);
                     break;
             }
@@ -98,7 +108,7 @@ namespace Generation {
     export class Wall extends ƒ.Node {
         public tag: Tag.TAG = Tag.TAG.WALL;
         public collider: Game.ƒ.Rectangle;
-        public wallThickness: number = 30;
+        public wallThickness: number = 3;
 
         constructor(_position: Game.ƒ.Vector2, _width: number, _direction: [boolean, boolean, boolean, boolean]) {
             super("Wall");
@@ -178,12 +188,10 @@ namespace Generation {
         }
 
         public changeRoom() {
-            if (this.parentRoom.finished) {
-                if (Networking.client.id == Networking.client.idHost) {
-                    Generation.switchRoom(this.parentRoom, this.direction);
-                } else {
-                    Networking.switchRoomRequest(this.parentRoom.coordinates, this.direction);
-                }
+            if (Networking.client.id == Networking.client.idHost) {
+                Generation.switchRoom(this.parentRoom, this.direction);
+            } else {
+                Networking.switchRoomRequest(this.parentRoom.coordinates, this.direction);
             }
         }
     }

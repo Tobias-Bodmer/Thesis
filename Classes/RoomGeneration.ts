@@ -220,39 +220,43 @@ namespace Generation {
     }
 
     export function switchRoom(_currentRoom: Room, _direction: [boolean, boolean, boolean, boolean]) {
-        let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => (<any>elem).tag != Tag.TAG.PLAYER);
-
-        oldObjects.forEach((elem) => {
-            Game.graph.removeChild(elem);
-        });
-
-        if (_direction[0]) {
-            addRoomToGraph(_currentRoom.neighbourN);
-        }
-        if (_direction[1]) {
-            addRoomToGraph(_currentRoom.neighbourE);
-        }
-        if (_direction[2]) {
-            addRoomToGraph(_currentRoom.neighbourS);
-
-        }
-        if (_direction[3]) {
-            addRoomToGraph(_currentRoom.neighbourW);
-        }
-
-        function addRoomToGraph(_room: Room) {
-            sendRoom(_room);
-            Game.graph.addChild(_room);
-            Game.graph.appendChild(_room.walls[0]);
-            Game.graph.appendChild(_room.walls[1]);
-            Game.graph.appendChild(_room.walls[2]);
-            Game.graph.appendChild(_room.walls[3]);
-
-            Game.avatar1.cmpTransform.mtxLocal.translation = _room.cmpTransform.mtxLocal.translation;
-
-            for (let i = 0; i < _room.doors.length; i++) {
-                Game.graph.addChild(_room.doors[i]);
+        if (_currentRoom.finished) {
+            let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => (<any>elem).tag != Tag.TAG.PLAYER);
+    
+            oldObjects.forEach((elem) => {
+                Game.graph.removeChild(elem);
+            });
+    
+            if (_direction[0]) {
+                addRoomToGraph(_currentRoom.neighbourN);
             }
+            if (_direction[1]) {
+                addRoomToGraph(_currentRoom.neighbourE);
+            }
+            if (_direction[2]) {
+                addRoomToGraph(_currentRoom.neighbourS);
+    
+            }
+            if (_direction[3]) {
+                addRoomToGraph(_currentRoom.neighbourW);
+            }
+    
+            function addRoomToGraph(_room: Room) {
+                sendRoom(_room);
+                Game.graph.addChild(_room);
+                Game.graph.appendChild(_room.walls[0]);
+                Game.graph.appendChild(_room.walls[1]);
+                Game.graph.appendChild(_room.walls[2]);
+                Game.graph.appendChild(_room.walls[3]);
+    
+                Game.avatar1.cmpTransform.mtxLocal.translation = _room.cmpTransform.mtxLocal.translation;
+    
+                for (let i = 0; i < _room.doors.length; i++) {
+                    Game.graph.addChild(_room.doors[i]);
+                }
+            }
+    
+            EnemySpawner.spawnEnemies();
         }
     }
 }

@@ -381,6 +381,7 @@ declare namespace Generation {
         walls: Wall[];
         doors: Door[];
         finished: boolean;
+        enemyCount: number;
         neighbourN: Room;
         neighbourE: Room;
         neighbourS: Room;

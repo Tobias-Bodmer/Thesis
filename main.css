@@ -32,6 +32,16 @@ canvas {
     height: 60px;
 }
 
+#Inventory {
+    width: 100%;
+    height: 20px;
+}
+
+#Inventory > img {
+    width: auto;
+    height: 20px;
+}
+
 #HP-Bar {
     border: 1px solid black;
     width: 300px;

@@ -1,13 +1,19 @@
 namespace EnemySpawner {
-    let spawnTime: number = 0.1 * Game.frameRate;
+    let spawnTime: number = 0 * Game.frameRate;
     let currentTime: number = spawnTime;
     let maxEnemies: number = 0;
 
     export function spawnEnemies(): void {
-        if (Game.enemies.length < maxEnemies) {
-            // console.log(Game.enemies.length);
+        let currentRoom = (<Generation.Room>Game.graph.getChildren().find(elem => (<Generation.Room>elem).tag == Tag.TAG.ROOM));
+        maxEnemies = currentRoom.enemyCount;
+        while (maxEnemies > 0) {
+            maxEnemies = currentRoom.enemyCount;
             if (currentTime == spawnTime) {
-                spawnByID(Entity.ID.REDTICK, new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2)));
+                let position = new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2));
+                position.add(currentRoom.mtxLocal.translation.toVector2());
+                console.log(position);
+                spawnByID(Entity.ID.REDTICK, position);
+                currentRoom.enemyCount--;
             }
             currentTime--;
             if (currentTime <= 0) {

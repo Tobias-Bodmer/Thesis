@@ -126,9 +126,12 @@ namespace Game {
                     if (element instanceof Enemy.EnemyShoot) {
                         (<Enemy.EnemyShoot>element).weapon.cooldown(element.attributes.coolDownReduction);
                     }
-                })
+                });
 
-                EnemySpawner.spawnEnemies();
+                let currentRoom = (<Generation.Room>Game.graph.getChildren().find(elem => (<Generation.Room>elem).tag == Tag.TAG.ROOM));
+                if (currentRoom.enemyCount <= 0) {
+                    currentRoom.finished = true;
+                }
             }
 
             UI.updateUI();
