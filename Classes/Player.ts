@@ -105,6 +105,14 @@ namespace Player {
                 _direction = new ƒ.Vector3(0, _direction.y, _direction.z)
                 this.cmpTransform.mtxLocal.translate(_direction, false);
             }
+
+
+            // if (Networking.client.id == Networking.client.idHost) {
+            //     Game.avatar2.avatarPrediction();
+            // }
+            // if (Networking.client.id != Networking.client.idHost) {
+            //     Game.avatar1.avatarPrediction();
+            // } 
         }
 
         avatarPrediction() {
@@ -122,8 +130,8 @@ namespace Player {
             if (Networking.client.id != Networking.client.idHost) {
                 if (this.tick >= 1 && this.hostPositions[this.tick - 1] != undefined && this.positions[this.tick - 1] != undefined) {
                     if (this.hostPositions[this.tick - 1].x != this.positions[this.tick - 1].x || this.hostPositions[this.tick - 1].y != this.positions[this.tick - 1].y) {
-                        console.log(this.positions);
-                        console.log(this.hostPositions);
+                        console.log(this.positions[this.tick - 1]);
+                        console.log(this.hostPositions[this.tick - 1]);
 
                         console.log("correct");
                         this.correctPosition();
@@ -134,7 +142,9 @@ namespace Player {
 
         async correctPosition() {
             if (this.hostPositions[this.tick] != undefined) {
+                console.log(this.cmpTransform.mtxLocal.translation);
                 this.cmpTransform.mtxLocal.translation = this.hostPositions[this.tick];
+                console.log(this.cmpTransform.mtxLocal.translation);
             } else {
                 setTimeout(() => { this.correctPosition }, 100);
             }
