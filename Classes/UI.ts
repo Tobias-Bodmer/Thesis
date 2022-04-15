@@ -13,7 +13,7 @@ namespace UI {
 
             //search DOMImg for Item
             player1UI.querySelector("#Inventory").querySelectorAll("img").forEach((imgElement) => {
-                if (imgElement.src == element.imgSrc) {
+                if (imgElement.src == document.URL + element.imgSrc.substring(2)) {
                     exsist = true;
                 }
             });
@@ -36,7 +36,7 @@ namespace UI {
 
                 //search DOMImg for Item
                 player2UI.querySelector("#Inventory").querySelectorAll("img").forEach((imgElement) => {
-                    if (imgElement.src == element.imgSrc) {
+                    if (imgElement.src == document.URL + element.imgSrc.substring(2)) {
                         exsist = true;
                     }
                 });

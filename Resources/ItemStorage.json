@@ -4,7 +4,7 @@
             "name": "coolDown",
             "description": "upps the damage",
             "id": 0,
-            "imgSrc": "./Resources/Image/Items"
+            "imgSrc": "./Resources/Image/Items/iceBucket.png"
         }
     ],
     "internalStats": [

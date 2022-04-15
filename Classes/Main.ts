@@ -218,6 +218,9 @@ namespace Game {
 
         AnimationGeneration.createAllAnimations();
 
+        //Items
+        await Items.txtIceBucket.load("./Resources/Image/Items/iceBucket.png");
+
     }
 
     async function waitOnConnection() {
@@ -236,6 +239,7 @@ namespace Game {
             if (Networking.client.id == Networking.client.idHost) {
                 item1 = new Items.CooldDownDown(Items.ITEMID.COOLDOWN, new ƒ.Vector2(0, 2), null);
                 let item2 = new Items.CooldDownDown(Items.ITEMID.COOLDOWN, new ƒ.Vector2(0, -2), null);
+
                 graph.appendChild(item1);
                 graph.appendChild(item2);
             }

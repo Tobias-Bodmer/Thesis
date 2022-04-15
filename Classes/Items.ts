@@ -2,7 +2,10 @@ namespace Items {
     export enum ITEMID {
         COOLDOWN
     }
-    export abstract class Item extends Game.ƒAid.NodeSprite {
+
+    export let txtIceBucket: ƒ.TextureImage = new ƒ.TextureImage();
+
+    export abstract class Item extends Game.ƒ.Node {
         public tag: Tag.TAG = Tag.TAG.ITEM;
         id: ITEMID;
         public netId: number = Networking.idGenerator();
@@ -23,9 +26,24 @@ namespace Items {
             console.log("old: " + this.netId);
             this.description = item.description;
             this.imgSrc = item.imgSrc;
+
+            this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshQuad()));
+            let material: ƒ.Material = new ƒ.Material("white", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
+            this.addComponent(new ƒ.ComponentMaterial(material));
+
             this.addComponent(new ƒ.ComponentTransform());
             this.mtxLocal.translation = _position.toVector3();
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);
+        }
+
+        async loadTexture(_texture: ƒ.TextureImage): Promise<void> {
+            let newTxt: ƒ.TextureImage = new ƒ.TextureImage();
+            newTxt = _texture;
+            let newCoat: ƒ.CoatRemissiveTextured = new ƒ.CoatRemissiveTextured();
+            newCoat.texture = newTxt;
+            let newMtr: ƒ.Material = new ƒ.Material("mtr", ƒ.ShaderFlatTextured, newCoat);
+
+            this.getComponent(Game.ƒ.ComponentMaterial).material = newMtr;
         }
 
         setPosition(_position: ƒ.Vector2) {
@@ -54,6 +72,12 @@ namespace Items {
     }
 
     export class CooldDownDown extends InternalItem {
+
+        constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number) {
+            super(_id, _position, _netId);
+
+            this.loadTexture(txtIceBucket);
+        }
 
         setValues(_attributes: Entity.Attributes) {
             _attributes.coolDownReduction = _attributes.coolDownReduction * (100 / (100 + this.value));

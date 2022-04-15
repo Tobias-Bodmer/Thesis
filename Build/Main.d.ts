@@ -117,7 +117,8 @@ declare namespace Items {
     enum ITEMID {
         COOLDOWN = 0
     }
-    abstract class Item extends Game.ƒAid.NodeSprite {
+    let txtIceBucket: ƒ.TextureImage;
+    abstract class Item extends Game.ƒ.Node {
         tag: Tag.TAG;
         id: ITEMID;
         netId: number;
@@ -125,6 +126,7 @@ declare namespace Items {
         imgSrc: string;
         collider: Collider.Collider;
         constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
+        loadTexture(_texture: ƒ.TextureImage): Promise<void>;
         setPosition(_position: ƒ.Vector2): void;
         despawn(): void;
     }
@@ -134,6 +136,7 @@ declare namespace Items {
         setValues(_attributes: Entity.Attributes): void;
     }
     class CooldDownDown extends InternalItem {
+        constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
         setValues(_attributes: Entity.Attributes): void;
     }
     function getItemById(_id: ITEMID): Items.Item;
@@ -266,21 +269,22 @@ declare namespace Networking {
         SPAWN = 3,
         TRANSFORM = 4,
         AVATARPREDICTION = 5,
-        KNOCKBACKREQUEST = 6,
-        KNOCKBACKPUSH = 7,
-        SPAWNBULLET = 8,
-        SPAWNBULLETENEMY = 9,
-        BULLETTRANSFORM = 10,
-        BULLETDIE = 11,
-        SPAWNENEMY = 12,
-        ENEMYTRANSFORM = 13,
-        ENEMYSTATE = 14,
-        ENEMYDIE = 15,
-        SPAWNINTERNALITEM = 16,
-        UPDATEATTRIBUTES = 17,
-        ITEMDIE = 18,
-        SENDROOM = 19,
-        SWITCHROOMREQUEST = 20
+        UPDATEINVENTORY = 6,
+        KNOCKBACKREQUEST = 7,
+        KNOCKBACKPUSH = 8,
+        SPAWNBULLET = 9,
+        SPAWNBULLETENEMY = 10,
+        BULLETTRANSFORM = 11,
+        BULLETDIE = 12,
+        SPAWNENEMY = 13,
+        ENEMYTRANSFORM = 14,
+        ENEMYSTATE = 15,
+        ENEMYDIE = 16,
+        SPAWNINTERNALITEM = 17,
+        UPDATEATTRIBUTES = 18,
+        ITEMDIE = 19,
+        SENDROOM = 20,
+        SWITCHROOMREQUEST = 21
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -301,6 +305,7 @@ declare namespace Networking {
     function avatarPrediction(_position: Game.ƒ.Vector3, _tick: number): void;
     function knockbackRequest(_netId: number, _knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function knockbackPush(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
+    function updateInventory(_netId: number): void;
     function spawnBullet(_direction: ƒ.Vector3, _netId: number): void;
     function updateBullet(_position: ƒ.Vector3, _netId: number, _tick?: number): void;
     function spawnBulletAtEnemy(_bulletNetId: number, _enemyNetId: number): Promise<void>;

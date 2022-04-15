@@ -8,6 +8,7 @@ namespace Networking {
         SPAWN,
         TRANSFORM,
         AVATARPREDICTION,
+        UPDATEINVENTORY,
         KNOCKBACKREQUEST,
         KNOCKBACKPUSH,
         SPAWNBULLET,
@@ -101,9 +102,11 @@ namespace Networking {
                             let moveVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.value.data[0], message.content.value.data[1], message.content.value.data[2]);
                             let rotateVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.rotation.data[0], message.content.rotation.data[1], message.content.rotation.data[2]);
 
-                            Game.avatar2.collider.position = moveVector.toVector2();
-                            Game.avatar2.mtxLocal.translation = moveVector;
-                            Game.avatar2.mtxLocal.rotation = rotateVector;
+                            if (Game.avatar2 != undefined) {
+                                Game.avatar2.mtxLocal.translation = moveVector;
+                                Game.avatar2.mtxLocal.rotation = rotateVector;
+                                Game.avatar2.collider.position = moveVector.toVector2();
+                            }
                         }
 
                         if (message.content != undefined && message.content.text == FUNCTION.AVATARPREDICTION.toString()) {
@@ -111,6 +114,13 @@ namespace Networking {
                                 let newPosition: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                                 Game.avatar1.hostPositions[message.content.tick] = newPosition;
                             }
+                        }
+
+                        //Update inventory
+                        if (message.content != undefined && message.content.text == FUNCTION.UPDATEINVENTORY.toString()) {
+                            let item: Items.Item = Game.items.find(elem => elem.netId == message.content.netId);
+
+                            Game.avatar2.items.push(item);
                         }
 
                         //Client request for move knockback
@@ -330,6 +340,10 @@ namespace Networking {
 
     export function knockbackPush(_knockbackForce: number, _position: Game.ƒ.Vector3) {
         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.KNOCKBACKPUSH, knockbackForce: _knockbackForce, position: _position } })
+    }
+
+    export function updateInventory(_netId: number) {
+        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.UPDATEINVENTORY, netId: _netId } })
     }
     //#endregion
 
