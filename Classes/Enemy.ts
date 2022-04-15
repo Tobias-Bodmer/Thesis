@@ -2,10 +2,8 @@ namespace Enemy {
     export let txtTick: ƒ.TextureImage = new ƒ.TextureImage();
 
     export enum BEHAVIOUR {
-        IDLE, FOLLOW, FLEE
+        IDLE, FOLLOW, FLEE, MOVE, SUMMON
     }
-
-
 
     import ƒAid = FudgeAid;
 

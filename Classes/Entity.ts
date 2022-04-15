@@ -131,7 +131,7 @@ namespace Entity {
 
     }
     export enum ANIMATIONSTATES {
-        IDLE, WALK
+        IDLE, WALK, SUMMON
     }
 
     export enum ID {
