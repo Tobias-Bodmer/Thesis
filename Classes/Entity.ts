@@ -106,7 +106,7 @@ namespace Entity {
 
                 function reduceKnockback(_elem: Entity, _direction: Game.ƒ.Vector3, _moveDirection: Game.ƒ.Vector3) {
                     // _knockbackForce = _knockbackForce / knockBackScaling;
-                    if (_knockbackForce > 0.1) {
+                    if (_knockbackForce > 0.01) {
                         setTimeout(() => {
                             _moveDirection.subtract(direction);
 

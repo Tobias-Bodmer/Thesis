@@ -10,7 +10,7 @@ namespace Enemy {
     export class Enemy extends Entity.Entity implements Interfaces.IKnockbackable {
         currentState: BEHAVIOUR;
         public netId: number = Networking.idGenerator();
-        target: ƒ.Vector3;
+        target: ƒ.Vector2;
         lifetime: number;
         moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
 
@@ -37,7 +37,8 @@ namespace Enemy {
 
         public update() {
             super.update();
-            this.mtxLocal.translate(this.moveDirection);
+            this.moveBehaviour();
+            this.move(this.moveDirection);
             Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId, this.currentAnimation);
         }
 
@@ -48,37 +49,32 @@ namespace Enemy {
         public getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void {
             super.getKnockback(_knockbackForce, _position);
         }
-
-        public moveSimple() {
-            this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
-
-            let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.target, this.cmpTransform.mtxLocal.translation);
-
-            direction.normalize();
-
-            direction.scale((1 / Game.frameRate * this.attributes.speed));
-
-            this.moveDirection.add(direction)
-
+        move(_direction: ƒ.Vector3) {
+            this.moveDirection.add(_direction)
             this.collide(this.moveDirection);
-
-            this.moveDirection.subtract(direction);
+            this.moveDirection.subtract(_direction);
         }
 
-        moveAway() {
-            this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
+        moveBehaviour() {
 
-            let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.cmpTransform.mtxLocal.translation, this.target);
-            direction.normalize();
-
-            direction.scale((1 / Game.frameRate * this.attributes.speed));
-
-            this.moveDirection.add(direction)
-
-            this.collide(this.moveDirection);
-
-            this.moveDirection.subtract(direction);
         }
+        public moveSimple(_target: ƒ.Vector2): ƒ.Vector2 {
+            this.target = _target;
+            let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation);
+            direction.normalize();
+            direction.scale((1 / Game.frameRate * this.attributes.speed));
+            return direction.toVector2();
+        }
+
+        moveAway(_target: ƒ.Vector2): ƒ.Vector2 {
+            let moveSimple = this.moveSimple(_target);
+            moveSimple.x *= -1;
+            moveSimple.y *= -1;
+            return moveSimple;
+        }
+
+        //TODO move patrol
+
 
         public getDamage(_value: number): void {
             if (Networking.client.idHost == Networking.client.id) {
@@ -169,7 +165,6 @@ namespace Enemy {
 
         update(): void {
             super.update();
-            this.moveBehaviour();
         }
 
         behaviour() {
@@ -186,7 +181,6 @@ namespace Enemy {
         }
 
         moveBehaviour() {
-
             this.behaviour();
             switch (this.currentState) {
                 case BEHAVIOUR.IDLE:
@@ -208,13 +202,17 @@ namespace Enemy {
                         this.currentAnimation = Entity.ANIMATIONSTATES.WALK;
                         Networking.updateEnemyState(this.currentAnimation, this.netId);
                     }
-                    this.moveSimple()
+                    this.moveDirection = this.moveAway(Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2()).toVector3();
                     break;
                 // default:
                 //     // this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
                 //     // break;
             }
         }
+
+    }
+
+    export class EnemyPatrol extends Enemy {
 
     }
     export class EnemyShoot extends Enemy {

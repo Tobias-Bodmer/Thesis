@@ -14,6 +14,7 @@ declare namespace Game {
     let graph: ƒ.Node;
     let avatar1: Player.Player;
     let avatar2: Player.Player;
+    let currentRoom: Generation.Room;
     let connected: boolean;
     let frameRate: number;
     let enemies: Enemy.Enemy[];
@@ -72,15 +73,17 @@ declare namespace Enemy {
     class Enemy extends Entity.Entity implements Interfaces.IKnockbackable {
         currentState: BEHAVIOUR;
         netId: number;
-        target: ƒ.Vector3;
+        target: ƒ.Vector2;
         lifetime: number;
         moveDirection: Game.ƒ.Vector3;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
         update(): void;
         doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
-        moveSimple(): void;
-        moveAway(): void;
+        move(_direction: ƒ.Vector3): void;
+        moveBehaviour(): void;
+        moveSimple(_target: ƒ.Vector2): ƒ.Vector2;
+        moveAway(_target: ƒ.Vector2): ƒ.Vector2;
         getDamage(_value: number): void;
         die(): void;
         collide(_direction: ƒ.Vector3): void;
@@ -90,6 +93,8 @@ declare namespace Enemy {
         update(): void;
         behaviour(): void;
         moveBehaviour(): void;
+    }
+    class EnemyPatrol extends Enemy {
     }
     class EnemyShoot extends Enemy {
         weapon: Weapons.Weapon;

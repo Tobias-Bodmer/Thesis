@@ -25,13 +25,19 @@ namespace Game {
     export let gamestate: GAMESTATES = GAMESTATES.PAUSE;
     export let viewport: ƒ.Viewport = new ƒ.Viewport();
     export let graph: ƒ.Node = new ƒ.Node("Graph");
+
     export let avatar1: Player.Player;
     export let avatar2: Player.Player;
+
+    export let currentRoom: Generation.Room;
+
     export let connected: boolean = false;
     export let frameRate: number = 60;
+
     export let enemies: Enemy.Enemy[] = [];
     export let bullets: Bullets.Bullet[];
     export let items: Items.Item[] = [];
+    //JSON
     export let enemiesJSON: Entity.Entity[];
     export let internalItemJSON: Items.InternalItem[];
     export let bulletsJSON: Bullets.Bullet[];
@@ -127,7 +133,7 @@ namespace Game {
                     }
                 });
 
-                let currentRoom = (<Generation.Room>Game.graph.getChildren().find(elem => (<Generation.Room>elem).tag == Tag.TAG.ROOM));
+                currentRoom = (<Generation.Room>Game.graph.getChildren().find(elem => (<Generation.Room>elem).tag == Tag.TAG.ROOM));
                 if (currentRoom.enemyCount <= 0) {
                     currentRoom.finished = true;
                 }
@@ -241,7 +247,7 @@ namespace Game {
             //#region init Items
             if (Networking.client.id == Networking.client.idHost) {
                 item1 = new Items.InternalItem(Items.ITEMID.COOLDOWN, new ƒ.Vector2(0, 2), null);
-                let item2 = new Items.InternalItem(Items.ITEMID.DMGUP, new ƒ.Vector2(0, -2), null);
+                let item2 = new Items.InternalItem(Items.ITEMID.HEALTHUP, new ƒ.Vector2(0, -2), null);
 
                 graph.appendChild(item1);
                 graph.appendChild(item2);

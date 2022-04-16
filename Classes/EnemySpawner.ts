@@ -1,7 +1,7 @@
 namespace EnemySpawner {
     let spawnTime: number = 0 * Game.frameRate;
     let currentTime: number = spawnTime;
-    let maxEnemies: number = 0;
+    let maxEnemies: number = 1;
 
     export function spawnEnemies(): void {
         let currentRoom = (<Generation.Room>Game.graph.getChildren().find(elem => (<Generation.Room>elem).tag == Tag.TAG.ROOM));
@@ -28,22 +28,29 @@ namespace EnemySpawner {
         switch (_id) {
             case Entity.ID.BAT:
                 if (_attributes == null && _netID == null) {
-                    const bat = Game.enemiesJSON.find(enemy => enemy.name == "bat");
-                    enemy = new Enemy.EnemyDumb(Entity.ID.BAT, new Entity.Attributes(bat.attributes.healthPoints, bat.attributes.attackPoints, bat.attributes.speed, bat.attributes.scale, Math.random() * bat.attributes.knockbackForce + 0.5), _position, _netID);
+                    const ref = Game.enemiesJSON.find(enemy => enemy.name == "bat");
+                    enemy = new Enemy.EnemyDumb(Entity.ID.BAT, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale, Math.random() * ref.attributes.knockbackForce + 0.5), _position, _netID);
                 } else {
                     enemy = new Enemy.EnemyDumb(Entity.ID.BAT, _attributes, _position, _netID);
                 }
                 break;
             case Entity.ID.REDTICK:
                 if (_attributes == null && _netID == null) {
-                    const redtick = Game.enemiesJSON.find(enemy => enemy.name == "redtick");
-                    enemy = new Enemy.EnemyDumb(Entity.ID.REDTICK, new Entity.Attributes(redtick.attributes.healthPoints, redtick.attributes.attackPoints, redtick.attributes.speed, redtick.attributes.scale, Math.random() * redtick.attributes.knockbackForce + 0.5), _position, _netID);
+                    const ref = Game.enemiesJSON.find(enemy => enemy.name == "redtick");
+                    enemy = new Enemy.EnemyDumb(Entity.ID.REDTICK, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, Math.random() * ref.attributes.scale + 0.5, ref.attributes.knockbackForce), _position, _netID);
                 }
                 else {
                     enemy = new Enemy.EnemyDumb(Entity.ID.REDTICK, _attributes, _position, _netID);
                 }
                 break;
             case Entity.ID.SMALLTICK:
+                if (_attributes == null && _netID == null) {
+                    const ref = Game.enemiesJSON.find(enemy => enemy.name == "smalltick");
+                    enemy = new Enemy.EnemyDumb(Entity.ID.SMALLTICK, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, Math.random() * ref.attributes.scale + 0.5, ref.attributes.knockbackForce), _position, _netID);
+                }
+                else {
+                    enemy = new Enemy.EnemyDumb(Entity.ID.SMALLTICK, _attributes, _position, _netID);
+                }
                 break;
             case Entity.ID.SKELETON:
                 break;

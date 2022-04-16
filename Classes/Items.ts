@@ -108,8 +108,8 @@ namespace Items {
                     //TODO: implement weapon sync over network
                     break;
                 case ITEMID.HEALTHUP:
-                    _avatar.attributes.healthPoints = Calculation.addPercentageAmountToValue(_avatar.attributes.healthPoints, this.value);
-                    console.log(this.description + ": " + _avatar.attributes.healthPoints);
+                    _avatar.attributes.healthPoints = Calculation.addPercentageAmountToValue(_avatar.attributes.maxHealthPoints, this.value);
+                    console.log(this.description + ": " + _avatar.attributes.maxHealthPoints);
                     Networking.updateAvatarAttributes(_avatar.attributes);
                     break;
                 case ITEMID.SCALEUP:

@@ -55,7 +55,7 @@ namespace Enemy {
                         this.currentAnimation = Entity.ANIMATIONSTATES.WALK;
                         Networking.updateEnemyState(this.currentAnimation, this.netId);
                     }
-                    this.moveAway();
+                    this.moveDirection = this.moveAway(Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2()).toVector3();
                     break;
                 case BEHAVIOUR.SUMMON:
                     if (this.currentAnimation != Entity.ANIMATIONSTATES.SUMMON) {
