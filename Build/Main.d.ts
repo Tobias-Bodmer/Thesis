@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -20,8 +20,7 @@ declare namespace Game {
     let bullets: Bullets.Bullet[];
     let items: Items.Item[];
     let enemiesJSON: Entity.Entity[];
-    let itemsJSON: Items.Item[];
-    let internalItemStatsJSON: Items.InternalItem[];
+    let internalItemJSON: Items.InternalItem[];
     let bulletsJSON: Bullets.Bullet[];
     function cameraUpdate(): void;
 }
@@ -48,7 +47,8 @@ declare namespace Entity {
     }
     enum ANIMATIONSTATES {
         IDLE = 0,
-        WALK = 1
+        WALK = 1,
+        SUMMON = 2
     }
     enum ID {
         PLAYER1 = 0,
@@ -65,7 +65,9 @@ declare namespace Enemy {
     enum BEHAVIOUR {
         IDLE = 0,
         FOLLOW = 1,
-        FLEE = 2
+        FLEE = 2,
+        MOVE = 3,
+        SUMMON = 4
     }
     class Enemy extends Entity.Entity implements Interfaces.IKnockbackable {
         currentState: BEHAVIOUR;
@@ -115,9 +117,13 @@ declare namespace Interfaces {
 }
 declare namespace Items {
     enum ITEMID {
-        COOLDOWN = 0
+        COOLDOWN = 0,
+        DMGUP = 1,
+        SPEEDUP = 2,
+        PROJECTILESUP = 3
     }
     let txtIceBucket: ƒ.TextureImage;
+    let txtDmgUp: ƒ.TextureImage;
     abstract class Item extends Game.ƒ.Node {
         tag: Tag.TAG;
         id: ITEMID;
@@ -129,17 +135,15 @@ declare namespace Items {
         loadTexture(_texture: ƒ.TextureImage): Promise<void>;
         setPosition(_position: ƒ.Vector2): void;
         despawn(): void;
+        doYourThing(_avatar: Player.Player): void;
     }
-    abstract class InternalItem extends Item {
+    class InternalItem extends Item {
         value: number;
         constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
-        setValues(_attributes: Entity.Attributes): void;
+        doYourThing(_avatar: Player.Player): void;
+        setAttributesById(_id: ITEMID, _attributes: Entity.Attributes): void;
+        setTextureById(_id: ITEMID): void;
     }
-    class CooldDownDown extends InternalItem {
-        constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
-        setValues(_attributes: Entity.Attributes): void;
-    }
-    function getItemById(_id: ITEMID): Items.Item;
 }
 declare namespace AnimationGeneration {
     export let txtRedTickIdle: ƒ.TextureImage;
@@ -171,11 +175,21 @@ declare namespace Entity {
         maxHealthPoints: number;
         knockbackForce: number;
         hitable: boolean;
+        armor: number;
         speed: number;
         attackPoints: number;
         coolDownReduction: number;
         scale: number;
         constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _cooldownReduction?: number);
+    }
+}
+declare namespace Enemy {
+    class SummonorBoss extends EnemyDumb {
+        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
+        update(): void;
+        behaviour(): void;
+        moveBehaviour(): void;
+        summon(): void;
     }
 }
 declare namespace Bullets {

@@ -1,16 +1,18 @@
 {
-    "items": [
+    "internalItems": [
         {
-            "name": "coolDown",
-            "description": "upps the damage",
+            "name": "Ice Bucket Challenge",
+            "description": "cools not only you but also your cooldown down",
             "id": 0,
-            "imgSrc": "./Resources/Image/Items/iceBucket.png"
-        }
-    ],
-    "internalStats": [
-        {
-            "id": 0,
+            "imgSrc": "./Resources/Image/Items/iceBucket.png",
             "value": 10
+        },
+        {
+            "name": "dmgUP",
+            "description": "cnt wrt th wrds crrtly",
+            "id": 1,
+            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "value": 1
         }
     ]
 }

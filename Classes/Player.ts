@@ -55,7 +55,7 @@ namespace Player {
                 if (this.collider.collides(item.collider)) {
                     if (item instanceof Items.InternalItem) {
                         Networking.updateInventory(item.netId);
-                        item.setValues(this.attributes);
+                        item.doYourThing(this);
                         this.items.push(item);
                     }
                 }

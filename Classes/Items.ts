@@ -1,9 +1,15 @@
 namespace Items {
     export enum ITEMID {
-        COOLDOWN
+        COOLDOWN,
+        DMGUP,
+        SPEEDUP,
+        PROJECTILESUP
     }
 
     export let txtIceBucket: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtDmgUp: ƒ.TextureImage = new ƒ.TextureImage();
+
+
 
     export abstract class Item extends Game.ƒ.Node {
         public tag: Tag.TAG = Tag.TAG.ITEM;
@@ -14,16 +20,15 @@ namespace Items {
         public collider: Collider.Collider;
 
         constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number) {
-            super(getItemById(_id).name);
+            super(getInternalItemById(_id).name);
             this.id = _id;
-            const item = getItemById(this.id);
+            const item = getInternalItemById(this.id);
 
             if (_netId != undefined) {
                 Networking.popID(this.netId);
                 Networking.currentIDs.push(_netId);
                 this.netId = _netId;
             }
-            console.log("old: " + this.netId);
             this.description = item.description;
             this.imgSrc = item.imgSrc;
 
@@ -55,43 +60,53 @@ namespace Items {
             Networking.removeItem(this.netId);
             Game.graph.removeChild(this);
         }
+
+        doYourThing(_avatar: Player.Player) {
+
+        }
     }
 
-    export abstract class InternalItem extends Item {
+
+
+    export class InternalItem extends Item {
         value: number;
         constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _position, _netId);
-            this.value = getInternalValueById(_id);
+            this.value = getInternalItemById(_id).value;
+            this.setTextureById(_id);
             Networking.spawnInternalItem(this.id, _position, this.netId);
         }
 
-        setValues(_attributes: Entity.Attributes) {
-        }
-
-
-    }
-
-    export class CooldDownDown extends InternalItem {
-
-        constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number) {
-            super(_id, _position, _netId);
-
-            this.loadTexture(txtIceBucket);
-        }
-
-        setValues(_attributes: Entity.Attributes) {
-            _attributes.coolDownReduction = _attributes.coolDownReduction * (100 / (100 + this.value));
-            Networking.updateAvatarAttributes(_attributes);
+        doYourThing(_avatar: Player.Player) {
+            this.setAttributesById(this.id, _avatar.attributes);
+            Networking.updateAvatarAttributes(_avatar.attributes);
             this.despawn();
         }
+
+        setAttributesById(_id: ITEMID, _attributes: Entity.Attributes) {
+            switch (_id) {
+                case ITEMID.COOLDOWN:
+                    _attributes.coolDownReduction = _attributes.coolDownReduction * (100 / (100 + this.value));
+                    break;
+                case ITEMID.DMGUP:
+                    _attributes.attackPoints += this.value;
+            }
+        }
+
+        setTextureById(_id: ITEMID) {
+            switch (_id) {
+                case ITEMID.COOLDOWN:
+                    this.loadTexture(txtIceBucket);
+                    break;
+                case ITEMID.DMGUP:
+                    this.loadTexture(txtIceBucket)
+            }
+        }
     }
 
-    export function getItemById(_id: ITEMID): Items.Item {
-        return Game.itemsJSON.find(item => item.id == _id);
-    }
 
-    function getInternalValueById(_id: ITEMID): number {
-        return Game.internalItemStatsJSON.find(item => item.id == _id).value;
+    function getInternalItemById(_id: ITEMID): Items.InternalItem {
+        return Game.internalItemJSON.find(item => item.id == _id);
     }
 
 }
