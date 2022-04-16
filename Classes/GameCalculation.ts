@@ -34,5 +34,12 @@ namespace Calculation {
         return new ƒ.Vector3(newX, newY, _vectorToRotate.z);
     }
 
+    export function addPercentageAmountToValue(_baseValue: number, _percentageAmount: number): number {
+        return _baseValue * ((100 + _percentageAmount) / 100);
+    }
+    export function subPercentageAmountToValue(_baseValue: number, _percentageAmount: number): number {
+        return _baseValue * (100 / (100 + _percentageAmount));
+    }
+
 
 }

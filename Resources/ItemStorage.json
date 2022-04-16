@@ -9,10 +9,45 @@
         },
         {
             "name": "dmgUP",
-            "description": "cnt wrt th wrds crrtly",
+            "description": "up up we go!",
             "id": 1,
             "imgSrc": "./Resources/Image/Items/iceBucket.png",
             "value": 1
+        },
+        {
+            "name": "speedUp",
+            "description": "up over and gone!",
+            "id": 2,
+            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "value": 5
+        },
+        {
+            "name": "projectilesUp",
+            "description": "i hope you like it",
+            "id": 3,
+            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "value": 1
+        },
+        {
+            "name": "healthUp",
+            "description": "gimma that juicy juice",
+            "id": 4,
+            "imgSrc": "./Resources/Image/Items/healthUp.png",
+            "value": 5
+        },
+        {
+            "name": "scaleUp",
+            "description": "bigger means better",
+            "id": 5,
+            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "value": 13
+        },
+        {
+            "name": "scaleDown",
+            "description": "small n tiny",
+            "id": 6,
+            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "value": 13
         }
     ]
 }

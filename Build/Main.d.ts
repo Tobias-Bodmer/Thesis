@@ -120,10 +120,14 @@ declare namespace Items {
         COOLDOWN = 0,
         DMGUP = 1,
         SPEEDUP = 2,
-        PROJECTILESUP = 3
+        PROJECTILESUP = 3,
+        HEALTHUP = 4,
+        SCALEUP = 5,
+        SCALEDOWN = 6
     }
     let txtIceBucket: ƒ.TextureImage;
     let txtDmgUp: ƒ.TextureImage;
+    let txtHealthUp: ƒ.TextureImage;
     abstract class Item extends Game.ƒ.Node {
         tag: Tag.TAG;
         id: ITEMID;
@@ -141,7 +145,7 @@ declare namespace Items {
         value: number;
         constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
         doYourThing(_avatar: Player.Player): void;
-        setAttributesById(_id: ITEMID, _attributes: Entity.Attributes): void;
+        setAttributesById(_id: ITEMID, _avatar: Player.Player): void;
         setTextureById(_id: ITEMID): void;
     }
 }
@@ -265,6 +269,8 @@ declare namespace Calculation {
     function getCloserAvatarPosition(_startPoint: ƒ.Vector3): ƒ.Vector3;
     function calcDegree(_center: ƒ.Vector3, _target: ƒ.Vector3): number;
     function getRotatedVectorByAngle2D(_vectorToRotate: ƒ.Vector3, _angle: number): ƒ.Vector3;
+    function addPercentageAmountToValue(_baseValue: number, _percentageAmount: number): number;
+    function subPercentageAmountToValue(_baseValue: number, _percentageAmount: number): number;
 }
 declare namespace InputSystem {
     function calcPositionFromDegree(_degrees: number, _distance: number): ƒ.Vector2;

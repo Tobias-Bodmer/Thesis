@@ -221,6 +221,8 @@ namespace Game {
 
         //Items
         await Items.txtIceBucket.load("./Resources/Image/Items/iceBucket.png");
+        await Items.txtHealthUp.load("./Resources/Image/Items/healthUp.png");
+
 
     }
 

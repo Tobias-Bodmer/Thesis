@@ -3,11 +3,16 @@ namespace Items {
         COOLDOWN,
         DMGUP,
         SPEEDUP,
-        PROJECTILESUP
+        PROJECTILESUP,
+        HEALTHUP,
+        SCALEUP,
+        SCALEDOWN
     }
 
     export let txtIceBucket: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtDmgUp: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtHealthUp: ƒ.TextureImage = new ƒ.TextureImage();
+
 
 
 
@@ -78,18 +83,47 @@ namespace Items {
         }
 
         doYourThing(_avatar: Player.Player) {
-            this.setAttributesById(this.id, _avatar.attributes);
-            Networking.updateAvatarAttributes(_avatar.attributes);
+            this.setAttributesById(this.id, _avatar);
             this.despawn();
         }
 
-        setAttributesById(_id: ITEMID, _attributes: Entity.Attributes) {
+        setAttributesById(_id: ITEMID, _avatar: Player.Player) {
             switch (_id) {
                 case ITEMID.COOLDOWN:
-                    _attributes.coolDownReduction = _attributes.coolDownReduction * (100 / (100 + this.value));
+                    _avatar.attributes.coolDownReduction = Calculation.subPercentageAmountToValue(_avatar.attributes.coolDownReduction, this.value);
+                    console.log(this.description + ": " + _avatar.attributes.coolDownReduction);
+                    Networking.updateAvatarAttributes(_avatar.attributes);
                     break;
                 case ITEMID.DMGUP:
-                    _attributes.attackPoints += this.value;
+                    _avatar.attributes.attackPoints += this.value;
+                    console.log(this.description + ": " + _avatar.attributes.attackPoints);
+                    Networking.updateAvatarAttributes(_avatar.attributes);
+                    break;
+                case ITEMID.SPEEDUP:
+                    _avatar.attributes.speed = Calculation.subPercentageAmountToValue(_avatar.attributes.speed, this.value);
+                    console.log(this.description + ": " + _avatar.attributes.speed);
+                    Networking.updateAvatarAttributes(_avatar.attributes);
+                    break;
+                case ITEMID.PROJECTILESUP:
+                    //TODO: implement weapon sync over network
+                    break;
+                case ITEMID.HEALTHUP:
+                    _avatar.attributes.healthPoints = Calculation.addPercentageAmountToValue(_avatar.attributes.healthPoints, this.value);
+                    console.log(this.description + ": " + _avatar.attributes.healthPoints);
+                    Networking.updateAvatarAttributes(_avatar.attributes);
+                    break;
+                case ITEMID.SCALEUP:
+                    _avatar.attributes.scale = Calculation.addPercentageAmountToValue(_avatar.attributes.scale, this.value);
+                    console.log(this.description + ": " + _avatar.attributes.scale);
+                    Networking.updateAvatarAttributes(_avatar.attributes);
+                    //TODO: set new collider and sync over network
+                    break;
+                case ITEMID.SCALEDOWN:
+                    _avatar.attributes.scale = Calculation.subPercentageAmountToValue(_avatar.attributes.scale, this.value);
+                    console.log(this.description + ": " + _avatar.attributes.scale);
+                    Networking.updateAvatarAttributes(_avatar.attributes);
+                    //TODO: set new collider and sync over network
+                    break;
             }
         }
 
@@ -99,7 +133,29 @@ namespace Items {
                     this.loadTexture(txtIceBucket);
                     break;
                 case ITEMID.DMGUP:
-                    this.loadTexture(txtIceBucket)
+                    this.loadTexture(txtIceBucket); //TODO: add correct texture and change in JSON
+
+                    break;
+                case ITEMID.SPEEDUP:
+                    //TODO: add correct texture and change in JSON
+
+                    break;
+                case ITEMID.PROJECTILESUP:
+                    //TODO: add correct texture and change in JSON
+
+                    break;
+                case ITEMID.HEALTHUP:
+                    this.loadTexture(txtHealthUp);
+                    //TODO: add correct texture and change in JSON
+
+                    break;
+                case ITEMID.SCALEUP:
+                    //TODO: add correct texture and change in JSON
+
+                    break;
+                case ITEMID.SCALEDOWN:
+                    //TODO: add correct texture and change in JSON
+                    break;
             }
         }
     }
