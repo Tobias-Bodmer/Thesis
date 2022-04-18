@@ -2,6 +2,9 @@ namespace AnimationGeneration {
     export let txtRedTickIdle: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtRedTickWalk: ƒ.TextureImage = new ƒ.TextureImage();
 
+    export let txtSmallTickIdle: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtSmallTickWalk: ƒ.TextureImage = new ƒ.TextureImage();
+
     export let txtBatIdle: ƒ.TextureImage = new ƒ.TextureImage();
 
     export import ƒAid = FudgeAid;
@@ -49,6 +52,8 @@ namespace AnimationGeneration {
 
     let batAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.BAT, txtBatIdle, 4, 12);
     let redTickAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.REDTICK, txtRedTickIdle, 6, 12, txtRedTickWalk, 4, 12);
+    let smallTickAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.SMALLTICK, txtRedTickIdle, 6, 12, txtRedTickWalk, 4, 12);
+
     (<ƒAid.SpriteSheetAnimation>batAnimation.animations[""])
     //#endregion
 
@@ -59,6 +64,8 @@ namespace AnimationGeneration {
                 return batAnimation;
             case Entity.ID.REDTICK:
                 return redTickAnimation;
+            case Entity.ID.SMALLTICK:
+                return smallTickAnimation;
             default:
                 return null;
         }
@@ -66,7 +73,7 @@ namespace AnimationGeneration {
     }
 
     export function createAllAnimations() {
-        sheetArray.push(batAnimation, redTickAnimation);
+        sheetArray.push(batAnimation, redTickAnimation, smallTickAnimation);
 
         sheetArray.forEach(obj => {
             let idleWidth: number = obj.spriteSheetIdle.texture.texImageSource.width / obj.idleNumberOfFrames;
@@ -88,7 +95,7 @@ namespace AnimationGeneration {
         return scale;
     }
 
-    function generateAnimationFromGrid(_spritesheet: ƒ.CoatTextured, _animationsheet: ƒAid.SpriteSheetAnimations, _animationName: string, _width: number, _height: number, _numberOfFrames: number, _frameRate: number, _resolution: number) {
+    export function generateAnimationFromGrid(_spritesheet: ƒ.CoatTextured, _animationsheet: ƒAid.SpriteSheetAnimations, _animationName: string, _width: number, _height: number, _numberOfFrames: number, _frameRate: number, _resolution: number) {
         let name = _animationName;
         let createdAnimation: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation(name, _spritesheet);
         createdAnimation.generateByGrid(ƒ.Rectangle.GET(0, 0, _width, _height), _numberOfFrames, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(_width));

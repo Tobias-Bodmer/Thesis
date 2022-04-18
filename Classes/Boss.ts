@@ -37,34 +37,14 @@ namespace Enemy {
 
             switch (this.currentState) {
                 case BEHAVIOUR.IDLE:
-                    if (this.currentAnimation != Entity.ANIMATIONSTATES.IDLE) {
-                        this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
-                        this.setFrameDirection(1);
-                        this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
-                        this.currentAnimation = Entity.ANIMATIONSTATES.IDLE;
-                        Networking.updateEnemyState(this.currentAnimation, this.netId);
-                    }
-                    this.setFrameDirection(1);
-                    this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
+                    this.switchAnimation("idle");
                     break;
                 case BEHAVIOUR.FLEE:
-                    if (this.currentAnimation != Entity.ANIMATIONSTATES.WALK) {
-                        this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["walk"]);
-                        this.setFrameDirection(1);
-                        this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
-                        this.currentAnimation = Entity.ANIMATIONSTATES.WALK;
-                        Networking.updateEnemyState(this.currentAnimation, this.netId);
-                    }
+                    this.switchAnimation("walk");
                     this.moveDirection = this.moveAway(Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2()).toVector3();
                     break;
                 case BEHAVIOUR.SUMMON:
-                    if (this.currentAnimation != Entity.ANIMATIONSTATES.SUMMON) {
-                        this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["summon"]);
-                        this.setFrameDirection(1);
-                        this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
-                        this.currentAnimation = Entity.ANIMATIONSTATES.WALK;
-                        Networking.updateEnemyState(this.currentAnimation, this.netId);
-                    }
+                    this.switchAnimation("summon");
                     this.summon();
                     break;
                 // default:

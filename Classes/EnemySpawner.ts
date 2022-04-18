@@ -1,7 +1,7 @@
 namespace EnemySpawner {
     let spawnTime: number = 0 * Game.frameRate;
     let currentTime: number = spawnTime;
-    let maxEnemies: number = 1;
+    let maxEnemies: number = 0;
 
     export function spawnEnemies(): void {
         let currentRoom = (<Generation.Room>Game.graph.getChildren().find(elem => (<Generation.Room>elem).tag == Tag.TAG.ROOM));

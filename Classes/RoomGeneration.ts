@@ -48,8 +48,9 @@ namespace Generation {
 
     function addRoom(_currentRoom: Room, _roomType: Generation.ROOMTYPE): void {
         let numberOfExits: number = countBool(_currentRoom.exits);
-        let randomNumber: number = Math.floor(Math.random() * numberOfExits);
+        let randomNumber: number = Math.round(Math.random() * (numberOfExits - 1));
         let possibleExitIndex: number[] = getExitIndex(_currentRoom.exits);
+        console.log(_roomType + ": " + possibleExitIndex + "____ " + randomNumber);
         let newRoomPosition: [number, number];
         let newRoom: Room;
 
@@ -222,11 +223,11 @@ namespace Generation {
     export function switchRoom(_currentRoom: Room, _direction: [boolean, boolean, boolean, boolean]) {
         if (_currentRoom.finished) {
             let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => (<any>elem).tag != Tag.TAG.PLAYER);
-    
+
             oldObjects.forEach((elem) => {
                 Game.graph.removeChild(elem);
             });
-    
+
             if (_direction[0]) {
                 addRoomToGraph(_currentRoom.neighbourN);
             }
@@ -235,12 +236,12 @@ namespace Generation {
             }
             if (_direction[2]) {
                 addRoomToGraph(_currentRoom.neighbourS);
-    
+
             }
             if (_direction[3]) {
                 addRoomToGraph(_currentRoom.neighbourW);
             }
-    
+
             function addRoomToGraph(_room: Room) {
                 sendRoom(_room);
                 Game.graph.addChild(_room);
@@ -248,14 +249,14 @@ namespace Generation {
                 Game.graph.appendChild(_room.walls[1]);
                 Game.graph.appendChild(_room.walls[2]);
                 Game.graph.appendChild(_room.walls[3]);
-    
+
                 Game.avatar1.cmpTransform.mtxLocal.translation = _room.cmpTransform.mtxLocal.translation;
-    
+
                 for (let i = 0; i < _room.doors.length; i++) {
                     Game.graph.addChild(_room.doors[i]);
                 }
             }
-    
+
             EnemySpawner.spawnEnemies();
         }
     }

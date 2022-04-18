@@ -154,6 +154,39 @@ namespace Enemy {
                 this.cmpTransform.mtxLocal.translate(_direction);
             }
         }
+
+        switchAnimation(_name: string) {
+            switch (_name) {
+                case "idle":
+                    if (this.currentAnimation != Entity.ANIMATIONSTATES.IDLE) {
+                        this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations[_name]);
+                        this.setFrameDirection(1);
+                        this.framerate = AnimationGeneration.getAnimationById(this.id).idleFrameRate;
+                        this.currentAnimation = Entity.ANIMATIONSTATES.IDLE;
+                        Networking.updateEnemyState(this.currentAnimation, this.netId);
+                    }
+                    break;
+                case "walk":
+                    if (this.currentAnimation != Entity.ANIMATIONSTATES.WALK) {
+                        this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations[_name]);
+                        this.setFrameDirection(1);
+                        this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
+                        this.currentAnimation = Entity.ANIMATIONSTATES.WALK;
+                        Networking.updateEnemyState(this.currentAnimation, this.netId);
+                    }
+                    break;
+                case "summon":
+                    if (this.currentAnimation != Entity.ANIMATIONSTATES.SUMMON) {
+                        this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations[_name]);
+                        this.setFrameDirection(1);
+                        this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
+                        this.currentAnimation = Entity.ANIMATIONSTATES.SUMMON;
+                        Networking.updateEnemyState(this.currentAnimation, this.netId);
+                    }
+
+            }
+
+        }
     }
 
 
@@ -184,25 +217,11 @@ namespace Enemy {
             this.behaviour();
             switch (this.currentState) {
                 case BEHAVIOUR.IDLE:
-                    if (this.currentAnimation != Entity.ANIMATIONSTATES.IDLE) {
-                        this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
-                        this.setFrameDirection(1);
-                        this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
-                        this.currentAnimation = Entity.ANIMATIONSTATES.IDLE;
-                        Networking.updateEnemyState(this.currentAnimation, this.netId);
-                    }
-                    this.setFrameDirection(1);
-                    this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
+                    this.switchAnimation("idle");
                     break;
                 case BEHAVIOUR.FOLLOW:
-                    if (this.currentAnimation != Entity.ANIMATIONSTATES.WALK) {
-                        this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["walk"]);
-                        this.setFrameDirection(1);
-                        this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
-                        this.currentAnimation = Entity.ANIMATIONSTATES.WALK;
-                        Networking.updateEnemyState(this.currentAnimation, this.netId);
-                    }
-                    this.moveDirection = this.moveAway(Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2()).toVector3();
+                    this.switchAnimation("walk");
+                    this.moveDirection = this.moveSimple(Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2()).toVector3();
                     break;
                 // default:
                 //     // this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
@@ -213,6 +232,32 @@ namespace Enemy {
     }
 
     export class EnemyPatrol extends Enemy {
+        patrolPoints: ƒ.Vector2[] = [new ƒ.Vector2(0, 4), new ƒ.Vector2(5, 0)];
+        waitTime: number = 1000;
+        currenPointIndex: number = 0;
+
+        public update(): void {
+            super.update();
+        }
+
+        moveBehaviour(): void {
+            this.patrol();
+        }
+
+        patrol() {
+            if (this.mtxLocal.translation.getDistance(ƒ.Vector3.SUM(this.patrolPoints[this.currenPointIndex].toVector3(), Game.currentRoom.mtxLocal.translation)) > 0.3) {
+                this.moveDirection = this.moveSimple((ƒ.Vector2.SUM(this.patrolPoints[this.currenPointIndex], Game.currentRoom.mtxLocal.translation.toVector2()))).toVector3();
+            } else {
+                setTimeout(() => {
+                    if (this.currenPointIndex + 1 < this.patrolPoints.length) {
+                        this.currenPointIndex++;
+                    }
+                    else {
+                        this.currenPointIndex = 0;
+                    }
+                }, this.waitTime);
+            }
+        }
 
     }
     export class EnemyShoot extends Enemy {

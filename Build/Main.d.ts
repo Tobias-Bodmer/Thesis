@@ -87,6 +87,7 @@ declare namespace Enemy {
         getDamage(_value: number): void;
         die(): void;
         collide(_direction: ƒ.Vector3): void;
+        switchAnimation(_name: string): void;
     }
     class EnemyDumb extends Enemy {
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
@@ -95,6 +96,12 @@ declare namespace Enemy {
         moveBehaviour(): void;
     }
     class EnemyPatrol extends Enemy {
+        patrolPoints: ƒ.Vector2[];
+        waitTime: number;
+        currenPointIndex: number;
+        update(): void;
+        moveBehaviour(): void;
+        patrol(): void;
     }
     class EnemyShoot extends Enemy {
         weapon: Weapons.Weapon;
@@ -157,6 +164,8 @@ declare namespace Items {
 declare namespace AnimationGeneration {
     export let txtRedTickIdle: ƒ.TextureImage;
     export let txtRedTickWalk: ƒ.TextureImage;
+    export let txtSmallTickIdle: ƒ.TextureImage;
+    export let txtSmallTickWalk: ƒ.TextureImage;
     export let txtBatIdle: ƒ.TextureImage;
     export import ƒAid = FudgeAid;
     class MyAnimationClass {
@@ -176,6 +185,7 @@ declare namespace AnimationGeneration {
     export let sheetArray: MyAnimationClass[];
     export function getAnimationById(_id: Entity.ID): MyAnimationClass;
     export function createAllAnimations(): void;
+    export function generateAnimationFromGrid(_spritesheet: ƒ.CoatTextured, _animationsheet: ƒAid.SpriteSheetAnimations, _animationName: string, _width: number, _height: number, _numberOfFrames: number, _frameRate: number, _resolution: number): void;
     export {};
 }
 declare namespace Entity {
