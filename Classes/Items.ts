@@ -6,7 +6,8 @@ namespace Items {
         PROJECTILESUP,
         HEALTHUP,
         SCALEUP,
-        SCALEDOWN
+        SCALEDOWN,
+        ARMORUP
     }
 
     export let txtIceBucket: ƒ.TextureImage = new ƒ.TextureImage();
@@ -124,6 +125,11 @@ namespace Items {
                     Networking.updateAvatarAttributes(_avatar.attributes);
                     //TODO: set new collider and sync over network
                     break;
+                case ITEMID.ARMORUP:
+                    _avatar.attributes.armor += this.value;
+                    console.log(this.description + ": " + _avatar.attributes.armor);
+                    Networking.updateAvatarAttributes(_avatar.attributes);
+                    break;
             }
         }
 
@@ -154,6 +160,9 @@ namespace Items {
 
                     break;
                 case ITEMID.SCALEDOWN:
+                    //TODO: add correct texture and change in JSON
+                    break;
+                case ITEMID.ARMORUP:
                     //TODO: add correct texture and change in JSON
                     break;
             }

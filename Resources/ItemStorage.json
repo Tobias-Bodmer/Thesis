@@ -48,6 +48,13 @@
             "id": 6,
             "imgSrc": "./Resources/Image/Items/iceBucket.png",
             "value": 13
+        },
+        {
+            "name": "armorUp",
+            "description": "harder better faster stronger",
+            "id": 7,
+            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "value": 5
         }
     ]
 }

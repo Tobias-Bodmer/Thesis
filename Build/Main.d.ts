@@ -137,7 +137,8 @@ declare namespace Items {
         PROJECTILESUP = 3,
         HEALTHUP = 4,
         SCALEUP = 5,
-        SCALEDOWN = 6
+        SCALEDOWN = 6,
+        ARMORUP = 7
     }
     let txtIceBucket: ƒ.TextureImage;
     let txtDmgUp: ƒ.TextureImage;
