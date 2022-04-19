@@ -24,12 +24,15 @@ namespace Items {
         public description: string;
         public imgSrc: string;
         public collider: Collider.Collider;
+        transform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
+        position: ƒ.Vector2
 
         constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number) {
             super(getInternalItemById(_id).name);
             this.id = _id;
             const item = getInternalItemById(this.id);
-
+            this.position = _position;
+            this.transform.mtxLocal.translation = _position.toVector3();
             if (_netId != undefined) {
                 Networking.popID(this.netId);
                 Networking.currentIDs.push(_netId);
@@ -80,7 +83,7 @@ namespace Items {
             super(_id, _position, _netId);
             this.value = getInternalItemById(_id).value;
             this.setTextureById(_id);
-            Networking.spawnInternalItem(this.id, _position, this.netId);
+            Networking.spawnInternalItem(this, this.id, _position, this.netId);
         }
 
         doYourThing(_avatar: Player.Player) {
@@ -106,7 +109,9 @@ namespace Items {
                     Networking.updateAvatarAttributes(_avatar.attributes);
                     break;
                 case ITEMID.PROJECTILESUP:
-                    //TODO: implement weapon sync over network
+                    _avatar.weapon.projectileAmount += this.value;
+                    console.log(this.description + ": " + _avatar.weapon.projectileAmount);
+                    Networking.updateAvatarWeapon(_avatar.weapon);
                     break;
                 case ITEMID.HEALTHUP:
                     _avatar.attributes.healthPoints = Calculation.addPercentageAmountToValue(_avatar.attributes.maxHealthPoints, this.value);
@@ -115,12 +120,16 @@ namespace Items {
                     break;
                 case ITEMID.SCALEUP:
                     _avatar.attributes.scale = Calculation.addPercentageAmountToValue(_avatar.attributes.scale, this.value);
+                    _avatar.attributes.updateScaleDependencies();
+                    _avatar.mtxLocal.scale(new ƒ.Vector3(_avatar.attributes.scale, _avatar.attributes.scale, _avatar.attributes.scale));
                     console.log(this.description + ": " + _avatar.attributes.scale);
                     Networking.updateAvatarAttributes(_avatar.attributes);
                     //TODO: set new collider and sync over network
                     break;
                 case ITEMID.SCALEDOWN:
                     _avatar.attributes.scale = Calculation.subPercentageAmountToValue(_avatar.attributes.scale, this.value);
+                    _avatar.mtxLocal.scale(new ƒ.Vector3(_avatar.attributes.scale, _avatar.attributes.scale, _avatar.attributes.scale));
+                    _avatar.attributes.updateScaleDependencies();
                     console.log(this.description + ": " + _avatar.attributes.scale);
                     Networking.updateAvatarAttributes(_avatar.attributes);
                     //TODO: set new collider and sync over network
@@ -131,6 +140,7 @@ namespace Items {
                     Networking.updateAvatarAttributes(_avatar.attributes);
                     break;
             }
+
         }
 
         setTextureById(_id: ITEMID) {

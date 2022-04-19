@@ -150,6 +150,8 @@ declare namespace Items {
         description: string;
         imgSrc: string;
         collider: Collider.Collider;
+        transform: ƒ.ComponentTransform;
+        position: ƒ.Vector2;
         constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
         loadTexture(_texture: ƒ.TextureImage): Promise<void>;
         setPosition(_position: ƒ.Vector2): void;
@@ -203,6 +205,7 @@ declare namespace Entity {
         coolDownReduction: number;
         scale: number;
         constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _armor: number, _cooldownReduction?: number);
+        updateScaleDependencies(): void;
     }
 }
 declare namespace Enemy {
@@ -232,7 +235,7 @@ declare namespace Bullets {
         flyDirection: ƒ.Vector3;
         direction: ƒ.Vector3;
         collider: Collider.Collider;
-        hitPoints: number;
+        hitPointsScale: number;
         speed: number;
         lifetime: number;
         knockbackForce: number;
@@ -320,9 +323,10 @@ declare namespace Networking {
         ENEMYDIE = 16,
         SPAWNINTERNALITEM = 17,
         UPDATEATTRIBUTES = 18,
-        ITEMDIE = 19,
-        SENDROOM = 20,
-        SWITCHROOMREQUEST = 21
+        UPDATEWEAPON = 19,
+        ITEMDIE = 20,
+        SENDROOM = 21,
+        SWITCHROOMREQUEST = 22
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -352,8 +356,9 @@ declare namespace Networking {
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number, _state: Entity.ANIMATIONSTATES): void;
     function updateEnemyState(_state: Entity.ANIMATIONSTATES, _netId: number): void;
     function removeEnemy(_netId: number): void;
-    function spawnInternalItem(_id: number, _position: ƒ.Vector2, _netId: number): Promise<void>;
+    function spawnInternalItem(_item: Items.InternalItem, _id: number, _position: ƒ.Vector2, _netId: number): Promise<void>;
     function updateAvatarAttributes(_attributes: Entity.Attributes): void;
+    function updateAvatarWeapon(_weapon: Weapons.Weapon): void;
     function removeItem(_netId: number): void;
     function sendRoom(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: Generation.ROOMTYPE): void;
     function switchRoomRequest(_coordiantes: [number, number], _direction: [boolean, boolean, boolean, boolean]): void;

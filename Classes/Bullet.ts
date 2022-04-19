@@ -22,7 +22,7 @@ namespace Bullets {
 
         public collider: Collider.Collider;
 
-        public hitPoints: number = 5;
+        public hitPointsScale: number = 5;
         public speed: number = 20;
         lifetime: number = 1 * Game.frameRate;
         knockbackForce: number = 4;
@@ -54,7 +54,7 @@ namespace Bullets {
             }
 
             this.speed = _speed;
-            this.hitPoints = _hitPoints;
+            this.hitPointsScale = _hitPoints;
             this.lifetime = _lifetime;
             this.knockbackForce = _knockbackForce;
             this.killcount = _killcount;
@@ -153,9 +153,9 @@ namespace Bullets {
             colliders.forEach((element) => {
                 if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
                     if ((<Enemy.Enemy>element).attributes.healthPoints > 0) {
-                        (<Enemy.Enemy>element).getDamage(this.hitPoints);
+                        (<Enemy.Enemy>element).getDamage(this.hitPointsScale);
                         (<Enemy.Enemy>element).getKnockback(this.knockbackForce, this.mtxLocal.translation);
-                        Game.graph.addChild(new UI.DamageUI((<Enemy.Enemy>element).cmpTransform.mtxLocal.translation, Math.round((<Enemy.Enemy>element).getDamageReduction(this.hitPoints))));
+                        Game.graph.addChild(new UI.DamageUI((<Enemy.Enemy>element).cmpTransform.mtxLocal.translation, Math.round((<Enemy.Enemy>element).getDamageReduction(this.hitPointsScale))));
                         this.lifetime = 0;
                         this.killcount--;
                     }
@@ -166,9 +166,9 @@ namespace Bullets {
                 colliders.forEach((element) => {
                     if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
                         if ((<Player.Player>element).attributes.healthPoints > 0 && (<Player.Player>element).attributes.hitable) {
-                            (<Player.Player>element).getDamage(this.hitPoints);
+                            (<Player.Player>element).getDamage(this.hitPointsScale);
                             (<Player.Player>element).getKnockback(this.knockbackForce, this.mtxLocal.translation);
-                            Game.graph.addChild(new UI.DamageUI((<Player.Player>element).cmpTransform.mtxLocal.translation, this.hitPoints));
+                            Game.graph.addChild(new UI.DamageUI((<Player.Player>element).cmpTransform.mtxLocal.translation, this.hitPointsScale));
                             this.lifetime = 0;
                             this.killcount--;
                         }
@@ -190,7 +190,7 @@ namespace Bullets {
         constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number) {
             super(_name, _speed, _hitPoints, _lifetime, _knockbackForce, _killcount, _position, _direction, _netId);
             this.speed = 6;
-            this.hitPoints = 10;
+            this.hitPointsScale = 10;
             this.lifetime = 6;
             this.killcount = 4;
         }
@@ -208,7 +208,7 @@ namespace Bullets {
         constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _target?: ƒ.Vector3, _netId?: number) {
             super(_name, _speed, _hitPoints, _lifetime, _knockbackForce, _killcount, _position, _direction, _netId);
             this.speed = 20;
-            this.hitPoints = 5;
+            this.hitPointsScale = 5;
             this.lifetime = 1 * Game.frameRate;
             this.killcount = 1;
             if (_target != null) {

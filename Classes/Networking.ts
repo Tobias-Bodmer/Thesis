@@ -21,6 +21,7 @@ namespace Networking {
         ENEMYDIE,
         SPAWNINTERNALITEM,
         UPDATEATTRIBUTES,
+        UPDATEWEAPON,
         ITEMDIE,
         SENDROOM,
         SWITCHROOMREQUEST
@@ -81,29 +82,15 @@ namespace Networking {
                     //Spawn avatar2 as ranged or melee 
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
                         if (message.content.type == Player.PLAYERTYPE.MELEE) {
-                            Game.avatar2 = new Player.Melee(Entity.ID.PLAYER2,
-                                new Entity.Attributes(
-                                    message.content.attributes.healthPoints,
-                                    message.content.attributes.attackPoints,
-                                    message.content.attributes.speed,
-                                    message.content.attributes.scale,
-                                    message.content.attributes.knockbackForce,
-                                    message.content.attributes.armor
-                                ));
+                            const attributes: Entity.Attributes = message.content.attributes;
+                            Game.avatar2 = new Player.Melee(Entity.ID.PLAYER2, attributes);
+
 
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                             Game.graph.appendChild(Game.avatar2);
                         } else if (message.content.type == Player.PLAYERTYPE.RANGED) {
-                            Game.avatar2 = new Player.Ranged(Entity.ID.PLAYER2,
-                                new Entity.Attributes(
-                                    message.content.attributes.healthPoints,
-                                    message.content.attributes.attackPoints,
-                                    message.content.attributes.speed,
-                                    message.content.attributes.scale,
-                                    message.content.attributes.knockbackForce,
-                                    message.content.attributes.armor
-                                ));
-
+                            const attributes: Entity.Attributes = message.content.attributes
+                            Game.avatar2 = new Player.Ranged(Entity.ID.PLAYER2, attributes);
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                             Game.graph.appendChild(Game.avatar2);
                         }
@@ -114,6 +101,8 @@ namespace Networking {
 
                         //Sync avatar2 position and rotation
                         if (message.content != undefined && message.content.text == FUNCTION.TRANSFORM.toString()) {
+                            // let test: Game.ƒ.Vector3 = message.content.value.data;
+                            // // console.log(test);
                             let moveVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.value.data[0], message.content.value.data[1], message.content.value.data[2]);
                             let rotateVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.rotation.data[0], message.content.rotation.data[1], message.content.rotation.data[2]);
 
@@ -134,7 +123,6 @@ namespace Networking {
                         //Update inventory
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEINVENTORY.toString()) {
                             let item: Items.Item = Game.items.find(elem => elem.netId == message.content.netId);
-
                             Game.avatar2.items.push(item);
                         }
 
@@ -190,19 +178,13 @@ namespace Networking {
 
                         //Spawn enemy at the client 
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNENEMY.toString()) {
+                            const attributes: Entity.Attributes = message.content.attributes;
                             EnemySpawner.networkSpawnById(
                                 message.content.id,
                                 new ƒ.Vector2(
                                     message.content.position.data[0],
                                     message.content.position.data[1]),
-                                new Entity.Attributes(
-                                    message.content.attributes.healthPoints,
-                                    message.content.attributes.attackPoints,
-                                    message.content.attributes.speed,
-                                    message.content.attributes.scale,
-                                    message.content.attributes.knockbackForce,
-                                    message.content.attributes.armor
-                                )
+                                attributes
                                 , message.content.netId);
                         }
 
@@ -241,14 +223,23 @@ namespace Networking {
                         //Spawn item from host
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNINTERNALITEM.toString()) {
                             if (client.id != client.idHost) {
+                                let newItem: Items.InternalItem = message.content.item;
+                                // Game.graph.addChild(newItem);
                                 Game.graph.addChild(new Items.InternalItem(message.content.id, new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]), message.content.netId));
                             }
                         }
 
                         //apply item attributes
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEATTRIBUTES.toString()) {
-                            let temp: Entity.Attributes = new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale, message.content.attributes.knockbackForce, message.content.attributes.coolDownReduction);
-                            Game.avatar2.attributes = temp;
+                            const tempAttributes: Entity.Attributes = message.content.attributes;
+                            Game.avatar2.attributes = tempAttributes;
+                            Game.avatar2.mtxLocal.scale(new ƒ.Vector3(Game.avatar2.attributes.scale, Game.avatar2.attributes.scale, Game.avatar2.attributes.scale));
+                        }
+
+                        //apply weapon
+                        if (message.content != undefined && message.content.text == FUNCTION.UPDATEWEAPON.toString()) {
+                            const tempWeapon: Weapons.Weapon = message.content.weapon;
+                            Game.avatar2.weapon = tempWeapon;
                         }
 
                         //Kill item from host
@@ -405,9 +396,9 @@ namespace Networking {
 
 
     //#region items
-    export async function spawnInternalItem(_id: number, _position: ƒ.Vector2, _netId: number) {
+    export async function spawnInternalItem(_item: Items.InternalItem, _id: number, _position: ƒ.Vector2, _netId: number) {
         if (Game.connected && client.idHost == client.id) {
-            await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNINTERNALITEM, id: _id, position: _position, netId: _netId } });
+            await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNINTERNALITEM, item: _item, id: _id, position: _position, netId: _netId } });
         }
     }
     export function updateAvatarAttributes(_attributes: Entity.Attributes) {
@@ -416,6 +407,14 @@ namespace Networking {
         }
         else {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEATTRIBUTES, attributes: _attributes } });
+        }
+    }
+    export function updateAvatarWeapon(_weapon: Weapons.Weapon) {
+        if (client.idHost != client.id) {
+            client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.UPDATEWEAPON, weapon: _weapon } });
+        }
+        else {
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEWEAPON, weapon: _weapon } });
         }
     }
 

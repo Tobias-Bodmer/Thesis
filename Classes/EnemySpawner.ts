@@ -4,20 +4,22 @@ namespace EnemySpawner {
     let maxEnemies: number = 0;
 
     export function spawnEnemies(): void {
-        let currentRoom = (<Generation.Room>Game.graph.getChildren().find(elem => (<Generation.Room>elem).tag == Tag.TAG.ROOM));
-        maxEnemies = currentRoom.enemyCount;
-        while (maxEnemies > 0) {
+        if (Networking.client.idHost == Networking.client.id) {
+            let currentRoom = (<Generation.Room>Game.graph.getChildren().find(elem => (<Generation.Room>elem).tag == Tag.TAG.ROOM));
             maxEnemies = currentRoom.enemyCount;
-            if (currentTime == spawnTime) {
-                let position = new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2));
-                position.add(currentRoom.mtxLocal.translation.toVector2());
-                console.log(position);
-                spawnByID(Entity.ID.REDTICK, position);
-                currentRoom.enemyCount--;
-            }
-            currentTime--;
-            if (currentTime <= 0) {
-                currentTime = spawnTime;
+            while (maxEnemies > 0) {
+                maxEnemies = currentRoom.enemyCount;
+                if (currentTime == spawnTime) {
+                    let position = new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2));
+                    position.add(currentRoom.mtxLocal.translation.toVector2());
+                    // console.log(position);
+                    spawnByID(Entity.ID.REDTICK, position);
+                    currentRoom.enemyCount--;
+                }
+                currentTime--;
+                if (currentTime <= 0) {
+                    currentTime = spawnTime;
+                }
             }
         }
     }

@@ -6,7 +6,7 @@ namespace Player {
 
     export abstract class Player extends Entity.Entity implements Interfaces.IKnockbackable {
         public items: Array<Items.Item> = [];
-        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.NORMALBULLETS.STANDARD, 2);
+        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.NORMALBULLETS.STANDARD, 1);
 
         public tick: number = 0;
         public positions: ƒ.Vector3[] = [];

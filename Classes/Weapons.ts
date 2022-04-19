@@ -5,7 +5,7 @@ namespace Weapons {
         attackCount: number = 1;
         public currentAttackCount: number = this.attackCount;
         bulletType: Bullets.NORMALBULLETS = Bullets.NORMALBULLETS.STANDARD;
-        projectileAmount: number = 2;
+        projectileAmount: number = 1;
 
         constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.NORMALBULLETS, _projectileAmount: number) {
             this.cooldownTime = _cooldownTime;
@@ -57,15 +57,15 @@ namespace Weapons {
                 switch (_bulletType) {
                     case Bullets.NORMALBULLETS.STANDARD:
                         const standardRef = Game.bulletsJSON.find(bullet => bullet.type == Bullets.NORMALBULLETS.STANDARD);
-                        magazine.push(new Bullets.Bullet(standardRef.name, standardRef.speed, standardRef.hitPoints, standardRef.lifetime, standardRef.knockbackForce, standardRef.killcount, _position, _direction, _netId))
+                        magazine.push(new Bullets.Bullet(standardRef.name, standardRef.speed, standardRef.hitPointsScale, standardRef.lifetime, standardRef.knockbackForce, standardRef.killcount, _position, _direction, _netId))
                         break;
                     case Bullets.NORMALBULLETS.SLOW:
                         const slowRef = Game.bulletsJSON.find(bullet => bullet.type == Bullets.NORMALBULLETS.SLOW);
-                        magazine.push(new Bullets.Bullet(slowRef.name, slowRef.speed, slowRef.hitPoints, slowRef.lifetime, slowRef.knockbackForce, slowRef.killcount, _position, _direction, _netId));
+                        magazine.push(new Bullets.Bullet(slowRef.name, slowRef.speed, slowRef.hitPointsScale, slowRef.lifetime, slowRef.knockbackForce, slowRef.killcount, _position, _direction, _netId));
                         break;
                     case Bullets.NORMALBULLETS.MELEE:
                         const meleeRef = Game.bulletsJSON.find(bullet => bullet.type == Bullets.NORMALBULLETS.MELEE);
-                        magazine.push(new Bullets.Bullet(meleeRef.name, meleeRef.speed, meleeRef.hitPoints, meleeRef.lifetime, meleeRef.knockbackForce, meleeRef.killcount, _position, _direction, _netId));
+                        magazine.push(new Bullets.Bullet(meleeRef.name, meleeRef.speed, meleeRef.hitPointsScale, meleeRef.lifetime, meleeRef.knockbackForce, meleeRef.killcount, _position, _direction, _netId));
                         break;
                 }
             }

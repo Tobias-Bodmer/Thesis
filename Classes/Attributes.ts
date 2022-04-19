@@ -25,5 +25,12 @@ namespace Entity {
                 this.coolDownReduction = _cooldownReduction;
             }
         }
+
+        updateScaleDependencies() {
+            this.healthPoints = Math.fround(this.healthPoints * (100 + (10 * this.scale)) / 100);
+            this.attackPoints = Math.fround(this.attackPoints * this.scale);
+            this.speed = Math.fround(this.speed / this.scale);
+            this.knockbackForce = this.knockbackForce * (100 + (10 * this.scale)) / 100;
+        }
     }
 }

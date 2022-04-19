@@ -43,6 +43,7 @@ namespace Generation {
     }
 
     function sendRoom(_room: Room) {
+        console.log(_room);
         Networking.sendRoom(_room.name, _room.coordinates, _room.exits, _room.roomType);
     }
 

@@ -253,8 +253,8 @@ namespace Game {
 
             //#region init Items
             if (Networking.client.id == Networking.client.idHost) {
-                item1 = new Items.InternalItem(Items.ITEMID.COOLDOWN, new ƒ.Vector2(0, 2), null);
-                let item2 = new Items.InternalItem(Items.ITEMID.HEALTHUP, new ƒ.Vector2(0, -2), null);
+                item1 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(0, 2), null);
+                let item2 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(0, -2), null);
 
                 graph.appendChild(item1);
                 graph.appendChild(item2);

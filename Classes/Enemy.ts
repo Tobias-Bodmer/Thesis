@@ -9,7 +9,7 @@ namespace Enemy {
 
     export class Enemy extends Entity.Entity implements Interfaces.IKnockbackable {
         currentState: BEHAVIOUR;
-        public netId: number = Networking.idGenerator();
+        public netId: number;
         target: ƒ.Vector2;
         lifetime: number;
         moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
@@ -25,11 +25,15 @@ namespace Enemy {
 
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
             if (_netId != undefined) {
-                Networking.popID(this.netId);
+                if (this.netId != undefined) {
+                    Networking.popID(this.netId);
+                }
                 Networking.currentIDs.push(_netId);
                 this.netId = _netId;
             }
-            this.mtxLocal.scale(new ƒ.Vector3(this.attributes.scale, this.attributes.scale, 0));
+            else {
+                this.netId = Networking.idGenerator()
+            }
             this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), (this.mtxLocal.scaling.x * this.idleScale) / 2)
             Networking.spawnEnemy(this, this.netId);
@@ -73,9 +77,7 @@ namespace Enemy {
             return moveSimple;
         }
 
-        //TODO move patrol
-
-
+       
         public getDamage(_value: number): void {
             if (Networking.client.idHost == Networking.client.id) {
                 super.getDamage(_value);
