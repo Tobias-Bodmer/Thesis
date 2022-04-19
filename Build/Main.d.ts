@@ -43,6 +43,7 @@ declare namespace Entity {
         updateCollider(): void;
         collide(_direction: ƒ.Vector3): void;
         getDamage(_value: number): void;
+        getDamageReduction(_value: number): number;
         doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     }
@@ -68,7 +69,8 @@ declare namespace Enemy {
         FOLLOW = 1,
         FLEE = 2,
         MOVE = 3,
-        SUMMON = 4
+        SUMMON = 4,
+        DASH = 5
     }
     class Enemy extends Entity.Entity implements Interfaces.IKnockbackable {
         currentState: BEHAVIOUR;
@@ -199,7 +201,7 @@ declare namespace Entity {
         attackPoints: number;
         coolDownReduction: number;
         scale: number;
-        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _cooldownReduction?: number);
+        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _armor: number, _cooldownReduction?: number);
     }
 }
 declare namespace Enemy {

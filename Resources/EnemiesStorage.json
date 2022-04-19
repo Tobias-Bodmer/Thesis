@@ -7,7 +7,8 @@
                 "attackPoints": 1,
                 "speed": 2,
                 "scale": 1,
-                "knockbackForce": 0.1
+                "knockbackForce": 0.1,
+                "armor": 0
             }
         },
         {
@@ -17,7 +18,8 @@
                 "attackPoints": 1,
                 "speed": 3,
                 "scale": 0.8,
-                "knockbackForce": 0.1
+                "knockbackForce": 0.1,
+                "armor": 0
             }
         },
         {
@@ -27,7 +29,8 @@
                 "attackPoints": 1,
                 "speed": 1,
                 "scale": 2,
-                "knockbackForce": 0.1
+                "knockbackForce": 0.1,
+                "armor": 0
             }
         }
     ]

@@ -54,7 +54,7 @@ namespace Enemy {
         }
 
         summon() {
-            EnemySpawner.spawnByID(Entity.ID.SMALLTICK, this.mtxLocal.translation.toVector2(), new Entity.Attributes(5, 5, 3, Math.random() * 2 + 1, 0));
+            EnemySpawner.spawnByID(Entity.ID.SMALLTICK, this.mtxLocal.translation.toVector2(), new Entity.Attributes(5, 5, 3, Math.random() * 2 + 1, 0, 0));
         }
     }
 }

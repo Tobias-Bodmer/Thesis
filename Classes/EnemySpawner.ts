@@ -29,7 +29,7 @@ namespace EnemySpawner {
             case Entity.ID.BAT:
                 if (_attributes == null && _netID == null) {
                     const ref = Game.enemiesJSON.find(enemy => enemy.name == "bat");
-                    enemy = new Enemy.EnemyDumb(Entity.ID.BAT, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale, Math.random() * ref.attributes.knockbackForce + 0.5), _position, _netID);
+                    enemy = new Enemy.EnemyDumb(Entity.ID.BAT, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale, Math.random() * ref.attributes.knockbackForce + 0.5, ref.attributes.armor), _position, _netID);
                 } else {
                     enemy = new Enemy.EnemyDumb(Entity.ID.BAT, _attributes, _position, _netID);
                 }
@@ -37,7 +37,7 @@ namespace EnemySpawner {
             case Entity.ID.REDTICK:
                 if (_attributes == null && _netID == null) {
                     const ref = Game.enemiesJSON.find(enemy => enemy.name == "redtick");
-                    enemy = new Enemy.EnemyDumb(Entity.ID.REDTICK, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, Math.random() * ref.attributes.scale + 0.5, ref.attributes.knockbackForce), _position, _netID);
+                    enemy = new Enemy.EnemyDumb(Entity.ID.REDTICK, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, Math.random() * ref.attributes.scale + 0.5, ref.attributes.knockbackForce, ref.attributes.armor), _position, _netID);
                 }
                 else {
                     enemy = new Enemy.EnemyDumb(Entity.ID.REDTICK, _attributes, _position, _netID);
@@ -46,7 +46,7 @@ namespace EnemySpawner {
             case Entity.ID.SMALLTICK:
                 if (_attributes == null && _netID == null) {
                     const ref = Game.enemiesJSON.find(enemy => enemy.name == "smalltick");
-                    enemy = new Enemy.EnemyDumb(Entity.ID.SMALLTICK, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, Math.random() * ref.attributes.scale + 0.5, ref.attributes.knockbackForce), _position, _netID);
+                    enemy = new Enemy.EnemyDumb(Entity.ID.SMALLTICK, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, Math.random() * ref.attributes.scale + 0.5, ref.attributes.knockbackForce, ref.attributes.armor), _position, _netID);
                 }
                 else {
                     enemy = new Enemy.EnemyDumb(Entity.ID.SMALLTICK, _attributes, _position, _netID);

@@ -12,8 +12,9 @@ namespace Entity {
         scale: number;
 
 
-        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _cooldownReduction?: number) {
+        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _armor: number, _cooldownReduction?: number) {
             this.scale = _scale;
+            this.armor = _armor;
             this.healthPoints = Math.fround(_healthPoints * (100 + (10 * this.scale)) / 100);
             this.maxHealthPoints = this.healthPoints;
             this.attackPoints = Math.fround(_attackPoints * this.scale);

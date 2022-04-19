@@ -155,7 +155,7 @@ namespace Bullets {
                     if ((<Enemy.Enemy>element).attributes.healthPoints > 0) {
                         (<Enemy.Enemy>element).getDamage(this.hitPoints);
                         (<Enemy.Enemy>element).getKnockback(this.knockbackForce, this.mtxLocal.translation);
-                        Game.graph.addChild(new UI.DamageUI((<Enemy.Enemy>element).cmpTransform.mtxLocal.translation, this.hitPoints));
+                        Game.graph.addChild(new UI.DamageUI((<Enemy.Enemy>element).cmpTransform.mtxLocal.translation, Math.round((<Enemy.Enemy>element).getDamageReduction(this.hitPoints))));
                         this.lifetime = 0;
                         this.killcount--;
                     }

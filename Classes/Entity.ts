@@ -82,8 +82,12 @@ namespace Entity {
 
         public getDamage(_value: number) {
             if (_value != null && this.attributes.hitable) {
-                this.attributes.healthPoints -= _value;
+                this.attributes.healthPoints -= this.getDamageReduction(_value);
             }
+        }
+
+        getDamageReduction(_value: number): number {
+            return _value * (1 - (this.attributes.armor / 100));
         }
         //#region knockback
         public doKnockback(_body: Entity.Entity) {

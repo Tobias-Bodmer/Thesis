@@ -81,6 +81,8 @@ namespace Game {
                 }, 100);
             }
         }
+
+
     }
 
     function update(): void {
@@ -245,6 +247,8 @@ namespace Game {
             await init();
             gamestate = GAMESTATES.PLAYING;
             await Networking.spawnPlayer(playerType);
+            EnemySpawner.spawnEnemies();
+
 
 
             //#region init Items
@@ -263,11 +267,11 @@ namespace Game {
 
     function playerChoice(_e: Event) {
         if ((<HTMLButtonElement>_e.target).id == "Ranged") {
-            avatar1 = new Player.Ranged(Entity.ID.PLAYER1, new Entity.Attributes(10, 5, 5, 1, 2));
+            avatar1 = new Player.Ranged(Entity.ID.PLAYER1, new Entity.Attributes(10, 5, 5, 1, 2, 5));
             playerType = Player.PLAYERTYPE.RANGED;
         }
         if ((<HTMLButtonElement>_e.target).id == "Melee") {
-            avatar1 = new Player.Melee(Entity.ID.PLAYER1, new Entity.Attributes(10, 1, 5, 1, 2));
+            avatar1 = new Player.Melee(Entity.ID.PLAYER1, new Entity.Attributes(10, 1, 5, 1, 2, 10));
             playerType = Player.PLAYERTYPE.MELEE;
         }
         document.getElementById("Lobbyscreen").style.visibility = "hidden";

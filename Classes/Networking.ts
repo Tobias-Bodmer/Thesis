@@ -82,12 +82,27 @@ namespace Networking {
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
                         if (message.content.type == Player.PLAYERTYPE.MELEE) {
                             Game.avatar2 = new Player.Melee(Entity.ID.PLAYER2,
-                                new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale, message.content.attributes.knockbackForce));
+                                new Entity.Attributes(
+                                    message.content.attributes.healthPoints,
+                                    message.content.attributes.attackPoints,
+                                    message.content.attributes.speed,
+                                    message.content.attributes.scale,
+                                    message.content.attributes.knockbackForce,
+                                    message.content.attributes.armor
+                                ));
 
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                             Game.graph.appendChild(Game.avatar2);
                         } else if (message.content.type == Player.PLAYERTYPE.RANGED) {
-                            Game.avatar2 = new Player.Ranged(Entity.ID.PLAYER2, new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale, message.content.attributes.knockbackForce));
+                            Game.avatar2 = new Player.Ranged(Entity.ID.PLAYER2,
+                                new Entity.Attributes(
+                                    message.content.attributes.healthPoints,
+                                    message.content.attributes.attackPoints,
+                                    message.content.attributes.speed,
+                                    message.content.attributes.scale,
+                                    message.content.attributes.knockbackForce,
+                                    message.content.attributes.armor
+                                ));
 
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                             Game.graph.appendChild(Game.avatar2);
@@ -185,7 +200,8 @@ namespace Networking {
                                     message.content.attributes.attackPoints,
                                     message.content.attributes.speed,
                                     message.content.attributes.scale,
-                                    message.content.attributes.knockbackForce
+                                    message.content.attributes.knockbackForce,
+                                    message.content.attributes.armor
                                 )
                                 , message.content.netId);
                         }
