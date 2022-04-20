@@ -23,7 +23,7 @@ namespace Enemy {
 
 
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
-            
+
             this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), (this.mtxLocal.scaling.x * this.idleScale) / 2)
             Networking.spawnEnemy(this, this.netId);
@@ -67,23 +67,9 @@ namespace Enemy {
             return moveSimple;
         }
 
-
-        public getDamage(_value: number): void {
-            super.getDamage(_value);
-            if (Networking.client.idHost == Networking.client.id) {
-                if (this.attributes.healthPoints <= 0) {
-
-                    Networking.removeEnemy(this.netId);
-                    Networking.popID(this.netId);
-                    this.die();
-                }
-            }
-        }
-
         die() {
             Game.graph.removeChild(this);
         }
-
 
         collide(_direction: ƒ.Vector3) {
             super.collide(_direction);

@@ -67,7 +67,6 @@ namespace UI {
         public tag: Tag.TAG = Tag.TAG.DAMAGEUI;
         up: number = 0.15;
         lifetime: number = 0.5 * Game.frameRate;
-
         async lifespan(_graph: ƒ.Node) {
             if (this.lifetime >= 0 && this.lifetime != null) {
                 this.lifetime--;

@@ -61,10 +61,6 @@ namespace Entity {
             }
         }
 
-
-
-
-
         collide(_direction: ƒ.Vector3) {
             this.canMoveX = true;
             this.canMoveY = true;
@@ -113,11 +109,24 @@ namespace Entity {
         }
 
         public getDamage(_value: number) {
-            let hitValue = this.getDamageReduction(_value);
-            if (_value != null && this.attributes.hitable) {
-                this.attributes.healthPoints -= hitValue;
-                Game.graph.addChild(new UI.DamageUI(this.mtxLocal.translation, Math.round(hitValue)));
+            if (Networking.client.idHost == Networking.client.id) {
+                if (_value != null && this.attributes.hitable) {
+                    let hitValue = this.getDamageReduction(_value);
+                    this.attributes.healthPoints -= hitValue;
+                    Game.graph.addChild(new UI.DamageUI(this.mtxLocal.translation, Math.round(hitValue)));
+                    Networking.updateUI(this.mtxLocal.translation.toVector2(), Math.round(hitValue));
+                }
+                if (this.attributes.healthPoints <= 0) {
+
+                    Networking.removeEnemy(this.netId);
+                    Networking.popID(this.netId);
+                    this.die();
+                }
             }
+        }
+
+        die() {
+            Game.graph.removeChild(this);
         }
 
         private getDamageReduction(_value: number): number {

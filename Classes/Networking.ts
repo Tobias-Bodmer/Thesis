@@ -25,7 +25,8 @@ namespace Networking {
         ITEMDIE,
         SENDROOM,
         SWITCHROOMREQUEST,
-        UPDATEBUFF
+        UPDATEBUFF,
+        UPDATEUI
     }
 
     import ƒClient = FudgeNet.FudgeClient;
@@ -228,6 +229,12 @@ namespace Networking {
                             console.log(buffList);
                             let entity = Game.entities.find(ent => ent.netId == message.content.netId);
                             entity.buffs = buffList;
+                        }
+
+                        //update UI
+                        if (message.content != undefined && message.content.text == FUNCTION.UPDATEUI.toString()) {
+                            let position: ƒ.Vector2 = new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]);
+                            Game.graph.addChild(new UI.DamageUI(position.toVector3(), message.content.value));
                         }
 
                         //Spawn item from host
@@ -442,6 +449,14 @@ namespace Networking {
     export async function updateBuffList(_buffList: Buff.Buff[], _netId: number) {
         if (Game.connected && client.idHost == client.id) {
             await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEBUFF, buffList: _buffList, netId: _netId } });
+        }
+    }
+    //#endregion
+
+    //#region UI
+    export async function updateUI(_position: Game.ƒ.Vector2, _value: number) {
+        if (Game.connected && client.idHost == client.id) {
+            await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEUI, position: _position, value: _value } });
         }
     }
     //#endregion

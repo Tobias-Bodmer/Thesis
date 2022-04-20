@@ -18,7 +18,7 @@ namespace Buff {
 
         }
         addToEntity(_avatar: Entity.Entity) {
-            if (_avatar.buffs.find(buff => buff.id == this.id)) {
+            if (_avatar.buffs.filter(buff => buff.id == this.id).length > 0) {
                 return;
             }
             else {

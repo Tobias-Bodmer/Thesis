@@ -47,6 +47,7 @@ declare namespace Entity {
         updateBuffs(): void;
         collide(_direction: ƒ.Vector3): void;
         getDamage(_value: number): void;
+        die(): void;
         private getDamageReduction;
         doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
@@ -89,7 +90,6 @@ declare namespace Enemy {
         moveBehaviour(): void;
         moveSimple(_target: ƒ.Vector2): ƒ.Vector2;
         moveAway(_target: ƒ.Vector2): ƒ.Vector2;
-        getDamage(_value: number): void;
         die(): void;
         collide(_direction: ƒ.Vector3): void;
         switchAnimation(_name: string): void;
@@ -352,7 +352,8 @@ declare namespace Networking {
         ITEMDIE = 20,
         SENDROOM = 21,
         SWITCHROOMREQUEST = 22,
-        UPDATEBUFF = 23
+        UPDATEBUFF = 23,
+        UPDATEUI = 24
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -387,6 +388,7 @@ declare namespace Networking {
     function updateAvatarWeapon(_weapon: Weapons.Weapon): void;
     function removeItem(_netId: number): void;
     function updateBuffList(_buffList: Buff.Buff[], _netId: number): Promise<void>;
+    function updateUI(_position: Game.ƒ.Vector2, _value: number): Promise<void>;
     function sendRoom(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: Generation.ROOMTYPE): void;
     function switchRoomRequest(_coordiantes: [number, number], _direction: [boolean, boolean, boolean, boolean]): void;
     function idGenerator(): number;
