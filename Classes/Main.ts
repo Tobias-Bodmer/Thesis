@@ -184,7 +184,6 @@ namespace Game {
                 }
             }
 
-            document.getElementById("Hostscreen").style.visibility = "visible";
             document.getElementById("Host").addEventListener("click", Networking.setHost);
 
             waitForHost();
@@ -192,7 +191,8 @@ namespace Game {
             waitForLobby();
 
             function waitForHost() {
-                if (Networking.clients.length >= 2 && Networking.client.idHost == undefined) {
+                if (Networking.clients.length >= 2) {
+                    document.getElementById("Hostscreen").style.visibility = "visible";
                     return;
                 } else {
                     setTimeout(() => {
