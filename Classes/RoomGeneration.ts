@@ -42,9 +42,8 @@ namespace Generation {
         sendRoom(rooms[0]);
     }
 
-    function sendRoom(_room: Room) {
-        console.log(_room);
-        Networking.sendRoom(_room.name, _room.coordinates, _room.exits, _room.roomType);
+    function sendRoom(_room: Room, _direciton?: [boolean, boolean, boolean, boolean]) {
+        Networking.sendRoom(_room.name, _room.coordinates, _room.exits, _room.roomType, _direciton);
     }
 
     function addRoom(_currentRoom: Room, _roomType: Generation.ROOMTYPE): void {
@@ -220,27 +219,27 @@ namespace Generation {
     export function switchRoom(_currentRoom: Room, _direction: [boolean, boolean, boolean, boolean]) {
         if (_currentRoom.finished) {
             if (_direction[0]) {
-                sendRoom(_currentRoom.neighbourN);
-                addRoomToGraph(_currentRoom.neighbourN);
+                sendRoom(_currentRoom.neighbourN, [false, false, true, false]);
+                addRoomToGraph(_currentRoom.neighbourN, [false, false, true, false]);
             }
             if (_direction[1]) {
-                sendRoom(_currentRoom.neighbourE);
-                addRoomToGraph(_currentRoom.neighbourE);
+                sendRoom(_currentRoom.neighbourE, [false, false, false, true]);
+                addRoomToGraph(_currentRoom.neighbourE, [false, false, false, true]);
             }
             if (_direction[2]) {
-                sendRoom(_currentRoom.neighbourS);
-                addRoomToGraph(_currentRoom.neighbourS);
+                sendRoom(_currentRoom.neighbourS, [true, false, false, false]);
+                addRoomToGraph(_currentRoom.neighbourS, [true, false, false, false]);
             }
             if (_direction[3]) {
-                sendRoom(_currentRoom.neighbourW);
-                addRoomToGraph(_currentRoom.neighbourW);
+                sendRoom(_currentRoom.neighbourW, [false, true, false, false]);
+                addRoomToGraph(_currentRoom.neighbourW, [false, true, false, false]);
             }
 
             EnemySpawner.spawnEnemies();
         }
     }
 
-    export function addRoomToGraph(_room: Room) {
+    export function addRoomToGraph(_room: Room, _direciton?: [boolean, boolean, boolean, boolean]) {
         let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => (<any>elem).tag != Tag.TAG.PLAYER);
 
         oldObjects.forEach((elem) => {
@@ -253,7 +252,23 @@ namespace Generation {
         Game.graph.appendChild(_room.walls[2]);
         Game.graph.appendChild(_room.walls[3]);
 
-        Game.avatar1.cmpTransform.mtxLocal.translation = _room.cmpTransform.mtxLocal.translation;
+        let newPosition: Game.ƒ.Vector3 = _room.cmpTransform.mtxLocal.translation.clone;
+
+        if (_direciton != null) {
+            if (_direciton[0]) {
+                newPosition.y += _room.roomSize / 2.3;
+            }
+            if (_direciton[1]) {
+                newPosition.x += _room.roomSize / 2.3;
+            }
+            if (_direciton[2]) {
+                newPosition.y -= _room.roomSize / 2.3;
+            }
+            if (_direciton[3]) {
+                newPosition.x -= _room.roomSize / 2.3;
+            }
+        }
+        Game.avatar1.cmpTransform.mtxLocal.translation = newPosition;
 
         if (Networking.client.id != Networking.client.idHost) {
             _room.setDoors();

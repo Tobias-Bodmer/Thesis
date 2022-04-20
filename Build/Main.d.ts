@@ -442,7 +442,7 @@ declare namespace Networking {
     function removeItem(_netId: number): void;
     function updateBuffList(_buffList: Buff.Buff[], _netId: number): Promise<void>;
     function updateUI(_position: Game.ƒ.Vector2, _value: number): Promise<void>;
-    function sendRoom(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: Generation.ROOMTYPE): void;
+    function sendRoom(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: Generation.ROOMTYPE, _direciton?: [boolean, boolean, boolean, boolean]): void;
     function switchRoomRequest(_coordiantes: [number, number], _direction: [boolean, boolean, boolean, boolean]): void;
     function idGenerator(): number;
     function popID(_id: number): void;
@@ -548,7 +548,7 @@ declare namespace Generation {
     let rooms: Room[];
     function generateRooms(): void;
     function switchRoom(_currentRoom: Room, _direction: [boolean, boolean, boolean, boolean]): void;
-    function addRoomToGraph(_room: Room): void;
+    function addRoomToGraph(_room: Room, _direciton?: [boolean, boolean, boolean, boolean]): void;
 }
 declare namespace Tag {
     enum TAG {
