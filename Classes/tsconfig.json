@@ -57,6 +57,7 @@
   },
   "include": [
     "Main.ts",
+    "UI.ts",
     "Entity.ts",
     "Enemy.ts",
     "Interfaces.ts",

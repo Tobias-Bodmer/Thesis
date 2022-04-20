@@ -5,8 +5,8 @@ namespace Generation {
     export let rooms: Room[] = [];
 
     //spawn chances
-    let challengeRoomSpawnChance: number = 20;
-    let treasureRoomSpawnChance: number = 10;
+    let challengeRoomSpawnChance: number = 30;
+    let treasureRoomSpawnChance: number = 20;
 
     export function generateRooms(): void {
         let startCoords: [number, number] = [0, 0];
@@ -219,42 +219,61 @@ namespace Generation {
 
     export function switchRoom(_currentRoom: Room, _direction: [boolean, boolean, boolean, boolean]) {
         if (_currentRoom.finished) {
-            let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => (<any>elem).tag != Tag.TAG.PLAYER);
-
-            oldObjects.forEach((elem) => {
-                Game.graph.removeChild(elem);
-            });
-
             if (_direction[0]) {
+                sendRoom(_currentRoom.neighbourN);
                 addRoomToGraph(_currentRoom.neighbourN);
             }
             if (_direction[1]) {
+                sendRoom(_currentRoom.neighbourE);
                 addRoomToGraph(_currentRoom.neighbourE);
             }
             if (_direction[2]) {
+                sendRoom(_currentRoom.neighbourS);
                 addRoomToGraph(_currentRoom.neighbourS);
-
             }
             if (_direction[3]) {
+                sendRoom(_currentRoom.neighbourW);
                 addRoomToGraph(_currentRoom.neighbourW);
             }
 
-            function addRoomToGraph(_room: Room) {
-                sendRoom(_room);
-                Game.graph.addChild(_room);
-                Game.graph.appendChild(_room.walls[0]);
-                Game.graph.appendChild(_room.walls[1]);
-                Game.graph.appendChild(_room.walls[2]);
-                Game.graph.appendChild(_room.walls[3]);
-
-                Game.avatar1.cmpTransform.mtxLocal.translation = _room.cmpTransform.mtxLocal.translation;
-
-                for (let i = 0; i < _room.doors.length; i++) {
-                    Game.graph.addChild(_room.doors[i]);
-                }
-            }
-
             EnemySpawner.spawnEnemies();
+        }
+    }
+
+    export function addRoomToGraph(_room: Room) {
+        let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => (<any>elem).tag != Tag.TAG.PLAYER);
+
+        oldObjects.forEach((elem) => {
+            Game.graph.removeChild(elem);
+        });
+
+        Game.graph.addChild(_room);
+        Game.graph.appendChild(_room.walls[0]);
+        Game.graph.appendChild(_room.walls[1]);
+        Game.graph.appendChild(_room.walls[2]);
+        Game.graph.appendChild(_room.walls[3]);
+
+        Game.avatar1.cmpTransform.mtxLocal.translation = _room.cmpTransform.mtxLocal.translation;
+
+        if (Networking.client.id != Networking.client.idHost) {
+            _room.setDoors();
+        }
+
+        for (let i = 0; i < _room.doors.length; i++) {
+            Game.graph.addChild(_room.doors[i]);
+        }
+
+        if (_room.roomType == ROOMTYPE.TREASURE && Networking.client.id == Networking.client.idHost) {
+            //TODO: add ExternalItems random
+            let position: Game.ƒ.Vector2 = _room.mtxLocal.translation.toVector2();
+
+            position.x -= 2;
+            let randomItemId: number = Math.floor(Math.random() * (Object.keys(Items.ITEMID).length / 2 - 1));
+            Game.graph.addChild(new Items.InternalItem(randomItemId, position));
+
+            position.x += 4;
+            randomItemId = Math.floor(Math.random() * (Object.keys(Items.ITEMID).length / 2 - 1));
+            Game.graph.addChild(new Items.InternalItem(randomItemId, position));
         }
     }
 }

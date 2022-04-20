@@ -42,6 +42,11 @@ namespace Generation {
             this.coordinates = _coordiantes;
             this.exits = _exits;
             this.roomType = _roomType;
+
+            this.addComponent(new ƒ.ComponentTransform());
+            this.cmpTransform.mtxLocal.scale(new ƒ.Vector3(this.roomSize, this.roomSize, 0));
+            this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(this.coordinates[0] * this.roomSize, this.coordinates[1] * this.roomSize, -0.02);
+
             switch (_roomType) {
                 case ROOMTYPE.START:
                     this.enemyCount = 5;
@@ -72,11 +77,8 @@ namespace Generation {
                     break;
             }
 
-            this.addComponent(new ƒ.ComponentTransform());
             this.addComponent(this.cmpMesh);
             this.addComponent(this.cmpMaterial);
-            this.cmpTransform.mtxLocal.scale(new ƒ.Vector3(this.roomSize, this.roomSize, 0));
-            this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(this.coordinates[0] * this.roomSize, this.coordinates[1] * this.roomSize, -0.02);
 
             this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, [true, false, false, false]));
             this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, [false, true, false, false]));
