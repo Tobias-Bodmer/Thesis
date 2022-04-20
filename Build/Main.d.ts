@@ -41,6 +41,7 @@ declare namespace Entity {
         performKnockback: boolean;
         idleScale: number;
         buffs: Buff.Buff[];
+        buffAnimation: UI.particleAnimation;
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number);
         update(): void;
         updateCollider(): void;
@@ -530,6 +531,13 @@ declare namespace UI {
         constructor(_position: ƒ.Vector3, _damage: number);
         move(): Promise<void>;
         loadTexture(_texture: number): void;
+    }
+    let healParticle: ƒ.TextureImage;
+    let poisonParticle: ƒ.TextureImage;
+    let burnParticle: ƒ.TextureImage;
+    class particleAnimation extends ƒAid.NodeSprite {
+        animations: ƒAid.SpriteSheetAnimations;
+        constructor();
     }
 }
 declare namespace Weapons {

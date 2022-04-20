@@ -13,6 +13,7 @@ namespace Entity {
         performKnockback: boolean = false;
         idleScale: number;
         buffs: Buff.Buff[] = [];
+        buffAnimation: UI.particleAnimation = new UI.particleAnimation;
 
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number) {
             super(getNameById(_id));
@@ -36,6 +37,9 @@ namespace Entity {
             this.addComponent(new ƒ.ComponentTransform());
             this.mtxLocal.scale(new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale));
             this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);
+
+            this.buffAnimation.activate(false);
+            this.addChild(this.buffAnimation);
         }
 
         public update() {

@@ -57,23 +57,18 @@ namespace InputSystem {
 
     export function move() {
         let moveVector: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
-        let hasChanged: boolean = false;
 
         if (controller.get("W")) {
             moveVector.y += 1;
-            hasChanged = true;
         }
         if (controller.get("A")) {
             moveVector.x -= 1;
-            hasChanged = true;
         }
         if (controller.get("S")) {
             moveVector.y -= 1;
-            hasChanged = true;
         }
         if (controller.get("D")) {
             moveVector.x += 1;
-            hasChanged = true;
         }
 
         Game.avatar1.move(moveVector);

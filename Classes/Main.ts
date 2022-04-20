@@ -106,12 +106,6 @@ namespace Game {
 
             //#region count items
             items = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.TAG.ITEM)
-            if (Game.connected && Networking.client.idHost == Networking.client.id) {
-                items.forEach(element => {
-                    // element.despawn();
-                    // (<Items.InternalItem>element).collisionDetection();
-                });
-            }
             //#endregion
 
             bullets = <Bullets.Bullet[]>graph.getChildren().filter(element => (<Bullets.Bullet>element).tag == Tag.TAG.BULLET)
@@ -257,6 +251,11 @@ namespace Game {
         await UI.txtEight.load("./Resources/Image/white8.png");
         await UI.txtNine.load("./Resources/Image/white9.png");
         await UI.txtTen.load("./Resources/Image/white10.png");
+
+        //UI particle
+        // await UI.healParticle.load("./Resources/Image/Particle/");
+        // await UI.poisonParticle.load("./Resources/Image/Particle/");
+        // await UI.burnParticle.load("./Resources/Image/Particle/");
 
         //ENEMY
         await AnimationGeneration.txtBatIdle.load("./Resources/Image/Enemies/bat/batIdle.png");

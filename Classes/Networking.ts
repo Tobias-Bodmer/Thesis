@@ -240,8 +240,6 @@ namespace Networking {
                         //Spawn item from host
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNINTERNALITEM.toString()) {
                             if (client.id != client.idHost) {
-                                let newItem: Items.InternalItem = message.content.item;
-                                // Game.graph.addChild(newItem);
                                 Game.graph.addChild(new Items.InternalItem(message.content.id, new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]), message.content.netId));
                             }
                         }
