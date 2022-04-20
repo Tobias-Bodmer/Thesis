@@ -233,7 +233,6 @@ namespace Player {
             }
         }
 
-
         //Dash
         public doAbility() {
             if (this.currentabilityCount > 0) {

@@ -161,14 +161,14 @@ namespace UI {
     export let poisonParticle: ƒ.TextureImage = new ƒ.TextureImage();
     export let burnParticle: ƒ.TextureImage = new ƒ.TextureImage();
 
-    export class particleAnimation extends ƒAid.NodeSprite {
+    export class ParticleAnimation extends Game.ƒAid.NodeSprite {
         animations: ƒAid.SpriteSheetAnimations = {};
 
         constructor() {
             super("particleAnimation");
-            AnimationGeneration.generateAnimationFromGrid(new ƒ.CoatTextured(ƒ.Color.CSS("white"), healParticle), this.animations, "heal", 32, 32, 5, 12, 22);
-            AnimationGeneration.generateAnimationFromGrid(new ƒ.CoatTextured(ƒ.Color.CSS("white"), poisonParticle), this.animations, "poison", 32, 32, 5, 12, 22);
-            AnimationGeneration.generateAnimationFromGrid(new ƒ.CoatTextured(ƒ.Color.CSS("white"), burnParticle), this.animations, "burn", 32, 32, 5, 12, 22);
+            // AnimationGeneration.generateAnimationFromGrid(new ƒ.CoatTextured(ƒ.Color.CSS("white"), healParticle), this.animations, "heal", 32, 32, 5, 12, 22);
+            // AnimationGeneration.generateAnimationFromGrid(new ƒ.CoatTextured(ƒ.Color.CSS("white"), poisonParticle), this.animations, "poison", 32, 32, 5, 12, 22);
+            // AnimationGeneration.generateAnimationFromGrid(new ƒ.CoatTextured(ƒ.Color.CSS("white"), burnParticle), this.animations, "burn", 32, 32, 5, 12, 22);
         }
     }
 }

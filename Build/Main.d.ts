@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -26,6 +26,36 @@ declare namespace Game {
     let bulletsJSON: Bullets.Bullet[];
     function cameraUpdate(): void;
 }
+declare namespace UI {
+    function updateUI(): void;
+    let txtZero: ƒ.TextureImage;
+    let txtOne: ƒ.TextureImage;
+    let txtTow: ƒ.TextureImage;
+    let txtThree: ƒ.TextureImage;
+    let txtFour: ƒ.TextureImage;
+    let txtFive: ƒ.TextureImage;
+    let txtSix: ƒ.TextureImage;
+    let txtSeven: ƒ.TextureImage;
+    let txtEight: ƒ.TextureImage;
+    let txtNine: ƒ.TextureImage;
+    let txtTen: ƒ.TextureImage;
+    class DamageUI extends ƒ.Node {
+        tag: Tag.TAG;
+        up: number;
+        lifetime: number;
+        lifespan(_graph: ƒ.Node): Promise<void>;
+        constructor(_position: ƒ.Vector3, _damage: number);
+        move(): Promise<void>;
+        loadTexture(_damage: number): void;
+    }
+    let healParticle: ƒ.TextureImage;
+    let poisonParticle: ƒ.TextureImage;
+    let burnParticle: ƒ.TextureImage;
+    class ParticleAnimation extends Game.ƒAid.NodeSprite {
+        animations: ƒAid.SpriteSheetAnimations;
+        constructor();
+    }
+}
 declare namespace Entity {
     class Entity extends Game.ƒAid.NodeSprite {
         currentAnimation: ANIMATIONSTATES;
@@ -41,7 +71,7 @@ declare namespace Entity {
         performKnockback: boolean;
         idleScale: number;
         buffs: Buff.Buff[];
-        buffAnimation: UI.particleAnimation;
+        buffAnimation: UI.ParticleAnimation;
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number);
         update(): void;
         updateCollider(): void;
@@ -99,6 +129,19 @@ declare namespace Enemy {
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
         update(): void;
         behaviour(): void;
+        moveBehaviour(): void;
+    }
+    class EnemyDash extends Enemy {
+        isAttacking: boolean;
+        perfomrAbility: boolean;
+        lastMoveDireciton: Game.ƒ.Vector3;
+        dashCount: number;
+        avatars: Player.Player[];
+        randomPlayer: number;
+        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
+        update(): void;
+        behaviour(): void;
+        doDash(): void;
         moveBehaviour(): void;
     }
     class EnemyPatrol extends Enemy {
@@ -497,6 +540,7 @@ declare namespace Generation {
     let rooms: Room[];
     function generateRooms(): void;
     function switchRoom(_currentRoom: Room, _direction: [boolean, boolean, boolean, boolean]): void;
+    function addRoomToGraph(_room: Room): void;
 }
 declare namespace Tag {
     enum TAG {
@@ -508,36 +552,6 @@ declare namespace Tag {
         WALL = 5,
         DOOR = 6,
         DAMAGEUI = 7
-    }
-}
-declare namespace UI {
-    function updateUI(): void;
-    let txtZero: ƒ.TextureImage;
-    let txtOne: ƒ.TextureImage;
-    let txtTow: ƒ.TextureImage;
-    let txtThree: ƒ.TextureImage;
-    let txtFour: ƒ.TextureImage;
-    let txtFive: ƒ.TextureImage;
-    let txtSix: ƒ.TextureImage;
-    let txtSeven: ƒ.TextureImage;
-    let txtEight: ƒ.TextureImage;
-    let txtNine: ƒ.TextureImage;
-    let txtTen: ƒ.TextureImage;
-    class DamageUI extends ƒ.Node {
-        tag: Tag.TAG;
-        up: number;
-        lifetime: number;
-        lifespan(_graph: ƒ.Node): Promise<void>;
-        constructor(_position: ƒ.Vector3, _damage: number);
-        move(): Promise<void>;
-        loadTexture(_damage: number): void;
-    }
-    let healParticle: ƒ.TextureImage;
-    let poisonParticle: ƒ.TextureImage;
-    let burnParticle: ƒ.TextureImage;
-    class particleAnimation extends ƒAid.NodeSprite {
-        animations: ƒAid.SpriteSheetAnimations;
-        constructor();
     }
 }
 declare namespace Weapons {

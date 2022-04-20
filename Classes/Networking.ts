@@ -269,28 +269,9 @@ namespace Networking {
                         }
                         //send room 
                         if (message.content != undefined && message.content.text == FUNCTION.SENDROOM.toString()) {
-                            let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => (<any>elem).tag != Tag.TAG.PLAYER);
-
-                            oldObjects.forEach((elem) => {
-                                Game.graph.removeChild(elem);
-                            });
-
-
                             let room: Generation.Room = new Generation.Room(message.content.name, message.content.coordiantes, message.content.exits, message.content.roomType);
 
-                            room.setDoors();
-
-                            Game.graph.addChild(room);
-                            Game.graph.appendChild(room.walls[0]);
-                            Game.graph.appendChild(room.walls[1]);
-                            Game.graph.appendChild(room.walls[2]);
-                            Game.graph.appendChild(room.walls[3]);
-
-                            for (let i = 0; i < room.doors.length; i++) {
-                                Game.graph.addChild(room.doors[i]);
-                            }
-
-                            Game.avatar1.cmpTransform.mtxLocal.translation = room.cmpTransform.mtxLocal.translation;
+                            Generation.addRoomToGraph(room);
                         }
                         //send request to switch rooms
                         if (message.content != undefined && message.content.text == FUNCTION.SWITCHROOMREQUEST.toString()) {

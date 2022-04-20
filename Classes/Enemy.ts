@@ -209,78 +209,75 @@ namespace Enemy {
 
     }
 
-    // export class EnemyDash extends Enemy {
-    //     isAttacking = false;
-    //     perfomrAbility = false;
-    //     lastMoveDireciton: Game.ƒ.Vector3;
-    //     dashCount: number = 1;
-    //     avatars: Player.Player[] = [];
-    //     randomPlayer = Math.round(Math.random());
+    export class EnemyDash extends Enemy {
+        isAttacking = false;
+        perfomrAbility = false;
+        lastMoveDireciton: Game.ƒ.Vector3;
+        dashCount: number = 1;
+        avatars: Player.Player[] = [];
+        randomPlayer = Math.round(Math.random());
 
-    //     constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
-    //         super(_id, _attributes, _position, _netId);
-    //     }
+        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
+            super(_id, _attributes, _position, _netId);
+        }
 
-    //     public update(): void {
-    //         super.update();
-    //     }
+        public update(): void {
+            super.update();
+        }
 
-    //     behaviour() {
-    //         this.avatars = [Game.avatar1, Game.avatar2]
-    //         this.target = (<Player.Player>this.avatars[this.randomPlayer]).mtxLocal.translation.toVector2();
-
-
-    //         let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
-
-    //         if (distance > 5) {
-    //             this.currentState = BEHAVIOUR.FOLLOW;
-    //             this.isAttacking = false;
-    //         }
-    //         else if (distance < 3 && !this.isAttacking) {
-    //             this.doDash();
-    //         }
-    //         else {
-    //             // this.currentState = BEHAVIOUR.IDLE;
-    //         }
+        behaviour() {
+            this.avatars = [Game.avatar1, Game.avatar2]
+            this.target = (<Player.Player>this.avatars[this.randomPlayer]).mtxLocal.translation.toVector2();
 
 
-    //     }
+            let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
+
+            if (distance > 5) {
+                this.currentState = BEHAVIOUR.FOLLOW;
+                this.isAttacking = false;
+            }
+            else if (distance < 3 && !this.isAttacking) {
+                this.doDash();
+            }
+            else {
+                // this.currentState = BEHAVIOUR.IDLE;
+            }
 
 
-    //     doDash() {
-    //         if (!this.isAttacking) {
-    //             this.isAttacking = true;
-    //             this.attributes.hitable = false;
-    //             this.attributes.speed *= 2;
-    //             setTimeout(() => {
-    //                 this.attributes.speed /= 2;
-    //                 this.attributes.hitable = true;
-    //             }, 300);
-    //         }
-    //     }
+        }
+
+
+        doDash() {
+            if (!this.isAttacking) {
+                this.isAttacking = true;
+                this.attributes.hitable = false;
+                this.attributes.speed *= 2;
+                setTimeout(() => {
+                    this.attributes.speed /= 2;
+                    this.attributes.hitable = true;
+                }, 300);
+            }
+        }
 
 
 
 
-    //     moveBehaviour(): void {
-    //         this.behaviour();
-    //         switch (this.currentState) {
-    //             case BEHAVIOUR.FOLLOW:
-    //                 this.switchAnimation("walk");
-    //                 if (this.isAttacking) {
-    //                     this.moveDirection = this.moveSimple(this.lastMoveDireciton.toVector2()).toVector3();
-    //                 }
-    //                 else {
-    //                     this.moveDirection = this.moveSimple(this.target).toVector3();
-    //                     this.lastMoveDireciton = this.moveDirection;
-    //                 }
-    //                 break;
-    //             case BEHAVIOUR.IDLE:
-    //                 this.switchAnimation("idle");
-    //                 break;
-    //         }
-    //     }
-    // }
+        moveBehaviour(): void {
+            this.behaviour();
+            switch (this.currentState) {
+                case BEHAVIOUR.FOLLOW:
+                    this.switchAnimation("walk");
+                    if (!this.isAttacking) {
+                        this.moveDirection = this.moveSimple(this.target).toVector3();
+                        this.lastMoveDireciton = this.moveDirection;
+                    }
+                    break;
+                case BEHAVIOUR.IDLE:
+                    this.switchAnimation("idle");
+                    break;
+            }
+        }
+    }
 
     export class EnemyPatrol extends Enemy {
         patrolPoints: ƒ.Vector2[] = [new ƒ.Vector2(0, 4), new ƒ.Vector2(5, 0)];
