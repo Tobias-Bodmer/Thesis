@@ -44,9 +44,9 @@ namespace Enemy {
             super.getKnockback(_knockbackForce, _position);
         }
         move(_direction: ƒ.Vector3) {
-            this.moveDirection.add(_direction)
+            // this.moveDirection.add(_direction)
             this.collide(this.moveDirection);
-            this.moveDirection.subtract(_direction);
+            // this.moveDirection.subtract(_direction);
         }
 
         moveBehaviour() {
@@ -251,9 +251,9 @@ namespace Enemy {
             if (!this.isAttacking) {
                 this.isAttacking = true;
                 this.attributes.hitable = false;
-                this.attributes.speed *= 2;
+                this.attributes.speed *= 5;
                 setTimeout(() => {
-                    this.attributes.speed /= 2;
+                    this.attributes.speed /= 5;
                     this.attributes.hitable = true;
                 }, 300);
             }
@@ -268,9 +268,10 @@ namespace Enemy {
                 case BEHAVIOUR.FOLLOW:
                     this.switchAnimation("walk");
                     if (!this.isAttacking) {
-                        this.moveDirection = this.moveSimple(this.target).toVector3();
                         this.lastMoveDireciton = this.moveDirection;
+                        this.moveDirection = this.moveSimple(this.target).toVector3();
                     }
+
                     break;
                 case BEHAVIOUR.IDLE:
                     this.switchAnimation("idle");
