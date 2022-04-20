@@ -72,7 +72,7 @@ namespace Entity {
 
                     if (areaBeforeMove < this.mtxLocal.scaling.x * this.mtxLocal.scaling.y) {
                         let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
-                        let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
+                        let newDirection = new Game.ƒ.Vector2(_direction.x, 0);
                         this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
 
                         if (this.collider.getIntersectionRect(element.collider) != null) {

@@ -208,6 +208,8 @@ namespace Game {
     }
 
     async function loadTextures() {
+        await Generation.txtStartRoom.load("./Resources/Image/Rooms/map01.png");
+
         await Bullets.bulletTxt.load("./Resources/Image/arrow01.png");
 
         //UI

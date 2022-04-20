@@ -447,6 +447,7 @@ declare namespace Generation {
         CHALLENGE = 4,
         BOSS = 5
     }
+    let txtStartRoom: Game.ƒ.TextureImage;
     class Room extends ƒ.Node {
         tag: Tag.TAG;
         roomType: ROOMTYPE;

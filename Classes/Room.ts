@@ -8,6 +8,8 @@ namespace Generation {
         BOSS
     }
 
+    export let txtStartRoom: Game.ƒ.TextureImage = new Game.ƒ.TextureImage();
+
     export class Room extends ƒ.Node {
         public tag: Tag.TAG = Tag.TAG.ROOM;
         public roomType: ROOMTYPE
@@ -24,12 +26,13 @@ namespace Generation {
         exits: [boolean, boolean, boolean, boolean] // N E S W
         mesh: ƒ.MeshQuad = new ƒ.MeshQuad;
         cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(this.mesh);
-        startRoomMat: ƒ.Material = new ƒ.Material("startRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("yellow")));
+        startRoomMat: ƒ.Material = new ƒ.Material("startRoomMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtStartRoom));
         normalRoomMat: ƒ.Material = new ƒ.Material("normalRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
         merchantRoomMat: ƒ.Material = new ƒ.Material("merchantRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("green")));
         treasureRoomMat: ƒ.Material = new ƒ.Material("treasureRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("yellow")));
         challengeRoomMat: ƒ.Material = new ƒ.Material("challengeRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("blue")));
         bossRoomMat: ƒ.Material = new ƒ.Material("bossRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("black")));
+
 
         cmpMaterial: ƒ.ComponentMaterial;
 
