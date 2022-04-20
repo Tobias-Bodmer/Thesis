@@ -55,8 +55,6 @@ namespace Enemy {
         public moveSimple(_target: ƒ.Vector2): ƒ.Vector2 {
             this.target = _target;
             let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation);
-            direction.normalize();
-            direction.scale((1 / Game.frameRate * this.attributes.speed));
             return direction.toVector2();
         }
 
@@ -120,6 +118,8 @@ namespace Enemy {
                 }
             })
 
+            _direction.normalize();
+            _direction.scale((1 / Game.frameRate * this.attributes.speed));
 
 
             if (this.canMoveX && this.canMoveY) {
