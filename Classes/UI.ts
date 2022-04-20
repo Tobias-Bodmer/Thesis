@@ -13,7 +13,8 @@ namespace UI {
 
             //search DOMImg for Item
             player1UI.querySelector("#Inventory").querySelectorAll("img").forEach((imgElement) => {
-                if (imgElement.src == document.URL + element.imgSrc.substring(2)) {
+                let imgName = element.imgSrc.split("/");
+                if (imgElement.src.split("/").find(elem => elem == imgName[imgName.length - 1]) != null) {
                     exsist = true;
                 }
             });
@@ -36,7 +37,8 @@ namespace UI {
 
                 //search DOMImg for Item
                 player2UI.querySelector("#Inventory").querySelectorAll("img").forEach((imgElement) => {
-                    if (imgElement.src == document.URL + element.imgSrc.substring(2)) {
+                    let imgName = element.imgSrc.split("/");
+                    if (imgElement.src.split("/").find(elem => elem == imgName[imgName.length - 1]) != null) {
                         exsist = true;
                     }
                 });
@@ -49,6 +51,10 @@ namespace UI {
                 }
             });
         }
+    }
+
+    function doExsist() {
+
     }
 
     export let txtZero: ƒ.TextureImage = new ƒ.TextureImage();
