@@ -34,6 +34,7 @@ namespace Game {
     export let connected: boolean = false;
     export let frameRate: number = 60;
 
+    export let entities: Entity.Entity[] = [];
     export let enemies: Enemy.Enemy[] = [];
     export let bullets: Bullets.Bullet[];
     export let items: Items.Item[] = [];
@@ -125,6 +126,9 @@ namespace Game {
                 element.move();
                 element.lifespan(graph);
             })
+            
+            entities = <Entity.Entity[]>graph.getChildren().filter(child => (<Entity.Entity>child) instanceof Entity.Entity);
+
 
             enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY)
             if (Game.connected && Networking.client.idHost == Networking.client.id) {

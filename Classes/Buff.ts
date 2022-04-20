@@ -17,7 +17,15 @@ namespace Buff {
         applyBuff(_avatar: Entity.Entity) {
 
         }
-
+        addToEntity(_avatar: Entity.Entity) {
+            if (_avatar.buffs.find(buff => buff.id == this.id)) {
+                return;
+            }
+            else {
+                _avatar.buffs.push(this);
+                Networking.updateBuffList(_avatar.buffs, _avatar.netId);
+            }
+        }
         doBuffStuff(_avatar: Entity.Entity): boolean {
             if (this.duration <= 0) {
                 return false;

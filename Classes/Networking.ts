@@ -82,16 +82,17 @@ namespace Networking {
 
                     //Spawn avatar2 as ranged or melee 
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
+                        let netId: number = message.content.netId
                         if (message.content.type == Player.PLAYERTYPE.MELEE) {
                             const attributes: Entity.Attributes = message.content.attributes;
-                            Game.avatar2 = new Player.Melee(Entity.ID.PLAYER2, attributes);
+                            Game.avatar2 = new Player.Melee(Entity.ID.PLAYER2, attributes, netId);
 
 
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                             Game.graph.appendChild(Game.avatar2);
                         } else if (message.content.type == Player.PLAYERTYPE.RANGED) {
                             const attributes: Entity.Attributes = message.content.attributes
-                            Game.avatar2 = new Player.Ranged(Entity.ID.PLAYER2, attributes);
+                            Game.avatar2 = new Player.Ranged(Entity.ID.PLAYER2, attributes, netId);
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                             Game.graph.appendChild(Game.avatar2);
                         }
@@ -221,6 +222,14 @@ namespace Networking {
                             popID(message.content.netId);
                         }
 
+                        //update Entity buff List
+                        if (message.content != undefined && message.content.text == FUNCTION.UPDATEBUFF.toString()) {
+                            const buffList: Buff.Buff[] = <Buff.Buff[]>message.content.buffList;
+                            console.log(buffList);
+                            let entity = Game.entities.find(ent => ent.netId == message.content.netId);
+                            entity.buffs = buffList;
+                        }
+
                         //Spawn item from host
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNINTERNALITEM.toString()) {
                             if (client.id != client.idHost) {
@@ -313,11 +322,11 @@ namespace Networking {
 
     export async function spawnPlayer(_type?: Player.PLAYERTYPE) {
         if (_type == Player.PLAYERTYPE.MELEE) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.MELEE, attributes: Game.avatar1.attributes, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.MELEE, attributes: Game.avatar1.attributes, position: Game.avatar1.cmpTransform.mtxLocal.translation, netId: Game.avatar1.netId } })
         } else if (_type == Player.PLAYERTYPE.RANGED) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.RANGED, attributes: Game.avatar1.attributes, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.RANGED, attributes: Game.avatar1.attributes, position: Game.avatar1.cmpTransform.mtxLocal.translation, netId: Game.avatar1.netId } })
         } else {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.RANGED, attributes: Game.avatar1.attributes, position: Game.avatar1.cmpTransform.mtxLocal.translation } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.RANGED, attributes: Game.avatar1.attributes, position: Game.avatar1.cmpTransform.mtxLocal.translation, netId: Game.avatar1.netId } })
         }
     }
 
@@ -430,9 +439,9 @@ namespace Networking {
     }
     //#endregion
     //#region buffs
-    export async function updateBuffList(_buff: Buff.Buff[], _netId: number) {
+    export async function updateBuffList(_buffList: Buff.Buff[], _netId: number) {
         if (Game.connected && client.idHost == client.id) {
-            await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEBUFF, buffList: _buff, netId: _netId } });
+            await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEBUFF, buffList: _buffList, netId: _netId } });
         }
     }
     //#endregion

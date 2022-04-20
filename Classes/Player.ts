@@ -18,8 +18,8 @@ namespace Player {
         readonly abilityCooldownTime: number = 10;
         currentabilityCooldownTime: number = this.abilityCooldownTime;
 
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes) {
-            super(_id, _attributes);
+        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _netId?: number) {
+            super(_id, _attributes, _netId);
             this.tag = Tag.TAG.PLAYER;
         }
 

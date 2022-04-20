@@ -2,6 +2,7 @@ namespace Entity {
     export class Entity extends Game.ƒAid.NodeSprite {
         currentAnimation: ANIMATIONSTATES;
         public tag: Tag.TAG;
+        public netId: number;
         id: Entity.ID;
         attributes: Attributes;
         collider: Collider.Collider;
@@ -13,10 +14,20 @@ namespace Entity {
         idleScale: number;
         buffs: Buff.Buff[] = [];
 
-        constructor(_id: Entity.ID, _attributes: Attributes) {
+        constructor(_id: Entity.ID, _attributes: Attributes, _netId: number) {
             super(getNameById(_id));
             this.id = _id;
             this.attributes = _attributes;
+            if (_netId != undefined) {
+                if (this.netId != undefined) {
+                    Networking.popID(this.netId);
+                }
+                Networking.currentIDs.push(_netId);
+                this.netId = _netId;
+            }
+            else {
+                this.netId = Networking.idGenerator()
+            }
             if (AnimationGeneration.getAnimationById(this.id) != null) {
                 let ani = AnimationGeneration.getAnimationById(this.id);
                 this.animations = ani.animations;
@@ -43,7 +54,8 @@ namespace Entity {
             for (let i = 0; i < this.buffs.length; i++) {
                 if (this.buffs[i] instanceof Buff.DamageBuff) {
                     if (!this.buffs[i].doBuffStuff(this)) {
-                        this.buffs.slice(i);
+                        this.buffs.splice(i);
+                        Networking.updateBuffList(this.buffs, this.netId);
                     }
                 }
             }

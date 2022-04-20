@@ -17,6 +17,7 @@ declare namespace Game {
     let currentRoom: Generation.Room;
     let connected: boolean;
     let frameRate: number;
+    let entities: Entity.Entity[];
     let enemies: Enemy.Enemy[];
     let bullets: Bullets.Bullet[];
     let items: Items.Item[];
@@ -29,6 +30,7 @@ declare namespace Entity {
     class Entity extends Game.ƒAid.NodeSprite {
         currentAnimation: ANIMATIONSTATES;
         tag: Tag.TAG;
+        netId: number;
         id: Entity.ID;
         attributes: Attributes;
         collider: Collider.Collider;
@@ -39,7 +41,7 @@ declare namespace Entity {
         performKnockback: boolean;
         idleScale: number;
         buffs: Buff.Buff[];
-        constructor(_id: Entity.ID, _attributes: Attributes);
+        constructor(_id: Entity.ID, _attributes: Attributes, _netId: number);
         update(): void;
         updateCollider(): void;
         updateBuffs(): void;
@@ -76,7 +78,6 @@ declare namespace Enemy {
     }
     class Enemy extends Entity.Entity implements Interfaces.IKnockbackable {
         currentState: BEHAVIOUR;
-        netId: number;
         target: ƒ.Vector2;
         lifetime: number;
         moveDirection: Game.ƒ.Vector3;
@@ -230,6 +231,7 @@ declare namespace Buff {
         id: BUFFID;
         constructor(_id: BUFFID, _duration: number, _tickRate: number);
         applyBuff(_avatar: Entity.Entity): void;
+        addToEntity(_avatar: Entity.Entity): void;
         doBuffStuff(_avatar: Entity.Entity): boolean;
     }
     class DamageBuff extends Buff {
@@ -384,7 +386,7 @@ declare namespace Networking {
     function updateAvatarAttributes(_attributes: Entity.Attributes): void;
     function updateAvatarWeapon(_weapon: Weapons.Weapon): void;
     function removeItem(_netId: number): void;
-    function updateBuffList(_buff: Buff.Buff[], _netId: number): Promise<void>;
+    function updateBuffList(_buffList: Buff.Buff[], _netId: number): Promise<void>;
     function sendRoom(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: Generation.ROOMTYPE): void;
     function switchRoomRequest(_coordiantes: [number, number], _direction: [boolean, boolean, boolean, boolean]): void;
     function idGenerator(): number;
@@ -406,7 +408,7 @@ declare namespace Player {
         currentabilityCount: number;
         readonly abilityCooldownTime: number;
         currentabilityCooldownTime: number;
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes);
+        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _netId?: number);
         move(_direction: ƒ.Vector3): void;
         collide(_direction: Game.ƒ.Vector3): void;
         avatarPrediction(): void;
