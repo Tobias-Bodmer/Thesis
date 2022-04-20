@@ -161,14 +161,41 @@ namespace UI {
     export let poisonParticle: ƒ.TextureImage = new ƒ.TextureImage();
     export let burnParticle: ƒ.TextureImage = new ƒ.TextureImage();
 
-    export class ParticleAnimation extends Game.ƒAid.NodeSprite {
-        animations: ƒAid.SpriteSheetAnimations = {};
-
+    export class HealParticle extends Game.ƒAid.NodeSprite {
         constructor() {
-            super("particleAnimation");
-            // AnimationGeneration.generateAnimationFromGrid(new ƒ.CoatTextured(ƒ.Color.CSS("white"), healParticle), this.animations, "heal", 32, 32, 5, 12, 22);
-            // AnimationGeneration.generateAnimationFromGrid(new ƒ.CoatTextured(ƒ.Color.CSS("white"), poisonParticle), this.animations, "poison", 32, 32, 5, 12, 22);
-            // AnimationGeneration.generateAnimationFromGrid(new ƒ.CoatTextured(ƒ.Color.CSS("white"), burnParticle), this.animations, "burn", 32, 32, 5, 12, 22);
+            super("HealParticle");
+            console.log(healParticle);
+            let animation: Game.ƒAid.SpriteSheetAnimation = new Game.ƒAid.SpriteSheetAnimation("heal", new ƒ.CoatTextured(ƒ.Color.CSS("white"), healParticle));
+
+            let numberOfFrames: number = 6;
+            let width: number = animation.spritesheet.texture.texImageSource.width / numberOfFrames;
+            let height: number = animation.spritesheet.texture.texImageSource.height;
+
+            animation.generateByGrid(ƒ.Rectangle.GET(0, 0, width, height), numberOfFrames, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(width));
+            this.setAnimation(animation);
+
+            this.addComponent(new Game.ƒ.ComponentTransform());
+
+            this.mtxLocal.translateZ(1);
+        }
+    }
+
+    export class PoisonParticle extends Game.ƒAid.NodeSprite {
+        constructor() {
+            super("HealParticle");
+            console.log(poisonParticle);
+            let animation: Game.ƒAid.SpriteSheetAnimation = new Game.ƒAid.SpriteSheetAnimation("poison", new ƒ.CoatTextured(ƒ.Color.CSS("white"), poisonParticle));
+
+            let numberOfFrames: number = 6;
+            let width: number = animation.spritesheet.texture.texImageSource.width / numberOfFrames;
+            let height: number = animation.spritesheet.texture.texImageSource.height;
+
+            animation.generateByGrid(ƒ.Rectangle.GET(0, 0, width, height), numberOfFrames, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(width));
+            this.setAnimation(animation);
+
+            this.addComponent(new Game.ƒ.ComponentTransform());
+
+            this.mtxLocal.translateZ(1);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Entity {
         performKnockback: boolean = false;
         idleScale: number;
         buffs: Buff.Buff[] = [];
-        buffAnimation: UI.ParticleAnimation;
+        buffAnimation: Game.ƒAid.NodeSprite[] = [];
 
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number) {
             super(getNameById(_id));
@@ -38,9 +38,12 @@ namespace Entity {
             this.mtxLocal.scale(new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale));
             this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);
 
-            this.buffAnimation = new UI.ParticleAnimation();
-            this.buffAnimation.activate(false);
-            this.addChild(this.buffAnimation);
+            this.buffAnimation.push(new UI.HealParticle());
+            this.buffAnimation.push(new UI.PoisonParticle());
+            this.buffAnimation.forEach((_elem) => {
+                _elem.activate(false);
+                this.addChild(_elem);
+            });
         }
 
         public update() {

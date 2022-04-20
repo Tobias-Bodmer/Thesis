@@ -51,8 +51,10 @@ declare namespace UI {
     let healParticle: ƒ.TextureImage;
     let poisonParticle: ƒ.TextureImage;
     let burnParticle: ƒ.TextureImage;
-    class ParticleAnimation extends Game.ƒAid.NodeSprite {
-        animations: ƒAid.SpriteSheetAnimations;
+    class HealParticle extends Game.ƒAid.NodeSprite {
+        constructor();
+    }
+    class PoisonParticle extends Game.ƒAid.NodeSprite {
         constructor();
     }
 }
@@ -71,7 +73,7 @@ declare namespace Entity {
         performKnockback: boolean;
         idleScale: number;
         buffs: Buff.Buff[];
-        buffAnimation: UI.ParticleAnimation;
+        buffAnimation: Game.ƒAid.NodeSprite[];
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number);
         update(): void;
         updateCollider(): void;

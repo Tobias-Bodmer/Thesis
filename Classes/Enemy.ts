@@ -70,66 +70,69 @@ namespace Enemy {
         }
 
         collide(_direction: ƒ.Vector3) {
-            super.collide(_direction);
+            if (_direction != ƒ.Vector3.ZERO()) {
+                super.collide(_direction);
 
-            let avatarColliders: Player.Player[] = <Player.Player[]>Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.PLAYER);
-            avatarColliders.forEach((element) => {
-                if (this.collider.collides(element.collider)) {
-                    let intersection = this.collider.getIntersection(element.collider);
-                    let areaBeforeMove = intersection;
+                let avatarColliders: Player.Player[] = <Player.Player[]>Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.PLAYER);
+                avatarColliders.forEach((element) => {
+                    if (this.collider.collides(element.collider)) {
+                        let intersection = this.collider.getIntersection(element.collider);
+                        let areaBeforeMove = intersection;
 
-                    if (areaBeforeMove < this.collider.radius + element.collider.radius) {
-                        let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
-                        let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
-                        this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+                        if (areaBeforeMove < this.collider.radius + element.collider.radius) {
+                            let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
+                            let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
+                            this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
 
-                        if (this.collider.getIntersection(element.collider) != null) {
-                            let newIntersection = this.collider.getIntersection(element.collider);
-                            let areaAfterMove = newIntersection;
+                            if (this.collider.getIntersection(element.collider) != null) {
+                                let newIntersection = this.collider.getIntersection(element.collider);
+                                let areaAfterMove = newIntersection;
 
-                            if (areaBeforeMove < areaAfterMove) {
-                                this.canMoveX = false;
+                                if (areaBeforeMove < areaAfterMove) {
+                                    this.canMoveX = false;
+                                }
+                            }
+
+                            this.collider.position = oldPosition;
+                            newDirection = new Game.ƒ.Vector2(0, _direction.y);
+                            this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+
+                            if (this.collider.getIntersection(element.collider) != null) {
+                                let newIntersection = this.collider.getIntersection(element.collider);
+                                let areaAfterMove = newIntersection;
+
+                                if (areaBeforeMove < areaAfterMove) {
+                                    this.canMoveY = false;
+                                }
+                            }
+                            this.collider.position = oldPosition;
+                        }
+
+                        if (Networking.client.id == Networking.client.idHost) {
+                            if (element == Game.avatar1) {
+                                element.getKnockback(this.attributes.knockbackForce, this.mtxLocal.translation);
+                            }
+                            if (element == Game.avatar2) {
+                                Networking.knockbackPush(this.attributes.knockbackForce, this.mtxLocal.translation);
                             }
                         }
-
-                        this.collider.position = oldPosition;
-                        newDirection = new Game.ƒ.Vector2(0, _direction.y);
-                        this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
-
-                        if (this.collider.getIntersection(element.collider) != null) {
-                            let newIntersection = this.collider.getIntersection(element.collider);
-                            let areaAfterMove = newIntersection;
-
-                            if (areaBeforeMove < areaAfterMove) {
-                                this.canMoveY = false;
-                            }
-                        }
-                        this.collider.position = oldPosition;
                     }
+                })
 
-                    if (Networking.client.id == Networking.client.idHost) {
-                        if (element == Game.avatar1) {
-                            element.getKnockback(this.attributes.knockbackForce, this.mtxLocal.translation);
-                        }
-                        if (element == Game.avatar2) {
-                            Networking.knockbackPush(this.attributes.knockbackForce, this.mtxLocal.translation);
-                        }
-                    }
+
+                _direction.normalize();
+                _direction.scale((1 / Game.frameRate * this.attributes.speed));
+
+
+                if (this.canMoveX && this.canMoveY) {
+                    this.cmpTransform.mtxLocal.translate(_direction);
+                } else if (this.canMoveX && !this.canMoveY) {
+                    _direction = new ƒ.Vector3(_direction.x, 0, _direction.z)
+                    this.cmpTransform.mtxLocal.translate(_direction);
+                } else if (!this.canMoveX && this.canMoveY) {
+                    _direction = new ƒ.Vector3(0, _direction.y, _direction.z)
+                    this.cmpTransform.mtxLocal.translate(_direction);
                 }
-            })
-
-            _direction.normalize();
-            _direction.scale((1 / Game.frameRate * this.attributes.speed));
-
-
-            if (this.canMoveX && this.canMoveY) {
-                this.cmpTransform.mtxLocal.translate(_direction);
-            } else if (this.canMoveX && !this.canMoveY) {
-                _direction = new ƒ.Vector3(_direction.x, 0, _direction.z)
-                this.cmpTransform.mtxLocal.translate(_direction);
-            } else if (!this.canMoveX && this.canMoveY) {
-                _direction = new ƒ.Vector3(0, _direction.y, _direction.z)
-                this.cmpTransform.mtxLocal.translate(_direction);
             }
         }
 

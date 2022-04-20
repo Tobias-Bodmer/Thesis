@@ -253,9 +253,9 @@ namespace Game {
         await UI.txtTen.load("./Resources/Image/white10.png");
 
         //UI particle
-        // await UI.healParticle.load("./Resources/Image/Particle/");
-        // await UI.poisonParticle.load("./Resources/Image/Particle/");
-        // await UI.burnParticle.load("./Resources/Image/Particle/");
+        await UI.healParticle.load("./Resources/Image/Particles/poison.png");
+        await UI.poisonParticle.load("./Resources/Image/Particles/poison.png");
+        await UI.burnParticle.load("./Resources/Image/Particles/poison.png");
 
         //ENEMY
         await AnimationGeneration.txtBatIdle.load("./Resources/Image/Enemies/bat/batIdle.png");
