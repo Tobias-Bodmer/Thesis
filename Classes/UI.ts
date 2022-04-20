@@ -87,6 +87,7 @@ namespace UI {
             this.addComponent(cmpMesh);
 
             let mtrSolidWhite: ƒ.Material = new ƒ.Material("SolidWhite", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
+
             let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(mtrSolidWhite);
             this.addComponent(cmpMaterial);
 
@@ -105,7 +106,7 @@ namespace UI {
 
             oldComCoat = this.getComponent(ƒ.ComponentMaterial);
 
-            switch (_texture) {
+            switch (Math.abs(_texture)) {
                 case 0:
                     newTxt = txtZero;
                     break;
@@ -142,8 +143,13 @@ namespace UI {
                 default:
                     break;
             }
-
-            newCoat.color = ƒ.Color.CSS("WHITE");
+            if (_texture >= 0) {
+                newCoat.color = ƒ.Color.CSS("red");
+            }
+            else {
+                newCoat.color = ƒ.Color.CSS("green");
+                this.up = 0.1;
+            }
             newCoat.texture = newTxt;
             oldComCoat.material = newMtr;
         }

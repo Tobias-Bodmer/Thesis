@@ -39,7 +39,7 @@ namespace Buff {
     }
 
     export class DamageBuff extends Buff {
-        value: number = 1;
+        value: number = -1;
         constructor(_id: BUFFID, _duration: number, _tickRate: number) {
             super(_id, _duration, _tickRate)
         }

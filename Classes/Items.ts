@@ -27,6 +27,7 @@ namespace Items {
         public collider: Collider.Collider;
         transform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
         position: ƒ.Vector2
+        buff: Buff.Buff[] = [new Buff.DamageBuff(Buff.BUFFID.BLEEDING, 300, 60)];
 
         constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number) {
             super(getInternalItemById(_id).name);

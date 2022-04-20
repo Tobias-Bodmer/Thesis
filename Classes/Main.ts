@@ -126,7 +126,7 @@ namespace Game {
                 element.move();
                 element.lifespan(graph);
             })
-            
+
             entities = <Entity.Entity[]>graph.getChildren().filter(child => (<Entity.Entity>child) instanceof Entity.Entity);
 
 
@@ -211,17 +211,17 @@ namespace Game {
         await Bullets.bulletTxt.load("./Resources/Image/arrow01.png");
 
         //UI
-        await UI.txtZero.load("./Resources/Image/0.png");
-        await UI.txtOne.load("./Resources/Image/1.png");
-        await UI.txtTow.load("./Resources/Image/2.png");
-        await UI.txtThree.load("./Resources/Image/3.png");
-        await UI.txtFour.load("./Resources/Image/4.png");
-        await UI.txtFive.load("./Resources/Image/5.png");
-        await UI.txtSix.load("./Resources/Image/6.png");
-        await UI.txtSeven.load("./Resources/Image/7.png");
-        await UI.txtEight.load("./Resources/Image/8.png");
-        await UI.txtNine.load("./Resources/Image/9.png");
-        await UI.txtTen.load("./Resources/Image/10.png");
+        await UI.txtZero.load("./Resources/Image/white0.png");
+        await UI.txtOne.load("./Resources/Image/white1.png");
+        await UI.txtTow.load("./Resources/Image/white2.png");
+        await UI.txtThree.load("./Resources/Image/white3.png");
+        await UI.txtFour.load("./Resources/Image/white4.png");
+        await UI.txtFive.load("./Resources/Image/white5.png");
+        await UI.txtSix.load("./Resources/Image/white6.png");
+        await UI.txtSeven.load("./Resources/Image/white7.png");
+        await UI.txtEight.load("./Resources/Image/white8.png");
+        await UI.txtNine.load("./Resources/Image/white9.png");
+        await UI.txtTen.load("./Resources/Image/white10.png");
 
         //ENEMY
         await AnimationGeneration.txtBatIdle.load("./Resources/Image/Enemies/bat/batIdle.png");

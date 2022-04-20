@@ -156,6 +156,7 @@ declare namespace Items {
         collider: Collider.Collider;
         transform: ƒ.ComponentTransform;
         position: ƒ.Vector2;
+        buff: Buff.Buff[];
         constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
         loadTexture(_texture: ƒ.TextureImage): Promise<void>;
         setPosition(_position: ƒ.Vector2): void;
