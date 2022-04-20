@@ -21,7 +21,7 @@ namespace Generation {
         addSpecialRooms();
         addRoom(rooms[rooms.length - 3], Generation.ROOMTYPE.MERCHANT);
         rooms.forEach(room => {
-            room.exits = calcRoomDoors(room.coordinates);
+            room.exits = calcRoomDoors(room);
             // console.log(room.coordinates + " " + room.exits + " " + room.roomType.toString());
         })
 
@@ -166,26 +166,22 @@ namespace Generation {
         return [north, east, south, west];
     }
 
-    function calcRoomDoors(_position: [number, number]): [boolean, boolean, boolean, boolean] {
+    function calcRoomDoors(_room: Generation.Room): [boolean, boolean, boolean, boolean] {
         let north: boolean = false;
         let east: boolean = false;
         let south: boolean = false;
         let west: boolean = false;
-
-        for (let i = 0; i < usedPositions.length; i++) {
-            // console.log(usedPositions[i][0] - _position[1]);
-            if (usedPositions[i][1] - _position[1] == -1 && usedPositions[i][0] - _position[0] == 0) {
-                south = true;
-            }
-            if (usedPositions[i][0] - _position[0] == -1 && usedPositions[i][1] - _position[1] == 0) {
-                west = true;
-            }
-            if (usedPositions[i][1] - _position[1] == 1 && usedPositions[i][0] - _position[0] == 0) {
-                north = true;
-            }
-            if (usedPositions[i][0] - _position[0] == 1 && usedPositions[i][1] - _position[1] == 0) {
-                east = true;
-            }
+        if (_room.neighbourN != undefined) {
+            north = true;
+        }
+        if (_room.neighbourE != undefined) {
+            east = true;
+        }
+        if (_room.neighbourS != undefined) {
+            south = true;
+        }
+        if (_room.neighbourW != undefined) {
+            west = true;
         }
         return [north, east, south, west];
     }

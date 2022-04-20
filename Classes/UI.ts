@@ -100,7 +100,7 @@ namespace UI {
             this.cmpTransform.mtxLocal.translate(new ƒ.Vector3(0, this.up, 0));
             this.cmpTransform.mtxLocal.scale(ƒ.Vector3.ONE(1.01));
         }
-        loadTexture(_texture: number) {
+        loadTexture(_damage: number) {
             let newTxt: ƒ.TextureImage = new ƒ.TextureImage();
             let newCoat: ƒ.CoatRemissiveTextured = new ƒ.CoatRemissiveTextured();
             let newMtr: ƒ.Material = new ƒ.Material("mtr", ƒ.ShaderFlatTextured, newCoat);
@@ -108,7 +108,7 @@ namespace UI {
 
             oldComCoat = this.getComponent(ƒ.ComponentMaterial);
 
-            switch (Math.abs(_texture)) {
+            switch (Math.abs(_damage)) {
                 case 0:
                     newTxt = txtZero;
                     break;
@@ -145,7 +145,7 @@ namespace UI {
                 default:
                     break;
             }
-            if (_texture >= 0) {
+            if (_damage >= 0) {
                 newCoat.color = ƒ.Color.CSS("red");
             }
             else {

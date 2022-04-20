@@ -116,7 +116,7 @@ namespace Items {
                     Networking.updateAvatarWeapon(_avatar.weapon);
                     break;
                 case ITEMID.HEALTHUP:
-                    _avatar.attributes.healthPoints = Calculation.addPercentageAmountToValue(_avatar.attributes.maxHealthPoints, this.value);
+                    _avatar.attributes.maxHealthPoints = Calculation.addPercentageAmountToValue(_avatar.attributes.maxHealthPoints, this.value);
                     console.log(this.description + ": " + _avatar.attributes.maxHealthPoints);
                     Networking.updateAvatarAttributes(_avatar.attributes);
                     break;
