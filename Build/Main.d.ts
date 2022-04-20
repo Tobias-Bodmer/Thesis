@@ -101,6 +101,19 @@ declare namespace Enemy {
         behaviour(): void;
         moveBehaviour(): void;
     }
+    class EnemyDash extends Enemy {
+        isAttacking: boolean;
+        perfomrAbility: boolean;
+        lastMoveDireciton: Game.ƒ.Vector3;
+        dashCount: number;
+        avatars: Player.Player[];
+        randomPlayer: number;
+        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
+        update(): void;
+        behaviour(): void;
+        doDash(): void;
+        moveBehaviour(): void;
+    }
     class EnemyPatrol extends Enemy {
         patrolPoints: ƒ.Vector2[];
         waitTime: number;
