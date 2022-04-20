@@ -4,10 +4,10 @@ namespace Weapons {
         public currentCooldownTime: number = this.cooldownTime;
         attackCount: number = 1;
         public currentAttackCount: number = this.attackCount;
-        bulletType: Bullets.NORMALBULLETS = Bullets.NORMALBULLETS.STANDARD;
+        bulletType: Bullets.BULLETTYPE = Bullets.BULLETTYPE.STANDARD;
         projectileAmount: number = 1;
 
-        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.NORMALBULLETS, _projectileAmount: number) {
+        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number) {
             this.cooldownTime = _cooldownTime;
             this.attackCount = _attackCount;
             this.bulletType = _bulletType;
@@ -51,22 +51,23 @@ namespace Weapons {
             }
         }
 
-        loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.NORMALBULLETS, _amount: number, _netId?: number): Bullets.Bullet[] {
+        loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.BULLETTYPE, _amount: number, _netId?: number): Bullets.Bullet[] {
             let magazine: Bullets.Bullet[] = [];
             for (let i = 0; i < _amount; i++) {
                 switch (_bulletType) {
-                    case Bullets.NORMALBULLETS.STANDARD:
-                        const standardRef = Game.bulletsJSON.find(bullet => bullet.type == Bullets.NORMALBULLETS.STANDARD);
+                    case Bullets.BULLETTYPE.STANDARD:
+                        const standardRef = Game.bulletsJSON.find(bullet => bullet.type == Bullets.BULLETTYPE.STANDARD);
                         magazine.push(new Bullets.Bullet(standardRef.name, standardRef.speed, standardRef.hitPointsScale, standardRef.lifetime, standardRef.knockbackForce, standardRef.killcount, _position, _direction, _netId))
                         break;
-                    case Bullets.NORMALBULLETS.SLOW:
-                        const slowRef = Game.bulletsJSON.find(bullet => bullet.type == Bullets.NORMALBULLETS.SLOW);
+                    case Bullets.BULLETTYPE.SLOW:
+                        const slowRef = Game.bulletsJSON.find(bullet => bullet.type == Bullets.BULLETTYPE.SLOW);
                         magazine.push(new Bullets.Bullet(slowRef.name, slowRef.speed, slowRef.hitPointsScale, slowRef.lifetime, slowRef.knockbackForce, slowRef.killcount, _position, _direction, _netId));
                         break;
-                    case Bullets.NORMALBULLETS.MELEE:
-                        const meleeRef = Game.bulletsJSON.find(bullet => bullet.type == Bullets.NORMALBULLETS.MELEE);
+                    case Bullets.BULLETTYPE.MELEE:
+                        const meleeRef = Game.bulletsJSON.find(bullet => bullet.type == Bullets.BULLETTYPE.MELEE);
                         magazine.push(new Bullets.Bullet(meleeRef.name, meleeRef.speed, meleeRef.hitPointsScale, meleeRef.lifetime, meleeRef.knockbackForce, meleeRef.killcount, _position, _direction, _netId));
                         break;
+                
                 }
             }
             return magazine;

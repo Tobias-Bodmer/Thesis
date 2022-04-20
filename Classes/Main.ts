@@ -96,9 +96,9 @@ namespace Game {
         if (Game.gamestate == Game.GAMESTATES.PLAYING) {
             cameraUpdate();
 
-            avatar1.cooldown();
 
             if (Game.connected) {
+                avatar1.cooldown();
                 avatar2.cooldown();
                 Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
             }

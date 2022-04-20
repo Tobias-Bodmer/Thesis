@@ -38,12 +38,14 @@ declare namespace Entity {
         animations: ƒAid.SpriteSheetAnimations;
         performKnockback: boolean;
         idleScale: number;
+        buffs: Buff.Buff[];
         constructor(_id: Entity.ID, _attributes: Attributes);
         update(): void;
         updateCollider(): void;
+        updateBuffs(): void;
         collide(_direction: ƒ.Vector3): void;
         getDamage(_value: number): void;
-        getDamageReduction(_value: number): number;
+        private getDamageReduction;
         doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     }
@@ -138,7 +140,8 @@ declare namespace Items {
         HEALTHUP = 4,
         SCALEUP = 5,
         SCALEDOWN = 6,
-        ARMORUP = 7
+        ARMORUP = 7,
+        HOMECOMING = 8
     }
     let txtIceBucket: ƒ.TextureImage;
     let txtDmgUp: ƒ.TextureImage;
@@ -217,12 +220,32 @@ declare namespace Enemy {
         summon(): void;
     }
 }
+declare namespace Buff {
+    enum BUFFID {
+        BLEEDING = 0
+    }
+    abstract class Buff {
+        duration: number;
+        tickRate: number;
+        id: BUFFID;
+        constructor(_id: BUFFID, _duration: number, _tickRate: number);
+        applyBuff(_avatar: Entity.Entity): void;
+        doBuffStuff(_avatar: Entity.Entity): boolean;
+    }
+    class DamageBuff extends Buff {
+        value: number;
+        constructor(_id: BUFFID, _duration: number, _tickRate: number);
+        applyBuff(_avatar: Entity.Entity): void;
+        getBuffDamgeById(_id: BUFFID, _avatar: Entity.Entity): void;
+    }
+}
 declare namespace Bullets {
-    enum NORMALBULLETS {
+    enum BULLETTYPE {
         STANDARD = 0,
         HIGHSPEED = 1,
         SLOW = 2,
-        MELEE = 3
+        MELEE = 3,
+        HOMING = 4
     }
     let bulletTxt: ƒ.TextureImage;
     class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
@@ -239,7 +262,7 @@ declare namespace Bullets {
         speed: number;
         lifetime: number;
         knockbackForce: number;
-        type: NORMALBULLETS;
+        type: BULLETTYPE;
         time: number;
         killcount: number;
         despawn(): Promise<void>;
@@ -326,7 +349,8 @@ declare namespace Networking {
         UPDATEWEAPON = 19,
         ITEMDIE = 20,
         SENDROOM = 21,
-        SWITCHROOMREQUEST = 22
+        SWITCHROOMREQUEST = 22,
+        UPDATEBUFF = 23
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -360,6 +384,7 @@ declare namespace Networking {
     function updateAvatarAttributes(_attributes: Entity.Attributes): void;
     function updateAvatarWeapon(_weapon: Weapons.Weapon): void;
     function removeItem(_netId: number): void;
+    function updateBuffList(_buff: Buff.Buff[], _netId: number): Promise<void>;
     function sendRoom(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: Generation.ROOMTYPE): void;
     function switchRoomRequest(_coordiantes: [number, number], _direction: [boolean, boolean, boolean, boolean]): void;
     function idGenerator(): number;
@@ -507,13 +532,13 @@ declare namespace Weapons {
         currentCooldownTime: number;
         attackCount: number;
         currentAttackCount: number;
-        bulletType: Bullets.NORMALBULLETS;
+        bulletType: Bullets.BULLETTYPE;
         projectileAmount: number;
-        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.NORMALBULLETS, _projectileAmount: number);
+        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number);
         shoot(_owner: Tag.TAG, _position: ƒ.Vector2, _direciton: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
         fire(_owner: Tag.TAG, _magazine: Bullets.Bullet[], _sync?: boolean): void;
         setBulletDirection(_magazine: Bullets.Bullet[]): Bullets.Bullet[];
-        loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.NORMALBULLETS, _amount: number, _netId?: number): Bullets.Bullet[];
+        loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.BULLETTYPE, _amount: number, _netId?: number): Bullets.Bullet[];
         cooldown(_faktor: number): void;
     }
 }

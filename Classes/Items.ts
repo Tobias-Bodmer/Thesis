@@ -7,7 +7,8 @@ namespace Items {
         HEALTHUP,
         SCALEUP,
         SCALEDOWN,
-        ARMORUP
+        ARMORUP,
+        HOMECOMING
     }
 
     export let txtIceBucket: ƒ.TextureImage = new ƒ.TextureImage();
@@ -138,6 +139,9 @@ namespace Items {
                     _avatar.attributes.armor += this.value;
                     console.log(this.description + ": " + _avatar.attributes.armor);
                     Networking.updateAvatarAttributes(_avatar.attributes);
+                    break;
+                case ITEMID.HOMECOMING:
+                    //TODO: talk with tobi
                     break;
             }
 

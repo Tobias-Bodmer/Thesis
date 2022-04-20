@@ -11,6 +11,7 @@ namespace Entity {
         animations: ƒAid.SpriteSheetAnimations = {};
         performKnockback: boolean = false;
         idleScale: number;
+        buffs: Buff.Buff[] = [];
 
         constructor(_id: Entity.ID, _attributes: Attributes) {
             super(getNameById(_id));
@@ -28,11 +29,29 @@ namespace Entity {
 
         public update() {
             this.updateCollider();
+            this.updateBuffs();
         }
 
         updateCollider() {
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
         }
+
+        updateBuffs() {
+            if (this.buffs.length == 0) {
+                return;
+            }
+            for (let i = 0; i < this.buffs.length; i++) {
+                if (this.buffs[i] instanceof Buff.DamageBuff) {
+                    if (!this.buffs[i].doBuffStuff(this)) {
+                        this.buffs.slice(i);
+                    }
+                }
+            }
+        }
+
+
+
+
 
         collide(_direction: ƒ.Vector3) {
             this.canMoveX = true;
@@ -82,12 +101,14 @@ namespace Entity {
         }
 
         public getDamage(_value: number) {
+            let hitValue = this.getDamageReduction(_value);
             if (_value != null && this.attributes.hitable) {
-                this.attributes.healthPoints -= this.getDamageReduction(_value);
+                this.attributes.healthPoints -= hitValue;
+                Game.graph.addChild(new UI.DamageUI(this.mtxLocal.translation, Math.round(hitValue)));
             }
         }
 
-        getDamageReduction(_value: number): number {
+        private getDamageReduction(_value: number): number {
             return _value * (1 - (this.attributes.armor / 100));
         }
         //#region knockback

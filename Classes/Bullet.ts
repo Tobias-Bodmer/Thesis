@@ -1,10 +1,11 @@
 namespace Bullets {
 
-    export enum NORMALBULLETS {
+    export enum BULLETTYPE {
         STANDARD,
         HIGHSPEED,
         SLOW,
-        MELEE
+        MELEE,
+        HOMING
     }
     export let bulletTxt: ƒ.TextureImage = new ƒ.TextureImage();
 
@@ -26,7 +27,7 @@ namespace Bullets {
         public speed: number = 20;
         lifetime: number = 1 * Game.frameRate;
         knockbackForce: number = 4;
-        type: NORMALBULLETS;
+        type: BULLETTYPE;
 
         time: number = 0;
         killcount: number = 1;
@@ -154,8 +155,8 @@ namespace Bullets {
                 if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
                     if ((<Enemy.Enemy>element).attributes.healthPoints > 0) {
                         (<Enemy.Enemy>element).getDamage(this.hitPointsScale);
+                        (<Enemy.Enemy>element).buffs.push(new Buff.DamageBuff(Buff.BUFFID.BLEEDING, 300, 60));
                         (<Enemy.Enemy>element).getKnockback(this.knockbackForce, this.mtxLocal.translation);
-                        Game.graph.addChild(new UI.DamageUI((<Enemy.Enemy>element).cmpTransform.mtxLocal.translation, Math.round((<Enemy.Enemy>element).getDamageReduction(this.hitPointsScale))));
                         this.lifetime = 0;
                         this.killcount--;
                     }

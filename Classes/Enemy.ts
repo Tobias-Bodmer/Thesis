@@ -77,10 +77,10 @@ namespace Enemy {
             return moveSimple;
         }
 
-       
+
         public getDamage(_value: number): void {
+            super.getDamage(_value);
             if (Networking.client.idHost == Networking.client.id) {
-                super.getDamage(_value);
                 if (this.attributes.healthPoints <= 0) {
 
                     Networking.removeEnemy(this.netId);
@@ -206,7 +206,7 @@ namespace Enemy {
             let target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
             let distance = ƒ.Vector3.DIFFERENCE(target, this.cmpTransform.mtxLocal.translation).magnitude;
             //TODO: set to 3 after testing
-            if (distance > -1) {
+            if (distance > 3) {
                 this.currentState = BEHAVIOUR.FOLLOW
             }
             else {

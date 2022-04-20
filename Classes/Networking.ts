@@ -24,7 +24,8 @@ namespace Networking {
         UPDATEWEAPON,
         ITEMDIE,
         SENDROOM,
-        SWITCHROOMREQUEST
+        SWITCHROOMREQUEST,
+        UPDATEBUFF
     }
 
     import ƒClient = FudgeNet.FudgeClient;
@@ -428,7 +429,13 @@ namespace Networking {
         }
     }
     //#endregion
-
+    //#region buffs
+    export async function updateBuffList(_buff: Buff.Buff[], _netId: number) {
+        if (Game.connected && client.idHost == client.id) {
+            await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEBUFF, buffList: _buff, netId: _netId } });
+        }
+    }
+    //#endregion
 
 
     //#region room
