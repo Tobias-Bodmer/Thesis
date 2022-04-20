@@ -38,7 +38,7 @@ namespace Networking {
     export let enemy: Enemy.Enemy;
     export let currentIDs: number[] = [];
 
-    document.getElementById("Host").addEventListener("click", () => { spawnPlayer() }, true);
+    document.getElementById("HostSpawn").addEventListener("click", () => { spawnPlayer() }, true);
     let IPConnection = <HTMLInputElement>document.getElementById("IPConnection");
     document.getElementById("Connecting").addEventListener("click", conneting, true);
 
@@ -338,7 +338,7 @@ namespace Networking {
     }
 
     export function setClient() {
-        Networking.client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: Networking.FUNCTION.CONNECTED, value: Networking.client.id } });
+        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: Networking.FUNCTION.CONNECTED, value: Networking.client.id } });
     }
 
     export function updateAvatarPosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3) {

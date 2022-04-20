@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset='utf-8'>
-    <link rel = "icon" href = "" type = "image/x-icon">
+    <link rel="icon" href="" type="image/x-icon">
     <title>Game</title>
 
     <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
@@ -12,6 +13,7 @@
     <script src='FUDGE/Net/Build/Client/FudgeClient.js'></script>
     <script src='Build/Main.js' defer></script>
 </head>
+
 <body>
     <div id="UI">
         <div id="Player1">
@@ -33,18 +35,26 @@
             </div>
         </div>
     </div>
+
     <canvas id="Canvas"></canvas>
+
     <div id="Startscreen">
         <button id="StartGame">Start</button>
         <button id="Option">Option</button>
         <button id="Credits">Credits</button>
     </div>
+
+    <div id="Hostscreen">
+        <button id="Host">Host</button>
+    </div>
+
     <div id="Lobbyscreen">
         <button id="Ranged">Ranged</button>
         <button id="Melee">Melee</button>
     </div>
+
     <div id="ConnectionGUI">
-        <button id="Host">Spawn</button>
+        <button id="HostSpawn">Spawn</button>
         <label>Server-Adress:</label>
         <input type="text" id="IPConnection" value="wss:thesis-fudgeserver.herokuapp.com">
         <button id="Connecting">Connecting</button>
@@ -52,4 +62,5 @@
     </div>
     <div id="IMHOST" style="visibility: hidden;">IM HOST</div>
 </body>
+
 </html>
