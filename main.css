@@ -4,6 +4,21 @@ canvas {
     height: 600px;
 }
 
+#Hostscreen{
+    position: absolute;
+    visibility: hidden;
+    top: 520px;
+    left: 10px;
+    width: 1000px;
+}
+
+#Hostscreen > button {
+    margin-left: 50%;
+    transform:translateX(-50%);
+    width: 150px;
+    height: 40px;
+}
+
 #Lobbyscreen {
     position: absolute;
     visibility: hidden;
