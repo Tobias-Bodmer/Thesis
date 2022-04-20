@@ -70,7 +70,7 @@ namespace Enemy {
         }
 
         collide(_direction: ƒ.Vector3) {
-            if (_direction != ƒ.Vector3.ZERO()) {
+            if (_direction.magnitude > 0) {
                 super.collide(_direction);
 
                 let avatarColliders: Player.Player[] = <Player.Player[]>Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.PLAYER);
@@ -249,7 +249,6 @@ namespace Enemy {
 
         }
 
-
         doDash() {
             if (!this.isAttacking) {
                 this.isAttacking = true;
@@ -261,9 +260,6 @@ namespace Enemy {
                 }, 300);
             }
         }
-
-
-
 
         moveBehaviour(): void {
             this.behaviour();
@@ -315,19 +311,44 @@ namespace Enemy {
     export class EnemyShoot extends Enemy {
         weapon: Weapons.Weapon;
         viewRadius: number = 3;
-        constructor(_id: number, _attributes: Entity.Attributes, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _netId?: number) {
+        gotRecognized: boolean = false;
+        constructor(_id: number, _attributes: Entity.Attributes, _weapon: Weapons.Weapon, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _attributes, _position, _netId);
             this.weapon = _weapon;
         }
 
         update() {
             super.update();
+        }
+
+        moveBehaviour(): void {
+            this.target = Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2();
+            let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
+
+            if (distance < 5) {
+                this.moveDirection = this.moveAway(this.target).toVector3();
+                this.gotRecognized = true;
+            } else {
+                this.moveDirection = ƒ.Vector3.ZERO();
+            }
+
             this.shoot();
         }
 
+        public getDamage(_value: number): void {
+            super.getDamage(_value);
+            this.gotRecognized = true;
+        }
+
         public shoot(_netId?: number) {
-            let target: ƒ.Vector3 = Calculation.getCloserAvatarPosition(this.mtxLocal.translation)
-            let _direction = ƒ.Vector3.DIFFERENCE(target, this.mtxLocal.translation);
+            this.target = Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2();
+            let _direction = ƒ.Vector3.DIFFERENCE(this.target.toVector3(0), this.mtxLocal.translation);
+
+            if (_direction.magnitude < 3 || this.gotRecognized) {
+                this.weapon.shoot(this.tag, this.mtxLocal.translation.toVector2(), _direction, _netId);
+            }
+
+
             // if (this.weapon.currentAttackCount > 0 && _direction.magnitude < this.viewRadius) {
             //     _direction.normalize();
             //     // let bullet: Bullets.Bullet = new Bullets.HomingBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, Calculation.getCloserAvatarPosition(this.mtxLocal.translation), _netId);
@@ -340,7 +361,6 @@ namespace Enemy {
             //     }
 
             // }
-            this.weapon.shoot(this.tag, this.mtxLocal.translation.toVector2(), _direction, _netId);
         }
     }
 

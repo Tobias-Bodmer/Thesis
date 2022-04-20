@@ -39,10 +39,10 @@ namespace EnemySpawner {
             case Entity.ID.REDTICK:
                 if (_attributes == null && _netID == null) {
                     const ref = Game.enemiesJSON.find(enemy => enemy.name == "redtick");
-                    enemy = new Enemy.EnemyDash(Entity.ID.REDTICK, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, Math.random() * ref.attributes.scale + 0.5, ref.attributes.knockbackForce, ref.attributes.armor), _position, _netID);
+                    enemy = new Enemy.EnemyShoot(Entity.ID.REDTICK, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, Math.random() * ref.attributes.scale + 0.5, ref.attributes.knockbackForce, ref.attributes.armor), new Weapons.Weapon(50, 1, Bullets.BULLETTYPE.STANDARD, 1), _position, _netID);
                 }
                 else {
-                    enemy = new Enemy.EnemyDash(Entity.ID.REDTICK, _attributes, _position, _netID);
+                    enemy = new Enemy.EnemyShoot(Entity.ID.REDTICK, _attributes, new Weapons.Weapon(50, 1, Bullets.BULLETTYPE.STANDARD, 1), _position, _netID);
                 }
                 break;
             case Entity.ID.SMALLTICK:

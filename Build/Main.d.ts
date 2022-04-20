@@ -73,7 +73,10 @@ declare namespace Entity {
         performKnockback: boolean;
         idleScale: number;
         buffs: Buff.Buff[];
-        buffAnimation: Game.ƒAid.NodeSprite[];
+        buffAnimation: {
+            key: string;
+            animation: Game.ƒAid.NodeSprite;
+        }[];
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number);
         update(): void;
         updateCollider(): void;
@@ -157,8 +160,11 @@ declare namespace Enemy {
     class EnemyShoot extends Enemy {
         weapon: Weapons.Weapon;
         viewRadius: number;
-        constructor(_id: number, _attributes: Entity.Attributes, _position: ƒ.Vector2, _weapon: Weapons.Weapon, _netId?: number);
+        gotRecognized: boolean;
+        constructor(_id: number, _attributes: Entity.Attributes, _weapon: Weapons.Weapon, _position: ƒ.Vector2, _netId?: number);
         update(): void;
+        moveBehaviour(): void;
+        getDamage(_value: number): void;
         shoot(_netId?: number): void;
     }
 }
