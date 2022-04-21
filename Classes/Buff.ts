@@ -29,13 +29,11 @@ namespace Buff {
 
         }
         addToEntity(_avatar: Entity.Entity) {
-            let particle = this.getParticleById(this.id);
-            _avatar.addChild(particle);
-            particle.activate(true);
             if (_avatar.buffs.filter(buff => buff.id == this.id).length > 0) {
                 return;
             }
             else {
+
                 _avatar.buffs.push(this);
                 Networking.updateBuffList(_avatar.buffs, _avatar.netId);
             }
@@ -48,6 +46,11 @@ namespace Buff {
             else if (this.duration % this.tickRate == 0) {
 
                 this.applyBuff(_avatar);
+            }
+            if (_avatar.getChildren().find(child => (<UI.Particles>child).id == this.id) == undefined) {
+                let particle = this.getParticleById(this.id);
+                _avatar.addChild(particle);
+                particle.activate(true);
             }
             this.duration--;
             return true;

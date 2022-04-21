@@ -43,9 +43,7 @@ namespace Generation {
             this.exits = _exits;
             this.roomType = _roomType;
 
-            this.addComponent(new ƒ.ComponentTransform());
-            this.cmpTransform.mtxLocal.scale(new ƒ.Vector3(this.roomSize, this.roomSize, 0));
-            this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(this.coordinates[0] * this.roomSize, this.coordinates[1] * this.roomSize, -0.02);
+
 
             switch (_roomType) {
                 case ROOMTYPE.START:
@@ -64,6 +62,7 @@ namespace Generation {
                     break;
                 case ROOMTYPE.TREASURE:
                     this.enemyCount = 0;
+                    this.roomSize = 5;
                     this.finished = true;
                     this.cmpMaterial = new ƒ.ComponentMaterial(this.treasureRoomMat);
                     break;
@@ -76,6 +75,10 @@ namespace Generation {
                     this.cmpMaterial = new ƒ.ComponentMaterial(this.bossRoomMat);
                     break;
             }
+
+            this.addComponent(new ƒ.ComponentTransform());
+            this.cmpTransform.mtxLocal.scale(new ƒ.Vector3(this.roomSize, this.roomSize, 0));
+            this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(this.coordinates[0] * this.roomSize, this.coordinates[1] * this.roomSize, -0.01);
 
             this.addComponent(this.cmpMesh);
             this.addComponent(this.cmpMaterial);

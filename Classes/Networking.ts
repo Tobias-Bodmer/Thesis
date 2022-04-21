@@ -89,13 +89,13 @@ namespace Networking {
                             Game.avatar2 = new Player.Melee(Entity.ID.MELEE, attributes, netId);
 
 
-                            Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
-                            Game.graph.appendChild(Game.avatar2);
+                            Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], 0);
+                            Game.graph.addChild(Game.avatar2);
                         } else if (message.content.type == Player.PLAYERTYPE.RANGED) {
                             const attributes: Entity.Attributes = message.content.attributes
                             Game.avatar2 = new Player.Ranged(Entity.ID.RANGED, attributes, netId);
-                            Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
-                            Game.graph.appendChild(Game.avatar2);
+                            Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], 0);
+                            Game.graph.addChild(Game.avatar2);
                         }
                     }
 
@@ -228,10 +228,18 @@ namespace Networking {
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEBUFF.toString()) {
                             const buffList: Buff.Buff[] = <Buff.Buff[]>message.content.buffList;
                             console.log(buffList);
+                            let newBuffs: Buff.Buff[] = [];
+                            buffList.forEach(buff => {
+                                switch (buff.id) {
+                                    case Buff.BUFFID.POISON:
+                                        newBuffs.push(new Buff.DamageBuff(buff.id, buff.duration, buff.tickRate));
+                                        break;
+                                }
+                            });
                             let entity = Game.entities.find(ent => ent.netId == message.content.netId);
                             entity.buffs.forEach(buff => {
                                 let flag: boolean = false;
-                                buffList.forEach(newBuff => {
+                                newBuffs.forEach(newBuff => {
                                     if (buff.id == newBuff.id) {
                                         flag = true;
                                     }
@@ -240,9 +248,11 @@ namespace Networking {
                                     entity.removeChild(entity.getChildren().find(child => (<UI.Particles>child).id == buff.id));
 
                                 }
-                            })
-                            entity.buffs = buffList;
+                            });
+                            entity.buffs = newBuffs;
                         }
+
+
 
                         //update UI
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEUI.toString()) {

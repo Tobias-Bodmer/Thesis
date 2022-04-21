@@ -6,7 +6,7 @@ namespace Generation {
 
     //spawn chances
     let challengeRoomSpawnChance: number = 30;
-    let treasureRoomSpawnChance: number = 20;
+    let treasureRoomSpawnChance: number = 100;
 
     export function generateRooms(): void {
         let startCoords: [number, number] = [0, 0];
@@ -247,28 +247,30 @@ namespace Generation {
         });
 
         Game.graph.addChild(_room);
-        Game.graph.appendChild(_room.walls[0]);
-        Game.graph.appendChild(_room.walls[1]);
-        Game.graph.appendChild(_room.walls[2]);
-        Game.graph.appendChild(_room.walls[3]);
+        Game.graph.addChild(_room.walls[0]);
+        Game.graph.addChild(_room.walls[1]);
+        Game.graph.addChild(_room.walls[2]);
+        Game.graph.addChild(_room.walls[3]);
 
         let newPosition: Game.ƒ.Vector3 = _room.cmpTransform.mtxLocal.translation.clone;
 
         if (_direciton != null) {
             if (_direciton[0]) {
-                newPosition.y += _room.roomSize / 2.3;
+                newPosition.y += _room.roomSize / 2 - 2;
             }
             if (_direciton[1]) {
-                newPosition.x += _room.roomSize / 2.3;
+                newPosition.x += _room.roomSize / 2 - 2;
             }
             if (_direciton[2]) {
-                newPosition.y -= _room.roomSize / 2.3;
+                newPosition.y -= _room.roomSize / 2 - 2;
             }
             if (_direciton[3]) {
-                newPosition.x -= _room.roomSize / 2.3;
+                newPosition.x -= _room.roomSize / 2 - 2;
             }
         }
+        newPosition.z = 0;
         Game.avatar1.cmpTransform.mtxLocal.translation = newPosition;
+
 
         if (Networking.client.id != Networking.client.idHost) {
             _room.setDoors();
