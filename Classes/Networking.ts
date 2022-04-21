@@ -207,7 +207,6 @@ namespace Networking {
                         //Sync animation state
                         if (message.content != undefined && message.content.text == FUNCTION.ENTITYANIMATIONSTATE.toString()) {
                             let enemy = Game.entities.find(enem => enem.netId == message.content.netId);
-                            console.warn(message.content.state);
                             if (enemy != undefined) {
                                 switch (message.content.state) {
                                     case Entity.ANIMATIONSTATES.IDLE:
@@ -449,12 +448,12 @@ namespace Networking {
             client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.UPDATEATTRIBUTES, attributes: _attributes, netId: _netId } });
         }
         else {
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEATTRIBUTES, attributes: _attributes } });
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEATTRIBUTES, attributes: _attributes, netId: _netId } });
         }
     }
     export function updateAvatarWeapon(_weapon: Weapons.Weapon, _targetNetId: number) {
         if (client.idHost != client.id) {
-            client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.UPDATEWEAPON, weapon: _weapon } });
+            client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.UPDATEWEAPON, weapon: _weapon, netId: _targetNetId } });
         }
         else {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEWEAPON, weapon: _weapon, netId: _targetNetId } });

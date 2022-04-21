@@ -18,6 +18,8 @@ namespace Items {
     export let txtIceBucket: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtDmgUp: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtHealthUp: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtToxicRelationship: ƒ.TextureImage = new ƒ.TextureImage();
+
 
     export abstract class Item extends Game.ƒ.Node {
         public tag: Tag.TAG = Tag.TAG.ITEM;
@@ -111,7 +113,7 @@ namespace Items {
                 case ITEMID.HOMECOMING:
                     break;
                 case ITEMID.TOXICRELATIONSHIP:
-                    this.loadTexture(txtIceBucket);
+                    this.loadTexture(txtToxicRelationship);
                     break;
                 case ITEMID.VAMPY:
                     this.loadTexture(txtIceBucket);
@@ -158,48 +160,48 @@ namespace Items {
             switch (this.id) {
                 case ITEMID.ICEBUCKETCHALLENGE:
                     _avatar.attributes.coolDownReduction = Calculation.subPercentageAmountToValue(_avatar.attributes.coolDownReduction, this.value);
-                    console.log(this.description + ": " + _avatar.attributes.coolDownReduction);
+                    console.log(this.name + "--" + this.description + ": " + _avatar.attributes.coolDownReduction);
                     Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
                     break;
                 case ITEMID.DMGUP:
                     _avatar.attributes.attackPoints += this.value;
-                    console.log(this.description + ": " + _avatar.attributes.attackPoints);
+                    console.log(this.name + "--" + this.description + ": " + _avatar.attributes.attackPoints);
                     Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
                     break;
                 case ITEMID.SPEEDUP:
                     _avatar.attributes.speed = Calculation.subPercentageAmountToValue(_avatar.attributes.speed, this.value);
-                    console.log(this.description + ": " + _avatar.attributes.speed);
+                    console.log(this.name + "--" + this.description + ": " + _avatar.attributes.speed);
                     Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
                     break;
                 case ITEMID.PROJECTILESUP:
                     _avatar.weapon.projectileAmount += this.value;
-                    console.log(this.description + ": " + _avatar.weapon.projectileAmount);
+                    console.log(this.name + "--" + this.description + ": " + _avatar.weapon.projectileAmount);
                     Networking.updateAvatarWeapon(_avatar.weapon, _avatar.netId);
                     break;
                 case ITEMID.HEALTHUP:
                     _avatar.attributes.maxHealthPoints = Calculation.addPercentageAmountToValue(_avatar.attributes.maxHealthPoints, this.value);
-                    console.log(this.description + ": " + _avatar.attributes.maxHealthPoints);
+                    console.log(this.name + "--" + this.description + ": " + _avatar.attributes.maxHealthPoints);
                     Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
                     break;
                 case ITEMID.SCALEUP:
                     _avatar.attributes.scale = Calculation.addPercentageAmountToValue(_avatar.attributes.scale, this.value);
                     _avatar.attributes.updateScaleDependencies();
                     _avatar.mtxLocal.scale(new ƒ.Vector3(_avatar.attributes.scale, _avatar.attributes.scale, _avatar.attributes.scale));
-                    console.log(this.description + ": " + _avatar.attributes.scale);
+                    console.log(this.name + "--" + this.description + ": " + _avatar.attributes.scale);
                     Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
                     //TODO: set new collider and sync over network
                     break;
                 case ITEMID.SCALEDOWN:
                     _avatar.attributes.scale = Calculation.subPercentageAmountToValue(_avatar.attributes.scale, this.value);
-                    _avatar.mtxLocal.scale(new ƒ.Vector3(_avatar.attributes.scale, _avatar.attributes.scale, _avatar.attributes.scale));
                     _avatar.attributes.updateScaleDependencies();
-                    console.log(this.description + ": " + _avatar.attributes.scale);
+                    _avatar.mtxLocal.scale(new ƒ.Vector3(_avatar.attributes.scale, _avatar.attributes.scale, _avatar.attributes.scale));
+                    console.log(this.name + "--" + this.description + ": " + _avatar.attributes.scale);
                     Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
                     //TODO: set new collider and sync over network
                     break;
                 case ITEMID.ARMORUP:
                     _avatar.attributes.armor += this.value;
-                    console.log(this.description + ": " + _avatar.attributes.armor);
+                    console.log(this.name + "--" + this.description + ": " + _avatar.attributes.armor);
                     Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
                     break;
                 case ITEMID.HOMECOMING:

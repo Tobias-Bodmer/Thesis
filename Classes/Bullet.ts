@@ -23,7 +23,7 @@ namespace Bullets {
 
         public collider: Collider.Collider;
 
-        public hitPointsScale: number = 5;
+        public hitPointsScale: number;
         public speed: number = 20;
         lifetime: number = 1 * Game.frameRate;
         knockbackForce: number = 4;
@@ -164,7 +164,7 @@ namespace Bullets {
             colliders.forEach((element) => {
                 if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
                     if ((<Enemy.Enemy>element).attributes.healthPoints > 0) {
-                        (<Enemy.Enemy>element).getDamage(this.hitPointsScale);
+                        (<Enemy.Enemy>element).getDamage(this.owner.attributes.attackPoints * this.hitPointsScale);
                         this.setBuff((<Enemy.Enemy>element));
                         (<Enemy.Enemy>element).getKnockback(this.knockbackForce, this.mtxLocal.translation);
                         this.lifetime = 0;

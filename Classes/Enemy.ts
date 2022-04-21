@@ -184,7 +184,6 @@ namespace Enemy {
 
     export class EnemyDash extends Enemy {
         isAttacking = false;
-        perfomrAbility = false;
         lastMoveDireciton: Game.ƒ.Vector3;
         dashCount: number = 1;
         avatars: Player.Player[] = [];

@@ -17,7 +17,7 @@
                 "healthPoints": 5,
                 "attackPoints": 1,
                 "speed": 3,
-                "scale": 0.8,
+                "scale": 1,
                 "knockbackForce": 0.1,
                 "armor": 0
             }
@@ -31,6 +31,17 @@
                 "scale": 2,
                 "knockbackForce": 0.1,
                 "armor": 0
+            }
+        },
+        {
+            "name": "skeleton",
+            "attributes": {
+                "healthPoints": 100,
+                "attackPoints": 1,
+                "speed": 2,
+                "scale": 2,
+                "knockbackForce": 0.1,
+                "armor": 5
             }
         }
     ]

@@ -141,7 +141,6 @@ declare namespace Enemy {
     }
     class EnemyDash extends Enemy {
         isAttacking: boolean;
-        perfomrAbility: boolean;
         lastMoveDireciton: Game.ƒ.Vector3;
         dashCount: number;
         avatars: Player.Player[];
@@ -205,6 +204,7 @@ declare namespace Items {
     let txtIceBucket: ƒ.TextureImage;
     let txtDmgUp: ƒ.TextureImage;
     let txtHealthUp: ƒ.TextureImage;
+    let txtToxicRelationship: ƒ.TextureImage;
     abstract class Item extends Game.ƒ.Node {
         tag: Tag.TAG;
         id: ITEMID;
@@ -246,6 +246,8 @@ declare namespace AnimationGeneration {
     export let txtSmallTickIdle: ƒ.TextureImage;
     export let txtSmallTickWalk: ƒ.TextureImage;
     export let txtBatIdle: ƒ.TextureImage;
+    export let txtSkeletonIdle: ƒ.TextureImage;
+    export let txtSkeletonWalk: ƒ.TextureImage;
     export let txtVikingIdle: ƒ.TextureImage;
     export import ƒAid = FudgeAid;
     class MyAnimationClass {

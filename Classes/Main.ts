@@ -279,7 +279,10 @@ namespace Game {
         await AnimationGeneration.txtRedTickWalk.load("./Resources/Image/Enemies/tick/redTickWalk.png");
 
         await AnimationGeneration.txtSmallTickIdle.load("./Resources/Image/Enemies/smallTick/smallTickIdle.png");
-        await AnimationGeneration.txtSmallTickWalk.load("./Resources/Image/Enemies/smallTick/smallTickWalk.png")
+        await AnimationGeneration.txtSmallTickWalk.load("./Resources/Image/Enemies/smallTick/smallTickWalk.png");
+
+        await AnimationGeneration.txtSkeletonIdle.load("./Resources/Image/Enemies/skeleton/skeletonIdle.png");
+        await AnimationGeneration.txtSkeletonWalk.load("./Resources/Image/Enemies/skeleton/skeletonWalk.png")
 
         await AnimationGeneration.txtVikingIdle.load("/Resources/Image/Player/vikingSide.png");
 
@@ -288,6 +291,7 @@ namespace Game {
         //Items
         await Items.txtIceBucket.load("./Resources/Image/Items/iceBucket.png");
         await Items.txtHealthUp.load("./Resources/Image/Items/healthUp.png");
+        await Items.txtToxicRelationship.load("./Resources/Image/Items/toxicRelationship.png");
 
 
     }

@@ -7,6 +7,10 @@ namespace AnimationGeneration {
 
     export let txtBatIdle: ƒ.TextureImage = new ƒ.TextureImage();
 
+    export let txtSkeletonIdle: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtSkeletonWalk: ƒ.TextureImage = new ƒ.TextureImage();
+
+
     export let txtVikingIdle: ƒ.TextureImage = new ƒ.TextureImage();
 
     export import ƒAid = FudgeAid;
@@ -56,6 +60,7 @@ namespace AnimationGeneration {
     let redTickAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.REDTICK, txtRedTickIdle, 6, 12, txtRedTickWalk, 4, 12);
     let smallTickAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.SMALLTICK, txtRedTickIdle, 6, 12, txtRedTickWalk, 4, 12);
     let vikingAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.RANGED, txtVikingIdle, 14, 12);
+    let skeletonAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.SKELETON, txtSkeletonIdle, 5, 12, txtSkeletonWalk, 7, 12);
 
     (<ƒAid.SpriteSheetAnimation>batAnimation.animations[""])
     //#endregion
@@ -71,6 +76,8 @@ namespace AnimationGeneration {
                 return smallTickAnimation;
             case Entity.ID.RANGED:
                 return vikingAnimation;
+            case Entity.ID.SKELETON:
+                return skeletonAnimation;
             default:
                 return null;
         }
@@ -78,7 +85,7 @@ namespace AnimationGeneration {
     }
 
     export function createAllAnimations() {
-        sheetArray.push(batAnimation, redTickAnimation, smallTickAnimation, vikingAnimation);
+        sheetArray.push(batAnimation, redTickAnimation, smallTickAnimation, vikingAnimation, skeletonAnimation);
 
         sheetArray.forEach(obj => {
             let idleWidth: number = obj.spriteSheetIdle.texture.texImageSource.width / obj.idleNumberOfFrames;

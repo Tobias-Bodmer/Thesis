@@ -4,7 +4,7 @@
             "name": "normalBullet",
             "type": 0,
             "speed": 20,
-            "hitPointsScale": 5,
+            "hitPointsScale": 1,
             "lifetime": 60,
             "knockbackForce": 4,
             "killcount": 1
