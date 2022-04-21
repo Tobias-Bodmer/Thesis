@@ -474,12 +474,12 @@ declare namespace Networking {
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number, _state: Entity.ANIMATIONSTATES): void;
     function updateEntityAnimationState(_state: Entity.ANIMATIONSTATES, _netId: number): void;
     function removeEnemy(_netId: number): void;
-    function spawnItem(_item: Items.Item, _id: number, _position: ƒ.Vector2, _netId: number): Promise<void>;
+    function spawnItem(_item: Items.Item, _id: number, _position: ƒ.Vector2, _netId: number): void;
     function updateEntityAttributes(_attributes: Entity.Attributes, _netId: number): void;
     function updateAvatarWeapon(_weapon: Weapons.Weapon, _targetNetId: number): void;
     function removeItem(_netId: number): void;
-    function updateBuffList(_buffList: Buff.Buff[], _netId: number): Promise<void>;
-    function updateUI(_position: Game.ƒ.Vector2, _value: number): Promise<void>;
+    function updateBuffList(_buffList: Buff.Buff[], _netId: number): void;
+    function updateUI(_position: Game.ƒ.Vector2, _value: number): void;
     function sendRoom(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: Generation.ROOMTYPE, _direciton?: [boolean, boolean, boolean, boolean]): void;
     function switchRoomRequest(_coordiantes: [number, number], _direction: [boolean, boolean, boolean, boolean]): void;
     function idGenerator(): number;

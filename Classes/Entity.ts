@@ -54,7 +54,8 @@ namespace Entity {
             }
             for (let i = 0; i < this.buffs.length; i++) {
                 if (!this.buffs[i].doBuffStuff(this)) {
-                    this.buffs.splice(i);
+                    console.log(this.buffs.splice(i,1));
+
                     Networking.updateBuffList(this.buffs, this.netId);
                 }
             }

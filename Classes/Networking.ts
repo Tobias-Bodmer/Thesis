@@ -439,9 +439,9 @@ namespace Networking {
 
 
     //#region items
-    export async function spawnItem(_item: Items.Item, _id: number, _position: ƒ.Vector2, _netId: number) {
+    export function spawnItem(_item: Items.Item, _id: number, _position: ƒ.Vector2, _netId: number) {
         if (Game.connected && client.idHost == client.id) {
-            await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNINTERNALITEM, item: _item, id: _id, position: _position, netId: _netId } });
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNINTERNALITEM, item: _item, id: _id, position: _position, netId: _netId } });
         }
     }
     export function updateEntityAttributes(_attributes: Entity.Attributes, _netId: number) {
@@ -472,17 +472,17 @@ namespace Networking {
     }
     //#endregion
     //#region buffs
-    export async function updateBuffList(_buffList: Buff.Buff[], _netId: number) {
+    export function updateBuffList(_buffList: Buff.Buff[], _netId: number) {
         if (Game.connected && client.idHost == client.id) {
-            await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEBUFF, buffList: _buffList, netId: _netId } });
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEBUFF, buffList: _buffList, netId: _netId } });
         }
     }
     //#endregion
 
     //#region UI
-    export async function updateUI(_position: Game.ƒ.Vector2, _value: number) {
+    export function updateUI(_position: Game.ƒ.Vector2, _value: number) {
         if (Game.connected && client.idHost == client.id) {
-            await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEUI, position: _position, value: _value } });
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEUI, position: _position, value: _value } });
         }
     }
     //#endregion
