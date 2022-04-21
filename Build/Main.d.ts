@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -51,11 +51,14 @@ declare namespace UI {
     let healParticle: ƒ.TextureImage;
     let poisonParticle: ƒ.TextureImage;
     let burnParticle: ƒ.TextureImage;
-    class HealParticle extends Game.ƒAid.NodeSprite {
-        constructor();
-    }
-    class PoisonParticle extends Game.ƒAid.NodeSprite {
-        constructor();
+    class Particles extends Game.ƒAid.NodeSprite {
+        id: Buff.BUFFID;
+        animationParticles: Game.ƒAid.SpriteSheetAnimation;
+        particleframeNumber: number;
+        particleframeRate: number;
+        width: number;
+        height: number;
+        constructor(_id: Buff.BUFFID, _texture: Game.ƒ.TextureImage, _frameCount: number, _frameRate: number);
     }
 }
 declare namespace Entity {
@@ -73,10 +76,6 @@ declare namespace Entity {
         performKnockback: boolean;
         idleScale: number;
         buffs: Buff.Buff[];
-        buffAnimation: {
-            key: string;
-            animation: Game.ƒAid.NodeSprite;
-        }[];
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number);
         update(): void;
         updateCollider(): void;
@@ -87,6 +86,7 @@ declare namespace Entity {
         private getDamageReduction;
         doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
+        switchAnimation(_name: string): void;
     }
     enum ANIMATIONSTATES {
         IDLE = 0,
@@ -94,8 +94,8 @@ declare namespace Entity {
         SUMMON = 2
     }
     enum ID {
-        PLAYER1 = 0,
-        PLAYER2 = 1,
+        RANGED = 0,
+        MELEE = 1,
         BAT = 2,
         REDTICK = 3,
         SMALLTICK = 4,
@@ -104,7 +104,6 @@ declare namespace Entity {
     function getNameById(_id: Entity.ID): string;
 }
 declare namespace Enemy {
-    let txtTick: ƒ.TextureImage;
     enum BEHAVIOUR {
         IDLE = 0,
         FOLLOW = 1,
@@ -128,7 +127,6 @@ declare namespace Enemy {
         moveAway(_target: ƒ.Vector2): ƒ.Vector2;
         die(): void;
         collide(_direction: ƒ.Vector3): void;
-        switchAnimation(_name: string): void;
     }
     class EnemyDumb extends Enemy {
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
@@ -229,6 +227,7 @@ declare namespace AnimationGeneration {
     export let txtSmallTickIdle: ƒ.TextureImage;
     export let txtSmallTickWalk: ƒ.TextureImage;
     export let txtBatIdle: ƒ.TextureImage;
+    export let txtVikingIdle: ƒ.TextureImage;
     export import ƒAid = FudgeAid;
     class MyAnimationClass {
         id: Entity.ID;
@@ -276,13 +275,16 @@ declare namespace Enemy {
 }
 declare namespace Buff {
     enum BUFFID {
-        BLEEDING = 0
+        BLEEDING = 0,
+        POISON = 1,
+        HEAL = 2
     }
     abstract class Buff {
         duration: number;
         tickRate: number;
         id: BUFFID;
         constructor(_id: BUFFID, _duration: number, _tickRate: number);
+        getParticleById(_id: BUFFID): UI.Particles;
         applyBuff(_avatar: Entity.Entity): void;
         addToEntity(_avatar: Entity.Entity): void;
         doBuffStuff(_avatar: Entity.Entity): boolean;
@@ -397,7 +399,7 @@ declare namespace Networking {
         BULLETDIE = 12,
         SPAWNENEMY = 13,
         ENEMYTRANSFORM = 14,
-        ENEMYSTATE = 15,
+        ENTITYANIMATIONSTATE = 15,
         ENEMYDIE = 16,
         SPAWNINTERNALITEM = 17,
         UPDATEATTRIBUTES = 18,
@@ -434,7 +436,7 @@ declare namespace Networking {
     function removeBullet(_netId: number): void;
     function spawnEnemy(_enemy: Enemy.Enemy, _netId: number): void;
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number, _state: Entity.ANIMATIONSTATES): void;
-    function updateEnemyState(_state: Entity.ANIMATIONSTATES, _netId: number): void;
+    function updateEntityAnimationState(_state: Entity.ANIMATIONSTATES, _netId: number): void;
     function removeEnemy(_netId: number): void;
     function spawnInternalItem(_item: Items.InternalItem, _id: number, _position: ƒ.Vector2, _netId: number): Promise<void>;
     function updateAvatarAttributes(_attributes: Entity.Attributes): void;

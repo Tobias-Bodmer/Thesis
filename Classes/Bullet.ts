@@ -155,7 +155,7 @@ namespace Bullets {
                 if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
                     if ((<Enemy.Enemy>element).attributes.healthPoints > 0) {
                         (<Enemy.Enemy>element).getDamage(this.hitPointsScale);
-                        new Buff.DamageBuff(Buff.BUFFID.BLEEDING, 300, 60).addToEntity((<Enemy.Enemy>element));
+                        new Buff.DamageBuff(Buff.BUFFID.POISON, 300, 60).addToEntity((<Enemy.Enemy>element));
                         (<Enemy.Enemy>element).getKnockback(this.knockbackForce, this.mtxLocal.translation);
                         this.lifetime = 0;
                         this.killcount--;

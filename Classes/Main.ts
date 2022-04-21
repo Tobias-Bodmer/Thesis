@@ -122,22 +122,23 @@ namespace Game {
             })
 
             entities = <Entity.Entity[]>graph.getChildren().filter(child => (<Entity.Entity>child) instanceof Entity.Entity);
-
-
-            enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY)
-            if (Game.connected && Networking.client.idHost == Networking.client.id) {
-                enemies.forEach(element => {
+            entities.forEach(element => {
+                element.updateBuffs();
+                if (Game.connected && Networking.client.idHost == Networking.client.id) {
                     element.update();
                     if (element instanceof Enemy.EnemyShoot) {
                         (<Enemy.EnemyShoot>element).weapon.cooldown(element.attributes.coolDownReduction);
                     }
-                });
-
-                currentRoom = (<Generation.Room>Game.graph.getChildren().find(elem => (<Generation.Room>elem).tag == Tag.TAG.ROOM));
-                if (currentRoom.enemyCount <= 0) {
-                    currentRoom.finished = true;
                 }
+            })
+
+            enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY)
+
+            currentRoom = (<Generation.Room>Game.graph.getChildren().find(elem => (<Generation.Room>elem).tag == Tag.TAG.ROOM));
+            if (currentRoom.enemyCount <= 0) {
+                currentRoom.finished = true;
             }
+
 
             UI.updateUI();
         }
@@ -266,6 +267,8 @@ namespace Game {
         await AnimationGeneration.txtSmallTickIdle.load("./Resources/Image/Enemies/smallTick/smallTickIdle.png");
         await AnimationGeneration.txtSmallTickWalk.load("./Resources/Image/Enemies/smallTick/smallTickWalk.png")
 
+        await AnimationGeneration.txtVikingIdle.load("/Resources/Image/Player/vikingSide.png");
+
         AnimationGeneration.createAllAnimations();
 
         //Items
@@ -277,11 +280,11 @@ namespace Game {
 
     function playerChoice(_e: Event) {
         if ((<HTMLButtonElement>_e.target).id == "Ranged") {
-            avatar1 = new Player.Ranged(Entity.ID.PLAYER1, new Entity.Attributes(10, 5, 5, 1, 2, 5));
+            avatar1 = new Player.Ranged(Entity.ID.RANGED, new Entity.Attributes(10, 5, 5, 1, 2, 5));
             playerType = Player.PLAYERTYPE.RANGED;
         }
         if ((<HTMLButtonElement>_e.target).id == "Melee") {
-            avatar1 = new Player.Melee(Entity.ID.PLAYER1, new Entity.Attributes(10, 1, 5, 1, 2, 10));
+            avatar1 = new Player.Melee(Entity.ID.MELEE, new Entity.Attributes(10, 1, 5, 1, 2, 10));
             playerType = Player.PLAYERTYPE.MELEE;
         }
         document.getElementById("Lobbyscreen").style.visibility = "hidden";

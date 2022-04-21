@@ -17,7 +17,7 @@ namespace Networking {
         BULLETDIE,
         SPAWNENEMY,
         ENEMYTRANSFORM,
-        ENEMYSTATE,
+        ENTITYANIMATIONSTATE,
         ENEMYDIE,
         SPAWNINTERNALITEM,
         UPDATEATTRIBUTES,
@@ -86,14 +86,14 @@ namespace Networking {
                         let netId: number = message.content.netId
                         if (message.content.type == Player.PLAYERTYPE.MELEE) {
                             const attributes: Entity.Attributes = message.content.attributes;
-                            Game.avatar2 = new Player.Melee(Entity.ID.PLAYER2, attributes, netId);
+                            Game.avatar2 = new Player.Melee(Entity.ID.MELEE, attributes, netId);
 
 
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                             Game.graph.appendChild(Game.avatar2);
                         } else if (message.content.type == Player.PLAYERTYPE.RANGED) {
                             const attributes: Entity.Attributes = message.content.attributes
-                            Game.avatar2 = new Player.Ranged(Entity.ID.PLAYER2, attributes, netId);
+                            Game.avatar2 = new Player.Ranged(Entity.ID.RANGED, attributes, netId);
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
                             Game.graph.appendChild(Game.avatar2);
                         }
@@ -200,8 +200,9 @@ namespace Networking {
                             }
                         }
                         //Sync animation state
-                        if (message.content != undefined && message.content.text == FUNCTION.ENEMYSTATE.toString()) {
-                            let enemy = Game.enemies.find(enem => enem.netId == message.content.netId);
+                        if (message.content != undefined && message.content.text == FUNCTION.ENTITYANIMATIONSTATE.toString()) {
+                            let enemy = Game.entities.find(enem => enem.netId == message.content.netId);
+                            console.warn(message.content.state);
                             if (enemy != undefined) {
                                 switch (message.content.state) {
                                     case Entity.ANIMATIONSTATES.IDLE:
@@ -228,6 +229,18 @@ namespace Networking {
                             const buffList: Buff.Buff[] = <Buff.Buff[]>message.content.buffList;
                             console.log(buffList);
                             let entity = Game.entities.find(ent => ent.netId == message.content.netId);
+                            entity.buffs.forEach(buff => {
+                                let flag: boolean = false;
+                                buffList.forEach(newBuff => {
+                                    if (buff.id == newBuff.id) {
+                                        flag = true;
+                                    }
+                                })
+                                if (!flag) {
+                                    entity.removeChild(entity.getChildren().find(child => (<UI.Particles>child).id == buff.id));
+
+                                }
+                            })
                             entity.buffs = buffList;
                         }
 
@@ -387,8 +400,14 @@ namespace Networking {
     export function updateEnemyPosition(_position: ƒ.Vector3, _netId: number, _state: Entity.ANIMATIONSTATES) {
         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ENEMYTRANSFORM, position: _position, netId: _netId, animation: _state } })
     }
-    export function updateEnemyState(_state: Entity.ANIMATIONSTATES, _netId: number) {
-        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ENEMYSTATE, state: _state, netId: _netId } })
+    export function updateEntityAnimationState(_state: Entity.ANIMATIONSTATES, _netId: number) {
+        if (Networking.client.idHost == Networking.client.id) {
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ENTITYANIMATIONSTATE, state: _state, netId: _netId } })
+        }
+        else {
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id == client.idHost).id, content: { text: FUNCTION.ENTITYANIMATIONSTATE, state: _state, netId: _netId } })
+
+        }
     }
     export function removeEnemy(_netId: number) {
         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ENEMYDIE, netId: _netId } })

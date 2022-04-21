@@ -7,6 +7,8 @@ namespace AnimationGeneration {
 
     export let txtBatIdle: ƒ.TextureImage = new ƒ.TextureImage();
 
+    export let txtVikingIdle: ƒ.TextureImage = new ƒ.TextureImage();
+
     export import ƒAid = FudgeAid;
     class MyAnimationClass {
         public id: Entity.ID;
@@ -53,6 +55,7 @@ namespace AnimationGeneration {
     let batAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.BAT, txtBatIdle, 4, 12);
     let redTickAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.REDTICK, txtRedTickIdle, 6, 12, txtRedTickWalk, 4, 12);
     let smallTickAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.SMALLTICK, txtRedTickIdle, 6, 12, txtRedTickWalk, 4, 12);
+    let vikingAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.RANGED, txtVikingIdle, 14, 12);
 
     (<ƒAid.SpriteSheetAnimation>batAnimation.animations[""])
     //#endregion
@@ -66,6 +69,8 @@ namespace AnimationGeneration {
                 return redTickAnimation;
             case Entity.ID.SMALLTICK:
                 return smallTickAnimation;
+            case Entity.ID.RANGED:
+                return vikingAnimation;
             default:
                 return null;
         }
@@ -73,7 +78,7 @@ namespace AnimationGeneration {
     }
 
     export function createAllAnimations() {
-        sheetArray.push(batAnimation, redTickAnimation, smallTickAnimation);
+        sheetArray.push(batAnimation, redTickAnimation, smallTickAnimation, vikingAnimation);
 
         sheetArray.forEach(obj => {
             let idleWidth: number = obj.spriteSheetIdle.texture.texImageSource.width / obj.idleNumberOfFrames;

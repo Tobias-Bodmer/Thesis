@@ -1,5 +1,4 @@
 namespace Enemy {
-    export let txtTick: ƒ.TextureImage = new ƒ.TextureImage();
 
     export enum BEHAVIOUR {
         IDLE, FOLLOW, FLEE, MOVE, SUMMON, DASH
@@ -30,10 +29,12 @@ namespace Enemy {
         }
 
         public update() {
-            super.update();
-            this.moveBehaviour();
-            this.move(this.moveDirection);
-            Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId, this.currentAnimation);
+            if (Networking.client.id == Networking.client.idHost) {
+                super.update();
+                this.moveBehaviour();
+                this.move(this.moveDirection);
+                Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId, this.currentAnimation);
+            }
         }
 
         public doKnockback(_body: Entity.Entity): void {
@@ -136,38 +137,7 @@ namespace Enemy {
             }
         }
 
-        switchAnimation(_name: string) {
-            switch (_name) {
-                case "idle":
-                    if (this.currentAnimation != Entity.ANIMATIONSTATES.IDLE) {
-                        this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations[_name]);
-                        this.setFrameDirection(1);
-                        this.framerate = AnimationGeneration.getAnimationById(this.id).idleFrameRate;
-                        this.currentAnimation = Entity.ANIMATIONSTATES.IDLE;
-                        Networking.updateEnemyState(this.currentAnimation, this.netId);
-                    }
-                    break;
-                case "walk":
-                    if (this.currentAnimation != Entity.ANIMATIONSTATES.WALK) {
-                        this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations[_name]);
-                        this.setFrameDirection(1);
-                        this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
-                        this.currentAnimation = Entity.ANIMATIONSTATES.WALK;
-                        Networking.updateEnemyState(this.currentAnimation, this.netId);
-                    }
-                    break;
-                case "summon":
-                    if (this.currentAnimation != Entity.ANIMATIONSTATES.SUMMON) {
-                        this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations[_name]);
-                        this.setFrameDirection(1);
-                        this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
-                        this.currentAnimation = Entity.ANIMATIONSTATES.SUMMON;
-                        Networking.updateEnemyState(this.currentAnimation, this.netId);
-                    }
 
-            }
-
-        }
     }
 
 
@@ -242,10 +212,6 @@ namespace Enemy {
             else if (distance < 3 && !this.isAttacking) {
                 this.doDash();
             }
-            else {
-                // this.currentState = BEHAVIOUR.IDLE;
-            }
-
 
         }
 
@@ -257,6 +223,7 @@ namespace Enemy {
                 setTimeout(() => {
                     this.attributes.speed /= 5;
                     this.attributes.hitable = true;
+                    this.currentState = BEHAVIOUR.IDLE;
                 }, 300);
             }
         }
@@ -274,6 +241,7 @@ namespace Enemy {
                     break;
                 case BEHAVIOUR.IDLE:
                     this.switchAnimation("idle");
+                    this.moveDirection = ƒ.Vector3.ZERO();
                     break;
             }
         }

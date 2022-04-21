@@ -13,7 +13,6 @@ namespace Entity {
         performKnockback: boolean = false;
         idleScale: number;
         buffs: Buff.Buff[] = [];
-        buffAnimation: { key: string, animation: Game.ƒAid.NodeSprite }[] = [];
 
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number) {
             super(getNameById(_id));
@@ -37,18 +36,10 @@ namespace Entity {
             this.addComponent(new ƒ.ComponentTransform());
             this.mtxLocal.scale(new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale));
             this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);
-
-            this.buffAnimation.push({ key: "heal", animation: new UI.HealParticle() });
-            this.buffAnimation.push({ key: "poison", animation: new UI.PoisonParticle() });
-            this.buffAnimation.forEach((_elem) => {
-                _elem.animation.activate(false);
-                this.addChild(_elem.animation);
-            });
         }
 
         public update() {
             this.updateCollider();
-            this.updateBuffs();
         }
 
         updateCollider() {
@@ -184,14 +175,48 @@ namespace Entity {
 
 
 
+        switchAnimation(_name: string) {
+            switch (_name) {
+                case "idle":
+                    if (this.currentAnimation != ANIMATIONSTATES.IDLE) {
+                        this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations[_name]);
+                        this.setFrameDirection(1);
+                        this.framerate = AnimationGeneration.getAnimationById(this.id).idleFrameRate;
+                        this.currentAnimation = ANIMATIONSTATES.IDLE;
+                        Networking.updateEntityAnimationState(this.currentAnimation, this.netId);
+                    }
+                    break;
+                case "walk":
+                    if (this.currentAnimation != ANIMATIONSTATES.WALK) {
+                        this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations[_name]);
+                        this.setFrameDirection(1);
+                        this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
+                        this.currentAnimation = ANIMATIONSTATES.WALK;
+                        Networking.updateEntityAnimationState(this.currentAnimation, this.netId);
+                    }
+                    break;
+                case "summon":
+                    if (this.currentAnimation != ANIMATIONSTATES.SUMMON) {
+                        this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations[_name]);
+                        this.setFrameDirection(1);
+                        this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
+                        this.currentAnimation = ANIMATIONSTATES.SUMMON;
+                        Networking.updateEntityAnimationState(this.currentAnimation, this.netId);
+                    }
+
+            }
+
+        }
+
+
     }
     export enum ANIMATIONSTATES {
         IDLE, WALK, SUMMON
     }
 
     export enum ID {
-        PLAYER1,
-        PLAYER2,
+        RANGED,
+        MELEE,
         BAT,
         REDTICK,
         SMALLTICK,
@@ -200,10 +225,10 @@ namespace Entity {
 
     export function getNameById(_id: Entity.ID): string {
         switch (_id) {
-            case ID.PLAYER1:
-                return "player1";
-            case ID.PLAYER2:
-                return "player2";
+            case ID.RANGED:
+                return "ranged";
+            case ID.MELEE:
+                return "tank";
             case ID.BAT:
                 return "bat";
             case ID.REDTICK:
