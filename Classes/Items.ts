@@ -174,7 +174,7 @@ namespace Items {
                 case ITEMID.PROJECTILESUP:
                     _avatar.weapon.projectileAmount += this.value;
                     console.log(this.description + ": " + _avatar.weapon.projectileAmount);
-                    Networking.updateAvatarWeapon(_avatar.weapon);
+                    Networking.updateAvatarWeapon(_avatar.weapon, _avatar.netId);
                     break;
                 case ITEMID.HEALTHUP:
                     _avatar.attributes.maxHealthPoints = Calculation.addPercentageAmountToValue(_avatar.attributes.maxHealthPoints, this.value);

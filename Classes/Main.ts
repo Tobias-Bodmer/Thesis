@@ -92,6 +92,9 @@ namespace Game {
 
         if (Game.gamestate == Game.GAMESTATES.PLAYING) {
             InputSystem.move();
+            if (Networking.client.id == Networking.client.idHost) {
+                avatar2.getItemCollision();
+            }
         }
 
         draw();
@@ -177,9 +180,13 @@ namespace Game {
                     if (Networking.client.id == Networking.client.idHost) {
                         item1 = new Items.BuffItem(Items.ITEMID.TOXICRELATIONSHIP, new ƒ.Vector2(0, 2), null);
                         let item2 = new Items.BuffItem(Items.ITEMID.SLOWYSLOW, new ƒ.Vector2(0, -2), null);
+                        let item3 = new Items.InternalItem(Items.ITEMID.PROJECTILESUP, new ƒ.Vector2(-2, 0), null);
+
 
                         graph.appendChild(item1);
                         graph.appendChild(item2);
+                        graph.appendChild(item3);
+
                     }
                     //#endregion
                 } else {
@@ -258,9 +265,12 @@ namespace Game {
         await UI.txtTen.load("./Resources/Image/white10.png");
 
         //UI particle
-        await UI.healParticle.load("./Resources/Image/Particles/poison.png");
+        await UI.healParticle.load("./Resources/Image/Particles/healing.png");
         await UI.poisonParticle.load("./Resources/Image/Particles/poison.png");
         await UI.burnParticle.load("./Resources/Image/Particles/poison.png");
+        await UI.bleedingParticle.load("./Resources/Image/Particles/bleeding.png");
+        await UI.slowParticle.load("./Resources/Image/Particles/slow.png");
+
 
         //ENEMY
         await AnimationGeneration.txtBatIdle.load("./Resources/Image/Enemies/bat/batIdle.png");
@@ -284,11 +294,11 @@ namespace Game {
 
     function playerChoice(_e: Event) {
         if ((<HTMLButtonElement>_e.target).id == "Ranged") {
-            avatar1 = new Player.Ranged(Entity.ID.RANGED, new Entity.Attributes(10, 5, 5, 1, 2, 5));
+            avatar1 = new Player.Ranged(Entity.ID.RANGED, new Entity.Attributes(100, 5, 5, 1, 2, 5));
             playerType = Player.PLAYERTYPE.RANGED;
         }
         if ((<HTMLButtonElement>_e.target).id == "Melee") {
-            avatar1 = new Player.Melee(Entity.ID.MELEE, new Entity.Attributes(10, 1, 5, 1, 2, 10));
+            avatar1 = new Player.Melee(Entity.ID.MELEE, new Entity.Attributes(100, 1, 5, 1, 2, 10));
             playerType = Player.PLAYERTYPE.MELEE;
         }
         document.getElementById("Lobbyscreen").style.visibility = "hidden";

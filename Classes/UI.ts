@@ -80,6 +80,7 @@ namespace UI {
         public tag: Tag.TAG = Tag.TAG.DAMAGEUI;
         up: number = 0.15;
         lifetime: number = 0.5 * Game.frameRate;
+        randomX: number = Math.random() * 0.05 - Math.random() * 0.05;
         async lifespan(_graph: ƒ.Node) {
             if (this.lifetime >= 0 && this.lifetime != null) {
                 this.lifetime--;
@@ -108,7 +109,7 @@ namespace UI {
         }
 
         async move() {
-            this.cmpTransform.mtxLocal.translate(new ƒ.Vector3(0, this.up, 0));
+            this.cmpTransform.mtxLocal.translate(new ƒ.Vector3(this.randomX, this.up, 0));
             this.cmpTransform.mtxLocal.scale(ƒ.Vector3.ONE(1.01));
         }
         loadTexture(_damage: number) {
@@ -171,6 +172,10 @@ namespace UI {
     export let healParticle: ƒ.TextureImage = new ƒ.TextureImage();
     export let poisonParticle: ƒ.TextureImage = new ƒ.TextureImage();
     export let burnParticle: ƒ.TextureImage = new ƒ.TextureImage();
+    export let bleedingParticle: ƒ.TextureImage = new ƒ.TextureImage();
+    export let slowParticle: ƒ.TextureImage = new ƒ.TextureImage();
+
+
 
     export class Particles extends Game.ƒAid.NodeSprite {
         id: Buff.BUFFID;
@@ -197,8 +202,14 @@ namespace UI {
     }
     function getNameById(_id: Buff.BUFFID): string {
         switch (_id) {
+            case Buff.BUFFID.BLEEDING:
+                return "bleeding";
             case Buff.BUFFID.POISON:
                 return "poison";
+            case Buff.BUFFID.HEAL:
+                return "heal";
+            case Buff.BUFFID.SLOW:
+                return "slow";
             default:
                 return null;
         }

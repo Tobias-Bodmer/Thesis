@@ -29,7 +29,7 @@ namespace Buff {
         }
 
         clone(): Buff {
-            return;
+            return this;
         }
 
         applyBuff(_avatar: Entity.Entity) {
@@ -46,7 +46,7 @@ namespace Buff {
             }
         }
         doBuffStuff(_avatar: Entity.Entity): boolean {
-            return;
+            return null;
         }
     }
 

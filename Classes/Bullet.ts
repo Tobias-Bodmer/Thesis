@@ -147,7 +147,9 @@ namespace Bullets {
         setBuff(_target: Entity.Entity) {
             this.owner.items.forEach(item => {
                 item.buff.forEach(buff => {
-                    buff.clone().addToEntity(_target);
+                    if (buff != undefined) {
+                        buff.clone().addToEntity(_target);
+                    }
                 })
             })
         }

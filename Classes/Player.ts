@@ -5,7 +5,7 @@ namespace Player {
     }
 
     export abstract class Player extends Entity.Entity implements Interfaces.IKnockbackable {
-        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.STANDARD, 1, this);
+        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId);
 
         public tick: number = 0;
         public positions: ƒ.Vector3[] = [];
@@ -26,10 +26,10 @@ namespace Player {
 
             if (_direction.magnitude != 0) {
                 _direction = Game.ƒ.Vector3.NORMALIZATION(_direction, 1)
-                this.switchAnimation("walk");
+                // this.switchAnimation("walk");
             }
             else if (_direction.magnitude == 0) {
-                this.switchAnimation("idle");
+                // this.switchAnimation("idle");
             }
 
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
@@ -53,14 +53,9 @@ namespace Player {
         collide(_direction: Game.ƒ.Vector3): void {
             super.collide(_direction);
 
-            let itemCollider: Items.Item[] = Game.items;
-            itemCollider.forEach(item => {
-                if (this.collider.collides(item.collider)) {
-                    Networking.updateInventory(item.netId);
-                    item.doYourThing(this);
-                    this.items.push(item);
-                }
-            })
+            if (Networking.client.id == Networking.client.idHost) {
+                this.getItemCollision();
+            }
 
             let enemyColliders: Enemy.Enemy[] = Game.enemies;
             enemyColliders.forEach(element => {
@@ -125,6 +120,17 @@ namespace Player {
             // if (Networking.client.id != Networking.client.idHost) {
             //     Game.avatar1.avatarPrediction();
             // } 
+        }
+
+        getItemCollision() {
+            let itemCollider: Items.Item[] = Game.items;
+            itemCollider.forEach(item => {
+                if (this.collider.collides(item.collider)) {
+                    Networking.updateInventory(item.id, item.netId, this.netId);
+                    item.doYourThing(this);
+                    this.items.push(item);
+                }
+            })
         }
 
         avatarPrediction() {
@@ -200,7 +206,7 @@ namespace Player {
         readonly abilityCooldownTime: number = 40;
         currentabilityCooldownTime: number = this.abilityCooldownTime;
 
-        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.MELEE, 2, this);
+        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.MELEE, 1, this.netId);
 
 
         public attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean) {

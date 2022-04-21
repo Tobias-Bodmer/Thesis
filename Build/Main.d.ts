@@ -44,6 +44,7 @@ declare namespace UI {
         tag: Tag.TAG;
         up: number;
         lifetime: number;
+        randomX: number;
         lifespan(_graph: ƒ.Node): Promise<void>;
         constructor(_position: ƒ.Vector3, _damage: number);
         move(): Promise<void>;
@@ -52,6 +53,8 @@ declare namespace UI {
     let healParticle: ƒ.TextureImage;
     let poisonParticle: ƒ.TextureImage;
     let burnParticle: ƒ.TextureImage;
+    let bleedingParticle: ƒ.TextureImage;
+    let slowParticle: ƒ.TextureImage;
     class Particles extends Game.ƒAid.NodeSprite {
         id: Buff.BUFFID;
         animationParticles: Game.ƒAid.SpriteSheetAnimation;
@@ -462,7 +465,7 @@ declare namespace Networking {
     function avatarPrediction(_position: Game.ƒ.Vector3, _tick: number): void;
     function knockbackRequest(_netId: number, _knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function knockbackPush(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
-    function updateInventory(_netId: number): void;
+    function updateInventory(_itemId: Items.ITEMID, _itemNetId: number, _netId: number): void;
     function spawnBullet(_direction: ƒ.Vector3, _netId: number): void;
     function updateBullet(_position: ƒ.Vector3, _netId: number, _tick?: number): void;
     function spawnBulletAtEnemy(_bulletNetId: number, _enemyNetId: number): Promise<void>;
@@ -473,7 +476,7 @@ declare namespace Networking {
     function removeEnemy(_netId: number): void;
     function spawnItem(_item: Items.Item, _id: number, _position: ƒ.Vector2, _netId: number): Promise<void>;
     function updateEntityAttributes(_attributes: Entity.Attributes, _netId: number): void;
-    function updateAvatarWeapon(_weapon: Weapons.Weapon): void;
+    function updateAvatarWeapon(_weapon: Weapons.Weapon, _targetNetId: number): void;
     function removeItem(_netId: number): void;
     function updateBuffList(_buffList: Buff.Buff[], _netId: number): Promise<void>;
     function updateUI(_position: Game.ƒ.Vector2, _value: number): Promise<void>;
@@ -500,6 +503,7 @@ declare namespace Player {
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _netId?: number);
         move(_direction: ƒ.Vector3): void;
         collide(_direction: Game.ƒ.Vector3): void;
+        getItemCollision(): void;
         avatarPrediction(): void;
         correctPosition(): Promise<void>;
         attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
@@ -598,7 +602,8 @@ declare namespace Tag {
 }
 declare namespace Weapons {
     class Weapon {
-        owner: Entity.Entity;
+        owner: number;
+        get _owner(): Entity.Entity;
         cooldownTime: number;
         currentCooldownTime: number;
         attackCount: number;
@@ -606,7 +611,7 @@ declare namespace Weapons {
         aimType: AIM;
         bulletType: Bullets.BULLETTYPE;
         projectileAmount: number;
-        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _owner: Entity.Entity);
+        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _owner: number);
         shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
         fire(_magazine: Bullets.Bullet[], _sync?: boolean): void;
         setBulletDirection(_magazine: Bullets.Bullet[]): Bullets.Bullet[];

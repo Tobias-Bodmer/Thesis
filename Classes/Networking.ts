@@ -125,8 +125,13 @@ namespace Networking {
 
                         //Update inventory
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEINVENTORY.toString()) {
-                            let item: Items.Item = Game.items.find(elem => elem.netId == message.content.netId);
-                            Game.avatar2.items.push(item);
+                            let newItem: Items.Item;
+                            if (Items.getBuffItemById(message.content.itemId) != null) {
+                                newItem = new Items.BuffItem(message.content.itemId, ƒ.Vector2.ZERO(), message.content.itemNetId);
+                            } else if (Items.getInternalItemById(message.content.itemId) != null) {
+                                newItem = new Items.InternalItem(message.content.itemId, ƒ.Vector2.ZERO(), message.content.itemNetId);
+                            }
+                            Game.entities.find(elem => (<Player.Player>elem).netId == message.content.netId).items.push(newItem);
                         }
 
                         //Client request for move knockback
@@ -281,8 +286,10 @@ namespace Networking {
 
                         //apply weapon
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEWEAPON.toString()) {
-                            const tempWeapon: Weapons.Weapon = message.content.weapon;
-                            Game.avatar2.weapon = tempWeapon;
+                            let weapon: Weapons.Weapon = message.content.weapon;
+                            console.log(weapon.projectileAmount);
+                            const tempWeapon: Weapons.Weapon = new Weapons.Weapon(weapon.cooldownTime, weapon.attackCount, weapon.bulletType, weapon.projectileAmount, weapon.owner);
+                            (<Player.Player>Game.entities.find(elem => elem.netId == message.content.netId)).weapon = tempWeapon;
                         }
 
                         //Kill item from host
@@ -372,8 +379,8 @@ namespace Networking {
         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.KNOCKBACKPUSH, knockbackForce: _knockbackForce, position: _position } })
     }
 
-    export function updateInventory(_netId: number) {
-        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.UPDATEINVENTORY, netId: _netId } })
+    export function updateInventory(_itemId: Items.ITEMID, _itemNetId: number, _netId: number) {
+        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.UPDATEINVENTORY, itemId: _itemId, itemNetId: _itemNetId, netId: _netId } })
     }
     //#endregion
 
@@ -445,12 +452,12 @@ namespace Networking {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEATTRIBUTES, attributes: _attributes } });
         }
     }
-    export function updateAvatarWeapon(_weapon: Weapons.Weapon) {
+    export function updateAvatarWeapon(_weapon: Weapons.Weapon, _targetNetId: number) {
         if (client.idHost != client.id) {
             client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.UPDATEWEAPON, weapon: _weapon } });
         }
         else {
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEWEAPON, weapon: _weapon } });
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEWEAPON, weapon: _weapon, netId: _targetNetId } });
         }
     }
 

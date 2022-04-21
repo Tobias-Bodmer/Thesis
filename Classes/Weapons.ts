@@ -1,6 +1,6 @@
 namespace Weapons {
     export class Weapon {
-        owner: Entity.Entity;
+        owner: number; get _owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.owner) };
         cooldownTime: number = 10;
         public currentCooldownTime: number = this.cooldownTime;
         attackCount: number = 1;
@@ -9,7 +9,7 @@ namespace Weapons {
         bulletType: Bullets.BULLETTYPE = Bullets.BULLETTYPE.STANDARD;
         projectileAmount: number = 1;
 
-        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _owner: Entity.Entity) {
+        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _owner: number) {
             this.cooldownTime = _cooldownTime;
             this.attackCount = _attackCount;
             this.bulletType = _bulletType;
@@ -31,7 +31,7 @@ namespace Weapons {
         fire(_magazine: Bullets.Bullet[], _sync?: boolean) {
             _magazine.forEach(bullet => {
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed)
-                bullet.owner = this.owner;
+                bullet.owner = this._owner;
                 Game.graph.addChild(bullet);
                 if (_sync) {
                     Networking.spawnBullet(bullet.direction, bullet.netId);
