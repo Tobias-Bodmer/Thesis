@@ -11,13 +11,19 @@ namespace UI {
         Game.avatar1.items.forEach((element) => {
             let exsist: boolean = false;
 
-            //search DOMImg for Item
-            player1UI.querySelector("#Inventory").querySelectorAll("img").forEach((imgElement) => {
-                let imgName = element.imgSrc.split("/");
-                if (imgElement.src.split("/").find(elem => elem == imgName[imgName.length - 1]) != null) {
-                    exsist = true;
-                }
-            });
+            if (element.imgSrc == undefined) {
+                exsist = true;
+            } else {
+                //search DOMImg for Item
+                player1UI.querySelector("#Inventory").querySelectorAll("img").forEach((imgElement) => {
+
+                    let imgName = element.imgSrc.split("/");
+                    if (imgElement.src.split("/").find(elem => elem == imgName[imgName.length - 1]) != null) {
+                        exsist = true;
+                    }
+                });
+            }
+
 
             //none exsisting DOMImg for Item
             if (!exsist) {
@@ -35,13 +41,18 @@ namespace UI {
             Game.avatar2.items.forEach((element) => {
                 let exsist: boolean = false;
 
-                //search DOMImg for Item
-                player2UI.querySelector("#Inventory").querySelectorAll("img").forEach((imgElement) => {
-                    let imgName = element.imgSrc.split("/");
-                    if (imgElement.src.split("/").find(elem => elem == imgName[imgName.length - 1]) != null) {
-                        exsist = true;
-                    }
-                });
+                if (element.imgSrc == undefined) {
+                    exsist = true;
+                } else {
+                    //search DOMImg for Item
+                    player2UI.querySelector("#Inventory").querySelectorAll("img").forEach((imgElement) => {
+                        let imgName = element.imgSrc.split("/");
+                        if (imgElement.src.split("/").find(elem => elem == imgName[imgName.length - 1]) != null) {
+                            exsist = true;
+                        }
+                    });
+                }
+
 
                 //none exsisting DOMImg for Item
                 if (!exsist) {

@@ -55,6 +55,43 @@
             "id": 7,
             "imgSrc": "./Resources/Image/Items/iceBucket.png",
             "value": 5
+        },
+        {
+            "name": "HomeComing",
+            "description": "harder better faster stronger",
+            "id": 8,
+            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "value": 5
         }
+    ],
+    "buffItems": [
+        {
+            "name": "poison",
+            "description": "harder better faster stronger",
+            "id": 9,
+            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "value": 1,
+            "duration": 600,
+            "tickRate": 60
+        },
+        {
+            "name": "bleed",
+            "description": "harder better faster stronger",
+            "id": 10,
+            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "value": 5,
+            "duration": 300,
+            "tickRate": 100
+        },
+        {
+            "name": "SlowySlow",
+            "description": "harder better faster stronger",
+            "id": 11,
+            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "value": 100,
+            "duration": 300,
+            "tickRate": 0
+        }
+        
     ]
 }

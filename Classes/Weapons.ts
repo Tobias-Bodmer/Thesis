@@ -1,33 +1,37 @@
 namespace Weapons {
     export class Weapon {
+        owner: Entity.Entity;
         cooldownTime: number = 10;
         public currentCooldownTime: number = this.cooldownTime;
         attackCount: number = 1;
         public currentAttackCount: number = this.attackCount;
+        aimType: AIM;
         bulletType: Bullets.BULLETTYPE = Bullets.BULLETTYPE.STANDARD;
         projectileAmount: number = 1;
 
-        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number) {
+        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _owner: Entity.Entity) {
             this.cooldownTime = _cooldownTime;
             this.attackCount = _attackCount;
             this.bulletType = _bulletType;
             this.projectileAmount = _projectileAmount;
+            this.owner = _owner;
+            this.aimType = AIM.NORMAL;
         }
 
-        public shoot(_owner: Tag.TAG, _position: ƒ.Vector2, _direciton: ƒ.Vector3, _netId?: number, _sync?: boolean) {
+        public shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _netId?: number, _sync?: boolean) {
             if (this.currentAttackCount > 0) {
                 _direciton.normalize();
                 let magazine: Bullets.Bullet[] = this.loadMagazine(_position, _direciton, this.bulletType, this.projectileAmount, _netId);
                 this.setBulletDirection(magazine);
-                this.fire(_owner, magazine, _sync);
+                this.fire(magazine, _sync);
                 this.currentAttackCount--;
             }
         }
 
-        fire(_owner: Tag.TAG, _magazine: Bullets.Bullet[], _sync?: boolean) {
+        fire(_magazine: Bullets.Bullet[], _sync?: boolean) {
             _magazine.forEach(bullet => {
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed)
-                bullet.owner = _owner;
+                bullet.owner = this.owner;
                 Game.graph.addChild(bullet);
                 if (_sync) {
                     Networking.spawnBullet(bullet.direction, bullet.netId);
@@ -67,7 +71,7 @@ namespace Weapons {
                         const meleeRef = Game.bulletsJSON.find(bullet => bullet.type == Bullets.BULLETTYPE.MELEE);
                         magazine.push(new Bullets.Bullet(meleeRef.name, meleeRef.speed, meleeRef.hitPointsScale, meleeRef.lifetime, meleeRef.knockbackForce, meleeRef.killcount, _position, _direction, _netId));
                         break;
-                
+
                 }
             }
             return magazine;
@@ -88,6 +92,11 @@ namespace Weapons {
             }
 
         }
+    }
+
+    export enum AIM {
+        NORMAL,
+        HOMING
     }
 
 }

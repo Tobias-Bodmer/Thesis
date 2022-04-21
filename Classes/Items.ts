@@ -1,6 +1,6 @@
 namespace Items {
     export enum ITEMID {
-        COOLDOWN,
+        ICEBUCKETCHALLENGE,
         DMGUP,
         SPEEDUP,
         PROJECTILESUP,
@@ -8,15 +8,16 @@ namespace Items {
         SCALEUP,
         SCALEDOWN,
         ARMORUP,
-        HOMECOMING
+        HOMECOMING,
+        TOXICRELATIONSHIP,
+        VAMPY,
+        SLOWYSLOW
+
     }
 
     export let txtIceBucket: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtDmgUp: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtHealthUp: ƒ.TextureImage = new ƒ.TextureImage();
-
-
-
 
     export abstract class Item extends Game.ƒ.Node {
         public tag: Tag.TAG = Tag.TAG.ITEM;
@@ -27,12 +28,11 @@ namespace Items {
         public collider: Collider.Collider;
         transform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
         position: ƒ.Vector2
-        buff: Buff.Buff[] = [new Buff.DamageBuff(Buff.BUFFID.BLEEDING, 300, 60)];
+        buff: Buff.Buff[] = [];
 
         constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number) {
-            super(getInternalItemById(_id).name);
+            super("item");
             this.id = _id;
-            const item = getInternalItemById(this.id);
             this.position = _position;
             this.transform.mtxLocal.translation = _position.toVector3();
             if (_netId != undefined) {
@@ -40,8 +40,7 @@ namespace Items {
                 Networking.currentIDs.push(_netId);
                 this.netId = _netId;
             }
-            this.description = item.description;
-            this.imgSrc = item.imgSrc;
+
 
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshQuad()));
             let material: ƒ.Material = new ƒ.Material("white", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
@@ -50,6 +49,22 @@ namespace Items {
             this.addComponent(new ƒ.ComponentTransform());
             this.mtxLocal.translation = _position.toVector3();
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);
+            this.buff.push(this.getBuffById());
+            this.setTextureById(_id);
+        }
+
+        getBuffById(): Buff.Buff {
+            let temp: Items.BuffItem = getBuffItemById(this.id);
+            switch (this.id) {
+                case ITEMID.TOXICRELATIONSHIP:
+                    return new Buff.DamageBuff(Buff.BUFFID.POISON, temp.duration, temp.tickRate, temp.value);
+                case ITEMID.VAMPY:
+                    return new Buff.DamageBuff(Buff.BUFFID.BLEEDING, temp.duration, temp.tickRate, temp.value);
+                case ITEMID.SLOWYSLOW:
+                    return new Buff.AttributesBuff(Buff.BUFFID.SLOW, temp.duration, temp.tickRate, temp.value);
+                default:
+                    return null;
+            }
         }
 
         async loadTexture(_texture: ƒ.TextureImage): Promise<void> {
@@ -61,96 +76,9 @@ namespace Items {
 
             this.getComponent(Game.ƒ.ComponentMaterial).material = newMtr;
         }
-
-        setPosition(_position: ƒ.Vector2) {
-            this.mtxLocal.translation = _position.toVector3();
-        }
-
-        public despawn(): void {
-            Networking.popID(this.netId);
-            Networking.removeItem(this.netId);
-            Game.graph.removeChild(this);
-        }
-
-        doYourThing(_avatar: Player.Player) {
-
-        }
-    }
-
-
-
-    export class InternalItem extends Item {
-        value: number;
-        constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number) {
-            super(_id, _position, _netId);
-            this.value = getInternalItemById(_id).value;
-            this.setTextureById(_id);
-            Networking.spawnInternalItem(this, this.id, _position, this.netId);
-        }
-
-        doYourThing(_avatar: Player.Player) {
-            this.setAttributesById(this.id, _avatar);
-            this.despawn();
-        }
-
-        setAttributesById(_id: ITEMID, _avatar: Player.Player) {
-            switch (_id) {
-                case ITEMID.COOLDOWN:
-                    _avatar.attributes.coolDownReduction = Calculation.subPercentageAmountToValue(_avatar.attributes.coolDownReduction, this.value);
-                    console.log(this.description + ": " + _avatar.attributes.coolDownReduction);
-                    Networking.updateAvatarAttributes(_avatar.attributes);
-                    break;
-                case ITEMID.DMGUP:
-                    _avatar.attributes.attackPoints += this.value;
-                    console.log(this.description + ": " + _avatar.attributes.attackPoints);
-                    Networking.updateAvatarAttributes(_avatar.attributes);
-                    break;
-                case ITEMID.SPEEDUP:
-                    _avatar.attributes.speed = Calculation.subPercentageAmountToValue(_avatar.attributes.speed, this.value);
-                    console.log(this.description + ": " + _avatar.attributes.speed);
-                    Networking.updateAvatarAttributes(_avatar.attributes);
-                    break;
-                case ITEMID.PROJECTILESUP:
-                    _avatar.weapon.projectileAmount += this.value;
-                    console.log(this.description + ": " + _avatar.weapon.projectileAmount);
-                    Networking.updateAvatarWeapon(_avatar.weapon);
-                    break;
-                case ITEMID.HEALTHUP:
-                    _avatar.attributes.maxHealthPoints = Calculation.addPercentageAmountToValue(_avatar.attributes.maxHealthPoints, this.value);
-                    console.log(this.description + ": " + _avatar.attributes.maxHealthPoints);
-                    Networking.updateAvatarAttributes(_avatar.attributes);
-                    break;
-                case ITEMID.SCALEUP:
-                    _avatar.attributes.scale = Calculation.addPercentageAmountToValue(_avatar.attributes.scale, this.value);
-                    _avatar.attributes.updateScaleDependencies();
-                    _avatar.mtxLocal.scale(new ƒ.Vector3(_avatar.attributes.scale, _avatar.attributes.scale, _avatar.attributes.scale));
-                    console.log(this.description + ": " + _avatar.attributes.scale);
-                    Networking.updateAvatarAttributes(_avatar.attributes);
-                    //TODO: set new collider and sync over network
-                    break;
-                case ITEMID.SCALEDOWN:
-                    _avatar.attributes.scale = Calculation.subPercentageAmountToValue(_avatar.attributes.scale, this.value);
-                    _avatar.mtxLocal.scale(new ƒ.Vector3(_avatar.attributes.scale, _avatar.attributes.scale, _avatar.attributes.scale));
-                    _avatar.attributes.updateScaleDependencies();
-                    console.log(this.description + ": " + _avatar.attributes.scale);
-                    Networking.updateAvatarAttributes(_avatar.attributes);
-                    //TODO: set new collider and sync over network
-                    break;
-                case ITEMID.ARMORUP:
-                    _avatar.attributes.armor += this.value;
-                    console.log(this.description + ": " + _avatar.attributes.armor);
-                    Networking.updateAvatarAttributes(_avatar.attributes);
-                    break;
-                case ITEMID.HOMECOMING:
-                    //TODO: talk with tobi
-                    break;
-            }
-
-        }
-
         setTextureById(_id: ITEMID) {
             switch (_id) {
-                case ITEMID.COOLDOWN:
+                case ITEMID.ICEBUCKETCHALLENGE:
                     this.loadTexture(txtIceBucket);
                     break;
                 case ITEMID.DMGUP:
@@ -180,13 +108,146 @@ namespace Items {
                 case ITEMID.ARMORUP:
                     //TODO: add correct texture and change in JSON
                     break;
+                case ITEMID.HOMECOMING:
+                    break;
+                case ITEMID.TOXICRELATIONSHIP:
+                    this.loadTexture(txtIceBucket);
+                    break;
+                case ITEMID.VAMPY:
+                    this.loadTexture(txtIceBucket);
+                    break;
             }
+        }
+
+        setPosition(_position: ƒ.Vector2) {
+            this.mtxLocal.translation = _position.toVector3();
+        }
+
+        public despawn(): void {
+            Networking.popID(this.netId);
+            Networking.removeItem(this.netId);
+            Game.graph.removeChild(this);
+        }
+
+        doYourThing(_avatar: Player.Player) {
+
         }
     }
 
 
-    function getInternalItemById(_id: ITEMID): Items.InternalItem {
+    export class InternalItem extends Item {
+        value: number;
+        constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number) {
+            super(_id, _position, _netId);
+            const item = getInternalItemById(this.id);
+            if (item != undefined) {
+                this.name = item.name;
+                this.value = item.value;
+                this.description = item.description;
+                this.imgSrc = item.imgSrc;
+            }
+            Networking.spawnItem(this, this.id, _position, this.netId);
+        }
+
+        doYourThing(_avatar: Player.Player) {
+            this.setAttributesById(_avatar);
+            this.despawn();
+        }
+
+        setAttributesById(_avatar: Player.Player) {
+            switch (this.id) {
+                case ITEMID.ICEBUCKETCHALLENGE:
+                    _avatar.attributes.coolDownReduction = Calculation.subPercentageAmountToValue(_avatar.attributes.coolDownReduction, this.value);
+                    console.log(this.description + ": " + _avatar.attributes.coolDownReduction);
+                    Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
+                    break;
+                case ITEMID.DMGUP:
+                    _avatar.attributes.attackPoints += this.value;
+                    console.log(this.description + ": " + _avatar.attributes.attackPoints);
+                    Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
+                    break;
+                case ITEMID.SPEEDUP:
+                    _avatar.attributes.speed = Calculation.subPercentageAmountToValue(_avatar.attributes.speed, this.value);
+                    console.log(this.description + ": " + _avatar.attributes.speed);
+                    Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
+                    break;
+                case ITEMID.PROJECTILESUP:
+                    _avatar.weapon.projectileAmount += this.value;
+                    console.log(this.description + ": " + _avatar.weapon.projectileAmount);
+                    Networking.updateAvatarWeapon(_avatar.weapon);
+                    break;
+                case ITEMID.HEALTHUP:
+                    _avatar.attributes.maxHealthPoints = Calculation.addPercentageAmountToValue(_avatar.attributes.maxHealthPoints, this.value);
+                    console.log(this.description + ": " + _avatar.attributes.maxHealthPoints);
+                    Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
+                    break;
+                case ITEMID.SCALEUP:
+                    _avatar.attributes.scale = Calculation.addPercentageAmountToValue(_avatar.attributes.scale, this.value);
+                    _avatar.attributes.updateScaleDependencies();
+                    _avatar.mtxLocal.scale(new ƒ.Vector3(_avatar.attributes.scale, _avatar.attributes.scale, _avatar.attributes.scale));
+                    console.log(this.description + ": " + _avatar.attributes.scale);
+                    Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
+                    //TODO: set new collider and sync over network
+                    break;
+                case ITEMID.SCALEDOWN:
+                    _avatar.attributes.scale = Calculation.subPercentageAmountToValue(_avatar.attributes.scale, this.value);
+                    _avatar.mtxLocal.scale(new ƒ.Vector3(_avatar.attributes.scale, _avatar.attributes.scale, _avatar.attributes.scale));
+                    _avatar.attributes.updateScaleDependencies();
+                    console.log(this.description + ": " + _avatar.attributes.scale);
+                    Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
+                    //TODO: set new collider and sync over network
+                    break;
+                case ITEMID.ARMORUP:
+                    _avatar.attributes.armor += this.value;
+                    console.log(this.description + ": " + _avatar.attributes.armor);
+                    Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
+                    break;
+                case ITEMID.HOMECOMING:
+                    //TODO: talk with tobi
+                    break;
+
+            }
+        }
+    }
+
+    export class BuffItem extends Item {
+        value: number;
+        tickRate: number;
+        duration: number;
+
+        constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number) {
+            super(_id, _position, _netId);
+            let temp = getBuffItemById(this.id);
+            this.name = temp.name;
+            this.value = temp.value;
+            this.tickRate = temp.tickRate;
+            this.duration = temp.duration;
+            this.imgSrc = temp.imgSrc;
+            Networking.spawnItem(this, this.id, this.mtxLocal.translation.toVector2(), this.netId);
+        }
+
+        doYourThing(_avatar: Player.Player): void {
+            this.setBuffById(_avatar);
+            this.despawn();
+        }
+
+        setBuffById(_avatar: Entity.Entity) {
+            switch (this.id) {
+                case ITEMID.TOXICRELATIONSHIP:
+                    let newBuff = this.buff.find(buff => buff.id == Buff.BUFFID.POISON).clone();
+                    newBuff.duration = undefined;
+                    (<Buff.DamageBuff>newBuff).value = 0.5;
+                    _avatar.buffs.push(newBuff);
+                    Networking.updateBuffList(_avatar.buffs, _avatar.netId);
+                    break;
+            }
+        }
+    }
+    export function getInternalItemById(_id: ITEMID): Items.InternalItem {
         return Game.internalItemJSON.find(item => item.id == _id);
     }
 
+    export function getBuffItemById(_id: ITEMID): Items.BuffItem {
+        return Game.buffItemJSON.find(item => item.id == _id);
+    }
 }

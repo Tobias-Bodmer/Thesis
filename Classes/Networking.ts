@@ -232,7 +232,7 @@ namespace Networking {
                             buffList.forEach(buff => {
                                 switch (buff.id) {
                                     case Buff.BUFFID.POISON:
-                                        newBuffs.push(new Buff.DamageBuff(buff.id, buff.duration, buff.tickRate));
+                                        newBuffs.push(new Buff.DamageBuff(buff.id, buff.duration, buff.tickRate, (<Buff.DamageBuff>buff).value));
                                         break;
                                 }
                             });
@@ -263,15 +263,20 @@ namespace Networking {
                         //Spawn item from host
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNINTERNALITEM.toString()) {
                             if (client.id != client.idHost) {
-                                Game.graph.addChild(new Items.InternalItem(message.content.id, new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]), message.content.netId));
+                                if (Items.getBuffItemById(message.content.id) != null) {
+                                    Game.graph.addChild(new Items.BuffItem(message.content.id, new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]), message.content.netId));
+                                } else if (Items.getInternalItemById(message.content.id) != null) {
+                                    Game.graph.addChild(new Items.InternalItem(message.content.id, new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]), message.content.netId));
+                                }
                             }
                         }
 
                         //apply item attributes
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEATTRIBUTES.toString()) {
                             const tempAttributes: Entity.Attributes = message.content.attributes;
-                            Game.avatar2.attributes = tempAttributes;
-                            Game.avatar2.mtxLocal.scale(new ƒ.Vector3(Game.avatar2.attributes.scale, Game.avatar2.attributes.scale, Game.avatar2.attributes.scale));
+                            let entity = Game.entities.find(elem => elem.netId == message.content.netId);
+                            entity.attributes = tempAttributes;
+                            entity.mtxLocal.scale(new ƒ.Vector3(Game.avatar2.attributes.scale, Game.avatar2.attributes.scale, Game.avatar2.attributes.scale));
                         }
 
                         //apply weapon
@@ -427,14 +432,14 @@ namespace Networking {
 
 
     //#region items
-    export async function spawnInternalItem(_item: Items.InternalItem, _id: number, _position: ƒ.Vector2, _netId: number) {
+    export async function spawnItem(_item: Items.Item, _id: number, _position: ƒ.Vector2, _netId: number) {
         if (Game.connected && client.idHost == client.id) {
             await client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNINTERNALITEM, item: _item, id: _id, position: _position, netId: _netId } });
         }
     }
-    export function updateAvatarAttributes(_attributes: Entity.Attributes) {
+    export function updateEntityAttributes(_attributes: Entity.Attributes, _netId: number) {
         if (client.idHost != client.id) {
-            client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.UPDATEATTRIBUTES, attributes: _attributes } });
+            client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.UPDATEATTRIBUTES, attributes: _attributes, netId: _netId } });
         }
         else {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEATTRIBUTES, attributes: _attributes } });

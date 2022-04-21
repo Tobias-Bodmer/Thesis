@@ -47,7 +47,7 @@ namespace Generation {
 
             switch (_roomType) {
                 case ROOMTYPE.START:
-                    this.enemyCount = 5;
+                    this.enemyCount = 1;
                     this.finished = true;
                     this.cmpMaterial = new ƒ.ComponentMaterial(this.startRoomMat);
                     break;

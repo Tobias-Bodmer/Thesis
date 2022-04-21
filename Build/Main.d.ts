@@ -23,6 +23,7 @@ declare namespace Game {
     let items: Items.Item[];
     let enemiesJSON: Entity.Entity[];
     let internalItemJSON: Items.InternalItem[];
+    let buffItemJSON: Items.BuffItem[];
     let bulletsJSON: Bullets.Bullet[];
     function cameraUpdate(): void;
 }
@@ -76,6 +77,7 @@ declare namespace Entity {
         performKnockback: boolean;
         idleScale: number;
         buffs: Buff.Buff[];
+        items: Array<Items.Item>;
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number);
         update(): void;
         updateCollider(): void;
@@ -184,7 +186,7 @@ declare namespace Interfaces {
 }
 declare namespace Items {
     enum ITEMID {
-        COOLDOWN = 0,
+        ICEBUCKETCHALLENGE = 0,
         DMGUP = 1,
         SPEEDUP = 2,
         PROJECTILESUP = 3,
@@ -192,7 +194,10 @@ declare namespace Items {
         SCALEUP = 5,
         SCALEDOWN = 6,
         ARMORUP = 7,
-        HOMECOMING = 8
+        HOMECOMING = 8,
+        TOXICRELATIONSHIP = 9,
+        VAMPY = 10,
+        SLOWYSLOW = 11
     }
     let txtIceBucket: ƒ.TextureImage;
     let txtDmgUp: ƒ.TextureImage;
@@ -208,7 +213,9 @@ declare namespace Items {
         position: ƒ.Vector2;
         buff: Buff.Buff[];
         constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
+        getBuffById(): Buff.Buff;
         loadTexture(_texture: ƒ.TextureImage): Promise<void>;
+        setTextureById(_id: ITEMID): void;
         setPosition(_position: ƒ.Vector2): void;
         despawn(): void;
         doYourThing(_avatar: Player.Player): void;
@@ -217,9 +224,18 @@ declare namespace Items {
         value: number;
         constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
         doYourThing(_avatar: Player.Player): void;
-        setAttributesById(_id: ITEMID, _avatar: Player.Player): void;
-        setTextureById(_id: ITEMID): void;
+        setAttributesById(_avatar: Player.Player): void;
     }
+    class BuffItem extends Item {
+        value: number;
+        tickRate: number;
+        duration: number;
+        constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
+        doYourThing(_avatar: Player.Player): void;
+        setBuffById(_avatar: Entity.Entity): void;
+    }
+    function getInternalItemById(_id: ITEMID): Items.InternalItem;
+    function getBuffItemById(_id: ITEMID): Items.BuffItem;
 }
 declare namespace AnimationGeneration {
     export let txtRedTickIdle: ƒ.TextureImage;
@@ -277,23 +293,39 @@ declare namespace Buff {
     enum BUFFID {
         BLEEDING = 0,
         POISON = 1,
-        HEAL = 2
+        HEAL = 2,
+        SLOW = 3
     }
     abstract class Buff {
         duration: number;
         tickRate: number;
         id: BUFFID;
+        protected noDuration: number;
         constructor(_id: BUFFID, _duration: number, _tickRate: number);
         getParticleById(_id: BUFFID): UI.Particles;
+        clone(): Buff;
         applyBuff(_avatar: Entity.Entity): void;
         addToEntity(_avatar: Entity.Entity): void;
         doBuffStuff(_avatar: Entity.Entity): boolean;
     }
     class DamageBuff extends Buff {
         value: number;
-        constructor(_id: BUFFID, _duration: number, _tickRate: number);
+        constructor(_id: BUFFID, _duration: number, _tickRate: number, _value: number);
+        clone(): DamageBuff;
+        doBuffStuff(_avatar: Entity.Entity): boolean;
         applyBuff(_avatar: Entity.Entity): void;
         getBuffDamgeById(_id: BUFFID, _avatar: Entity.Entity): void;
+    }
+    class AttributesBuff extends Buff {
+        isBuffApplied: boolean;
+        value: number;
+        removedValue: number;
+        constructor(_id: BUFFID, _duration: number, _tickRate: number, _value: number);
+        clone(): AttributesBuff;
+        doBuffStuff(_avatar: Entity.Entity): boolean;
+        removeBuff(_avatar: Entity.Entity): void;
+        applyBuff(_avatar: Entity.Entity): void;
+        getBuffAttributeById(_id: BUFFID, _avatar: Entity.Entity, _add: boolean): void;
     }
 }
 declare namespace Bullets {
@@ -307,7 +339,7 @@ declare namespace Bullets {
     let bulletTxt: ƒ.TextureImage;
     class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
         tag: Tag.TAG;
-        owner: Tag.TAG;
+        owner: Entity.Entity;
         netId: number;
         tick: number;
         positions: ƒ.Vector3[];
@@ -331,6 +363,7 @@ declare namespace Bullets {
         bulletPrediction(): void;
         correctPosition(): Promise<void>;
         loadTexture(): void;
+        setBuff(_target: Entity.Entity): void;
         collisionDetection(): Promise<void>;
     }
     class MeleeBullet extends Bullet {
@@ -438,8 +471,8 @@ declare namespace Networking {
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number, _state: Entity.ANIMATIONSTATES): void;
     function updateEntityAnimationState(_state: Entity.ANIMATIONSTATES, _netId: number): void;
     function removeEnemy(_netId: number): void;
-    function spawnInternalItem(_item: Items.InternalItem, _id: number, _position: ƒ.Vector2, _netId: number): Promise<void>;
-    function updateAvatarAttributes(_attributes: Entity.Attributes): void;
+    function spawnItem(_item: Items.Item, _id: number, _position: ƒ.Vector2, _netId: number): Promise<void>;
+    function updateEntityAttributes(_attributes: Entity.Attributes, _netId: number): void;
     function updateAvatarWeapon(_weapon: Weapons.Weapon): void;
     function removeItem(_netId: number): void;
     function updateBuffList(_buffList: Buff.Buff[], _netId: number): Promise<void>;
@@ -455,7 +488,6 @@ declare namespace Player {
         MELEE = 1
     }
     abstract class Player extends Entity.Entity implements Interfaces.IKnockbackable {
-        items: Array<Items.Item>;
         weapon: Weapons.Weapon;
         tick: number;
         positions: ƒ.Vector3[];
@@ -566,17 +598,23 @@ declare namespace Tag {
 }
 declare namespace Weapons {
     class Weapon {
+        owner: Entity.Entity;
         cooldownTime: number;
         currentCooldownTime: number;
         attackCount: number;
         currentAttackCount: number;
+        aimType: AIM;
         bulletType: Bullets.BULLETTYPE;
         projectileAmount: number;
-        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number);
-        shoot(_owner: Tag.TAG, _position: ƒ.Vector2, _direciton: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
-        fire(_owner: Tag.TAG, _magazine: Bullets.Bullet[], _sync?: boolean): void;
+        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _owner: Entity.Entity);
+        shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
+        fire(_magazine: Bullets.Bullet[], _sync?: boolean): void;
         setBulletDirection(_magazine: Bullets.Bullet[]): Bullets.Bullet[];
         loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.BULLETTYPE, _amount: number, _netId?: number): Bullets.Bullet[];
         cooldown(_faktor: number): void;
+    }
+    enum AIM {
+        NORMAL = 0,
+        HOMING = 1
     }
 }

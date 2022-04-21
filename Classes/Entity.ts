@@ -13,6 +13,8 @@ namespace Entity {
         performKnockback: boolean = false;
         idleScale: number;
         buffs: Buff.Buff[] = [];
+        public items: Array<Items.Item> = [];
+
 
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number) {
             super(getNameById(_id));
@@ -51,11 +53,9 @@ namespace Entity {
                 return;
             }
             for (let i = 0; i < this.buffs.length; i++) {
-                if (this.buffs[i] instanceof Buff.DamageBuff) {
-                    if (!this.buffs[i].doBuffStuff(this)) {
-                        this.buffs.splice(i);
-                        Networking.updateBuffList(this.buffs, this.netId);
-                    }
+                if (!this.buffs[i].doBuffStuff(this)) {
+                    this.buffs.splice(i);
+                    Networking.updateBuffList(this.buffs, this.netId);
                 }
             }
         }

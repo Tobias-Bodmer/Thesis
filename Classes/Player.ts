@@ -5,8 +5,7 @@ namespace Player {
     }
 
     export abstract class Player extends Entity.Entity implements Interfaces.IKnockbackable {
-        public items: Array<Items.Item> = [];
-        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.STANDARD, 1);
+        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.STANDARD, 1, this);
 
         public tick: number = 0;
         public positions: ƒ.Vector3[] = [];
@@ -57,11 +56,9 @@ namespace Player {
             let itemCollider: Items.Item[] = Game.items;
             itemCollider.forEach(item => {
                 if (this.collider.collides(item.collider)) {
-                    if (item instanceof Items.InternalItem) {
-                        Networking.updateInventory(item.netId);
-                        item.doYourThing(this);
-                        this.items.push(item);
-                    }
+                    Networking.updateInventory(item.netId);
+                    item.doYourThing(this);
+                    this.items.push(item);
                 }
             })
 
@@ -166,7 +163,7 @@ namespace Player {
         }
 
         public attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean) {
-            this.weapon.shoot(this.tag, this.mtxLocal.translation.toVector2(), _direction, _netId, _sync);
+            this.weapon.shoot(this.mtxLocal.translation.toVector2(), _direction, _netId, _sync);
         }
 
         public doKnockback(_body: Entity.Entity): void {
@@ -203,11 +200,11 @@ namespace Player {
         readonly abilityCooldownTime: number = 40;
         currentabilityCooldownTime: number = this.abilityCooldownTime;
 
-        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.MELEE, 2);
+        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.MELEE, 2, this);
 
 
         public attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean) {
-            this.weapon.shoot(this.tag, this.mtxLocal.translation.toVector2(), _direction, _netId, _sync);
+            this.weapon.shoot(this.mtxLocal.translation.toVector2(), _direction, _netId, _sync);
         }
 
         //Block

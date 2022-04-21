@@ -41,6 +41,8 @@ namespace Game {
     //JSON
     export let enemiesJSON: Entity.Entity[];
     export let internalItemJSON: Items.InternalItem[];
+    export let buffItemJSON: Items.BuffItem[];
+
     export let bulletsJSON: Bullets.Bullet[];
     //#endregion "PublicVariables"
 
@@ -173,8 +175,8 @@ namespace Game {
 
                     //#region init Items
                     if (Networking.client.id == Networking.client.idHost) {
-                        item1 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(0, 2), null);
-                        let item2 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(0, -2), null);
+                        item1 = new Items.BuffItem(Items.ITEMID.TOXICRELATIONSHIP, new ƒ.Vector2(0, 2), null);
+                        let item2 = new Items.BuffItem(Items.ITEMID.SLOWYSLOW, new ƒ.Vector2(0, -2), null);
 
                         graph.appendChild(item1);
                         graph.appendChild(item2);
@@ -229,6 +231,8 @@ namespace Game {
 
         const loadItem = await (await fetch("./Resources/ItemStorage.json")).json();
         internalItemJSON = (<Items.InternalItem[]>loadItem.internalItems);
+        buffItemJSON = (<Items.BuffItem[]>loadItem.buffItems);
+
 
         const loadBullets = await (await fetch("./Resources/BulletStorage.json")).json();
         bulletsJSON = (<Bullets.Bullet[]>loadBullets.standardBullets);

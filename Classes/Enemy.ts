@@ -313,7 +313,7 @@ namespace Enemy {
             let _direction = ƒ.Vector3.DIFFERENCE(this.target.toVector3(0), this.mtxLocal.translation);
 
             if (_direction.magnitude < 3 || this.gotRecognized) {
-                this.weapon.shoot(this.tag, this.mtxLocal.translation.toVector2(), _direction, _netId);
+                this.weapon.shoot(this.mtxLocal.translation.toVector2(), _direction, _netId);
             }
 
 

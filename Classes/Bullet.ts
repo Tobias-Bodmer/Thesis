@@ -11,7 +11,7 @@ namespace Bullets {
 
     export class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
         public tag: Tag.TAG = Tag.TAG.BULLET;
-        owner: Tag.TAG;
+        owner: Entity.Entity;
         public netId: number = Networking.idGenerator();
 
         public tick: number = 0;
@@ -144,25 +144,33 @@ namespace Bullets {
             oldComCoat.material = newMtr;
         }
 
+        setBuff(_target: Entity.Entity) {
+            this.owner.items.forEach(item => {
+                item.buff.forEach(buff => {
+                    buff.clone().addToEntity(_target);
+                })
+            })
+        }
+
         async collisionDetection() {
             let newPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
             this.collider.position = newPosition;
             let colliders: any[] = [];
-            if (this.owner == Tag.TAG.PLAYER) {
+            if (this.owner.tag == Tag.TAG.PLAYER) {
                 colliders = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY);
             }
             colliders.forEach((element) => {
                 if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
                     if ((<Enemy.Enemy>element).attributes.healthPoints > 0) {
                         (<Enemy.Enemy>element).getDamage(this.hitPointsScale);
-                        new Buff.DamageBuff(Buff.BUFFID.POISON, 300, 60).addToEntity((<Enemy.Enemy>element));
+                        this.setBuff((<Enemy.Enemy>element));
                         (<Enemy.Enemy>element).getKnockback(this.knockbackForce, this.mtxLocal.translation);
                         this.lifetime = 0;
                         this.killcount--;
                     }
                 }
             })
-            if (this.owner == Tag.TAG.ENEMY) {
+            if (this.owner.tag == Tag.TAG.ENEMY) {
                 colliders = Game.graph.getChildren().filter(element => (<Player.Player>element).tag == Tag.TAG.PLAYER);
                 colliders.forEach((element) => {
                     if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
