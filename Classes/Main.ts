@@ -225,10 +225,18 @@ namespace Game {
             }
         });
         document.getElementById("Option").addEventListener("click", () => {
-
+            // document.getElementById("Startscreen").style.visibility = "hidden";
+            // document.getElementById("Optionscreen").style.visibility = "visible";
         });
         document.getElementById("Credits").addEventListener("click", () => {
+            document.getElementById("Startscreen").style.visibility = "hidden";
+            document.getElementById("Creditscreen").style.visibility = "visible";
 
+            document.getElementById("BackCredit").addEventListener("click", () => {
+                document.getElementById("Creditscreen").style.visibility = "hidden";
+                document.getElementById("Optionscreen").style.visibility = "hidden";
+                document.getElementById("Startscreen").style.visibility = "visible";
+            });
         });
     }
 
