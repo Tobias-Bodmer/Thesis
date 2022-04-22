@@ -246,7 +246,7 @@ namespace Game {
 
     }
 
-    async function loadTextures() {
+    export async function loadTextures() {
         await Generation.txtStartRoom.load("./Resources/Image/Rooms/map01.png");
 
         await Bullets.bulletTxt.load("./Resources/Image/arrow01.png");
@@ -284,9 +284,6 @@ namespace Game {
         await AnimationGeneration.txtSkeletonIdle.load("./Resources/Image/Enemies/skeleton/skeletonIdle.png");
         await AnimationGeneration.txtSkeletonWalk.load("./Resources/Image/Enemies/skeleton/skeletonWalk.png")
 
-        await AnimationGeneration.txtVikingIdle.load("/Resources/Image/Player/vikingSide.png");
-
-        AnimationGeneration.createAllAnimations();
 
         //Items
         await Items.txtIceBucket.load("./Resources/Image/Items/iceBucket.png");
@@ -294,6 +291,7 @@ namespace Game {
         await Items.txtToxicRelationship.load("./Resources/Image/Items/toxicRelationship.png");
 
 
+        AnimationGeneration.generateAnimationObjects();
     }
 
     function playerChoice(_e: Event) {

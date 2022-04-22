@@ -186,6 +186,7 @@ namespace Networking {
 
                         //Spawn enemy at the client 
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNENEMY.toString()) {
+                            //TODO: change attributes
                             const attributes: Entity.Attributes = message.content.attributes;
                             EnemySpawner.networkSpawnById(
                                 message.content.id,
@@ -206,18 +207,9 @@ namespace Networking {
                         }
                         //Sync animation state
                         if (message.content != undefined && message.content.text == FUNCTION.ENTITYANIMATIONSTATE.toString()) {
-                            let enemy = Game.entities.find(enem => enem.netId == message.content.netId);
-                            if (enemy != undefined) {
-                                switch (message.content.state) {
-                                    case Entity.ANIMATIONSTATES.IDLE:
-                                        enemy.setAnimation(<ƒAid.SpriteSheetAnimation>enemy.animations["idle"]);
-                                        enemy.currentAnimation = Entity.ANIMATIONSTATES.IDLE;
-                                        break;
-                                    case Entity.ANIMATIONSTATES.WALK:
-                                        enemy.setAnimation(<ƒAid.SpriteSheetAnimation>enemy.animations["walk"]);
-                                        enemy.currentAnimation = Entity.ANIMATIONSTATES.WALK;
-                                        break;
-                                }
+                            let entity = Game.entities.find(enem => enem.netId == message.content.netId);
+                            if (entity != undefined) {
+                                entity.switchAnimation(message.content.state);
                             }
                         }
 

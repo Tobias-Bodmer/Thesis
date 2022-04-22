@@ -13,7 +13,8 @@ namespace EnemySpawner {
                     let position = new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2));
                     position.add(currentRoom.mtxLocal.translation.toVector2());
                     // console.log(position);
-                    spawnByID(getRandomEnemyId(), position);
+                    //TODO: use ID to get random enemies
+                    spawnByID(Entity.ID.REDTICK, position);
                     currentRoom.enemyCount--;
                 }
                 currentTime--;
@@ -61,10 +62,10 @@ namespace EnemySpawner {
             case Entity.ID.SMALLTICK:
                 if (_attributes == null && _netID == null) {
                     const ref = Game.enemiesJSON.find(enemy => enemy.name == "smalltick");
-                    enemy = new Enemy.EnemyDumb(Entity.ID.SMALLTICK, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale + (Math.random() * 0.2 - Math.random() * 0.2), ref.attributes.knockbackForce, ref.attributes.armor), _position, _netID);
+                    enemy = new Enemy.EnemyDash(Entity.ID.SMALLTICK, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale + (Math.random() * 0.2 - Math.random() * 0.2), ref.attributes.knockbackForce, ref.attributes.armor), _position, _netID);
                 }
                 else {
-                    enemy = new Enemy.EnemyDumb(Entity.ID.SMALLTICK, _attributes, _position, _netID);
+                    enemy = new Enemy.EnemyDash(Entity.ID.SMALLTICK, _attributes, _position, _netID);
                 }
                 break;
             case Entity.ID.SKELETON:

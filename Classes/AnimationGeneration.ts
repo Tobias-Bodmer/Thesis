@@ -11,62 +11,103 @@ namespace AnimationGeneration {
     export let txtSkeletonWalk: ƒ.TextureImage = new ƒ.TextureImage();
 
 
-    export let txtVikingIdle: ƒ.TextureImage = new ƒ.TextureImage();
-
     export import ƒAid = FudgeAid;
-    class MyAnimationClass {
-        public id: Entity.ID;
-        public spriteSheetIdle: ƒ.CoatTextured;
-        public spriteSheetWalk: ƒ.CoatTextured;
-        idleNumberOfFrames: number;
-        walkNumberOfFrames: number;
-        idleFrameRate: number;
-        walkFrameRate: number;
 
-        clrWhite: ƒ.Color = ƒ.Color.CSS("white");
+    export class AnimationContainer {
+        id: Entity.ID;
         animations: ƒAid.SpriteSheetAnimations = {};
-        idleScale: number;
-        walkScale: number;
-
-        constructor(_id: Entity.ID,
-            _txtIdle: ƒ.TextureImage,
-            _idleNumberOfFrames: number,
-            _idleFrameRate: number,
-            _txtWalk?: ƒ.TextureImage,
-            _walkNumberOfFrames?: number,
-            _walkFrameRate?: number) {
+        scale: [string, number][] = [];
+        frameRate: [string, number][] = [];
+        constructor(_id: Entity.ID) {
             this.id = _id;
-            this.spriteSheetIdle = new ƒ.CoatTextured(this.clrWhite, _txtIdle);
-            this.idleFrameRate = _idleFrameRate;
-            this.idleNumberOfFrames = _idleNumberOfFrames;
-            if (_txtWalk != undefined) {
-                this.spriteSheetWalk = new ƒ.CoatTextured(this.clrWhite, _txtWalk);
-                this.walkFrameRate = _walkFrameRate;
-                this.walkNumberOfFrames = _walkNumberOfFrames;
-            }
-            else {
-                this.spriteSheetWalk = new ƒ.CoatTextured(this.clrWhite, _txtIdle);
-                this.walkFrameRate = _idleFrameRate;
-                this.walkNumberOfFrames = _idleNumberOfFrames;
-            }
+            this.getAnimationById();
+        }
+        addAnimation(_ani: ƒAid.SpriteSheetAnimation, _scale: number, _frameRate: number) {
+            this.animations[_ani.name] = _ani;
+            this.scale.push([_ani.name, _scale]);
+            this.frameRate.push([_ani.name, _frameRate]);
+        }
 
+        getAnimationById() {
+            switch (this.id) {
+                case Entity.ID.BAT:
+                    this.addAnimation(batIdle.generatedSpriteAnimation, batIdle.animationScale, batIdle.frameRate);
+                    break;
+                case Entity.ID.REDTICK:
+                    this.addAnimation(redTickIdle.generatedSpriteAnimation, redTickIdle.animationScale, redTickIdle.frameRate);
+                    this.addAnimation(redTickWalk.generatedSpriteAnimation, redTickWalk.animationScale, redTickWalk.frameRate);
+                    break;
+                case Entity.ID.SMALLTICK:
+                    this.addAnimation(smallTickIdle.generatedSpriteAnimation, smallTickIdle.animationScale, smallTickIdle.frameRate);
+                    this.addAnimation(smallTickWalk.generatedSpriteAnimation, smallTickWalk.animationScale, smallTickWalk.frameRate);
+                    break;
+                case Entity.ID.SKELETON:
+                    this.addAnimation(skeletonIdle.generatedSpriteAnimation, skeletonIdle.animationScale, skeletonIdle.frameRate);
+                    this.addAnimation(skeletonWalk.generatedSpriteAnimation, skeletonWalk.animationScale, skeletonWalk.frameRate);
+            }
         }
     }
 
-    export let sheetArray: MyAnimationClass[] = [];
-    //#region animation
+    class MyAnimationClass {
+        public id: Entity.ID;
+        animationName: string;
+        public spriteSheet: ƒ.TextureImage;
+        amountOfFrames: number;
+        frameRate: number;
+        generatedSpriteAnimation: ƒAid.SpriteSheetAnimation;
+        animationScale: number;
 
-    let batAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.BAT, txtBatIdle, 4, 12);
-    let redTickAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.REDTICK, txtRedTickIdle, 6, 12, txtRedTickWalk, 4, 12);
-    let smallTickAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.SMALLTICK, txtRedTickIdle, 6, 12, txtRedTickWalk, 4, 12);
-    let vikingAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.RANGED, txtVikingIdle, 14, 12);
-    let skeletonAnimation: MyAnimationClass = new MyAnimationClass(Entity.ID.SKELETON, txtSkeletonIdle, 5, 12, txtSkeletonWalk, 7, 12);
+        constructor(_id: Entity.ID, _animationName: string, _txtIdle: ƒ.TextureImage, _amountOfFrames: number, _frameRate: number,) {
+            this.id = _id;
+            this.animationName = _animationName;
+            this.spriteSheet = _txtIdle;
+            this.frameRate = _frameRate;
+            this.amountOfFrames = _amountOfFrames;
+            generateAnimationFromGrid(this);
+        }
+    }
 
-    (<ƒAid.SpriteSheetAnimation>batAnimation.animations[""])
+    //#region spriteSheet
+    let batIdle: MyAnimationClass;
+
+    let redTickIdle: MyAnimationClass;
+    let redTickWalk: MyAnimationClass;
+
+    let smallTickIdle: MyAnimationClass;
+    let smallTickWalk: MyAnimationClass;
+
+    let skeletonIdle: MyAnimationClass;
+    let skeletonWalk: MyAnimationClass;
     //#endregion
 
 
-    export function getAnimationById(_id: Entity.ID): MyAnimationClass {
+    //#region AnimationContainer
+    let batAnimation: AnimationContainer;
+    let redTickAnimation: AnimationContainer;
+    let smallTickAnimation: AnimationContainer;
+    let skeletonAnimation: AnimationContainer;
+    //#endregion
+
+    export function generateAnimationObjects() {
+
+        batIdle = new MyAnimationClass(Entity.ID.BAT, "idle", txtBatIdle, 4, 12);
+
+        redTickIdle = new MyAnimationClass(Entity.ID.REDTICK, "idle", txtRedTickIdle, 6, 12);
+        redTickWalk = new MyAnimationClass(Entity.ID.REDTICK, "walk", txtRedTickWalk, 4, 12);
+
+        smallTickIdle = new MyAnimationClass(Entity.ID.SMALLTICK, "idle", txtSmallTickIdle, 6, 12);
+        smallTickWalk = new MyAnimationClass(Entity.ID.SMALLTICK, "walk", txtSmallTickWalk, 4, 12);
+
+        skeletonIdle = new MyAnimationClass(Entity.ID.SKELETON, "idle", txtSkeletonIdle, 5, 12);
+        skeletonWalk = new MyAnimationClass(Entity.ID.SKELETON, "walk", txtSkeletonWalk, 7, 12);
+
+        batAnimation = new AnimationContainer(Entity.ID.BAT);
+        redTickAnimation = new AnimationContainer(Entity.ID.REDTICK);
+        smallTickAnimation = new AnimationContainer(Entity.ID.SMALLTICK);
+        skeletonAnimation = new AnimationContainer(Entity.ID.SKELETON);
+    }
+
+    export function getAnimationById(_id: Entity.ID): AnimationContainer {
         switch (_id) {
             case Entity.ID.BAT:
                 return batAnimation;
@@ -74,8 +115,6 @@ namespace AnimationGeneration {
                 return redTickAnimation;
             case Entity.ID.SMALLTICK:
                 return smallTickAnimation;
-            case Entity.ID.RANGED:
-                return vikingAnimation;
             case Entity.ID.SKELETON:
                 return skeletonAnimation;
             default:
@@ -84,20 +123,6 @@ namespace AnimationGeneration {
 
     }
 
-    export function createAllAnimations() {
-        sheetArray.push(batAnimation, redTickAnimation, smallTickAnimation, vikingAnimation, skeletonAnimation);
-
-        sheetArray.forEach(obj => {
-            let idleWidth: number = obj.spriteSheetIdle.texture.texImageSource.width / obj.idleNumberOfFrames;
-            let idleHeigth: number = obj.spriteSheetIdle.texture.texImageSource.height;
-            let walkWidth: number = obj.spriteSheetWalk.texture.texImageSource.width / obj.walkNumberOfFrames;
-            let walkHeigth: number = obj.spriteSheetWalk.texture.texImageSource.height;
-            generateAnimationFromGrid(obj.spriteSheetIdle, obj.animations, "idle", idleWidth, idleHeigth, obj.idleNumberOfFrames, obj.idleFrameRate, 22);
-            generateAnimationFromGrid(obj.spriteSheetWalk, obj.animations, "walk", walkWidth, walkHeigth, obj.walkNumberOfFrames, obj.walkFrameRate, 22);
-            obj.idleScale = getPixelRatio(idleHeigth, idleWidth);
-            obj.walkScale = getPixelRatio(walkHeigth, walkWidth);
-        })
-    }
 
     function getPixelRatio(_width: number, _height: number): number {
         let max = Math.max(_width, _height);
@@ -107,12 +132,15 @@ namespace AnimationGeneration {
         return scale;
     }
 
-    export function generateAnimationFromGrid(_spritesheet: ƒ.CoatTextured, _animationsheet: ƒAid.SpriteSheetAnimations, _animationName: string, _width: number, _height: number, _numberOfFrames: number, _frameRate: number, _resolution: number) {
-        let name = _animationName;
-        let createdAnimation: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation(name, _spritesheet);
-        createdAnimation.generateByGrid(ƒ.Rectangle.GET(0, 0, _width, _height), _numberOfFrames, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(_width));
-        _animationsheet[name] = createdAnimation;
-        console.log(name + ": " + _animationsheet[name]);
+    export function generateAnimationFromGrid(_class: MyAnimationClass) {
+        let clrWhite: ƒ.Color = ƒ.Color.CSS("white");
+        let coatedSpriteSheet: ƒ.CoatTextured = new ƒ.CoatTextured(clrWhite, _class.spriteSheet);
+        let width: number = _class.spriteSheet.texImageSource.width / _class.amountOfFrames;
+        let height: number = _class.spriteSheet.texImageSource.height;
+        let createdAnimation: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation(_class.animationName, coatedSpriteSheet);
+        createdAnimation.generateByGrid(ƒ.Rectangle.GET(0, 0, width, height), _class.amountOfFrames, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(width));
+        _class.animationScale = getPixelRatio(width, height);
+        _class.generatedSpriteAnimation = createdAnimation;
     }
 }
 

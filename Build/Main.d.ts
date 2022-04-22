@@ -25,6 +25,7 @@ declare namespace Game {
     let internalItemJSON: Items.InternalItem[];
     let buffItemJSON: Items.BuffItem[];
     let bulletsJSON: Bullets.Bullet[];
+    function loadTextures(): Promise<void>;
     function cameraUpdate(): void;
 }
 declare namespace UI {
@@ -76,7 +77,7 @@ declare namespace Entity {
         canMoveX: boolean;
         canMoveY: boolean;
         moveDirection: Game.ƒ.Vector3;
-        animations: ƒAid.SpriteSheetAnimations;
+        animationContainer: AnimationGeneration.AnimationContainer;
         performKnockback: boolean;
         idleScale: number;
         buffs: Buff.Buff[];
@@ -91,12 +92,13 @@ declare namespace Entity {
         private getDamageReduction;
         doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
-        switchAnimation(_name: string): void;
+        switchAnimation(_name: ANIMATIONSTATES): void;
     }
     enum ANIMATIONSTATES {
         IDLE = 0,
         WALK = 1,
-        SUMMON = 2
+        SUMMON = 2,
+        ATTACK = 3
     }
     enum ID {
         RANGED = 0,
@@ -115,7 +117,7 @@ declare namespace Enemy {
         FLEE = 2,
         MOVE = 3,
         SUMMON = 4,
-        DASH = 5
+        ATTACK = 5
     }
     class Enemy extends Entity.Entity implements Interfaces.IKnockbackable {
         currentState: BEHAVIOUR;
@@ -135,6 +137,14 @@ declare namespace Enemy {
     }
     class EnemyDumb extends Enemy {
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
+        update(): void;
+        behaviour(): void;
+        moveBehaviour(): void;
+    }
+    class EnemySmash extends Enemy {
+        isAttacking: boolean;
+        avatars: Player.Player[];
+        randomPlayer: number;
         update(): void;
         behaviour(): void;
         moveBehaviour(): void;
@@ -248,26 +258,29 @@ declare namespace AnimationGeneration {
     export let txtBatIdle: ƒ.TextureImage;
     export let txtSkeletonIdle: ƒ.TextureImage;
     export let txtSkeletonWalk: ƒ.TextureImage;
-    export let txtVikingIdle: ƒ.TextureImage;
     export import ƒAid = FudgeAid;
+    export class AnimationContainer {
+        id: Entity.ID;
+        animations: ƒAid.SpriteSheetAnimations;
+        scale: [string, number][];
+        frameRate: [string, number][];
+        constructor(_id: Entity.ID);
+        addAnimation(_ani: ƒAid.SpriteSheetAnimation, _scale: number, _frameRate: number): void;
+        getAnimationById(): void;
+    }
     class MyAnimationClass {
         id: Entity.ID;
-        spriteSheetIdle: ƒ.CoatTextured;
-        spriteSheetWalk: ƒ.CoatTextured;
-        idleNumberOfFrames: number;
-        walkNumberOfFrames: number;
-        idleFrameRate: number;
-        walkFrameRate: number;
-        clrWhite: ƒ.Color;
-        animations: ƒAid.SpriteSheetAnimations;
-        idleScale: number;
-        walkScale: number;
-        constructor(_id: Entity.ID, _txtIdle: ƒ.TextureImage, _idleNumberOfFrames: number, _idleFrameRate: number, _txtWalk?: ƒ.TextureImage, _walkNumberOfFrames?: number, _walkFrameRate?: number);
+        animationName: string;
+        spriteSheet: ƒ.TextureImage;
+        amountOfFrames: number;
+        frameRate: number;
+        generatedSpriteAnimation: ƒAid.SpriteSheetAnimation;
+        animationScale: number;
+        constructor(_id: Entity.ID, _animationName: string, _txtIdle: ƒ.TextureImage, _amountOfFrames: number, _frameRate: number);
     }
-    export let sheetArray: MyAnimationClass[];
-    export function getAnimationById(_id: Entity.ID): MyAnimationClass;
-    export function createAllAnimations(): void;
-    export function generateAnimationFromGrid(_spritesheet: ƒ.CoatTextured, _animationsheet: ƒAid.SpriteSheetAnimations, _animationName: string, _width: number, _height: number, _numberOfFrames: number, _frameRate: number, _resolution: number): void;
+    export function generateAnimationObjects(): void;
+    export function getAnimationById(_id: Entity.ID): AnimationContainer;
+    export function generateAnimationFromGrid(_class: MyAnimationClass): void;
     export {};
 }
 declare namespace Entity {

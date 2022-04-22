@@ -37,14 +37,14 @@ namespace Enemy {
 
             switch (this.currentState) {
                 case BEHAVIOUR.IDLE:
-                    this.switchAnimation("idle");
+                    this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
                     break;
                 case BEHAVIOUR.FLEE:
-                    this.switchAnimation("walk");
+                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
                     this.moveDirection = this.moveAway(Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2()).toVector3();
                     break;
                 case BEHAVIOUR.SUMMON:
-                    this.switchAnimation("summon");
+                    this.switchAnimation(Entity.ANIMATIONSTATES.SUMMON);
                     this.summon();
                     break;
                 // default:

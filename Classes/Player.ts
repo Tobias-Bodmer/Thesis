@@ -26,10 +26,10 @@ namespace Player {
 
             if (_direction.magnitude != 0) {
                 _direction = Game.ƒ.Vector3.NORMALIZATION(_direction, 1)
-                // this.switchAnimation("walk");
+                this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
             }
             else if (_direction.magnitude == 0) {
-                // this.switchAnimation("idle");
+                this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
             }
 
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();

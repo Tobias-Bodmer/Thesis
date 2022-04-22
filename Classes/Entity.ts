@@ -9,7 +9,7 @@ namespace Entity {
         canMoveX: boolean = true;
         canMoveY: boolean = true;
         moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
-        animations: ƒAid.SpriteSheetAnimations = {};
+        animationContainer: AnimationGeneration.AnimationContainer;
         performKnockback: boolean = false;
         idleScale: number;
         buffs: Buff.Buff[] = [];
@@ -32,8 +32,8 @@ namespace Entity {
             }
             if (AnimationGeneration.getAnimationById(this.id) != null) {
                 let ani = AnimationGeneration.getAnimationById(this.id);
-                this.animations = ani.animations;
-                this.idleScale = ani.idleScale;
+                this.animationContainer = ani;
+                this.idleScale = ani.scale.find(animation => animation[0] == "idle")[1];
             }
             this.addComponent(new ƒ.ComponentTransform());
             this.mtxLocal.scale(new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale));
@@ -54,7 +54,7 @@ namespace Entity {
             }
             for (let i = 0; i < this.buffs.length; i++) {
                 if (!this.buffs[i].doBuffStuff(this)) {
-                    console.log(this.buffs.splice(i,1));
+                    console.log(this.buffs.splice(i, 1));
 
                     Networking.updateBuffList(this.buffs, this.netId);
                 }
@@ -174,45 +174,53 @@ namespace Entity {
         }
         //#endregion
 
+        switchAnimation(_name: ANIMATIONSTATES) {
+            //TODO: if animation doesnt exist dont switch
+            let name: string = ANIMATIONSTATES[_name].toLowerCase();
+            if (this.animationContainer != null && <ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name] != null) {
+                if (this.currentAnimation != _name) {
+                    console.log(name);
+                    switch (_name) {
+                        case ANIMATIONSTATES.IDLE:
+                            this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name]);
 
+                            this.currentAnimation = ANIMATIONSTATES.IDLE;
+                            break;
+                        case ANIMATIONSTATES.WALK:
+                            if (this.currentAnimation != ANIMATIONSTATES.WALK) {
+                                this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name]);
 
-        switchAnimation(_name: string) {
-            switch (_name) {
-                case "idle":
-                    if (this.currentAnimation != ANIMATIONSTATES.IDLE) {
-                        this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations[_name]);
-                        this.setFrameDirection(1);
-                        this.framerate = AnimationGeneration.getAnimationById(this.id).idleFrameRate;
-                        this.currentAnimation = ANIMATIONSTATES.IDLE;
-                        Networking.updateEntityAnimationState(this.currentAnimation, this.netId);
-                    }
-                    break;
-                case "walk":
-                    if (this.currentAnimation != ANIMATIONSTATES.WALK) {
-                        this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations[_name]);
-                        this.setFrameDirection(1);
-                        this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
-                        this.currentAnimation = ANIMATIONSTATES.WALK;
-                        Networking.updateEntityAnimationState(this.currentAnimation, this.netId);
-                    }
-                    break;
-                case "summon":
-                    if (this.currentAnimation != ANIMATIONSTATES.SUMMON) {
-                        this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations[_name]);
-                        this.setFrameDirection(1);
-                        this.framerate = AnimationGeneration.getAnimationById(this.id).walkFrameRate;
-                        this.currentAnimation = ANIMATIONSTATES.SUMMON;
-                        Networking.updateEntityAnimationState(this.currentAnimation, this.netId);
-                    }
+                                this.currentAnimation = ANIMATIONSTATES.WALK;
+                            }
+                            break;
+                        case ANIMATIONSTATES.SUMMON:
+                            if (this.currentAnimation != ANIMATIONSTATES.SUMMON) {
+                                this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name]);
 
+                                this.currentAnimation = ANIMATIONSTATES.SUMMON;
+                            }
+                            break;
+                        case ANIMATIONSTATES.ATTACK:
+                            if (this.currentAnimation != ANIMATIONSTATES.ATTACK) {
+                                this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name]);
+                                this.currentAnimation = ANIMATIONSTATES.ATTACK;
+                            }
+                            break;
+                    }
+                    this.framerate = this.animationContainer.frameRate.find(obj => obj[0] == name)[1];
+                    this.setFrameDirection(1);
+                    Networking.updateEntityAnimationState(this.currentAnimation, this.netId);
+                }
             }
-
+            else {
+                // console.warn("no animationContainer or animation with name: " + name + " at Entity: " + this.name);
+            }
         }
 
 
     }
     export enum ANIMATIONSTATES {
-        IDLE, WALK, SUMMON
+        IDLE, WALK, SUMMON, ATTACK
     }
 
     export enum ID {

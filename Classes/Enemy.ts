@@ -1,7 +1,7 @@
 namespace Enemy {
 
     export enum BEHAVIOUR {
-        IDLE, FOLLOW, FLEE, MOVE, SUMMON, DASH
+        IDLE, FOLLOW, FLEE, MOVE, SUMMON, ATTACK
     }
 
     import ƒAid = FudgeAid;
@@ -16,14 +16,12 @@ namespace Enemy {
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _attributes, _netId);
             this.attributes = _attributes;
-            this.currentState = BEHAVIOUR.IDLE;
-            this.currentAnimation = Entity.ANIMATIONSTATES.IDLE;
+            // this.currentState = BEHAVIOUR.IDLE;
+            // this.currentAnimation = Entity.ANIMATIONSTATES.WALK;
             this.tag = Tag.TAG.ENEMY;
 
-
+            this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["idle"]);
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
-
-            this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), (this.mtxLocal.scaling.x * this.idleScale) / 2)
             Networking.spawnEnemy(this, this.netId);
         }
@@ -155,7 +153,7 @@ namespace Enemy {
             let target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
             let distance = ƒ.Vector3.DIFFERENCE(target, this.cmpTransform.mtxLocal.translation).magnitude;
             //TODO: set to 3 after testing
-            if (distance > 3) {
+            if (distance > 2) {
                 this.currentState = BEHAVIOUR.FOLLOW
             }
             else {
@@ -168,10 +166,11 @@ namespace Enemy {
             this.behaviour();
             switch (this.currentState) {
                 case BEHAVIOUR.IDLE:
-                    this.switchAnimation("idle");
+                    this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
+                    this.moveDirection = ƒ.Vector3.ZERO();
                     break;
                 case BEHAVIOUR.FOLLOW:
-                    this.switchAnimation("walk");
+                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
                     this.moveDirection = this.moveSimple(Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2()).toVector3();
                     break;
                 // default:
@@ -180,6 +179,42 @@ namespace Enemy {
             }
         }
 
+    }
+
+    export class EnemySmash extends Enemy {
+        isAttacking = false;
+        avatars: Player.Player[] = [Game.avatar1, Game.avatar2];
+        randomPlayer = Math.round(Math.random());
+
+        public update(): void {
+            super.update();
+        }
+        behaviour() {
+            this.target = (<Player.Player>this.avatars[this.randomPlayer]).mtxLocal.translation.toVector2();
+            let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
+
+            if (this.currentState == BEHAVIOUR.ATTACK && this.getCurrentFrame >= (<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["attack"]).frames.length - 1) {
+                this.isAttacking = false;
+                this.currentState = BEHAVIOUR.FOLLOW;
+            }
+            if (distance < 2) {
+                this.currentState = BEHAVIOUR.ATTACK;
+                this.isAttacking = true;
+            }
+        }
+
+
+        moveBehaviour(): void {
+            this.behaviour();
+            switch (this.currentState) {
+                case BEHAVIOUR.FOLLOW:
+                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
+                    this.moveDirection = this.moveSimple(this.target).toVector3();
+                    break;
+                case BEHAVIOUR.ATTACK:
+                    this.switchAnimation(Entity.ANIMATIONSTATES.ATTACK);
+            }
+        }
     }
 
     export class EnemyDash extends Enemy {
@@ -222,7 +257,7 @@ namespace Enemy {
                 setTimeout(() => {
                     this.attributes.speed /= 5;
                     this.attributes.hitable = true;
-                    this.currentState = BEHAVIOUR.IDLE;
+                    this.currentState = BEHAVIOUR.FLEE;
                 }, 300);
             }
         }
@@ -231,17 +266,19 @@ namespace Enemy {
             this.behaviour();
             switch (this.currentState) {
                 case BEHAVIOUR.FOLLOW:
-                    this.switchAnimation("walk");
+                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
                     if (!this.isAttacking) {
                         this.lastMoveDireciton = this.moveDirection;
                         this.moveDirection = this.moveSimple(this.target).toVector3();
                     }
-
                     break;
                 case BEHAVIOUR.IDLE:
-                    this.switchAnimation("idle");
+                    this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
                     this.moveDirection = ƒ.Vector3.ZERO();
                     break;
+                case BEHAVIOUR.FLEE:
+                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
+                    this.moveDirection = this.moveAway(this.target).toVector3();
             }
         }
     }
