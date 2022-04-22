@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -68,7 +68,7 @@ declare namespace UI {
 }
 declare namespace Entity {
     class Entity extends Game.ƒAid.NodeSprite {
-        currentAnimation: ANIMATIONSTATES;
+        private currentAnimationState;
         tag: Tag.TAG;
         netId: number;
         id: Entity.ID;
@@ -100,6 +100,13 @@ declare namespace Entity {
         SUMMON = 2,
         ATTACK = 3
     }
+    enum BEHAVIOUR {
+        IDLE = 0,
+        FOLLOW = 1,
+        FLEE = 2,
+        SUMMON = 3,
+        ATTACK = 4
+    }
     enum ID {
         RANGED = 0,
         MELEE = 1,
@@ -111,16 +118,8 @@ declare namespace Entity {
     function getNameById(_id: Entity.ID): string;
 }
 declare namespace Enemy {
-    enum BEHAVIOUR {
-        IDLE = 0,
-        FOLLOW = 1,
-        FLEE = 2,
-        MOVE = 3,
-        SUMMON = 4,
-        ATTACK = 5
-    }
     class Enemy extends Entity.Entity implements Interfaces.IKnockbackable {
-        currentState: BEHAVIOUR;
+        currentBehaviour: Entity.BEHAVIOUR;
         target: ƒ.Vector2;
         lifetime: number;
         moveDirection: Game.ƒ.Vector3;
@@ -486,7 +485,7 @@ declare namespace Networking {
     function spawnBulletAtEnemy(_bulletNetId: number, _enemyNetId: number): Promise<void>;
     function removeBullet(_netId: number): void;
     function spawnEnemy(_enemy: Enemy.Enemy, _netId: number): void;
-    function updateEnemyPosition(_position: ƒ.Vector3, _netId: number, _state: Entity.ANIMATIONSTATES): void;
+    function updateEnemyPosition(_position: ƒ.Vector3, _netId: number): void;
     function updateEntityAnimationState(_state: Entity.ANIMATIONSTATES, _netId: number): void;
     function removeEnemy(_netId: number): void;
     function spawnItem(_item: Items.Item, _id: number, _position: ƒ.Vector2, _netId: number): void;

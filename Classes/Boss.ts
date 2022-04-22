@@ -13,17 +13,17 @@ namespace Enemy {
             let distance = ƒ.Vector3.DIFFERENCE(target, this.cmpTransform.mtxLocal.translation).magnitude;
             //TODO: set to 3 after testing
             if (distance < 5) {
-                this.currentState = BEHAVIOUR.FLEE;
+                this.currentBehaviour = Entity.BEHAVIOUR.FLEE;
             }
             else {
                 let nextState = Math.round(Math.random());
 
                 switch (nextState) {
                     case 0:
-                        this.currentState = BEHAVIOUR.SUMMON;
+                        this.currentBehaviour = Entity.BEHAVIOUR.SUMMON;
                         break;
                     case 1:
-                        this.currentState = BEHAVIOUR.IDLE;
+                        this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
                         break;
                     default:
                         break;
@@ -35,15 +35,15 @@ namespace Enemy {
         moveBehaviour() {
             this.behaviour();
 
-            switch (this.currentState) {
-                case BEHAVIOUR.IDLE:
+            switch (this.currentBehaviour) {
+                case Entity.BEHAVIOUR.IDLE:
                     this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
                     break;
-                case BEHAVIOUR.FLEE:
+                case Entity.BEHAVIOUR.FLEE:
                     this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
                     this.moveDirection = this.moveAway(Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2()).toVector3();
                     break;
-                case BEHAVIOUR.SUMMON:
+                case Entity.BEHAVIOUR.SUMMON:
                     this.switchAnimation(Entity.ANIMATIONSTATES.SUMMON);
                     this.summon();
                     break;

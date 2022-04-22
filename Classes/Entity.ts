@@ -1,6 +1,6 @@
 namespace Entity {
     export class Entity extends Game.ƒAid.NodeSprite {
-        currentAnimation: ANIMATIONSTATES;
+        private currentAnimationState: ANIMATIONSTATES;
         public tag: Tag.TAG;
         public netId: number;
         id: Entity.ID;
@@ -176,40 +176,33 @@ namespace Entity {
 
         switchAnimation(_name: ANIMATIONSTATES) {
             //TODO: if animation doesnt exist dont switch
-            let name: string = ANIMATIONSTATES[_name].toLowerCase();
+            let name: string = BEHAVIOUR[_name].toLowerCase();
             if (this.animationContainer != null && <ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name] != null) {
-                if (this.currentAnimation != _name) {
-                    console.log(name);
+                console.log(this.currentAnimationState);
+                console.log(_name);
+                if (this.currentAnimationState != _name) {
                     switch (_name) {
                         case ANIMATIONSTATES.IDLE:
                             this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name]);
-
-                            this.currentAnimation = ANIMATIONSTATES.IDLE;
+                            this.currentAnimationState = ANIMATIONSTATES.IDLE;
                             break;
                         case ANIMATIONSTATES.WALK:
-                            if (this.currentAnimation != ANIMATIONSTATES.WALK) {
-                                this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name]);
-
-                                this.currentAnimation = ANIMATIONSTATES.WALK;
-                            }
+                            this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name]);
+                            this.currentAnimationState = ANIMATIONSTATES.WALK;
                             break;
                         case ANIMATIONSTATES.SUMMON:
-                            if (this.currentAnimation != ANIMATIONSTATES.SUMMON) {
-                                this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name]);
-
-                                this.currentAnimation = ANIMATIONSTATES.SUMMON;
-                            }
+                            this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name]);
+                            this.currentAnimationState = ANIMATIONSTATES.SUMMON;
                             break;
                         case ANIMATIONSTATES.ATTACK:
-                            if (this.currentAnimation != ANIMATIONSTATES.ATTACK) {
-                                this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name]);
-                                this.currentAnimation = ANIMATIONSTATES.ATTACK;
-                            }
+                            this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name]);
+                            this.currentAnimationState = ANIMATIONSTATES.ATTACK;
+
                             break;
                     }
                     this.framerate = this.animationContainer.frameRate.find(obj => obj[0] == name)[1];
                     this.setFrameDirection(1);
-                    Networking.updateEntityAnimationState(this.currentAnimation, this.netId);
+                    Networking.updateEntityAnimationState(this.currentAnimationState, this.netId);
                 }
             }
             else {
@@ -221,6 +214,10 @@ namespace Entity {
     }
     export enum ANIMATIONSTATES {
         IDLE, WALK, SUMMON, ATTACK
+    }
+
+    export enum BEHAVIOUR {
+        IDLE, FOLLOW, FLEE, SUMMON, ATTACK
     }
 
     export enum ID {
