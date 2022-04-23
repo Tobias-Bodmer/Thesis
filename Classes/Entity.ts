@@ -176,10 +176,8 @@ namespace Entity {
 
         switchAnimation(_name: ANIMATIONSTATES) {
             //TODO: if animation doesnt exist dont switch
-            let name: string = BEHAVIOUR[_name].toLowerCase();
+            let name: string = ANIMATIONSTATES[_name].toLowerCase();
             if (this.animationContainer != null && <ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name] != null) {
-                console.log(this.currentAnimationState);
-                console.log(_name);
                 if (this.currentAnimationState != _name) {
                     switch (_name) {
                         case ANIMATIONSTATES.IDLE:

@@ -209,7 +209,6 @@ namespace Networking {
                         if (message.content != undefined && message.content.text == FUNCTION.ENTITYANIMATIONSTATE.toString()) {
                             let entity = Game.entities.find(enem => enem.netId == message.content.netId);
                             if (entity != undefined) {
-                                console.log(message.content.state);
                                 entity.switchAnimation(message.content.state);
                             }
                         }

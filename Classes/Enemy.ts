@@ -273,6 +273,7 @@ namespace Enemy {
                 case Entity.BEHAVIOUR.FLEE:
                     this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
                     this.moveDirection = this.moveAway(this.target).toVector3();
+                    break;
             }
         }
     }

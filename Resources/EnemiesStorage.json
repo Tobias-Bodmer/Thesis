@@ -25,7 +25,7 @@
         {
             "name": "redtick",
             "attributes": {
-                "healthPoints": 100,
+                "healthPoints": 15,
                 "attackPoints": 1,
                 "speed": 1,
                 "scale": 2,

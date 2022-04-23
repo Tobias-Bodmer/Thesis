@@ -52,7 +52,7 @@ namespace Items {
             this.mtxLocal.translation = _position.toVector3();
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);
             this.buff.push(this.getBuffById());
-            this.setTextureById(_id);
+            this.setTextureById();
         }
 
         getBuffById(): Buff.Buff {
@@ -78,8 +78,8 @@ namespace Items {
 
             this.getComponent(Game.ƒ.ComponentMaterial).material = newMtr;
         }
-        setTextureById(_id: ITEMID) {
-            switch (_id) {
+        setTextureById() {
+            switch (this.id) {
                 case ITEMID.ICEBUCKETCHALLENGE:
                     this.loadTexture(txtIceBucket);
                     break;

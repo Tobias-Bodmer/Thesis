@@ -227,7 +227,7 @@ declare namespace Items {
         constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
         getBuffById(): Buff.Buff;
         loadTexture(_texture: ƒ.TextureImage): Promise<void>;
-        setTextureById(_id: ITEMID): void;
+        setTextureById(): void;
         setPosition(_position: ƒ.Vector2): void;
         despawn(): void;
         doYourThing(_avatar: Player.Player): void;

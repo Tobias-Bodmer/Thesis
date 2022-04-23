@@ -304,11 +304,11 @@ namespace Game {
 
     function playerChoice(_e: Event) {
         if ((<HTMLButtonElement>_e.target).id == "Ranged") {
-            avatar1 = new Player.Ranged(Entity.ID.RANGED, new Entity.Attributes(100, 5, 5, 1, 2, 5));
+            avatar1 = new Player.Ranged(Entity.ID.RANGED, new Entity.Attributes(10, 5, 5, 1, 2, 5));
             playerType = Player.PLAYERTYPE.RANGED;
         }
         if ((<HTMLButtonElement>_e.target).id == "Melee") {
-            avatar1 = new Player.Melee(Entity.ID.MELEE, new Entity.Attributes(100, 1, 5, 1, 2, 10));
+            avatar1 = new Player.Melee(Entity.ID.MELEE, new Entity.Attributes(10, 1, 5, 1, 2, 10));
             playerType = Player.PLAYERTYPE.MELEE;
         }
         document.getElementById("Lobbyscreen").style.visibility = "hidden";

@@ -110,7 +110,15 @@ namespace Buff {
                     _avatar.getDamage(this.value);
                     break;
                 case BUFFID.POISON:
-                    _avatar.getDamage(this.value);
+                    // only do damage to player until he has 20% health
+                    if (_avatar instanceof Player.Player) {
+                        if (_avatar.attributes.healthPoints > _avatar.attributes.maxHealthPoints * 0.2) {
+                            _avatar.getDamage(this.value);
+                        }
+                    }
+                    else {
+                        _avatar.getDamage(this.value);
+                    }
                     break;
             }
         }
