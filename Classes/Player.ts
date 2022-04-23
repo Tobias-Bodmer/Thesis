@@ -129,6 +129,13 @@ namespace Player {
                     Networking.updateInventory(item.id, item.netId, this.netId);
                     item.doYourThing(this);
                     this.items.push(item);
+                    if (item instanceof Items.InternalItem) {
+                        console.log(item.name + ": " + item.description + " smth changed to: " + (<Items.InternalItem>item).value);
+                    }
+                    if (item instanceof Items.BuffItem) {
+                        console.log(item.name + ": " + item.description + " smth changed to: " + Buff.BUFFID[(<Items.BuffItem>item).buff[0].id].toString());
+
+                    }
                 }
             })
         }
