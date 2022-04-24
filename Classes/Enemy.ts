@@ -1,5 +1,15 @@
 namespace Enemy {
 
+    export enum EnemyClass {
+        ENEMYDUMB,
+        ENEMYDASH,
+        ENEMYSMASH,
+        ENEMYPATROL,
+        ENEMYSHOOT,
+        SUMMONOR,
+        SUMMONORADDS
+    }
+
     import ƒAid = FudgeAid;
 
     export class Enemy extends Entity.Entity implements Interfaces.IKnockbackable {
@@ -16,7 +26,7 @@ namespace Enemy {
 
             // this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["idle"]);
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
-            this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), (this.mtxLocal.scaling.x * this.idleScale) / 2)
+            this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), (this.mtxLocal.scaling.x * this.idleScale) / 2, this.netId)
         }
 
         public update() {
@@ -37,7 +47,7 @@ namespace Enemy {
         }
         move(_direction: ƒ.Vector3) {
             // this.moveDirection.add(_direction)
-            this.collide(this.moveDirection);
+            this.collide(_direction);
             // this.moveDirection.subtract(_direction);
         }
 
@@ -62,59 +72,25 @@ namespace Enemy {
         }
 
         collide(_direction: ƒ.Vector3) {
+            let knockback = this.currentKnockback.clone;
+            _direction.add(knockback);
             if (_direction.magnitude > 0) {
+
                 super.collide(_direction);
 
-                let avatarColliders: Player.Player[] = <Player.Player[]>Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.PLAYER);
-                avatarColliders.forEach((element) => {
-                    if (this.collider.collides(element.collider)) {
-                        let intersection = this.collider.getIntersection(element.collider);
-                        let areaBeforeMove = intersection;
-
-                        if (areaBeforeMove < this.collider.radius + element.collider.radius) {
-                            let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
-                            let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
-                            this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
-
-                            if (this.collider.getIntersection(element.collider) != null) {
-                                let newIntersection = this.collider.getIntersection(element.collider);
-                                let areaAfterMove = newIntersection;
-
-                                if (areaBeforeMove < areaAfterMove) {
-                                    this.canMoveX = false;
-                                }
-                            }
-
-                            this.collider.position = oldPosition;
-                            newDirection = new Game.ƒ.Vector2(0, _direction.y);
-                            this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
-
-                            if (this.collider.getIntersection(element.collider) != null) {
-                                let newIntersection = this.collider.getIntersection(element.collider);
-                                let areaAfterMove = newIntersection;
-
-                                if (areaBeforeMove < areaAfterMove) {
-                                    this.canMoveY = false;
-                                }
-                            }
-                            this.collider.position = oldPosition;
-                        }
-
-                        if (Networking.client.id == Networking.client.idHost) {
-                            if (element == Game.avatar1) {
-                                element.getKnockback(this.attributes.knockbackForce, this.mtxLocal.translation);
-                            }
-                            if (element == Game.avatar2) {
-                                Networking.knockbackPush(this.attributes.knockbackForce, this.mtxLocal.translation);
-                            }
-                        }
-                    }
+                let avatar: Player.Player[] = (<Player.Player[]>Game.graph.getChildren().filter(element => (<Player.Player>element).tag == Tag.TAG.PLAYER));
+                let avatarColliders: Collider.Collider[] = [];
+                avatar.forEach((elem) => {
+                    avatarColliders.push((<Player.Player>elem).collider);
                 })
-
+                this.calculateCollider(avatarColliders, _direction)
 
                 _direction.normalize();
                 _direction.scale((1 / Game.frameRate * this.attributes.speed));
-
+                if (knockback.magnitude > 0) {
+                    knockback.normalize();
+                    knockback.scale((1 / Game.frameRate * this.attributes.speed));
+                }
 
                 if (this.canMoveX && this.canMoveY) {
                     this.cmpTransform.mtxLocal.translate(_direction);
@@ -126,16 +102,16 @@ namespace Enemy {
                     this.cmpTransform.mtxLocal.translate(_direction);
                 }
             }
+            _direction.subtract(knockback);
+
+            this.reduceKnockback();
         }
-
-
     }
 
     export class EnemyDumb extends Enemy {
 
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _attributes, _position, _netId);
-            Networking.spawnEnemy(this, this.netId);
         }
 
         update(): void {
@@ -184,7 +160,6 @@ namespace Enemy {
 
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _attributes, _position, _netId);
-            Networking.spawnEnemy(this, this.netId);
         }
 
         public update(): void {
@@ -238,7 +213,6 @@ namespace Enemy {
 
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _attributes, _position, _netId);
-            Networking.spawnEnemy(this, this.netId);
         }
 
         public update(): void {
@@ -266,9 +240,9 @@ namespace Enemy {
             if (!this.isAttacking) {
                 this.isAttacking = true;
                 this.attributes.hitable = false;
-                this.attributes.speed *= 5;
+                this.attributes.speed *= 1.1;
                 setTimeout(() => {
-                    this.attributes.speed /= 5;
+                    this.attributes.speed /= 1.1;
                     this.attributes.hitable = true;
                     this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
                 }, 300);
@@ -304,7 +278,6 @@ namespace Enemy {
 
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _attributes, _position, _netId);
-            Networking.spawnEnemy(this, this.netId);
         }
 
         public update(): void {
@@ -333,13 +306,12 @@ namespace Enemy {
     }
 
     export class EnemyShoot extends Enemy {
-        weapon: Weapons.Weapon;
+        weapon: Weapons.Weapon = new Weapons.Weapon(60, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId, Weapons.AIM.HOMING);
         viewRadius: number = 3;
         gotRecognized: boolean = false;
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _weapon: Weapons.Weapon, _position: ƒ.Vector2, _netId?: number) {
+
+        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _attributes, _position, _netId);
-            this.weapon = _weapon;
-            Networking.spawnEnemy(this, this.netId);
         }
 
         update() {
@@ -399,7 +371,6 @@ namespace Enemy {
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _target: Player.Player, _netId?: number) {
             super(_id, _attributes, _position, _netId);
             this.avatar = _target;
-            Networking.spawnEnemy(this, this.netId);
         }
 
         public update(): void {

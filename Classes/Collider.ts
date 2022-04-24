@@ -1,5 +1,6 @@
 namespace Collider {
     export class Collider {
+        public ownerNetId: number;
         radius: number;
         position: ƒ.Vector2;
         get top(): number {
@@ -15,9 +16,10 @@ namespace Collider {
             return (this.position.y + this.radius);
         }
 
-        constructor(_position: ƒ.Vector2, _radius: number) {
+        constructor(_position: ƒ.Vector2, _radius: number, _netId: number) {
             this.position = _position;
             this.radius = _radius;
+            this.ownerNetId = _netId;
         }
 
         collides(_collider: Collider): boolean {

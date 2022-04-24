@@ -73,7 +73,7 @@ namespace Bullets {
             this.addComponent(cmpMaterial);
 
             let newPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
-            this.collider = new Collider.Collider(newPosition, this.cmpTransform.mtxLocal.scaling.y / 1.5);
+            this.collider = new Collider.Collider(newPosition, this.cmpTransform.mtxLocal.scaling.y / 1.5, this.netId);
             this.updateRotation(_direction);
             this.loadTexture();
             this.flyDirection = ƒ.Vector3.X();
@@ -226,7 +226,7 @@ namespace Bullets {
         constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _target?: ƒ.Vector3, _netId?: number) {
             super(_name, _speed, _hitPoints, _lifetime, _knockbackForce, _killcount, _position, _direction, _netId);
             this.speed = 20;
-            this.hitPointsScale = 5;
+            this.hitPointsScale = 1;
             this.lifetime = 1 * Game.frameRate;
             this.killcount = 1;
             if (_target != null) {

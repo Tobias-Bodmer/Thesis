@@ -82,16 +82,19 @@ declare namespace Entity {
         idleScale: number;
         buffs: Buff.Buff[];
         items: Array<Items.Item>;
+        currentKnockback: ƒ.Vector3;
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number);
         update(): void;
         updateCollider(): void;
         updateBuffs(): void;
         collide(_direction: ƒ.Vector3): void;
+        calculateCollider(_collider: any[], _direction: ƒ.Vector3): void;
         getDamage(_value: number): void;
         die(): void;
         private getDamageReduction;
         doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
+        reduceKnockback(): void;
         switchAnimation(_name: ANIMATIONSTATES): void;
     }
     enum ANIMATIONSTATES {
@@ -120,6 +123,15 @@ declare namespace Entity {
     function getNameById(_id: Entity.ID): string;
 }
 declare namespace Enemy {
+    enum EnemyClass {
+        ENEMYDUMB = 0,
+        ENEMYDASH = 1,
+        ENEMYSMASH = 2,
+        ENEMYPATROL = 3,
+        ENEMYSHOOT = 4,
+        SUMMONOR = 5,
+        SUMMONORADDS = 6
+    }
     class Enemy extends Entity.Entity implements Interfaces.IKnockbackable {
         currentBehaviour: Entity.BEHAVIOUR;
         target: ƒ.Vector2;
@@ -179,7 +191,7 @@ declare namespace Enemy {
         weapon: Weapons.Weapon;
         viewRadius: number;
         gotRecognized: boolean;
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _weapon: Weapons.Weapon, _position: ƒ.Vector2, _netId?: number);
+        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
         update(): void;
         moveBehaviour(): void;
         getDamage(_value: number): void;
@@ -320,7 +332,8 @@ declare namespace Entity {
     }
 }
 declare namespace Enemy {
-    class Summonor extends EnemyDumb {
+    class Summonor extends EnemyShoot {
+        damageTaken: number;
         summonChance: number;
         summonCooldown: number;
         summonCurrentCooldown: number;
@@ -328,7 +341,9 @@ declare namespace Enemy {
         update(): void;
         cooldown(): void;
         behaviour(): void;
+        getDamage(_value: number): void;
         moveBehaviour(): void;
+        defencePhase(): void;
         summon(): void;
     }
 }
@@ -424,13 +439,14 @@ declare namespace Bullets {
 }
 declare namespace Collider {
     class Collider {
+        ownerNetId: number;
         radius: number;
         position: ƒ.Vector2;
         get top(): number;
         get left(): number;
         get right(): number;
         get bottom(): number;
-        constructor(_position: ƒ.Vector2, _radius: number);
+        constructor(_position: ƒ.Vector2, _radius: number, _netId: number);
         collides(_collider: Collider): boolean;
         collidesRect(_collider: Game.ƒ.Rectangle): boolean;
         getIntersection(_collider: Collider): number;
@@ -439,7 +455,7 @@ declare namespace Collider {
 }
 declare namespace EnemySpawner {
     function spawnEnemies(): void;
-    function spawnByID(_enemyClass: any, _id: Entity.ID, _position: ƒ.Vector2, _attributes?: Entity.Attributes, _target?: Player.Player, _netID?: number): void;
+    function spawnByID(_enemyClass: Enemy.EnemyClass, _id: Entity.ID, _position: ƒ.Vector2, _attributes?: Entity.Attributes, _target?: Player.Player, _netID?: number): void;
     function networkSpawnById(_enemyClass: any, _id: Entity.ID, _position: ƒ.Vector2, _attributes: Entity.Attributes, _netID: number, _target?: number): void;
 }
 declare namespace Calculation {
@@ -510,7 +526,7 @@ declare namespace Networking {
     function updateBullet(_position: ƒ.Vector3, _netId: number, _tick?: number): void;
     function spawnBulletAtEnemy(_bulletNetId: number, _enemyNetId: number): Promise<void>;
     function removeBullet(_netId: number): void;
-    function spawnEnemy(_enemy: Enemy.Enemy, _netId: number): void;
+    function spawnEnemy(_enemyClass: Enemy.EnemyClass, _enemy: Enemy.Enemy, _netId: number): void;
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number): void;
     function updateEntityAnimationState(_state: Entity.ANIMATIONSTATES, _netId: number): void;
     function removeEnemy(_netId: number): void;
@@ -651,7 +667,7 @@ declare namespace Weapons {
         aimType: AIM;
         bulletType: Bullets.BULLETTYPE;
         projectileAmount: number;
-        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _owner: number);
+        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _ownerNetId: number, _aimType: AIM);
         shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
         fire(_magazine: Bullets.Bullet[], _sync?: boolean): void;
         setBulletDirection(_magazine: Bullets.Bullet[]): Bullets.Bullet[];

@@ -14,6 +14,7 @@ namespace Entity {
         idleScale: number;
         buffs: Buff.Buff[] = [];
         public items: Array<Items.Item> = [];
+        currentKnockback: ƒ.Vector3 = ƒ.Vector3.ZERO();
 
 
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number) {
@@ -37,7 +38,7 @@ namespace Entity {
             }
             this.addComponent(new ƒ.ComponentTransform());
             this.mtxLocal.scale(new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale));
-            this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);
+            this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2, this.netId);
         }
 
         public update() {
@@ -64,48 +65,99 @@ namespace Entity {
         collide(_direction: ƒ.Vector3) {
             this.canMoveX = true;
             this.canMoveY = true;
-            let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.TAG.ROOM)).walls;
-            colliders.forEach((element) => {
-                if (this.collider.collidesRect(element.collider)) {
-                    console.log("wall");
+            let walls: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.TAG.ROOM)).walls;
+            let wallColliders: Game.ƒ.Rectangle[] = [];
+            walls.forEach(elem => {
+                wallColliders.push(elem.collider);
+            })
+            this.calculateCollider(wallColliders, _direction);
+        }
 
-                    let intersection = this.collider.getIntersectionRect(element.collider);
-                    let areaBeforeMove = intersection.height * intersection.width;
+        public calculateCollider(_collider: any[], _direction: ƒ.Vector3) {
+            _collider.forEach((element) => {
+                if (element instanceof Collider.Collider) {
+                    if (this.collider.collides(element)) {
+                        let intersection = this.collider.getIntersection(element);
+                        let areaBeforeMove = intersection;
 
-                    if (areaBeforeMove < this.mtxLocal.scaling.x * this.mtxLocal.scaling.y) {
-                        let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
-                        let newDirection = new Game.ƒ.Vector2(_direction.x, 0);
-                        this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+                        if (areaBeforeMove < this.collider.radius + element.radius) {
+                            let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
+                            let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
+                            this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
 
-                        if (this.collider.getIntersectionRect(element.collider) != null) {
-                            let newIntersection = this.collider.getIntersectionRect(element.collider);
-                            let areaAfterMove = newIntersection.height * newIntersection.width;
+                            if (this.collider.getIntersection(element) != null) {
+                                let newIntersection = this.collider.getIntersection(element);
+                                let areaAfterMove = newIntersection;
 
-                            if (areaBeforeMove < areaAfterMove) {
-                                this.canMoveX = false;
+                                if (areaBeforeMove < areaAfterMove) {
+                                    this.canMoveX = false;
+                                }
                             }
+
+                            this.collider.position = oldPosition;
+                            newDirection = new Game.ƒ.Vector2(0, _direction.y);
+                            this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+
+                            if (this.collider.getIntersection(element) != null) {
+                                let newIntersection = this.collider.getIntersection(element);
+                                let areaAfterMove = newIntersection;
+
+                                if (areaBeforeMove < areaAfterMove) {
+                                    this.canMoveY = false;
+                                }
+                            }
+                            this.collider.position = oldPosition;
                         }
 
 
-
-                        this.collider.position = oldPosition;
-                        newDirection = new Game.ƒ.Vector2(0, _direction.y);
-                        this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
-
-                        if (this.collider.getIntersectionRect(element.collider) != null) {
-                            let newIntersection = this.collider.getIntersectionRect(element.collider);
-                            let areaAfterMove = newIntersection.height * newIntersection.width;
-
-                            if (areaBeforeMove < areaAfterMove) {
-                                this.canMoveY = false;
+                        if (Networking.client.id == Networking.client.idHost) {
+                            if (element.ownerNetId == Game.avatar1.netId) {
+                                Game.avatar1.getKnockback(this.attributes.knockbackForce, this.mtxLocal.translation);
+                            }
+                            if (element.ownerNetId == Game.avatar2.netId) {
+                                Networking.knockbackPush(this.attributes.knockbackForce, this.mtxLocal.translation);
                             }
                         }
-                        this.collider.position = oldPosition;
-                    } else {
-                        this.canMoveX = false;
-                        this.canMoveY = false;
                     }
+                }
+                else if (element instanceof Game.ƒ.Rectangle) {
+                    if (this.collider.collidesRect(element)) {
+                        let intersection = this.collider.getIntersectionRect(element);
+                        let areaBeforeMove = intersection.height * intersection.width;
 
+                        if (areaBeforeMove < this.mtxLocal.scaling.x * this.mtxLocal.scaling.y) {
+                            let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
+                            let newDirection = new Game.ƒ.Vector2(_direction.x, 0);
+                            this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+
+                            if (this.collider.getIntersectionRect(element) != null) {
+                                let newIntersection = this.collider.getIntersectionRect(element);
+                                let areaAfterMove = newIntersection.height * newIntersection.width;
+
+                                if (areaBeforeMove < areaAfterMove) {
+                                    this.canMoveX = false;
+                                }
+                            }
+
+                            this.collider.position = oldPosition;
+                            newDirection = new Game.ƒ.Vector2(0, _direction.y);
+                            this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
+
+                            if (this.collider.getIntersectionRect(element) != null) {
+                                let newIntersection = this.collider.getIntersectionRect(element);
+                                let areaAfterMove = newIntersection.height * newIntersection.width;
+
+                                if (areaBeforeMove < areaAfterMove) {
+                                    this.canMoveY = false;
+                                }
+                            }
+                            this.collider.position = oldPosition;
+                        } else {
+                            this.canMoveX = false;
+                            this.canMoveY = false;
+                        }
+
+                    }
                 }
             })
         }
@@ -147,31 +199,18 @@ namespace Entity {
 
                 direction.normalize();
 
-                direction.scale(_knockbackForce * 1 / knockBackScaling);
+                direction.scale(_knockbackForce * (1 / knockBackScaling));
 
-                this.moveDirection.add(direction);
+                this.currentKnockback.add(direction);
+            }
+        }
 
-                reduceKnockback(this, direction, this.moveDirection);
-
-                function reduceKnockback(_elem: Entity, _direction: Game.ƒ.Vector3, _moveDirection: Game.ƒ.Vector3) {
-                    // _knockbackForce = _knockbackForce / knockBackScaling;
-                    if (_knockbackForce > 0.01) {
-                        setTimeout(() => {
-                            _moveDirection.subtract(direction);
-
-                            _knockbackForce /= 3;
-
-                            direction.scale(_knockbackForce * (1 / knockBackScaling));
-
-                            _moveDirection.add(direction);
-
-                            reduceKnockback(_elem, _direction, _moveDirection);
-                        }, 200);
-                    } else {
-                        _moveDirection.subtract(direction);
-                        _elem.performKnockback = false;
-                    }
-                }
+        public reduceKnockback() {
+            this.currentKnockback.scale(0.5);
+            console.log(this.currentKnockback.magnitude);
+            if (this.currentKnockback.magnitude < 0.0001) {
+                this.currentKnockback = Game.ƒ.Vector3.ZERO();
+                this.performKnockback = false;
             }
         }
         //#endregion

@@ -14,7 +14,7 @@ namespace EnemySpawner {
                     position.add(currentRoom.mtxLocal.translation.toVector2());
                     // console.log(position);
                     //TODO: use ID to get random enemies
-                    spawnByID(Enemy.EnemySmash, Entity.ID.OGER, position);
+                    spawnByID(Enemy.EnemyClass.ENEMYSMASH, Entity.ID.OGER, position);
                     currentRoom.enemyCount--;
                 }
                 currentTime--;
@@ -37,60 +37,57 @@ namespace EnemySpawner {
     }
 
 
-    export function spawnByID(_enemyClass: any, _id: Entity.ID, _position: ƒ.Vector2, _attributes?: Entity.Attributes, _target?: Player.Player, _netID?: number) {
+    export function spawnByID(_enemyClass: Enemy.EnemyClass, _id: Entity.ID, _position: ƒ.Vector2, _attributes?: Entity.Attributes, _target?: Player.Player, _netID?: number) {
         let enemy: Enemy.Enemy;
+        let ref = null;
+        if (_attributes == null) {
+            ref = Game.enemiesJSON.find(enemy => enemy.name == _id.toString());
+        }
         switch (_enemyClass) {
-            case Enemy.EnemyDash:
-                if (_attributes == null && _netID == null) {
-                    const ref = Game.enemiesJSON.find(enemy => enemy.name == _id.toString());
+            case Enemy.EnemyClass.ENEMYDASH:
+                if (_netID == null) {
                     enemy = new Enemy.EnemyDash(_id, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale, Math.random() * ref.attributes.knockbackForce + 0.5, ref.attributes.armor), _position, _netID);
                 } else {
                     enemy = new Enemy.EnemyDash(_id, _attributes, _position, _netID);
                 }
                 break;
-            case Enemy.EnemyDumb:
-                if (_attributes == null && _netID == null) {
-                    const ref = Game.enemiesJSON.find(enemy => enemy.name == _id.toString());
+            case Enemy.EnemyClass.ENEMYDASH:
+                if (_netID == null) {
                     enemy = new Enemy.EnemyDumb(_id, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale, Math.random() * ref.attributes.knockbackForce + 0.5, ref.attributes.armor), _position, _netID);
                 } else {
                     enemy = new Enemy.EnemyDumb(_id, _attributes, _position, _netID);
                 }
                 break;
-            case Enemy.EnemyPatrol:
-                if (_attributes == null && _netID == null) {
-                    const ref = Game.enemiesJSON.find(enemy => enemy.name == _id.toString());
+            case Enemy.EnemyClass.ENEMYPATROL:
+                if (_netID == null) {
                     enemy = new Enemy.EnemyPatrol(_id, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale, Math.random() * ref.attributes.knockbackForce + 0.5, ref.attributes.armor), _position, _netID);
                 } else {
                     enemy = new Enemy.EnemyPatrol(_id, _attributes, _position, _netID);
                 }
                 break;
-            // case Enemy.EnemyShoot:
-            //     if (_attributes == null && _netID == null) {
-            //         const ref = Game.enemiesJSON.find(enemy => enemy.name == _id.toString());
+            // case Enemy.E:
+            //     if (_netID == null) {
             //         enemy = new Enemy.EnemyShoot(_id, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale, Math.random() * ref.attributes.knockbackForce + 0.5, ref.attributes.armor), _position, _netID);
             //     } else {
             //         enemy = new Enemy.EnemyShoot(_id, _attributes, _position, _netID);
             //     }
             //     break;
-            case Enemy.EnemySmash:
-                if (_attributes == null && _netID == null) {
-                    const ref = Game.enemiesJSON.find(enemy => enemy.name == _id.toString());
+            case Enemy.EnemyClass.ENEMYSMASH:
+                if (_netID == null) {
                     enemy = new Enemy.EnemySmash(_id, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale, Math.random() * ref.attributes.knockbackForce + 0.5, ref.attributes.armor), _position, _netID);
                 } else {
                     enemy = new Enemy.EnemySmash(_id, _attributes, _position, _netID);
                 }
                 break;
-            case Enemy.SummonorAdds:
-                if (_attributes == null && _netID == null) {
-                    const ref = Game.enemiesJSON.find(enemy => enemy.name == _id.toString());
+            case Enemy.EnemyClass.SUMMONORADDS:
+                if (_netID == null) {
                     enemy = new Enemy.SummonorAdds(_id, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale, Math.random() * ref.attributes.knockbackForce + 0.5, ref.attributes.armor), _position, _target, _netID);
                 } else {
                     enemy = new Enemy.SummonorAdds(_id, _attributes, _position, _target, _netID);
                 }
                 break;
-            case Enemy.Summonor:
-                if (_attributes == null && _netID == null) {
-                    const ref = Game.enemiesJSON.find(enemy => enemy.name == _id.toString());
+            case Enemy.EnemyClass.SUMMONOR:
+                if (_netID == null) {
                     enemy = new Enemy.Summonor(_id, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale, Math.random() * ref.attributes.knockbackForce + 0.5, ref.attributes.armor), _position, _netID);
                 } else {
                     enemy = new Enemy.Summonor(_id, _attributes, _position, _netID);
@@ -99,6 +96,7 @@ namespace EnemySpawner {
             default:
                 break;
         }
+        Networking.spawnEnemy(_enemyClass, enemy, enemy.netId);
         // switch (_id) {
         //     case Entity.ID.BAT:
         //         if (_attributes == null && _netID == null) {

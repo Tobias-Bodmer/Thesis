@@ -5,7 +5,7 @@ namespace Player {
     }
 
     export abstract class Player extends Entity.Entity implements Interfaces.IKnockbackable {
-        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId);
+        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId, Weapons.AIM.NORMAL);
 
         public tick: number = 0;
         public positions: ƒ.Vector3[] = [];
@@ -213,7 +213,7 @@ namespace Player {
         readonly abilityCooldownTime: number = 40;
         currentabilityCooldownTime: number = this.abilityCooldownTime;
 
-        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.MELEE, 1, this.netId);
+        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.MELEE, 1, this.netId, Weapons.AIM.NORMAL);
 
 
         public attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean) {

@@ -50,7 +50,7 @@ namespace Items {
 
             this.addComponent(new ƒ.ComponentTransform());
             this.mtxLocal.translation = _position.toVector3();
-            this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2);
+            this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2, this.netId);
             this.buff.push(this.getBuffById());
             this.setTextureById();
         }
@@ -197,6 +197,10 @@ namespace Items {
                     Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
                     break;
                 case ITEMID.HOMECOMING:
+                    if (_avatar instanceof Player.Ranged) {
+                        _avatar.weapon.aimType = Weapons.AIM.HOMING;
+                        Networking.updateAvatarWeapon(_avatar.weapon, _avatar.netId);
+                    }
                     //TODO: talk with tobi
                     break;
             }

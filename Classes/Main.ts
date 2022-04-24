@@ -176,16 +176,16 @@ namespace Game {
                     await Networking.spawnPlayer(playerType);
                     // EnemySpawner.spawnEnemies();
 
-                    EnemySpawner.spawnByID(Enemy.Summonor, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
+                    EnemySpawner.spawnByID(Enemy.EnemyClass.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
 
                     //#region init Items
                     if (Networking.client.id == Networking.client.idHost) {
-                        item1 = new Items.BuffItem(Items.ITEMID.TOXICRELATIONSHIP, new ƒ.Vector2(0, 2), null);
-                        let item2 = new Items.BuffItem(Items.ITEMID.SLOWYSLOW, new ƒ.Vector2(0, -2), null);
-                        let item3 = new Items.InternalItem(Items.ITEMID.PROJECTILESUP, new ƒ.Vector2(-2, 0), null);
+                        // item1 = new Items.BuffItem(Items.ITEMID.TOXICRELATIONSHIP, new ƒ.Vector2(0, 2), null);
+                        let item2 = new Items.InternalItem(Items.ITEMID.PROJECTILESUP, new ƒ.Vector2(0, -2), null);
+                        let item3 = new Items.InternalItem(Items.ITEMID.HOMECOMING, new ƒ.Vector2(-2, 0), null);
 
 
-                        graph.appendChild(item1);
+                        // graph.appendChild(item1);
                         graph.appendChild(item2);
                         graph.appendChild(item3);
 
