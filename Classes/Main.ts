@@ -176,7 +176,9 @@ namespace Game {
                     await Networking.spawnPlayer(playerType);
                     // EnemySpawner.spawnEnemies();
 
-                    EnemySpawner.spawnByID(Enemy.EnemyClass.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
+                    if (Networking.client.id == Networking.client.idHost) {
+                        EnemySpawner.spawnByID(Enemy.EnemyClass.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
+                    }
 
                     //#region init Items
                     if (Networking.client.id == Networking.client.idHost) {

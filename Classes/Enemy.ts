@@ -82,16 +82,17 @@ namespace Enemy {
                 let avatarColliders: Collider.Collider[] = [];
                 avatar.forEach((elem) => {
                     avatarColliders.push((<Player.Player>elem).collider);
-                })
-                this.calculateCollider(avatarColliders, _direction)
-
+                });
+                
                 _direction.normalize();
                 _direction.scale((1 / Game.frameRate * this.attributes.speed));
                 if (knockback.magnitude > 0) {
                     knockback.normalize();
                     knockback.scale((1 / Game.frameRate * this.attributes.speed));
                 }
-
+                
+                this.calculateCollider(avatarColliders, _direction)
+                
                 if (this.canMoveX && this.canMoveY) {
                     this.cmpTransform.mtxLocal.translate(_direction);
                 } else if (this.canMoveX && !this.canMoveY) {

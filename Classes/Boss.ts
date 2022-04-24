@@ -57,9 +57,9 @@ namespace Enemy {
         }
 
         defencePhase(): void {
-            this.moveDirection = this.moveSimple(new ƒ.Vector2(0, -13)).toVector3();
 
             if (this.mtxLocal.translation.equals(new ƒ.Vector2(0, -13).toVector3(), 1)) {
+                this.mtxLocal.translation = new ƒ.Vector2(0, -13).toVector3();
                 if (this.summonCurrentCooldown <= 0) {
                     let nextState = Math.round(Math.random() * 100);
 
@@ -68,6 +68,8 @@ namespace Enemy {
                         this.summonCurrentCooldown = this.summonCooldown;
                     }
                 }
+            } else {
+                this.moveDirection = this.moveSimple(new ƒ.Vector2(0, -13)).toVector3();
             }
         }
 

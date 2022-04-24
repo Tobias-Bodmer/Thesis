@@ -77,6 +77,7 @@ namespace Entity {
             _collider.forEach((element) => {
                 if (element instanceof Collider.Collider) {
                     if (this.collider.collides(element)) {
+                        console.log("colliding" + element.ownerNetId);
                         let intersection = this.collider.getIntersection(element);
                         let areaBeforeMove = intersection;
 

@@ -57,51 +57,12 @@ namespace Player {
                 this.getItemCollision();
             }
 
-            let enemyColliders: Enemy.Enemy[] = Game.enemies;
-            enemyColliders.forEach(element => {
-                if (this.collider.collides(element.collider)) {
-                    let intersection = this.collider.getIntersection(element.collider);
-                    let areaBeforeMove = intersection;
-
-                    if (areaBeforeMove < this.collider.radius + element.collider.radius) {
-                        let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
-                        let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
-                        this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
-
-                        if (this.collider.getIntersection(element.collider) != null) {
-                            let newIntersection = this.collider.getIntersection(element.collider);
-                            let areaAfterMove = newIntersection;
-
-                            if (areaBeforeMove < areaAfterMove) {
-                                this.canMoveX = false;
-                            }
-                        }
-
-                        this.collider.position = oldPosition;
-                        newDirection = new Game.ƒ.Vector2(0, _direction.y);
-                        this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));
-
-                        if (this.collider.getIntersection(element.collider) != null) {
-                            let newIntersection = this.collider.getIntersection(element.collider);
-                            let areaAfterMove = newIntersection;
-
-                            if (areaBeforeMove < areaAfterMove) {
-                                this.canMoveY = false;
-                            }
-                        }
-                        this.collider.position = oldPosition;
-                    } else {
-                        this.canMoveX = false;
-                        this.canMoveY = false;
-                    }
-                    //TODO: Sync knockback correctly over network
-                    // if (Networking.client.id == Networking.client.idHost) {
-                    //     element.getKnockback(this.attributes.knockbackForce, this.mtxLocal.translation);
-                    // } else {
-                    //     Networking.knockbackRequest(element.netId, this.attributes.knockbackForce, this.mtxLocal.translation);
-                    // }
-                }
+            let enemies: Enemy.Enemy[] = Game.enemies;
+            let enemiesCollider: Collider.Collider[] = [];
+            enemies.forEach(element => {
+                enemiesCollider.push(element.collider);
             })
+            this.calculateCollider(enemiesCollider, _direction);
 
             if (this.canMoveX && this.canMoveY) {
                 this.cmpTransform.mtxLocal.translate(_direction, false);
