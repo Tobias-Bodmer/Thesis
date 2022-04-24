@@ -108,14 +108,14 @@ declare namespace Entity {
         ATTACK = 4
     }
     enum ID {
-        RANGED = 0,
-        MELEE = 1,
-        BAT = 2,
-        REDTICK = 3,
-        SMALLTICK = 4,
-        SKELETON = 5,
-        OGER = 6,
-        SUMMONOR = 7
+        RANGED = "ranged",
+        MELEE = "melee",
+        BAT = "bat",
+        REDTICK = "redtick",
+        SMALLTICK = "smalltick",
+        SKELETON = "skeleton",
+        OGER = "oger",
+        SUMMONOR = "summonor"
     }
     function getNameById(_id: Entity.ID): string;
 }
@@ -149,6 +149,7 @@ declare namespace Enemy {
         avatars: Player.Player[];
         randomPlayer: number;
         currentBehaviour: Entity.BEHAVIOUR;
+        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
         update(): void;
         behaviour(): void;
         moveBehaviour(): void;
@@ -169,6 +170,7 @@ declare namespace Enemy {
         patrolPoints: ƒ.Vector2[];
         waitTime: number;
         currenPointIndex: number;
+        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
         update(): void;
         moveBehaviour(): void;
         patrol(): void;
@@ -177,7 +179,7 @@ declare namespace Enemy {
         weapon: Weapons.Weapon;
         viewRadius: number;
         gotRecognized: boolean;
-        constructor(_id: number, _attributes: Entity.Attributes, _weapon: Weapons.Weapon, _position: ƒ.Vector2, _netId?: number);
+        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _weapon: Weapons.Weapon, _position: ƒ.Vector2, _netId?: number);
         update(): void;
         moveBehaviour(): void;
         getDamage(_value: number): void;
@@ -437,8 +439,8 @@ declare namespace Collider {
 }
 declare namespace EnemySpawner {
     function spawnEnemies(): void;
-    function spawnByID(_id: Entity.ID, _position: ƒ.Vector2, _attributes?: Entity.Attributes, _netID?: number): void;
-    function networkSpawnById(_id: Entity.ID, _position: ƒ.Vector2, _attributes: Entity.Attributes, _netID: number): void;
+    function spawnByID(_enemyClass: any, _id: Entity.ID, _position: ƒ.Vector2, _attributes?: Entity.Attributes, _target?: Player.Player, _netID?: number): void;
+    function networkSpawnById(_enemyClass: any, _id: Entity.ID, _position: ƒ.Vector2, _attributes: Entity.Attributes, _netID: number, _target?: number): void;
 }
 declare namespace Calculation {
     function getCloserAvatarPosition(_startPoint: ƒ.Vector3): ƒ.Vector3;

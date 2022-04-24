@@ -17,7 +17,6 @@ namespace Enemy {
             // this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["idle"]);
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), (this.mtxLocal.scaling.x * this.idleScale) / 2)
-            Networking.spawnEnemy(this, this.netId);
         }
 
         public update() {
@@ -136,6 +135,7 @@ namespace Enemy {
 
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _attributes, _position, _netId);
+            Networking.spawnEnemy(this, this.netId);
         }
 
         update(): void {
@@ -181,6 +181,11 @@ namespace Enemy {
         avatars: Player.Player[] = [];
         randomPlayer = Math.round(Math.random());
         currentBehaviour: Entity.BEHAVIOUR = Entity.BEHAVIOUR.IDLE;
+
+        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
+            super(_id, _attributes, _position, _netId);
+            Networking.spawnEnemy(this, this.netId);
+        }
 
         public update(): void {
             super.update();
@@ -233,6 +238,7 @@ namespace Enemy {
 
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _attributes, _position, _netId);
+            Networking.spawnEnemy(this, this.netId);
         }
 
         public update(): void {
@@ -296,6 +302,11 @@ namespace Enemy {
         waitTime: number = 1000;
         currenPointIndex: number = 0;
 
+        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
+            super(_id, _attributes, _position, _netId);
+            Networking.spawnEnemy(this, this.netId);
+        }
+
         public update(): void {
             super.update();
         }
@@ -320,13 +331,15 @@ namespace Enemy {
         }
 
     }
+
     export class EnemyShoot extends Enemy {
         weapon: Weapons.Weapon;
         viewRadius: number = 3;
         gotRecognized: boolean = false;
-        constructor(_id: number, _attributes: Entity.Attributes, _weapon: Weapons.Weapon, _position: ƒ.Vector2, _netId?: number) {
+        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _weapon: Weapons.Weapon, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _attributes, _position, _netId);
             this.weapon = _weapon;
+            Networking.spawnEnemy(this, this.netId);
         }
 
         update() {
@@ -386,6 +399,7 @@ namespace Enemy {
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _target: Player.Player, _netId?: number) {
             super(_id, _attributes, _position, _netId);
             this.avatar = _target;
+            Networking.spawnEnemy(this, this.netId);
         }
 
         public update(): void {

@@ -48,36 +48,30 @@ namespace Enemy {
 
             switch (this.currentBehaviour) {
                 case Entity.BEHAVIOUR.IDLE:
-                    console.log("idle");
-
                     // this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
                     break;
                 case Entity.BEHAVIOUR.FLEE:
-                    console.log("flee");
-
                     // this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
                     console.log(this.mtxLocal.translation);
                     this.moveDirection = this.moveAway(Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2()).toVector3();
                     console.log(this.moveDirection);
                     break;
                 case Entity.BEHAVIOUR.SUMMON:
-                    console.log("summon");
-
                     // this.switchAnimation(Entity.ANIMATIONSTATES.SUMMON);
                     this.summon();
                     break;
-                // default:
-                //     // this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
-                //     // break;
+                default:
+                    // this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
+                    break;
             }
         }
 
         summon() {
             let target = Math.round(Math.random());
             if (target > 0) {
-                Game.graph.addChild(new SummonorAdds(Entity.ID.SMALLTICK, new Entity.Attributes(5, 5, 3, Math.random() + 1, 0, 0), this.mtxLocal.translation.toVector2(), Game.avatar1));
+                EnemySpawner.spawnByID(SummonorAdds, Entity.ID.SMALLTICK, this.mtxLocal.translation.toVector2(), null, Game.avatar1);
             } else {
-                Game.graph.addChild(new SummonorAdds(Entity.ID.SMALLTICK, new Entity.Attributes(5, 5, 3, Math.random() + 1, 0, 0), this.mtxLocal.translation.toVector2(), Game.avatar2));
+                EnemySpawner.spawnByID(SummonorAdds, Entity.ID.SMALLTICK, this.mtxLocal.translation.toVector2(), null, Game.avatar2);
             }
         }
     }

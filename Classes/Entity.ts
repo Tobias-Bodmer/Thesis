@@ -221,14 +221,14 @@ namespace Entity {
     }
 
     export enum ID {
-        RANGED,
-        MELEE,
-        BAT,
-        REDTICK,
-        SMALLTICK,
-        SKELETON,
-        OGER,
-        SUMMONOR
+        RANGED = "ranged",
+        MELEE = "melee",
+        BAT = "bat",
+        REDTICK = "redtick",
+        SMALLTICK = "smalltick",
+        SKELETON = "skeleton",
+        OGER = "oger",
+        SUMMONOR = "summonor"
     }
 
     export function getNameById(_id: Entity.ID): string {

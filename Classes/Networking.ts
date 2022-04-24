@@ -189,12 +189,33 @@ namespace Networking {
                             //TODO: change attributes
                             const attributes: Entity.Attributes = message.content.attributes;
                             EnemySpawner.networkSpawnById(
+                                getEnemyClass(message.content.enemyClass),
                                 message.content.id,
                                 new ƒ.Vector2(
                                     message.content.position.data[0],
                                     message.content.position.data[1]),
-                                attributes
-                                , message.content.netId);
+                                attributes, message.content.netId, message.content.target);
+
+                            function getEnemyClass(_enemy: number): any {
+                                switch (_enemy) {
+                                    case 0:
+                                        return Enemy.EnemyDash;
+                                    case 1:
+                                        return Enemy.EnemyDumb;
+                                    case 2:
+                                        return Enemy.EnemyPatrol;
+                                    case 3:
+                                        return Enemy.EnemyShoot;
+                                    case 4:
+                                        return Enemy.EnemySmash;
+                                    case 5:
+                                        return Enemy.Summonor;
+                                    case 6:
+                                        return Enemy.SummonorAdds;
+                                    default:
+                                        return null;
+                                }
+                            }
                         }
 
                         //Sync enemy transform from host to client
@@ -407,7 +428,33 @@ namespace Networking {
     //#region enemy
     export function spawnEnemy(_enemy: Enemy.Enemy, _netId: number) {
         if (Game.connected && client.idHost == client.id) {
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, id: _enemy.id, attributes: _enemy.attributes, position: _enemy.mtxLocal.translation, netId: _netId } })
+            if (_enemy instanceof Enemy.SummonorAdds) {
+                console.log(getEnemyClass(_enemy));
+                client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, enemyClass: getEnemyClass(_enemy), id: _enemy.id, attributes: _enemy.attributes, position: _enemy.mtxLocal.translation, netId: _netId, target: (<Enemy.SummonorAdds>_enemy).avatar.netId } })
+            } else {
+                client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, enemyClass: getEnemyClass(_enemy), id: _enemy.id, attributes: _enemy.attributes, position: _enemy.mtxLocal.translation, netId: _netId, target: null } })
+            }
+        }
+
+        function getEnemyClass(_enemy: Enemy.Enemy): any {
+            switch (true) {
+                case _enemy instanceof Enemy.EnemyDash:
+                    return 0;
+                case _enemy instanceof Enemy.EnemyDumb:
+                    return 1;
+                case _enemy instanceof Enemy.EnemyPatrol:
+                    return 2;
+                case _enemy instanceof Enemy.EnemyShoot:
+                    return 3;
+                case _enemy instanceof Enemy.EnemySmash:
+                    return 4;
+                case _enemy instanceof Enemy.Summonor:
+                    return 5;
+                case _enemy instanceof Enemy.SummonorAdds:
+                    return 6;
+                default:
+                    return null;
+            }
         }
     }
     export function updateEnemyPosition(_position: ƒ.Vector3, _netId: number) {
