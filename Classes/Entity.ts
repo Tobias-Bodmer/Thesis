@@ -224,7 +224,8 @@ namespace Entity {
         BAT,
         REDTICK,
         SMALLTICK,
-        SKELETON
+        SKELETON,
+        OGER
     }
 
     export function getNameById(_id: Entity.ID): string {

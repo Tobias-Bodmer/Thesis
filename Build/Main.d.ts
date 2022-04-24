@@ -113,7 +113,8 @@ declare namespace Entity {
         BAT = 2,
         REDTICK = 3,
         SMALLTICK = 4,
-        SKELETON = 5
+        SKELETON = 5,
+        OGER = 6
     }
     function getNameById(_id: Entity.ID): string;
 }
@@ -142,8 +143,11 @@ declare namespace Enemy {
     }
     class EnemySmash extends Enemy {
         isAttacking: boolean;
+        coolDown: number;
+        currentCooldown: number;
         avatars: Player.Player[];
         randomPlayer: number;
+        currentBehaviour: Entity.BEHAVIOUR;
         update(): void;
         behaviour(): void;
         moveBehaviour(): void;
@@ -257,6 +261,9 @@ declare namespace AnimationGeneration {
     export let txtBatIdle: ƒ.TextureImage;
     export let txtSkeletonIdle: ƒ.TextureImage;
     export let txtSkeletonWalk: ƒ.TextureImage;
+    export let txtOgerIdle: ƒ.TextureImage;
+    export let txtOgerWalk: ƒ.TextureImage;
+    export let txtOgerAttack: ƒ.TextureImage;
     export import ƒAid = FudgeAid;
     export class AnimationContainer {
         id: Entity.ID;

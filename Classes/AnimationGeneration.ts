@@ -10,6 +10,11 @@ namespace AnimationGeneration {
     export let txtSkeletonIdle: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtSkeletonWalk: ƒ.TextureImage = new ƒ.TextureImage();
 
+    export let txtOgerIdle: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtOgerWalk: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtOgerAttack: ƒ.TextureImage = new ƒ.TextureImage();
+
+
 
     export import ƒAid = FudgeAid;
 
@@ -44,6 +49,11 @@ namespace AnimationGeneration {
                 case Entity.ID.SKELETON:
                     this.addAnimation(skeletonIdle.generatedSpriteAnimation, skeletonIdle.animationScale, skeletonIdle.frameRate);
                     this.addAnimation(skeletonWalk.generatedSpriteAnimation, skeletonWalk.animationScale, skeletonWalk.frameRate);
+                case Entity.ID.OGER:
+                    this.addAnimation(ogerIdle.generatedSpriteAnimation, ogerIdle.animationScale, ogerIdle.frameRate);
+                    this.addAnimation(ogerWalk.generatedSpriteAnimation, ogerWalk.animationScale, ogerWalk.frameRate);
+                    this.addAnimation(ogerAttack.generatedSpriteAnimation, ogerAttack.animationScale, ogerAttack.frameRate);
+
             }
         }
     }
@@ -78,6 +88,10 @@ namespace AnimationGeneration {
 
     let skeletonIdle: MyAnimationClass;
     let skeletonWalk: MyAnimationClass;
+
+    let ogerIdle: MyAnimationClass;
+    let ogerWalk: MyAnimationClass;
+    let ogerAttack: MyAnimationClass;
     //#endregion
 
 
@@ -86,6 +100,7 @@ namespace AnimationGeneration {
     let redTickAnimation: AnimationContainer;
     let smallTickAnimation: AnimationContainer;
     let skeletonAnimation: AnimationContainer;
+    let ogerAnimation: AnimationContainer;
     //#endregion
 
     export function generateAnimationObjects() {
@@ -101,10 +116,16 @@ namespace AnimationGeneration {
         skeletonIdle = new MyAnimationClass(Entity.ID.SKELETON, "idle", txtSkeletonIdle, 5, 12);
         skeletonWalk = new MyAnimationClass(Entity.ID.SKELETON, "walk", txtSkeletonWalk, 7, 12);
 
+        ogerIdle = new MyAnimationClass(Entity.ID.OGER, "idle", txtOgerIdle, 5, 6);
+        ogerWalk = new MyAnimationClass(Entity.ID.OGER, "walk", txtOgerWalk, 6, 6);
+        ogerAttack = new MyAnimationClass(Entity.ID.OGER, "attack", txtOgerAttack, 10, 12);
+
+
         batAnimation = new AnimationContainer(Entity.ID.BAT);
         redTickAnimation = new AnimationContainer(Entity.ID.REDTICK);
         smallTickAnimation = new AnimationContainer(Entity.ID.SMALLTICK);
         skeletonAnimation = new AnimationContainer(Entity.ID.SKELETON);
+        ogerAnimation = new AnimationContainer(Entity.ID.OGER);
     }
 
     export function getAnimationById(_id: Entity.ID): AnimationContainer {
@@ -117,6 +138,8 @@ namespace AnimationGeneration {
                 return smallTickAnimation;
             case Entity.ID.SKELETON:
                 return skeletonAnimation;
+            case Entity.ID.OGER:
+                return ogerAnimation;
             default:
                 return null;
         }

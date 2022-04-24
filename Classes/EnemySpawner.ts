@@ -14,7 +14,7 @@ namespace EnemySpawner {
                     position.add(currentRoom.mtxLocal.translation.toVector2());
                     // console.log(position);
                     //TODO: use ID to get random enemies
-                    spawnByID(Entity.ID.REDTICK, position);
+                    spawnByID(Entity.ID.OGER, position);
                     currentRoom.enemyCount--;
                 }
                 currentTime--;
@@ -62,10 +62,10 @@ namespace EnemySpawner {
             case Entity.ID.SMALLTICK:
                 if (_attributes == null && _netID == null) {
                     const ref = Game.enemiesJSON.find(enemy => enemy.name == "smalltick");
-                    enemy = new Enemy.EnemyDash(Entity.ID.SMALLTICK, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale + (Math.random() * 0.2 - Math.random() * 0.2), ref.attributes.knockbackForce, ref.attributes.armor), _position, _netID);
+                    enemy = new Enemy.EnemySmash(Entity.ID.SMALLTICK, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale + (Math.random() * 0.2 - Math.random() * 0.2), ref.attributes.knockbackForce, ref.attributes.armor), _position, _netID);
                 }
                 else {
-                    enemy = new Enemy.EnemyDash(Entity.ID.SMALLTICK, _attributes, _position, _netID);
+                    enemy = new Enemy.EnemySmash(Entity.ID.SMALLTICK, _attributes, _position, _netID);
                 }
                 break;
             case Entity.ID.SKELETON:
@@ -76,6 +76,17 @@ namespace EnemySpawner {
                 else {
                     enemy = new Enemy.EnemyDumb(Entity.ID.SKELETON, _attributes, _position, _netID);
                 }
+                break;
+            case Entity.ID.OGER:
+                if (_attributes == null && _netID == null) {
+                    const ref = Game.enemiesJSON.find(enemy => enemy.name == "oger");
+                    enemy = new Enemy.EnemySmash(Entity.ID.OGER, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale + (Math.random() * 0.2 - Math.random() * 0.2), ref.attributes.knockbackForce, ref.attributes.armor), _position, _netID);
+                }
+                else {
+                    enemy = new Enemy.EnemySmash(Entity.ID.OGER, _attributes, _position, _netID);
+                }
+                break;
+            default:
                 break;
         }
         if (enemy != null) {

@@ -177,23 +177,36 @@ namespace Enemy {
 
     export class EnemySmash extends Enemy {
         isAttacking = false;
-        avatars: Player.Player[] = [Game.avatar1, Game.avatar2];
+        coolDown = 2 * Game.frameRate;
+        currentCooldown = this.coolDown;
+        avatars: Player.Player[] = [];
         randomPlayer = Math.round(Math.random());
+        currentBehaviour: Entity.BEHAVIOUR = Entity.BEHAVIOUR.IDLE;
 
         public update(): void {
             super.update();
         }
         behaviour() {
+            this.avatars = [Game.avatar1, Game.avatar2];
             this.target = (<Player.Player>this.avatars[this.randomPlayer]).mtxLocal.translation.toVector2();
             let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
 
             if (this.currentBehaviour == Entity.BEHAVIOUR.ATTACK && this.getCurrentFrame >= (<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["attack"]).frames.length - 1) {
                 this.isAttacking = false;
-                this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
+                this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
             }
             if (distance < 2) {
                 this.currentBehaviour = Entity.BEHAVIOUR.ATTACK;
                 this.isAttacking = true;
+            }
+            if (this.currentBehaviour == Entity.BEHAVIOUR.IDLE) {
+                if (this.currentCooldown > 0) {
+                    this.currentCooldown--;
+                }
+                else {
+                    this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW
+                    this.currentCooldown = this.coolDown;
+                }
             }
         }
 
@@ -207,6 +220,7 @@ namespace Enemy {
                     break;
                 case Entity.BEHAVIOUR.ATTACK:
                     this.switchAnimation(Entity.ANIMATIONSTATES.ATTACK);
+                    this.moveDirection = ƒ.Vector3.ZERO();
             }
         }
     }

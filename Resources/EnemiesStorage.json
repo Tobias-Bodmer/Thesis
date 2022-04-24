@@ -43,6 +43,17 @@
                 "knockbackForce": 0.1,
                 "armor": 5
             }
+        },
+        {
+            "name": "oger",
+            "attributes": {
+                "healthPoints": 100,
+                "attackPoints": 5,
+                "speed": 1,
+                "scale": 2,
+                "knockbackForce": 0.1,
+                "armor": 25
+            }
         }
     ]
 }
