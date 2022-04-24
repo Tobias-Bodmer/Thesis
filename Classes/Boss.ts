@@ -27,6 +27,8 @@ namespace Enemy {
             if (this.damageTaken >= 25) {
                 this.attributes.hitable = false;
                 this.currentBehaviour = Entity.BEHAVIOUR.SUMMON;
+            } else {
+                this.shoot();
             }
         }
 

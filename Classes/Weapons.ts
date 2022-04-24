@@ -16,12 +16,13 @@ namespace Weapons {
             this.projectileAmount = _projectileAmount;
             this.owner = _ownerNetId;
             this.aimType = _aimType;
+            // console.log(this.owner);
         }
 
-        public shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _netId?: number, _sync?: boolean) {
+        public shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _bulletNetId?: number, _sync?: boolean) {
             if (this.currentAttackCount > 0) {
                 _direciton.normalize();
-                let magazine: Bullets.Bullet[] = this.loadMagazine(_position, _direciton, this.bulletType, this.projectileAmount, _netId);
+                let magazine: Bullets.Bullet[] = this.loadMagazine(_position, _direciton, this.bulletType, this.projectileAmount, _bulletNetId);
                 this.setBulletDirection(magazine);
                 this.fire(magazine, _sync);
                 this.currentAttackCount--;
@@ -34,7 +35,11 @@ namespace Weapons {
                 bullet.owner = this._owner;
                 Game.graph.addChild(bullet);
                 if (_sync) {
-                    Networking.spawnBullet(bullet.direction, bullet.netId);
+                    if (this._owner instanceof Player.Player) {
+                        Networking.spawnBullet(bullet.direction, bullet.netId);
+                    } else {
+                        Networking.spawnBulletAtEnemy(bullet.direction, bullet.netId, this.owner);
+                    }
                 }
             })
         }

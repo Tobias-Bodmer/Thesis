@@ -522,9 +522,9 @@ declare namespace Networking {
     function knockbackRequest(_netId: number, _knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function knockbackPush(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function updateInventory(_itemId: Items.ITEMID, _itemNetId: number, _netId: number): void;
-    function spawnBullet(_direction: ƒ.Vector3, _netId: number): void;
+    function spawnBullet(_direction: ƒ.Vector3, _bulletNetId: number): void;
     function updateBullet(_position: ƒ.Vector3, _netId: number, _tick?: number): void;
-    function spawnBulletAtEnemy(_bulletNetId: number, _enemyNetId: number): Promise<void>;
+    function spawnBulletAtEnemy(_direction: Game.ƒ.Vector3, _bulletNetId: number, _enemyNetId: number): Promise<void>;
     function removeBullet(_netId: number): void;
     function spawnEnemy(_enemyClass: Enemy.EnemyClass, _enemy: Enemy.Enemy, _netId: number): void;
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number): void;
@@ -668,7 +668,7 @@ declare namespace Weapons {
         bulletType: Bullets.BULLETTYPE;
         projectileAmount: number;
         constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _ownerNetId: number, _aimType: AIM);
-        shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
+        shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _bulletNetId?: number, _sync?: boolean): void;
         fire(_magazine: Bullets.Bullet[], _sync?: boolean): void;
         setBulletDirection(_magazine: Bullets.Bullet[]): Bullets.Bullet[];
         loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.BULLETTYPE, _amount: number, _netId?: number): Bullets.Bullet[];

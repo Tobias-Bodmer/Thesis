@@ -156,12 +156,13 @@ namespace Networking {
                             Game.avatar2.attack(new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]), message.content.netId);
                         }
 
+
                         //Spawn bullet from enemy on host
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNBULLETENEMY.toString()) {
                             let enemy: Enemy.Enemy = Game.enemies.find(elem => elem.netId == message.content.enemyNetId);
                             if (enemy != null) {
-                                if (enemy instanceof Enemy.EnemyShoot && client.id != client.idHost) {
-                                    (<Enemy.EnemyShoot>enemy).shoot(message.content.bulletNetId);
+                                if (enemy instanceof Enemy.Summonor && client.id != client.idHost) {
+                                    (<Enemy.Summonor>enemy).weapon.shoot(enemy.mtxLocal.translation.toVector2(), new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]), message.content.bulletNetId);
                                 }
                             }
                         }
@@ -379,9 +380,9 @@ namespace Networking {
 
 
     //#region bullet
-    export function spawnBullet(_direction: ƒ.Vector3, _netId: number) {
+    export function spawnBullet(_direction: ƒ.Vector3, _bulletNetId: number) {
         if (Game.connected) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNBULLET, direction: _direction, netId: _netId } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNBULLET, direction: _direction, bulletNetId: _bulletNetId } })
         }
     }
     export function updateBullet(_position: ƒ.Vector3, _netId: number, _tick?: number) {
@@ -389,9 +390,9 @@ namespace Networking {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.BULLETTRANSFORM, position: _position, netId: _netId, tick: _tick } })
         }
     }
-    export async function spawnBulletAtEnemy(_bulletNetId: number, _enemyNetId: number) {
+    export async function spawnBulletAtEnemy(_direction: Game.ƒ.Vector3, _bulletNetId: number, _enemyNetId: number) {
         if (Game.connected) {
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNBULLETENEMY, bulletNetId: _bulletNetId, enemyNetId: _enemyNetId } })
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNBULLETENEMY, direction: _direction, bulletNetId: _bulletNetId, enemyNetId: _enemyNetId } })
 
         }
     }

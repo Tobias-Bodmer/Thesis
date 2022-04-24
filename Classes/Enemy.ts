@@ -83,16 +83,16 @@ namespace Enemy {
                 avatar.forEach((elem) => {
                     avatarColliders.push((<Player.Player>elem).collider);
                 });
-                
+
                 _direction.normalize();
                 _direction.scale((1 / Game.frameRate * this.attributes.speed));
                 if (knockback.magnitude > 0) {
                     knockback.normalize();
                     knockback.scale((1 / Game.frameRate * this.attributes.speed));
                 }
-                
+
                 this.calculateCollider(avatarColliders, _direction)
-                
+
                 if (this.canMoveX && this.canMoveY) {
                     this.cmpTransform.mtxLocal.translate(_direction);
                 } else if (this.canMoveX && !this.canMoveY) {
@@ -307,12 +307,14 @@ namespace Enemy {
     }
 
     export class EnemyShoot extends Enemy {
-        weapon: Weapons.Weapon = new Weapons.Weapon(60, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId, Weapons.AIM.HOMING);
+        weapon: Weapons.Weapon;
         viewRadius: number = 3;
         gotRecognized: boolean = false;
 
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _attributes, _position, _netId);
+
+            this.weapon = new Weapons.Weapon(60, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId, Weapons.AIM.HOMING);
         }
 
         update() {
@@ -343,7 +345,7 @@ namespace Enemy {
             let _direction = ƒ.Vector3.DIFFERENCE(this.target.toVector3(0), this.mtxLocal.translation);
 
             if (_direction.magnitude < 3 || this.gotRecognized) {
-                this.weapon.shoot(this.mtxLocal.translation.toVector2(), _direction, _netId);
+                this.weapon.shoot(this.mtxLocal.translation.toVector2(), _direction, _netId, true);
             }
 
 
