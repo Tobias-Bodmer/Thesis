@@ -14,7 +14,7 @@ namespace Enemy {
             this.attributes = _attributes;
             this.tag = Tag.TAG.ENEMY;
 
-            this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["idle"]);
+            // this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["idle"]);
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), (this.mtxLocal.scaling.x * this.idleScale) / 2)
             Networking.spawnEnemy(this, this.netId);
@@ -131,7 +131,6 @@ namespace Enemy {
 
 
     }
-
 
     export class EnemyDumb extends Enemy {
 
@@ -374,6 +373,72 @@ namespace Enemy {
             //     }
 
             // }
+        }
+    }
+
+    export class SummonorAdds extends Enemy {
+        isAttacking = false;
+        lastMoveDireciton: Game.ƒ.Vector3;
+        dashCount: number = 1;
+        avatar: Player.Player;
+        randomPlayer = Math.round(Math.random());
+
+        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _target: Player.Player, _netId?: number) {
+            super(_id, _attributes, _position, _netId);
+            this.avatar = _target;
+        }
+
+        public update(): void {
+            super.update();
+        }
+
+        behaviour() {
+            this.target = this.avatar.mtxLocal.translation.toVector2();
+
+            let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
+
+            if (distance > 5) {
+                this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
+                this.isAttacking = false;
+            }
+            else if (distance < 3 && !this.isAttacking) {
+                this.doDash();
+            }
+
+        }
+
+        doDash() {
+            if (!this.isAttacking) {
+                this.isAttacking = true;
+                this.attributes.hitable = false;
+                this.attributes.speed *= 5;
+                setTimeout(() => {
+                    this.attributes.speed /= 5;
+                    this.attributes.hitable = true;
+                    this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
+                }, 300);
+            }
+        }
+
+        moveBehaviour(): void {
+            this.behaviour();
+            switch (this.currentBehaviour) {
+                case Entity.BEHAVIOUR.FOLLOW:
+                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
+                    if (!this.isAttacking) {
+                        this.lastMoveDireciton = this.moveDirection;
+                        this.moveDirection = this.moveSimple(this.target).toVector3();
+                    }
+                    break;
+                case Entity.BEHAVIOUR.IDLE:
+                    this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
+                    this.moveDirection = ƒ.Vector3.ZERO();
+                    break;
+                case Entity.BEHAVIOUR.FLEE:
+                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
+                    this.moveDirection = this.moveAway(this.target).toVector3();
+                    break;
+            }
         }
     }
 

@@ -164,6 +164,13 @@ namespace Bullets {
             colliders.forEach((element) => {
                 if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
                     if ((<Enemy.Enemy>element).attributes.healthPoints > 0) {
+                        if (element instanceof Enemy.SummonorAdds) {
+                            if ((<Enemy.SummonorAdds>element).avatar == this.owner) {
+                                this.lifetime = 0;
+                                this.killcount--;
+                                return;
+                            }
+                        }
                         (<Enemy.Enemy>element).getDamage(this.owner.attributes.attackPoints * this.hitPointsScale);
                         this.setBuff((<Enemy.Enemy>element));
                         (<Enemy.Enemy>element).getKnockback(this.knockbackForce, this.mtxLocal.translation);

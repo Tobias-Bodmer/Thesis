@@ -67,6 +67,8 @@ namespace Entity {
             let colliders: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.TAG.ROOM)).walls;
             colliders.forEach((element) => {
                 if (this.collider.collidesRect(element.collider)) {
+                    console.log("wall");
+
                     let intersection = this.collider.getIntersectionRect(element.collider);
                     let areaBeforeMove = intersection.height * intersection.width;
 
@@ -225,7 +227,8 @@ namespace Entity {
         REDTICK,
         SMALLTICK,
         SKELETON,
-        OGER
+        OGER,
+        SUMMONOR
     }
 
     export function getNameById(_id: Entity.ID): string {
@@ -242,6 +245,11 @@ namespace Entity {
                 return "smallTick";
             case ID.SKELETON:
                 return "skeleton";
+            case ID.OGER:
+                return "oger";
+            case ID.SKELETON:
+                return "summonor";
         }
+        return null;
     }
 }

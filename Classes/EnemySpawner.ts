@@ -62,10 +62,10 @@ namespace EnemySpawner {
             case Entity.ID.SMALLTICK:
                 if (_attributes == null && _netID == null) {
                     const ref = Game.enemiesJSON.find(enemy => enemy.name == "smalltick");
-                    enemy = new Enemy.EnemySmash(Entity.ID.SMALLTICK, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale + (Math.random() * 0.2 - Math.random() * 0.2), ref.attributes.knockbackForce, ref.attributes.armor), _position, _netID);
+                    enemy = new Enemy.EnemyDash(Entity.ID.SMALLTICK, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale + (Math.random() * 0.2 - Math.random() * 0.2), ref.attributes.knockbackForce, ref.attributes.armor), _position, _netID);
                 }
                 else {
-                    enemy = new Enemy.EnemySmash(Entity.ID.SMALLTICK, _attributes, _position, _netID);
+                    enemy = new Enemy.EnemyDash(Entity.ID.SMALLTICK, _attributes, _position, _netID);
                 }
                 break;
             case Entity.ID.SKELETON:
@@ -84,6 +84,15 @@ namespace EnemySpawner {
                 }
                 else {
                     enemy = new Enemy.EnemySmash(Entity.ID.OGER, _attributes, _position, _netID);
+                }
+                break;
+            case Entity.ID.SUMMONOR:
+                if (_attributes == null && _netID == null) {
+                    const ref = Game.enemiesJSON.find(enemy => enemy.name == "summonor");
+                    enemy = new Enemy.Summonor(Entity.ID.SUMMONOR, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale + (Math.random() * 0.2 - Math.random() * 0.2), ref.attributes.knockbackForce, ref.attributes.armor), _position, _netID);
+                }
+                else {
+                    enemy = new Enemy.Summonor(Entity.ID.SUMMONOR, _attributes, _position, _netID);
                 }
                 break;
             default:

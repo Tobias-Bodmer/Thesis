@@ -54,6 +54,17 @@
                 "knockbackForce": 0.1,
                 "armor": 25
             }
+        },
+        {
+            "name": "summonor",
+            "attributes": {
+                "healthPoints": 150,
+                "attackPoints": 0,
+                "speed": 2,
+                "scale": 2,
+                "knockbackForce": 0.1,
+                "armor": 5
+            }
         }
     ]
 }

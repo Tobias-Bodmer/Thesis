@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -114,7 +114,8 @@ declare namespace Entity {
         REDTICK = 3,
         SMALLTICK = 4,
         SKELETON = 5,
-        OGER = 6
+        OGER = 6,
+        SUMMONOR = 7
     }
     function getNameById(_id: Entity.ID): string;
 }
@@ -181,6 +182,18 @@ declare namespace Enemy {
         moveBehaviour(): void;
         getDamage(_value: number): void;
         shoot(_netId?: number): void;
+    }
+    class SummonorAdds extends Enemy {
+        isAttacking: boolean;
+        lastMoveDireciton: Game.ƒ.Vector3;
+        dashCount: number;
+        avatar: Player.Player;
+        randomPlayer: number;
+        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _target: Player.Player, _netId?: number);
+        update(): void;
+        behaviour(): void;
+        doDash(): void;
+        moveBehaviour(): void;
     }
 }
 declare namespace Interfaces {
@@ -305,9 +318,13 @@ declare namespace Entity {
     }
 }
 declare namespace Enemy {
-    class SummonorBoss extends EnemyDumb {
+    class Summonor extends EnemyDumb {
+        summonChance: number;
+        summonCooldown: number;
+        summonCurrentCooldown: number;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
         update(): void;
+        cooldown(): void;
         behaviour(): void;
         moveBehaviour(): void;
         summon(): void;
