@@ -172,20 +172,20 @@ namespace Enemy {
             let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
 
             if (this.currentBehaviour == Entity.BEHAVIOUR.ATTACK && this.getCurrentFrame >= (<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["attack"]).frames.length - 1) {
-                this.isAttacking = false;
                 this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
             }
-            if (distance < 2) {
+            else if (distance < 2 && !this.isAttacking) {
                 this.currentBehaviour = Entity.BEHAVIOUR.ATTACK;
                 this.isAttacking = true;
             }
-            if (this.currentBehaviour == Entity.BEHAVIOUR.IDLE) {
+            else if (this.currentBehaviour == Entity.BEHAVIOUR.IDLE) {
                 if (this.currentCooldown > 0) {
                     this.currentCooldown--;
                 }
                 else {
                     this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW
                     this.currentCooldown = this.coolDown;
+                    this.isAttacking = false;
                 }
             }
         }
@@ -201,6 +201,11 @@ namespace Enemy {
                 case Entity.BEHAVIOUR.ATTACK:
                     this.switchAnimation(Entity.ANIMATIONSTATES.ATTACK);
                     this.moveDirection = ƒ.Vector3.ZERO();
+                    break;
+                case Entity.BEHAVIOUR.IDLE:
+                    this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
+                    this.moveDirection = ƒ.Vector3.ZERO();
+                    break;
             }
         }
     }
