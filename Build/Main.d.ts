@@ -83,6 +83,7 @@ declare namespace Entity {
         buffs: Buff.Buff[];
         items: Array<Items.Item>;
         currentKnockback: ƒ.Vector3;
+        weapon: Weapons.Weapon;
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number);
         update(): void;
         updateCollider(): void;
@@ -188,7 +189,6 @@ declare namespace Enemy {
         patrol(): void;
     }
     class EnemyShoot extends Enemy {
-        weapon: Weapons.Weapon;
         viewRadius: number;
         gotRecognized: boolean;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
@@ -395,8 +395,7 @@ declare namespace Bullets {
         STANDARD = 0,
         HIGHSPEED = 1,
         SLOW = 2,
-        MELEE = 3,
-        HOMING = 4
+        MELEE = 3
     }
     let bulletTxt: ƒ.TextureImage;
     class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
@@ -418,7 +417,7 @@ declare namespace Bullets {
         time: number;
         killcount: number;
         despawn(): Promise<void>;
-        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
+        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _netId?: number);
         update(): Promise<void>;
         doKnockback(_body: ƒAid.NodeSprite): void;
         getKnockback(_knockbackForce: number, _position: ƒ.Vector3): void;
@@ -437,7 +436,7 @@ declare namespace Bullets {
         target: ƒ.Vector3;
         rotateSpeed: number;
         targetDirection: ƒ.Vector3;
-        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _target?: ƒ.Vector3, _netId?: number);
+        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _target?: ƒ.Vector3, _netId?: number);
         update(): Promise<void>;
         setTarget(_netID: number): void;
         calculateHoming(): void;
@@ -492,7 +491,7 @@ declare namespace Networking {
         KNOCKBACKREQUEST = 7,
         KNOCKBACKPUSH = 8,
         SPAWNBULLET = 9,
-        SPAWNBULLETENEMY = 10,
+        BULLETPREDICTION = 10,
         BULLETTRANSFORM = 11,
         BULLETDIE = 12,
         SPAWNENEMY = 13,
@@ -528,9 +527,9 @@ declare namespace Networking {
     function knockbackRequest(_netId: number, _knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function knockbackPush(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function updateInventory(_itemId: Items.ITEMID, _itemNetId: number, _netId: number): void;
-    function spawnBullet(_direction: ƒ.Vector3, _bulletNetId: number, _bulletTarget?: ƒ.Vector3): void;
-    function updateBullet(_position: ƒ.Vector3, _netId: number, _tick?: number): void;
-    function spawnBulletAtEnemy(_direction: Game.ƒ.Vector3, _bulletNetId: number, _enemyNetId: number): Promise<void>;
+    function spawnBullet(_aimType: Weapons.AIM, _direction: ƒ.Vector3, _bulletNetId: number, _ownerNetId: number, _bulletTarget?: ƒ.Vector3): void;
+    function updateBullet(_position: ƒ.Vector3, _rotation: ƒ.Vector3, _netId: number, _tick?: number): void;
+    function predictionBullet(_position: ƒ.Vector3, _netId: number, _tick?: number): void;
     function removeBullet(_netId: number): void;
     function spawnEnemy(_enemyClass: Enemy.EnemyClass, _enemy: Enemy.Enemy, _netId: number): void;
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number): void;

@@ -15,6 +15,8 @@ namespace Entity {
         buffs: Buff.Buff[] = [];
         public items: Array<Items.Item> = [];
         currentKnockback: ƒ.Vector3 = ƒ.Vector3.ZERO();
+        public weapon: Weapons.Weapon;
+
 
 
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number) {

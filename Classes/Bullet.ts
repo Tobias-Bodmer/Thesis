@@ -4,9 +4,9 @@ namespace Bullets {
         STANDARD,
         HIGHSPEED,
         SLOW,
-        MELEE,
-        HOMING
+        MELEE
     }
+
     export let bulletTxt: ƒ.TextureImage = new ƒ.TextureImage();
 
     export class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
@@ -39,13 +39,11 @@ namespace Bullets {
                     Networking.popID(this.netId);
                     Networking.removeBullet(this.netId);
                     Game.graph.removeChild(this);
-                    // console.log(this.hostPositions);
-                    // console.log(this.positions);
                 }
             }
         }
 
-        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number) {
+        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _netId?: number) {
             super(_name);
 
             if (_netId != undefined) {
@@ -81,14 +79,29 @@ namespace Bullets {
             this.loadTexture();
             this.flyDirection = ƒ.Vector3.X();
             this.direction = _direction;
+
+            this.owner = _ownerId;
         }
 
 
         async update() {
-            this.cmpTransform.mtxLocal.translate(this.flyDirection);
-            this.bulletPrediction();
-            this.collisionDetection();
-            this.despawn();
+            if (Networking.client.id == Networking.client.idHost) {
+                this.cmpTransform.mtxLocal.translate(this.flyDirection);
+                if (this._owner == Game.avatar2) {
+                    this.bulletPrediction();
+                } else {
+                    Networking.updateBullet(this.mtxLocal.translation, this.mtxLocal.rotation, this.netId);
+                }
+                this.collisionDetection();
+                this.despawn();
+            } else {
+                if (this._owner == Game.avatar1) {
+                    this.cmpTransform.mtxLocal.translate(this.flyDirection);
+                    this.bulletPrediction();
+                    this.collisionDetection();
+                    this.despawn();
+                }
+            }
         }
 
         doKnockback(_body: ƒAid.NodeSprite): void {
@@ -109,7 +122,7 @@ namespace Bullets {
             while (this.time >= 1) {
                 this.positions.push(new ƒ.Vector3(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.translation.z));
                 if (Game.connected) {
-                    Networking.updateBullet(this.cmpTransform.mtxLocal.translation, this.netId, this.tick);
+                    Networking.predictionBullet(this.cmpTransform.mtxLocal.translation, this.netId, this.tick);
                 }
                 this.tick++;
                 this.time -= 1;
@@ -226,8 +239,8 @@ namespace Bullets {
         rotateSpeed: number = 2;
         targetDirection: ƒ.Vector3;
 
-        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _target?: ƒ.Vector3, _netId?: number) {
-            super(_name, _speed, _hitPoints, _lifetime, _knockbackForce, _killcount, _position, _direction, _netId);
+        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _target?: ƒ.Vector3, _netId?: number) {
+            super(_name, _speed, _hitPoints, _lifetime, _knockbackForce, _killcount, _position, _direction, _ownerId, _netId);
             this.speed = 20;
             this.hitPointsScale = 1;
             this.lifetime = 1 * Game.frameRate;
@@ -241,10 +254,16 @@ namespace Bullets {
             this.targetDirection = _direction;
             if (Networking.client.idHost == Networking.client.id) {
                 this.setTarget(Game.avatar1.netId);
-            }   
+            }
         }
         async update(): Promise<void> {
-            this.calculateHoming();
+            if (Networking.client.id == Networking.client.idHost) {
+                this.calculateHoming();
+            } else {
+                if (this._owner == Game.avatar1) {
+                    this.calculateHoming();
+                }
+            }
             super.update()
         }
 

@@ -307,7 +307,6 @@ namespace Enemy {
     }
 
     export class EnemyShoot extends Enemy {
-        weapon: Weapons.Weapon;
         viewRadius: number = 3;
         gotRecognized: boolean = false;
 

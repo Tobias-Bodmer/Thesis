@@ -16,29 +16,36 @@ namespace Weapons {
             this.projectileAmount = _projectileAmount;
             this.owner = _ownerNetId;
             this.aimType = _aimType;
-            // console.log(this.owner);
         }
 
         public shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _bulletNetId?: number, _sync?: boolean) {
-            if (this.currentAttackCount > 0) {
+            if (_sync) {
+                if (this.currentAttackCount > 0) {
+                    _direciton.normalize();
+                    let magazine: Bullets.Bullet[] = this.loadMagazine(_position, _direciton, this.bulletType, _bulletNetId);
+                    this.setBulletDirection(magazine);
+                    this.fire(magazine, _sync);
+                    this.currentAttackCount--;
+                }
+            } else {
                 _direciton.normalize();
                 let magazine: Bullets.Bullet[] = this.loadMagazine(_position, _direciton, this.bulletType, _bulletNetId);
                 this.setBulletDirection(magazine);
                 this.fire(magazine, _sync);
-                this.currentAttackCount--;
             }
         }
 
         fire(_magazine: Bullets.Bullet[], _sync?: boolean) {
             _magazine.forEach(bullet => {
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed)
-                bullet.owner = this.owner;
                 Game.graph.addChild(bullet);
-                if (_sync && Game.entities.find(enti => enti.netId == this.owner).tag == Tag.TAG.PLAYER) {
-                    Networking.spawnBullet(bullet.direction, bullet.netId);
-                }
-                else if (_sync) {
-                    Networking.spawnBulletAtEnemy(bullet.direction, bullet.netId, this.owner);
+                if (_sync) {
+                    if (bullet instanceof Bullets.HomingBullet) {
+                        Networking.spawnBullet(this.aimType, bullet.direction, bullet.netId, this.owner, (<Bullets.HomingBullet>bullet).target);
+
+                    } else {
+                        Networking.spawnBullet(this.aimType, bullet.direction, bullet.netId, this.owner);
+                    }
                 }
             })
         }
@@ -65,10 +72,10 @@ namespace Weapons {
                 const ref = Game.bulletsJSON.find(bullet => bullet.type == _bulletType);
                 switch (this.aimType) {
                     case AIM.NORMAL:
-                        magazine.push(new Bullets.Bullet(ref.name, ref.speed, ref.hitPointsScale, ref.lifetime, ref.knockbackForce, ref.killcount, _position, _direction, _netId))
+                        magazine.push(new Bullets.Bullet(ref.name, ref.speed, ref.hitPointsScale, ref.lifetime, ref.knockbackForce, ref.killcount, _position, _direction, this.owner, _netId))
                         break;
                     case AIM.HOMING:
-                        magazine.push(new Bullets.HomingBullet(ref.name, ref.speed, ref.hitPointsScale, ref.lifetime, ref.knockbackForce, ref.killcount, _position, _direction, null, _netId));
+                        magazine.push(new Bullets.HomingBullet(ref.name, ref.speed, ref.hitPointsScale, ref.lifetime, ref.knockbackForce, ref.killcount, _position, _direction, this.owner, null, _netId));
                         break;
                 }
             }
@@ -83,11 +90,11 @@ namespace Weapons {
                     this.currentCooldownTime = specificCoolDownTime;
                     this.currentAttackCount = this.attackCount;
 
-                    if (Game.entities.find(ent => ent.netId == this.owner).tag == Tag.TAG.ENEMY && Networking.client.idHost == Networking.client.id) {
-                        Networking.updateAvatarWeapon(this, this.owner);
-                    }
+                    // if (Game.entities.find(ent => ent.netId == this.owner).tag == Tag.TAG.ENEMY && Networking.client.idHost == Networking.client.id) {
+                    //     Networking.updateAvatarWeapon(this, this.owner);
+                    // }
                 } else {
-                                  this.currentCooldownTime--;
+                    this.currentCooldownTime--;
                 }
             }
 
