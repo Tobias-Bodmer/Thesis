@@ -208,7 +208,7 @@ namespace Entity {
 
         public reduceKnockback() {
             this.currentKnockback.scale(0.5);
-            console.log(this.currentKnockback.magnitude);
+            // console.log(this.currentKnockback.magnitude);
             if (this.currentKnockback.magnitude < 0.0001) {
                 this.currentKnockback = Game.ƒ.Vector3.ZERO();
                 this.performKnockback = false;

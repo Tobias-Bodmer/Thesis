@@ -220,7 +220,7 @@ namespace Bullets {
 
     export class HomingBullet extends Bullet {
         target: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
-        rotateSpeed: number = 2;
+        rotateSpeed: number = 5;
         targetDirection: ƒ.Vector3;
 
         constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _target?: ƒ.Vector3, _netId?: number) {

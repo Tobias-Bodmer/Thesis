@@ -314,7 +314,7 @@ namespace Enemy {
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _attributes, _position, _netId);
 
-            this.weapon = new Weapons.Weapon(60, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId, Weapons.AIM.HOMING);
+            this.weapon = new Weapons.Weapon(60, 1, Bullets.BULLETTYPE.STANDARD, 2, this.netId, Weapons.AIM.HOMING);
         }
 
         update() {

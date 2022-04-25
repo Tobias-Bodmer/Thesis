@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -671,7 +671,7 @@ declare namespace Weapons {
         shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _bulletNetId?: number, _sync?: boolean): void;
         fire(_magazine: Bullets.Bullet[], _sync?: boolean): void;
         setBulletDirection(_magazine: Bullets.Bullet[]): Bullets.Bullet[];
-        loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.BULLETTYPE, _amount: number, _netId?: number): Bullets.Bullet[];
+        loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.BULLETTYPE, _netId?: number): Bullets.Bullet[];
         cooldown(_faktor: number): void;
     }
     enum AIM {

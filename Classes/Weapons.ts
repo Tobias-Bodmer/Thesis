@@ -22,7 +22,7 @@ namespace Weapons {
         public shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _bulletNetId?: number, _sync?: boolean) {
             if (this.currentAttackCount > 0) {
                 _direciton.normalize();
-                let magazine: Bullets.Bullet[] = this.loadMagazine(_position, _direciton, this.bulletType, this.projectileAmount, _bulletNetId);
+                let magazine: Bullets.Bullet[] = this.loadMagazine(_position, _direciton, this.bulletType, _bulletNetId);
                 this.setBulletDirection(magazine);
                 this.fire(magazine, _sync);
                 this.currentAttackCount--;
@@ -34,12 +34,11 @@ namespace Weapons {
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed)
                 bullet.owner = this._owner;
                 Game.graph.addChild(bullet);
-                if (_sync) {
-                    if (this._owner instanceof Player.Player) {
-                        Networking.spawnBullet(bullet.direction, bullet.netId);
-                    } else {
-                        Networking.spawnBulletAtEnemy(bullet.direction, bullet.netId, this.owner);
-                    }
+                if (_sync && Game.entities.find(enti => enti.netId == this.owner).tag == Tag.TAG.PLAYER) {
+                    Networking.spawnBullet(bullet.direction, bullet.netId);
+                }
+                else if (_sync) {
+                    Networking.spawnBulletAtEnemy(bullet.direction, bullet.netId, this.owner);
                 }
             })
         }
@@ -60,9 +59,9 @@ namespace Weapons {
             }
         }
 
-        loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.BULLETTYPE, _amount: number, _netId?: number): Bullets.Bullet[] {
+        loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.BULLETTYPE, _netId?: number): Bullets.Bullet[] {
             let magazine: Bullets.Bullet[] = [];
-            for (let i = 0; i < _amount; i++) {
+            for (let i = 0; i < this.projectileAmount; i++) {
                 const ref = Game.bulletsJSON.find(bullet => bullet.type == _bulletType);
                 switch (this.aimType) {
                     case AIM.NORMAL:
@@ -83,6 +82,7 @@ namespace Weapons {
                 if (this.currentCooldownTime <= 0) {
                     this.currentCooldownTime = specificCoolDownTime;
                     this.currentAttackCount = this.attackCount;
+                    Networking.updateAvatarWeapon(this, this.owner);
                 } else {
                     // console.log(this.currentCooldownTime);
 

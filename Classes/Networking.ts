@@ -159,10 +159,10 @@ namespace Networking {
 
                         //Spawn bullet from enemy on host
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNBULLETENEMY.toString()) {
-                            let enemy: Enemy.Enemy = Game.enemies.find(elem => elem.netId == message.content.enemyNetId);
+                            let enemy: Entity.Entity = Game.entities.find(elem => elem.netId == message.content.enemyNetId);
                             if (enemy != null) {
-                                if (enemy instanceof Enemy.Summonor && client.id != client.idHost) {
-                                    (<Enemy.Summonor>enemy).weapon.shoot(enemy.mtxLocal.translation.toVector2(), new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]), message.content.bulletNetId);
+                                if (enemy instanceof Enemy.EnemyShoot) {
+                                    (<Enemy.EnemyShoot>enemy).weapon.shoot(enemy.mtxLocal.translation.toVector2(), new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]), message.content.bulletNetId);
                                 }
                             }
                         }
@@ -279,7 +279,6 @@ namespace Networking {
                         //apply weapon
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEWEAPON.toString()) {
                             let weapon: Weapons.Weapon = message.content.weapon;
-                            console.log(weapon.projectileAmount);
                             const tempWeapon: Weapons.Weapon = new Weapons.Weapon(weapon.cooldownTime, weapon.attackCount, weapon.bulletType, weapon.projectileAmount, weapon.owner, weapon.aimType);
                             (<Player.Player>Game.entities.find(elem => elem.netId == message.content.netId)).weapon = tempWeapon;
                         }
@@ -382,7 +381,7 @@ namespace Networking {
     //#region bullet
     export function spawnBullet(_direction: ƒ.Vector3, _bulletNetId: number) {
         if (Game.connected) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWNBULLET, direction: _direction, bulletNetId: _bulletNetId } })
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.SPAWNBULLET, direction: _direction, bulletNetId: _bulletNetId } })
         }
     }
     export function updateBullet(_position: ƒ.Vector3, _netId: number, _tick?: number) {
@@ -408,11 +407,7 @@ namespace Networking {
     //#region enemy
     export function spawnEnemy(_enemyClass: Enemy.EnemyClass, _enemy: Enemy.Enemy, _netId: number) {
         if (Game.connected && client.idHost == client.id) {
-            if (_enemy instanceof Enemy.SummonorAdds) {
-                client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, enemyClass: Enemy.EnemyClass.SUMMONORADDS, id: _enemy.id, attributes: _enemy.attributes, position: _enemy.mtxLocal.translation, netId: _netId, target: (<Enemy.SummonorAdds>_enemy).avatar.netId } })
-            } else {
-                client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, enemyClass: _enemyClass, id: _enemy.id, attributes: _enemy.attributes, position: _enemy.mtxLocal.translation, netId: _netId, target: null } })
-            }
+                client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, enemyClass: _enemyClass, id: _enemy.id, attributes: _enemy.attributes, position: _enemy.mtxLocal.translation, netId: _netId, target: _enemy.target } })
         }
     }
     export function updateEnemyPosition(_position: ƒ.Vector3, _netId: number) {
