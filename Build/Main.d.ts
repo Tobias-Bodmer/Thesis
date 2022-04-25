@@ -397,7 +397,8 @@ declare namespace Bullets {
     let bulletTxt: ƒ.TextureImage;
     class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
         tag: Tag.TAG;
-        owner: Entity.Entity;
+        owner: number;
+        get _owner(): Entity.Entity;
         netId: number;
         tick: number;
         positions: ƒ.Vector3[];
@@ -434,6 +435,7 @@ declare namespace Bullets {
         targetDirection: ƒ.Vector3;
         constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _target?: ƒ.Vector3, _netId?: number);
         update(): Promise<void>;
+        setTarget(_netID: number): void;
         calculateHoming(): void;
     }
 }
@@ -522,7 +524,7 @@ declare namespace Networking {
     function knockbackRequest(_netId: number, _knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function knockbackPush(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function updateInventory(_itemId: Items.ITEMID, _itemNetId: number, _netId: number): void;
-    function spawnBullet(_direction: ƒ.Vector3, _bulletNetId: number): void;
+    function spawnBullet(_direction: ƒ.Vector3, _bulletNetId: number, _bulletTarget?: ƒ.Vector3): void;
     function updateBullet(_position: ƒ.Vector3, _netId: number, _tick?: number): void;
     function spawnBulletAtEnemy(_direction: Game.ƒ.Vector3, _bulletNetId: number, _enemyNetId: number): Promise<void>;
     function removeBullet(_netId: number): void;

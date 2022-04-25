@@ -32,7 +32,7 @@ namespace Weapons {
         fire(_magazine: Bullets.Bullet[], _sync?: boolean) {
             _magazine.forEach(bullet => {
                 bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed)
-                bullet.owner = this._owner;
+                bullet.owner = this.owner;
                 Game.graph.addChild(bullet);
                 if (_sync && Game.entities.find(enti => enti.netId == this.owner).tag == Tag.TAG.PLAYER) {
                     Networking.spawnBullet(bullet.direction, bullet.netId);
@@ -82,11 +82,12 @@ namespace Weapons {
                 if (this.currentCooldownTime <= 0) {
                     this.currentCooldownTime = specificCoolDownTime;
                     this.currentAttackCount = this.attackCount;
-                    Networking.updateAvatarWeapon(this, this.owner);
-                } else {
-                    // console.log(this.currentCooldownTime);
 
-                    this.currentCooldownTime--;
+                    if (Game.entities.find(ent => ent.netId == this.owner).tag == Tag.TAG.ENEMY && Networking.client.idHost == Networking.client.id) {
+                        Networking.updateAvatarWeapon(this, this.owner);
+                    }
+                } else {
+                                  this.currentCooldownTime--;
                 }
             }
 

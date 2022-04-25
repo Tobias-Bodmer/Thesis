@@ -279,6 +279,7 @@ namespace Networking {
                         //apply weapon
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEWEAPON.toString()) {
                             let weapon: Weapons.Weapon = message.content.weapon;
+                            console.log("updated weapon");
                             const tempWeapon: Weapons.Weapon = new Weapons.Weapon(weapon.cooldownTime, weapon.attackCount, weapon.bulletType, weapon.projectileAmount, weapon.owner, weapon.aimType);
                             (<Player.Player>Game.entities.find(elem => elem.netId == message.content.netId)).weapon = tempWeapon;
                         }
@@ -379,7 +380,7 @@ namespace Networking {
 
 
     //#region bullet
-    export function spawnBullet(_direction: ƒ.Vector3, _bulletNetId: number) {
+    export function spawnBullet(_direction: ƒ.Vector3, _bulletNetId: number, _bulletTarget?: ƒ.Vector3) {
         if (Game.connected) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.SPAWNBULLET, direction: _direction, bulletNetId: _bulletNetId } })
         }
@@ -407,7 +408,7 @@ namespace Networking {
     //#region enemy
     export function spawnEnemy(_enemyClass: Enemy.EnemyClass, _enemy: Enemy.Enemy, _netId: number) {
         if (Game.connected && client.idHost == client.id) {
-                client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, enemyClass: _enemyClass, id: _enemy.id, attributes: _enemy.attributes, position: _enemy.mtxLocal.translation, netId: _netId, target: _enemy.target } })
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, enemyClass: _enemyClass, id: _enemy.id, attributes: _enemy.attributes, position: _enemy.mtxLocal.translation, netId: _netId, target: _enemy.target } })
         }
     }
     export function updateEnemyPosition(_position: ƒ.Vector3, _netId: number) {

@@ -11,8 +11,8 @@ namespace Bullets {
 
     export class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
         public tag: Tag.TAG = Tag.TAG.BULLET;
-        owner: Entity.Entity;
-        public netId: number = Networking.idGenerator();
+        owner: number; get _owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.owner) };;
+        public netId: number;
 
         public tick: number = 0;
         public positions: ƒ.Vector3[] = [];
@@ -52,6 +52,9 @@ namespace Bullets {
                 Networking.popID(this.netId);
                 Networking.currentIDs.push(_netId);
                 this.netId = _netId;
+            }
+            else {
+                this.netId = Networking.idGenerator();
             }
 
             this.speed = _speed;
@@ -145,7 +148,7 @@ namespace Bullets {
         }
 
         setBuff(_target: Entity.Entity) {
-            this.owner.items.forEach(item => {
+            this._owner.items.forEach(item => {
                 item.buff.forEach(buff => {
                     if (buff != undefined) {
                         buff.clone().addToEntity(_target);
@@ -158,20 +161,20 @@ namespace Bullets {
             let newPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
             this.collider.position = newPosition;
             let colliders: any[] = [];
-            if (this.owner.tag == Tag.TAG.PLAYER) {
+            if (this._owner.tag == Tag.TAG.PLAYER) {
                 colliders = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY);
             }
             colliders.forEach((element) => {
                 if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
                     if ((<Enemy.Enemy>element).attributes.healthPoints > 0) {
                         if (element instanceof Enemy.SummonorAdds) {
-                            if ((<Enemy.SummonorAdds>element).avatar == this.owner) {
+                            if ((<Enemy.SummonorAdds>element).avatar == this._owner) {
                                 this.lifetime = 0;
                                 this.killcount--;
                                 return;
                             }
                         }
-                        (<Enemy.Enemy>element).getDamage(this.owner.attributes.attackPoints * this.hitPointsScale);
+                        (<Enemy.Enemy>element).getDamage(this._owner.attributes.attackPoints * this.hitPointsScale);
                         this.setBuff((<Enemy.Enemy>element));
                         (<Enemy.Enemy>element).getKnockback(this.knockbackForce, this.mtxLocal.translation);
                         this.lifetime = 0;
@@ -179,7 +182,7 @@ namespace Bullets {
                     }
                 }
             })
-            if (this.owner.tag == Tag.TAG.ENEMY) {
+            if (this._owner.tag == Tag.TAG.ENEMY) {
                 colliders = Game.graph.getChildren().filter(element => (<Player.Player>element).tag == Tag.TAG.PLAYER);
                 colliders.forEach((element) => {
                     if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
@@ -219,8 +222,8 @@ namespace Bullets {
     }
 
     export class HomingBullet extends Bullet {
-        target: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
-        rotateSpeed: number = 5;
+        target: ƒ.Vector3;
+        rotateSpeed: number = 2;
         targetDirection: ƒ.Vector3;
 
         constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _target?: ƒ.Vector3, _netId?: number) {
@@ -236,10 +239,17 @@ namespace Bullets {
                 this.target = ƒ.Vector3.SUM(this.mtxLocal.translation, _direction);
             }
             this.targetDirection = _direction;
+            if (Networking.client.idHost == Networking.client.id) {
+                this.setTarget(Game.avatar1.netId);
+            }   
         }
         async update(): Promise<void> {
             this.calculateHoming();
             super.update()
+        }
+
+        setTarget(_netID: number) {
+            this.target = Game.entities.find(ent => ent.netId == _netID).mtxLocal.translation;
         }
 
         calculateHoming() {
