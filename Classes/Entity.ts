@@ -70,14 +70,18 @@ namespace Entity {
             walls.forEach(elem => {
                 wallColliders.push(elem.collider);
             })
-            this.calculateCollider(wallColliders, _direction);
+            let mewDirection = _direction.clone;
+            if (!mewDirection.equals(Game.ƒ.Vector3.ZERO())) {
+                mewDirection.normalize();
+                mewDirection.scale((1 / Game.frameRate * this.attributes.speed));
+            }
+            this.calculateCollider(wallColliders, mewDirection);
         }
 
         public calculateCollider(_collider: any[], _direction: ƒ.Vector3) {
             _collider.forEach((element) => {
                 if (element instanceof Collider.Collider) {
                     if (this.collider.collides(element)) {
-                        console.log("colliding" + element.ownerNetId);
                         let intersection = this.collider.getIntersection(element);
                         let areaBeforeMove = intersection;
 
