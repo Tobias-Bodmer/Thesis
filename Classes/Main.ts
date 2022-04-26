@@ -47,7 +47,6 @@ namespace Game {
     //#endregion "PublicVariables"
 
     //#region "PrivateVariables"
-    let item1: Items.Item;
     let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
     let playerType: Player.PLAYERTYPE;
     const damper: number = 3.5;

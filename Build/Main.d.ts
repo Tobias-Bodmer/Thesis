@@ -67,6 +67,14 @@ declare namespace UI {
     }
 }
 declare namespace Entity {
+    class Cooldown {
+        private coolDown;
+        private currentCooldown;
+        get getCurrentCoolDown(): number;
+        myCallback: () => void;
+        constructor(_number: number);
+        checkCoolDown(): boolean;
+    }
     class Entity extends Game.ƒAid.NodeSprite {
         private currentAnimationState;
         tag: Tag.TAG;
@@ -157,8 +165,7 @@ declare namespace Enemy {
     }
     class EnemySmash extends Enemy {
         isAttacking: boolean;
-        coolDown: number;
-        currentCooldown: number;
+        coolDown: Entity.Cooldown;
         avatars: Player.Player[];
         randomPlayer: number;
         currentBehaviour: Entity.BEHAVIOUR;
@@ -169,6 +176,7 @@ declare namespace Enemy {
     }
     class EnemyDash extends Enemy {
         isAttacking: boolean;
+        coolDownDash: Entity.Cooldown;
         lastMoveDireciton: Game.ƒ.Vector3;
         dashCount: number;
         avatars: Player.Player[];

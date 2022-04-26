@@ -1,4 +1,32 @@
 namespace Entity {
+    function doSmth(): boolean {
+        console.log("smth");
+        return true;
+    }
+    export class Cooldown {
+        private coolDown: number
+        private currentCooldown: number; get getCurrentCoolDown(): number { return this.currentCooldown };
+        public myCallback: () => void;
+        constructor(_number: number) {
+            this.coolDown = _number;
+            this.currentCooldown = _number;
+            this.myCallback = () => doSmth();
+        }
+
+    
+
+        checkCoolDown(): boolean {
+            if (this.currentCooldown > 0) {
+                this.currentCooldown--;
+                return false;
+            }
+            else {
+                this.currentCooldown = this.coolDown;
+                this.myCallback();
+                return true;
+            }
+        }
+    }
     export class Entity extends Game.ƒAid.NodeSprite {
         private currentAnimationState: ANIMATIONSTATES;
         public tag: Tag.TAG;
