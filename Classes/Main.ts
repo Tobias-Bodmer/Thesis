@@ -73,18 +73,6 @@ namespace Game {
         viewport.initialize("Viewport", graph, cmpCamera, canvas);
 
         draw();
-
-        helper();
-
-        function helper() {
-            if (avatar2 != undefined) {
-                ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, frameRate);
-            } else {
-                setTimeout(() => {
-                    helper();
-                }, 100);
-            }
-        }
     }
 
     function update(): void {
@@ -107,7 +95,7 @@ namespace Game {
                     Game.avatar1.avatarPrediction();
                 }
 
-                Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation); 
+                Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
             }
 
             //#region count items
@@ -192,6 +180,29 @@ namespace Game {
 
                     }
                     //#endregion
+
+                    readySate();
+
+                    function readySate() {
+                        if (Networking.clients.length >= 2 && Networking.client.idHost != undefined) {
+                            Networking.setClientReady();
+                        }
+                        if (Networking.clients.filter(elem => elem.ready == true).length < 2) {
+                            setTimeout(() => { readySate() }, 200);
+                        }
+                    }
+
+                    helper();
+
+                    function helper() {
+                        if (Networking.clients.filter(elem => elem.ready == true).length >= 2) {
+                            ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, frameRate);
+                        } else {
+                            setTimeout(() => {
+                                helper();
+                            }, 100);
+                        }
+                    }
                 } else {
                     setTimeout(waitOnConnection, 300);
                 }
@@ -252,17 +263,6 @@ namespace Game {
             playerType = Player.PLAYERTYPE.MELEE;
         }
         document.getElementById("Lobbyscreen").style.visibility = "hidden";
-
-        readySate();
-
-        function readySate() {
-            if (Networking.clients.length >= 2 && Networking.client.idHost != undefined) {
-                Networking.setClientReady();
-            }
-            if (Networking.clients.filter(elem => elem.ready == true).length < 2) {
-                setTimeout(() => { readySate() }, 200);
-            }
-        }
     }
 
     async function loadJSON() {

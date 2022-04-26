@@ -159,25 +159,28 @@ namespace Networking {
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNBULLET.toString()) {
                             let bullet: Bullets.Bullet;
                             let entity: Entity.Entity = Game.entities.find(elem => elem.netId == message.content.ownerNetId);
-                            let weapon: Weapons.Weapon = entity.weapon;
-                            const ref = Game.bulletsJSON.find(bullet => bullet.type == weapon.bulletType);
-                            let direciton: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]);
-                            switch (<Weapons.AIM>message.content.aimType) {
-                                case Weapons.AIM.NORMAL:
-                                    bullet = new Bullets.Bullet(ref.name, ref.speed, ref.hitPointsScale, ref.lifetime, ref.knockbackForce, ref.killcount, entity.mtxLocal.translation.toVector2(), direciton, entity.netId, message.content.bulletNetId);
-                                    break;
-                                case Weapons.AIM.HOMING:
-                                    let bulletTarget: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.bulletTarget.data[0], message.content.bulletTarget.data[1], message.content.bulletTarget.data[2]);
-                                    bullet = new Bullets.HomingBullet(ref.name, ref.speed, ref.hitPointsScale, ref.lifetime, ref.knockbackForce, ref.killcount, entity.mtxLocal.translation.toVector2(), direciton, entity.netId, bulletTarget, message.content.bulletNetId);
-                                    break;
 
-                                default:
-                                    break;
+                            if (entity != null) {
+                                let weapon: Weapons.Weapon = entity.weapon;
+                                const ref = Game.bulletsJSON.find(bullet => bullet.type == weapon.bulletType);
+                                let direciton: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]);
+                                switch (<Weapons.AIM>message.content.aimType) {
+                                    case Weapons.AIM.NORMAL:
+                                        bullet = new Bullets.Bullet(ref.name, ref.speed, ref.hitPointsScale, ref.lifetime, ref.knockbackForce, ref.killcount, entity.mtxLocal.translation.toVector2(), direciton, entity.netId, message.content.bulletNetId);
+                                        break;
+                                    case Weapons.AIM.HOMING:
+                                        let bulletTarget: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.bulletTarget.data[0], message.content.bulletTarget.data[1], message.content.bulletTarget.data[2]);
+                                        bullet = new Bullets.HomingBullet(ref.name, ref.speed, ref.hitPointsScale, ref.lifetime, ref.knockbackForce, ref.killcount, entity.mtxLocal.translation.toVector2(), direciton, entity.netId, bulletTarget, message.content.bulletNetId);
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+
+                                bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed)
+
+                                Game.graph.addChild(bullet);
                             }
-
-                            bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed)
-
-                            Game.graph.addChild(bullet);
                         }
 
                         //Sync bullet transform from host to client
