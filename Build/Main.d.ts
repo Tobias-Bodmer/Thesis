@@ -590,6 +590,7 @@ declare namespace Player {
     abstract class Player extends Entity.Entity implements Interfaces.IKnockbackable {
         weapon: Weapons.Weapon;
         tick: number;
+        bufferSize: number;
         positions: ƒ.Vector3[];
         hostPositions: ƒ.Vector3[];
         time: number;

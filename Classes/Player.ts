@@ -8,6 +8,7 @@ namespace Player {
         public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId, Weapons.AIM.NORMAL);
 
         public tick: number = 0;
+        public bufferSize: number = 1024;
         public positions: ƒ.Vector3[] = [];
         public hostPositions: ƒ.Vector3[] = [];
         time: number = 0;
@@ -92,26 +93,20 @@ namespace Player {
         }
 
         avatarPrediction() {
+            this.time += Game.ƒ.Loop.timeFrameGame * 0.001;
 
-            if (this.hostPositions.length > this.positions.length) {
-                this.hostPositions = [];
-                this.positions = [];
-            }
-
-            this.time += 1;
-
-            while (this.time >= 1) {
-                this.positions.push(new ƒ.Vector3(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.translation.z));
+            while (this.time >= (1 / Game.frameRate)) {
+                this.positions[this.tick % this.bufferSize] = (new ƒ.Vector3(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.translation.z));
                 if (Game.connected) {
                     Networking.avatarPrediction(this.cmpTransform.mtxLocal.translation, this.tick);
                 }
                 this.tick++;
-                this.time -= 1;
+                this.time -= (1 / Game.frameRate);
             }
 
             if (Networking.client.id != Networking.client.idHost) {
-                if (this.tick >= 5 && this.hostPositions[this.tick - 5] != undefined && this.positions[this.tick - 5] != undefined) {
-                    if (!this.hostPositions[this.tick - 5].equals(this.positions[this.tick - 5], 0.1)) {
+                if (this.tick >= 1 && this.hostPositions[this.tick - 1] != undefined && this.positions[this.tick - 1] != undefined) {
+                    if (!this.hostPositions[this.tick - 1].equals(this.positions[this.tick - 1], 0.1)) {
                         console.log("correct");
                         this.correctPosition();
                     }

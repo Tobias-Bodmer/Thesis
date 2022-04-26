@@ -131,7 +131,7 @@ namespace Networking {
                         if (message.content != undefined && message.content.text == FUNCTION.AVATARPREDICTION.toString()) {
                             if (client.id != client.idHost) {
                                 let newPosition: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
-                                Game.avatar1.hostPositions[message.content.tick] = newPosition;
+                                Game.avatar1.hostPositions[message.content.tick % Game.avatar1.bufferSize] = newPosition;
                             }
                         }
 
