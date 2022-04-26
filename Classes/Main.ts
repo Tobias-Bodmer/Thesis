@@ -36,7 +36,7 @@ namespace Game {
 
     export let entities: Entity.Entity[] = [];
     export let enemies: Enemy.Enemy[] = [];
-    export let bullets: Bullets.Bullet[];
+    export let bullets: Bullets.Bullet[] = [];
     export let items: Items.Item[] = [];
 
     export let coolDowns: Ability.Cooldown[] = [];
@@ -107,7 +107,7 @@ namespace Game {
                     Game.avatar1.avatarPrediction();
                 }
 
-                Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation); 
+                Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
             }
 
             //#region count items
