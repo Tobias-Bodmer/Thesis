@@ -95,6 +95,11 @@ namespace Player {
         avatarPrediction() {
             this.time += Game.ƒ.Loop.timeFrameGame * 0.001;
 
+           
+            if (this.hostPositions.length >= this.bufferSize) {
+                this.hostPositions = [];
+            }
+
             while (this.time >= (1 / Game.frameRate)) {
                 this.positions[this.tick % this.bufferSize] = (new ƒ.Vector3(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.translation.z));
                 if (Game.connected) {
@@ -111,6 +116,7 @@ namespace Player {
                     }
                 }
             }
+
 
             // if (this.hostPositions.length >= 3) {
             //     this.hostPositions.slice(0, 1);
