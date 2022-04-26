@@ -107,7 +107,6 @@ namespace Player {
             if (Networking.client.id != Networking.client.idHost) {
                 if (this.tick % this.bufferSize >= 5 && this.hostPositions[this.tick % this.bufferSize - 5] != undefined && this.positions[this.tick % this.bufferSize - 5] != undefined) {
                     if (!this.hostPositions[this.tick % this.bufferSize - 5].equals(this.positions[this.tick % this.bufferSize - 5], 0.1)) {
-                        console.log("correct");
                         this.correctPosition();
                     }
                 }
@@ -122,8 +121,9 @@ namespace Player {
         }
 
         async correctPosition() {
-            if (this.hostPositions[this.tick] != undefined) {
-                this.cmpTransform.mtxLocal.translation = this.hostPositions[this.tick];
+            if (this.hostPositions[this.tick % this.bufferSize] != undefined) {
+                this.cmpTransform.mtxLocal.translation = this.hostPositions[this.tick % this.bufferSize];
+                console.log("correct");
             } else {
                 setTimeout(() => { this.correctPosition }, 100);
             }
