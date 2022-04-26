@@ -113,7 +113,11 @@ namespace Networking {
                                 Game.avatar2.mtxLocal.translation = moveVector;
                                 Game.avatar2.mtxLocal.rotation = rotateVector;
                                 Game.avatar2.collider.position = moveVector.toVector2();
+                                if (Networking.client.id == Networking.client.idHost) {
+                                    Game.avatar2.avatarPrediction();
+                                }
                             }
+
                         }
 
                         if (message.content != undefined && message.content.text == FUNCTION.AVATARPREDICTION.toString()) {
@@ -198,8 +202,11 @@ namespace Networking {
                         if (message.content != undefined && message.content.text == FUNCTION.BULLETDIE.toString()) {
                             if (client.id != client.idHost) {
                                 let bullet = Game.bullets.find(element => element.netId == message.content.netId);
-                                bullet.lifetime = 0;
-                                bullet.despawn();
+
+                                if (bullet != undefined) {
+                                    bullet.lifetime = 0;
+                                    bullet.despawn();
+                                }
                             }
                         }
 
@@ -295,8 +302,7 @@ namespace Networking {
 
                         //apply weapon
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEWEAPON.toString()) {
-                            let weapon: Weapons.Weapon = message.content.weapon;
-                            const tempWeapon: Weapons.Weapon = new Weapons.Weapon(weapon.cooldownTime, weapon.attackCount, weapon.bulletType, weapon.projectileAmount, weapon.owner, weapon.aimType);
+                            const tempWeapon: Weapons.Weapon = new Weapons.Weapon(message.content.weapon.cooldownTime, message.content.weapon.attackCount, message.content.weapon.bulletType, message.content.weapon.projectileAmount, message.content.weapon.owner, message.content.weapon.aimType);
                             (<Player.Player>Game.entities.find(elem => elem.netId == message.content.netId)).weapon = tempWeapon;
                         }
 

@@ -3,10 +3,10 @@
         {
             "name": "normalBullet",
             "type": 0,
-            "speed": 20,
+            "speed": 15,
             "hitPointsScale": 1,
             "lifetime": 60,
-            "knockbackForce": 4,
+            "knockbackForce": 40,
             "killcount": 1
         },
         {

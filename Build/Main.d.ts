@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -21,7 +21,7 @@ declare namespace Game {
     let enemies: Enemy.Enemy[];
     let bullets: Bullets.Bullet[];
     let items: Items.Item[];
-    let coolDowns: Entity.Cooldown[];
+    let coolDowns: Ability.Cooldown[];
     let enemiesJSON: Entity.Entity[];
     let internalItemJSON: Items.InternalItem[];
     let buffItemJSON: Items.BuffItem[];
@@ -68,16 +68,6 @@ declare namespace UI {
     }
 }
 declare namespace Entity {
-    class Cooldown {
-        hasCoolDown: boolean;
-        private coolDown;
-        private currentCooldown;
-        myCallback: () => void;
-        constructor(_number: number);
-        startCoolDown(): void;
-        private endCoolDOwn;
-        updateCoolDown(): void;
-    }
     class Entity extends Game.ƒAid.NodeSprite {
         private currentAnimationState;
         private performKnockback;
@@ -100,7 +90,7 @@ declare namespace Entity {
         updateCollider(): void;
         updateBuffs(): void;
         collide(_direction: ƒ.Vector3): void;
-        calculateCollider(_collider: any[], _direction: ƒ.Vector3): void;
+        calculateCollider(_collider: Collider.Collider[] | Game.ƒ.Rectangle[], _direction: ƒ.Vector3): void;
         getDamage(_value: number): void;
         die(): void;
         private getDamageReduction;
@@ -135,7 +125,7 @@ declare namespace Entity {
     function getNameById(_id: Entity.ID): string;
 }
 declare namespace Enemy {
-    enum EnemyClass {
+    enum ENEMYCLASS {
         ENEMYDUMB = 0,
         ENEMYDASH = 1,
         ENEMYSMASH = 2,
@@ -168,7 +158,7 @@ declare namespace Enemy {
     }
     class EnemySmash extends Enemy {
         isAttacking: boolean;
-        coolDown: Entity.Cooldown;
+        coolDown: Ability.Cooldown;
         avatars: Player.Player[];
         randomPlayer: number;
         currentBehaviour: Entity.BEHAVIOUR;
@@ -178,8 +168,7 @@ declare namespace Enemy {
         moveBehaviour(): void;
     }
     class EnemyDash extends Enemy {
-        isAttacking: boolean;
-        dash: Entity.Cooldown;
+        protected dash: Ability.Dash;
         lastMoveDireciton: Game.ƒ.Vector3;
         dashCount: number;
         avatars: Player.Player[];
@@ -187,7 +176,6 @@ declare namespace Enemy {
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
         update(): void;
         behaviour(): void;
-        doDash(): void;
         moveBehaviour(): void;
     }
     class EnemyPatrol extends Enemy {
@@ -208,16 +196,12 @@ declare namespace Enemy {
         getDamage(_value: number): void;
         shoot(_netId?: number): void;
     }
-    class SummonorAdds extends Enemy {
-        isAttacking: boolean;
-        lastMoveDireciton: Game.ƒ.Vector3;
-        dashCount: number;
+    class SummonorAdds extends EnemyDash {
         avatar: Player.Player;
         randomPlayer: number;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _target: Player.Player, _netId?: number);
         update(): void;
         behaviour(): void;
-        doDash(): void;
         moveBehaviour(): void;
     }
 }
@@ -327,6 +311,44 @@ declare namespace AnimationGeneration {
     export function generateAnimationFromGrid(_class: MyAnimationClass): void;
     export {};
 }
+declare namespace Ability {
+    abstract class Ability {
+        protected ownerNetId: number;
+        get owner(): Entity.Entity;
+        protected cooldown: Cooldown;
+        protected abilityCount: number;
+        protected currentabilityCount: number;
+        protected duration: number;
+        doesAbility: boolean;
+        constructor(_ownerNetId: number, _duration: number, _abilityCount: number, _cooldownTime: number);
+        doAbility(): void;
+        protected activateAbility(): void;
+        protected deactivateAbility(): void;
+    }
+    class Block extends Ability {
+        protected activateAbility(): void;
+        protected deactivateAbility(): void;
+    }
+    class Dash extends Ability {
+        speed: number;
+        constructor(_ownerNetId: number, _duration: number, _abilityCount: number, _cooldownTime: number, _speed: number);
+        protected activateAbility(): void;
+        protected deactivateAbility(): void;
+    }
+    class SpawnSummoners extends Ability {
+        protected activateAbility(): void;
+        protected deactivateAbility(): void;
+    }
+    class Cooldown {
+        hasCoolDown: boolean;
+        private coolDown;
+        private currentCooldown;
+        constructor(_number: number);
+        startCoolDown(): void;
+        private endCoolDOwn;
+        updateCoolDown(): void;
+    }
+}
 declare namespace Entity {
     class Attributes {
         healthPoints: number;
@@ -351,6 +373,7 @@ declare namespace Enemy {
         summonChance: number;
         summonCooldown: number;
         summonCurrentCooldown: number;
+        private summon;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
         update(): void;
         cooldown(): void;
@@ -359,7 +382,6 @@ declare namespace Enemy {
         moveBehaviour(): void;
         attackingPhase(): void;
         defencePhase(): void;
-        summon(): void;
     }
 }
 declare namespace Buff {
@@ -471,8 +493,8 @@ declare namespace Collider {
 }
 declare namespace EnemySpawner {
     function spawnEnemies(): void;
-    function spawnByID(_enemyClass: Enemy.EnemyClass, _id: Entity.ID, _position: ƒ.Vector2, _attributes?: Entity.Attributes, _target?: Player.Player, _netID?: number): void;
-    function networkSpawnById(_enemyClass: any, _id: Entity.ID, _position: ƒ.Vector2, _attributes: Entity.Attributes, _netID: number, _target?: number): void;
+    function spawnByID(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2, _attributes?: Entity.Attributes, _target?: Player.Player, _netID?: number): void;
+    function networkSpawnById(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2, _attributes: Entity.Attributes, _netID: number, _target?: number): void;
 }
 declare namespace Calculation {
     function getCloserAvatarPosition(_startPoint: ƒ.Vector3): ƒ.Vector3;
@@ -542,7 +564,7 @@ declare namespace Networking {
     function updateBullet(_position: ƒ.Vector3, _rotation: ƒ.Vector3, _netId: number, _tick?: number): void;
     function predictionBullet(_position: ƒ.Vector3, _netId: number, _tick?: number): void;
     function removeBullet(_netId: number): void;
-    function spawnEnemy(_enemyClass: Enemy.EnemyClass, _enemy: Enemy.Enemy, _netId: number): void;
+    function spawnEnemy(_enemyClass: Enemy.ENEMYCLASS, _enemy: Enemy.Enemy, _netId: number): void;
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number): void;
     function updateEntityAnimationState(_state: Entity.ANIMATIONSTATES, _netId: number): void;
     function removeEnemy(_netId: number): void;
@@ -570,8 +592,6 @@ declare namespace Player {
         time: number;
         readonly abilityCount: number;
         currentabilityCount: number;
-        readonly abilityCooldownTime: number;
-        currentabilityCooldownTime: number;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _netId?: number);
         move(_direction: ƒ.Vector3): void;
         collide(_direction: Game.ƒ.Vector3): void;
@@ -582,11 +602,9 @@ declare namespace Player {
         doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: ƒ.Vector3): void;
         doAbility(): void;
-        cooldown(): void;
     }
     class Melee extends Player {
-        readonly abilityCount: number;
-        currentabilityCount: number;
+        protected block: Ability.Block;
         readonly abilityCooldownTime: number;
         currentabilityCooldownTime: number;
         weapon: Weapons.Weapon;
@@ -594,6 +612,7 @@ declare namespace Player {
         doAbility(): void;
     }
     class Ranged extends Player {
+        private dash;
         performAbility: boolean;
         lastMoveDirection: Game.ƒ.Vector3;
         move(_direction: ƒ.Vector3): void;
@@ -676,9 +695,9 @@ declare namespace Weapons {
     class Weapon {
         owner: number;
         get _owner(): Entity.Entity;
+        protected cooldown: Ability.Cooldown;
         cooldownTime: number;
-        currentCooldownTime: number;
-        attackCount: number;
+        protected attackCount: number;
         currentAttackCount: number;
         aimType: AIM;
         bulletType: Bullets.BULLETTYPE;
@@ -688,7 +707,6 @@ declare namespace Weapons {
         fire(_magazine: Bullets.Bullet[], _sync?: boolean): void;
         setBulletDirection(_magazine: Bullets.Bullet[]): Bullets.Bullet[];
         loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.BULLETTYPE, _netId?: number): Bullets.Bullet[];
-        cooldown(_faktor: number): void;
     }
     enum AIM {
         NORMAL = 0,

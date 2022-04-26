@@ -1,9 +1,9 @@
 namespace Weapons {
     export class Weapon {
         owner: number; get _owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.owner) };
-        cooldownTime: number = 10;
-        public currentCooldownTime: number = this.cooldownTime;
-        attackCount: number = 1;
+        protected cooldown: Ability.Cooldown;
+        public cooldownTime: number;
+        protected attackCount: number = 1;
         public currentAttackCount: number = this.attackCount;
         aimType: AIM;
         bulletType: Bullets.BULLETTYPE = Bullets.BULLETTYPE.STANDARD;
@@ -16,16 +16,27 @@ namespace Weapons {
             this.projectileAmount = _projectileAmount;
             this.owner = _ownerNetId;
             this.aimType = _aimType;
+
+            this.cooldown = new Ability.Cooldown(this.cooldownTime);
         }
+
+
 
         public shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _bulletNetId?: number, _sync?: boolean) {
             if (_sync) {
-                if (this.currentAttackCount > 0) {
+                if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
+                    this.currentAttackCount = this.attackCount;
+                }
+                if (this.currentAttackCount > 0 && !this.cooldown.hasCoolDown) {
                     _direciton.normalize();
                     let magazine: Bullets.Bullet[] = this.loadMagazine(_position, _direciton, this.bulletType, _bulletNetId);
                     this.setBulletDirection(magazine);
                     this.fire(magazine, _sync);
                     this.currentAttackCount--;
+                    if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
+                        this.cooldown = new Ability.Cooldown(this._owner.attributes.coolDownReduction * this.cooldownTime);
+                        this.cooldown.startCoolDown();
+                    }
                 }
             } else {
                 _direciton.normalize();
@@ -80,24 +91,6 @@ namespace Weapons {
                 }
             }
             return magazine;
-        }
-
-
-        public cooldown(_faktor: number) {
-            let specificCoolDownTime = this.cooldownTime * _faktor;
-            if (this.currentAttackCount <= 0) {
-                if (this.currentCooldownTime <= 0) {
-                    this.currentCooldownTime = specificCoolDownTime;
-                    this.currentAttackCount = this.attackCount;
-
-                    // if (Game.entities.find(ent => ent.netId == this.owner).tag == Tag.TAG.ENEMY && Networking.client.idHost == Networking.client.id) {
-                    //     Networking.updateAvatarWeapon(this, this.owner);
-                    // }
-                } else {
-                    this.currentCooldownTime--;
-                }
-            }
-
         }
     }
 

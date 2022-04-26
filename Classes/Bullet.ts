@@ -11,7 +11,7 @@ namespace Bullets {
 
     export class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
         public tag: Tag.TAG = Tag.TAG.BULLET;
-        owner: number; get _owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.owner) };;
+        owner: number; get _owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.owner) };
         public netId: number;
 
         public tick: number = 0;
@@ -79,7 +79,6 @@ namespace Bullets {
             this.loadTexture();
             this.flyDirection = ƒ.Vector3.X();
             this.direction = _direction;
-
             this.owner = _ownerId;
         }
 
@@ -98,8 +97,6 @@ namespace Bullets {
                 if (this._owner == Game.avatar1) {
                     this.cmpTransform.mtxLocal.translate(this.flyDirection);
                     this.bulletPrediction();
-                    this.collisionDetection();
-                    this.despawn();
                 }
             }
         }
@@ -251,12 +248,12 @@ namespace Bullets {
             if (_target != null) {
                 this.target = _target;
             }
-            else {
-                this.target = ƒ.Vector3.SUM(this.mtxLocal.translation, _direction);
-            }
+            // else {
+            //     this.target = ƒ.Vector3.SUM(this.mtxLocal.translation, _direction);
+            // }
             this.targetDirection = _direction;
             if (Networking.client.idHost == Networking.client.id) {
-                this.setTarget(Game.avatar1.netId);
+                this.setTarget(Game.avatar2.netId);
             }
         }
         async update(): Promise<void> {
@@ -279,9 +276,8 @@ namespace Bullets {
             if (newDirection.x != 0 && newDirection.y != 0) {
                 newDirection.normalize();
             }
-            let rotateAmount2: number = ƒ.Vector3.CROSS(newDirection, this.targetDirection).z;
+            let rotateAmount2: number = ƒ.Vector3.CROSS(newDirection, this.mtxLocal.getX()).z;
             this.mtxLocal.rotateZ(-rotateAmount2 * this.rotateSpeed);
-            this.targetDirection = Calculation.getRotatedVectorByAngle2D(this.targetDirection, -rotateAmount2 * this.rotateSpeed);
         }
     }
 }

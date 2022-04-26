@@ -7,6 +7,7 @@ namespace Enemy {
         summonChance: number = 5;
         summonCooldown: number = 120;
         summonCurrentCooldown: number = 0;
+        private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 0, 5, 5 * Game.frameRate)
 
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _attributes, _position, _netId);
@@ -26,6 +27,11 @@ namespace Enemy {
 
         behaviour() {
             this.cooldown();
+            let distance = ƒ.Vector3.DIFFERENCE(Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2().toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
+
+            if (distance < 5) {
+                this.gotRecognized = true;
+            }
 
             if (this.damageTaken >= 25) {
                 this.attributes.hitable = false;
@@ -79,14 +85,16 @@ namespace Enemy {
                 if (this.defencePhaseCurrentTime > 0) {
                     if (this.mtxLocal.translation.equals(new ƒ.Vector2(0, -13).toVector3(), 1)) {
                         this.mtxLocal.translation = new ƒ.Vector2(0, -13).toVector3();
-                        if (this.summonCurrentCooldown <= 0) {
-                            let nextState = Math.round(Math.random() * 100);
+                        // if (this.summonCurrentCooldown <= 0) {
+                        // if (this.summon.doesAbility) {
+                        let nextState = Math.round(Math.random() * 100);
 
-                            if (nextState <= this.summonChance) {
-                                this.summon();
-                                this.summonCurrentCooldown = this.summonCooldown;
-                            }
+                        if (nextState <= this.summonChance) {
+                            // this.summon();
+                            this.summon.doAbility();
+                            this.summonCurrentCooldown = this.summonCooldown;
                         }
+                        // }
                     }
                     this.defencePhaseCurrentTime--;
                 } else {
@@ -96,13 +104,13 @@ namespace Enemy {
             }
         }
 
-        summon() {
-            let target = Math.round(Math.random());
-            if (target > 0) {
-                EnemySpawner.spawnByID(ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, this.mtxLocal.translation.toVector2(), null, Game.avatar1);
-            } else {
-                EnemySpawner.spawnByID(ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, this.mtxLocal.translation.toVector2(), null, Game.avatar2);
-            }
-        }
+        // summon() {
+        //     let target = Math.round(Math.random());
+        //     if (target > 0) {
+        //         EnemySpawner.spawnByID(ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, this.mtxLocal.translation.toVector2(), null, Game.avatar1);
+        //     } else {
+        //         EnemySpawner.spawnByID(ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, this.mtxLocal.translation.toVector2(), null, Game.avatar2);
+        //     }
+        // }
     }
 }

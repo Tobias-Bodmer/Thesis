@@ -14,8 +14,6 @@ namespace Player {
 
         readonly abilityCount: number = 1;
         currentabilityCount: number = this.abilityCount;
-        readonly abilityCooldownTime: number = 10;
-        currentabilityCooldownTime: number = this.abilityCooldownTime;
 
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _netId?: number) {
             super(_id, _attributes, _netId);
@@ -73,14 +71,6 @@ namespace Player {
                 _direction = new ƒ.Vector3(0, _direction.y, _direction.z)
                 this.cmpTransform.mtxLocal.translate(_direction, false);
             }
-
-
-            // if (Networking.client.id == Networking.client.idHost) {
-            //     Game.avatar2.avatarPrediction();
-            // }
-            // if (Networking.client.id != Networking.client.idHost) {
-            //     Game.avatar1.avatarPrediction();
-            // } 
         }
 
         getItemCollision() {
@@ -115,10 +105,7 @@ namespace Player {
 
             if (Networking.client.id != Networking.client.idHost) {
                 if (this.tick >= 1 && this.hostPositions[this.tick - 1] != undefined && this.positions[this.tick - 1] != undefined) {
-                    if (this.hostPositions[this.tick - 1].x != this.positions[this.tick - 1].x || this.hostPositions[this.tick - 1].y != this.positions[this.tick - 1].y) {
-                        console.log(this.positions[this.tick - 1]);
-                        console.log(this.hostPositions[this.tick - 1]);
-
+                    if (!this.hostPositions[this.tick - 1].equals(this.positions[this.tick - 1], 0.1)) {
                         console.log("correct");
                         this.correctPosition();
                     }
@@ -128,9 +115,7 @@ namespace Player {
 
         async correctPosition() {
             if (this.hostPositions[this.tick] != undefined) {
-                console.log(this.cmpTransform.mtxLocal.translation);
                 this.cmpTransform.mtxLocal.translation = this.hostPositions[this.tick];
-                console.log(this.cmpTransform.mtxLocal.translation);
             } else {
                 setTimeout(() => { this.correctPosition }, 100);
             }
@@ -151,26 +136,10 @@ namespace Player {
         public doAbility() {
 
         }
-
-        public cooldown() {
-            this.weapon.cooldown(this.attributes.coolDownReduction);
-
-            if (this.currentabilityCount <= 0) {
-                if (this.currentabilityCooldownTime <= 0) {
-                    this.currentabilityCooldownTime = this.abilityCooldownTime;
-                    this.currentabilityCount = this.abilityCount;
-                } else {
-                    this.currentabilityCooldownTime--;
-                }
-            }
-        }
-
     }
 
     export class Melee extends Player {
-
-        readonly abilityCount: number = 1;
-        currentabilityCount: number = this.abilityCount;
+        protected block: Ability.Block = new Ability.Block(this.netId, 600, 1, 5 * Game.frameRate);
         readonly abilityCooldownTime: number = 40;
         currentabilityCooldownTime: number = this.abilityCooldownTime;
 
@@ -183,24 +152,17 @@ namespace Player {
 
         //Block
         public doAbility() {
-            if (this.currentabilityCount > 0) {
-                this.attributes.hitable = false;
 
-                setTimeout(() => {
-                    this.attributes.hitable = true;
-                }, 600);
-
-                this.currentabilityCount--;
-            }
         }
     }
     export class Ranged extends Player {
 
+        private dash: Ability.Dash = new Ability.Dash(this.netId, 150, 1, 5 * Game.frameRate, 2);
         performAbility: boolean = false;
         lastMoveDirection: Game.ƒ.Vector3;
 
         public move(_direction: ƒ.Vector3) {
-            if (this.performAbility) {
+            if (this.dash.doesAbility) {
                 super.move(this.lastMoveDirection);
             } else {
                 super.move(_direction);
@@ -210,21 +172,7 @@ namespace Player {
 
         //Dash
         public doAbility() {
-            if (this.currentabilityCount > 0) {
-                this.performAbility = true;
-                this.attributes.hitable = false;
-                this.attributes.speed *= 2;
-
-                setTimeout(() => {
-                    this.attributes.speed /= 2;
-                    setTimeout(() => {
-                        this.attributes.speed /= 1;
-                        this.attributes.hitable = true;
-                        this.performAbility = false;
-                    }, 100);
-                }, 300);
-                this.currentabilityCount--;
-            }
+            this.dash.doAbility();
         }
     }
 }

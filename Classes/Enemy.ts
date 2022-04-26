@@ -73,8 +73,17 @@ namespace Enemy {
 
         collide(_direction: ƒ.Vector3) {
             let knockback = this.currentKnockback.clone;
-            _direction.add(knockback);
+            if (knockback.magnitude > 0) {
+                console.log("direction: " + _direction.magnitude);
+            }
             if (_direction.magnitude > 0) {
+                _direction.normalize();
+                _direction.add(knockback);
+
+
+                _direction.scale((1 / Game.frameRate * this.attributes.speed));
+                knockback.scale((1 / Game.frameRate * this.attributes.speed));
+
 
                 super.collide(_direction);
 
@@ -83,13 +92,6 @@ namespace Enemy {
                 avatar.forEach((elem) => {
                     avatarColliders.push((<Player.Player>elem).collider);
                 });
-
-                _direction.normalize();
-                _direction.scale((1 / Game.frameRate * this.attributes.speed));
-                if (knockback.magnitude > 0) {
-                    knockback.normalize();
-                    knockback.scale((1 / Game.frameRate * this.attributes.speed));
-                }
 
                 this.calculateCollider(avatarColliders, _direction)
 
@@ -102,12 +104,17 @@ namespace Enemy {
                     _direction = new ƒ.Vector3(0, _direction.y, _direction.z)
                     this.cmpTransform.mtxLocal.translate(_direction);
                 }
+                _direction.subtract(knockback);
+                if (knockback.magnitude > 0) {
+                    console.log("knockback: " + knockback.magnitude);
+                    console.log("direction: " + _direction.magnitude);
+                }
             }
-            _direction.subtract(knockback);
 
             this.reduceKnockback();
         }
     }
+
 
     export class EnemyDumb extends Enemy {
 
@@ -153,7 +160,7 @@ namespace Enemy {
 
     export class EnemySmash extends Enemy {
         isAttacking = false;
-        coolDown = new Entity.Cooldown(2 * Game.frameRate);
+        coolDown = new Ability.Cooldown(50 * Game.frameRate);
         avatars: Player.Player[] = [];
         randomPlayer = Math.round(Math.random());
         currentBehaviour: Entity.BEHAVIOUR = Entity.BEHAVIOUR.IDLE;
@@ -205,8 +212,7 @@ namespace Enemy {
     }
 
     export class EnemyDash extends Enemy {
-        isAttacking = false;
-        dash = new Entity.Cooldown(3 * Game.frameRate);
+        protected dash = new Ability.Dash(this.netId, 300, 1, 250 * Game.frameRate, 5);
         lastMoveDireciton: Game.ƒ.Vector3;
         dashCount: number = 1;
         avatars: Player.Player[] = [];
@@ -223,30 +229,19 @@ namespace Enemy {
         behaviour() {
             this.avatars = [Game.avatar1, Game.avatar2]
             this.target = (<Player.Player>this.avatars[this.randomPlayer]).mtxLocal.translation.toVector2();
-
-
             let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
+
 
             if (distance > 5) {
                 this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
             }
-            else if (distance < 3 && !this.dash.hasCoolDown) {
-                this.doDash();
+            else if (distance < 3) {
+                this.dash.doAbility();
             }
 
         }
 
-        doDash() {
-            this.isAttacking = true;
-            this.attributes.hitable = false;
-            this.attributes.speed *= 1.1;
-            setTimeout(() => {
-                this.isAttacking = false;
-                this.attributes.speed /= 1.1;
-                this.attributes.hitable = true;
-                this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
-            }, 300);
-        }
+
 
 
         moveBehaviour(): void {
@@ -254,7 +249,7 @@ namespace Enemy {
             switch (this.currentBehaviour) {
                 case Entity.BEHAVIOUR.FOLLOW:
                     this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
-                    if (!this.isAttacking) {
+                    if (!this.dash.doesAbility) {
                         this.lastMoveDireciton = this.moveDirection;
                         this.moveDirection = this.moveSimple(this.target).toVector3();
                     }
@@ -362,10 +357,7 @@ namespace Enemy {
         }
     }
 
-    export class SummonorAdds extends Enemy {
-        isAttacking = false;
-        lastMoveDireciton: Game.ƒ.Vector3;
-        dashCount: number = 1;
+    export class SummonorAdds extends EnemyDash {
         avatar: Player.Player;
         randomPlayer = Math.round(Math.random());
 
@@ -385,24 +377,10 @@ namespace Enemy {
 
             if (distance > 5) {
                 this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
-                this.isAttacking = false;
-            }
-            else if (distance < 3 && !this.isAttacking) {
-                this.doDash();
-            }
 
-        }
-
-        doDash() {
-            if (!this.isAttacking) {
-                this.isAttacking = true;
-                this.attributes.hitable = false;
-                this.attributes.speed *= 5;
-                setTimeout(() => {
-                    this.attributes.speed /= 5;
-                    this.attributes.hitable = true;
-                    this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
-                }, 300);
+            }
+            else if (distance < 3) {
+                this.dash.doAbility();
             }
         }
 
@@ -411,7 +389,7 @@ namespace Enemy {
             switch (this.currentBehaviour) {
                 case Entity.BEHAVIOUR.FOLLOW:
                     this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
-                    if (!this.isAttacking) {
+                    if (!this.dash.doesAbility) {
                         this.lastMoveDireciton = this.moveDirection;
                         this.moveDirection = this.moveSimple(this.target).toVector3();
                     }

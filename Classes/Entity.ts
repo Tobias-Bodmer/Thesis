@@ -1,38 +1,5 @@
 namespace Entity {
-    function doSmth(): void {
-        console.log("smth");
-    }
-    export class Cooldown {
-        public hasCoolDown: boolean
-        private coolDown: number
-        private currentCooldown: number;
-        public myCallback: () => void;
-        constructor(_number: number) {
-            this.coolDown = _number;
-            this.currentCooldown = _number;
-            this.myCallback.apply(doSmth());
-            this.myCallback;
-        }
-        public startCoolDown() {
-            this.hasCoolDown = true
-            Game.coolDowns.push(this);
-        }
-
-        private endCoolDOwn() {
-            Game.coolDowns = Game.coolDowns.filter(cd => cd != this);
-            this.hasCoolDown = false;
-        }
-
-        updateCoolDown() {
-            if (this.currentCooldown > 0) {
-                this.currentCooldown--;
-            }
-            else {
-                this.currentCooldown = this.coolDown;
-                this.endCoolDOwn();
-            }
-        }
-    }
+    
     export class Entity extends Game.ƒAid.NodeSprite {
         private currentAnimationState: ANIMATIONSTATES;
         private performKnockback: boolean = false;
@@ -75,11 +42,6 @@ namespace Entity {
             this.addComponent(new ƒ.ComponentTransform());
             this.mtxLocal.scale(new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale));
             this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2, this.netId);
-            if (Networking.client.idHost = Networking.client.id) {
-                addEventListener(ƒ.EVENT.LOOP_FRAME, this.update);
-            }
-            addEventListener(ƒ.EVENT.LOOP_FRAME, this.updateBuffs);
-
         }
 
         public update() {
