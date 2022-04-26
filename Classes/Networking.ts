@@ -123,7 +123,7 @@ namespace Networking {
                                 Game.avatar2.mtxLocal.rotation = rotateVector;
                                 Game.avatar2.collider.position = moveVector.toVector2();
                                 if (Networking.client.id == Networking.client.idHost) {
-                                    Game.avatar2.avatarPrediction();
+                                    // Game.avatar2.avatarPrediction();
                                 }
                             }
                         }
