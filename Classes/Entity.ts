@@ -1,49 +1,55 @@
 namespace Entity {
-    function doSmth(): boolean {
+    function doSmth(): void {
         console.log("smth");
-        return true;
     }
     export class Cooldown {
+        public hasCoolDown: boolean
         private coolDown: number
-        private currentCooldown: number; get getCurrentCoolDown(): number { return this.currentCooldown };
+        private currentCooldown: number;
         public myCallback: () => void;
         constructor(_number: number) {
             this.coolDown = _number;
             this.currentCooldown = _number;
-            this.myCallback = () => doSmth();
+            this.myCallback.apply(doSmth());
+            this.myCallback;
+        }
+        public startCoolDown() {
+            this.hasCoolDown = true
+            Game.coolDowns.push(this);
         }
 
-    
+        private endCoolDOwn() {
+            Game.coolDowns = Game.coolDowns.filter(cd => cd != this);
+            this.hasCoolDown = false;
+        }
 
-        checkCoolDown(): boolean {
+        updateCoolDown() {
             if (this.currentCooldown > 0) {
                 this.currentCooldown--;
-                return false;
             }
             else {
                 this.currentCooldown = this.coolDown;
-                this.myCallback();
-                return true;
+                this.endCoolDOwn();
             }
         }
     }
     export class Entity extends Game.ƒAid.NodeSprite {
         private currentAnimationState: ANIMATIONSTATES;
+        private performKnockback: boolean = false;
         public tag: Tag.TAG;
         public netId: number;
-        id: Entity.ID;
-        attributes: Attributes;
-        collider: Collider.Collider;
-        canMoveX: boolean = true;
-        canMoveY: boolean = true;
-        moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
-        animationContainer: AnimationGeneration.AnimationContainer;
-        performKnockback: boolean = false;
-        idleScale: number;
-        buffs: Buff.Buff[] = [];
+        public id: Entity.ID;
+        public attributes: Attributes;
+        public collider: Collider.Collider;
         public items: Array<Items.Item> = [];
-        currentKnockback: ƒ.Vector3 = ƒ.Vector3.ZERO();
         public weapon: Weapons.Weapon;
+        public buffs: Buff.Buff[] = [];
+        protected canMoveX: boolean = true;
+        protected canMoveY: boolean = true;
+        protected moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
+        protected animationContainer: AnimationGeneration.AnimationContainer;
+        protected idleScale: number;
+        protected currentKnockback: ƒ.Vector3 = ƒ.Vector3.ZERO();
 
 
 
@@ -69,6 +75,11 @@ namespace Entity {
             this.addComponent(new ƒ.ComponentTransform());
             this.mtxLocal.scale(new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale));
             this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2, this.netId);
+            if (Networking.client.idHost = Networking.client.id) {
+                addEventListener(ƒ.EVENT.LOOP_FRAME, this.update);
+            }
+            addEventListener(ƒ.EVENT.LOOP_FRAME, this.updateBuffs);
+
         }
 
         public update() {

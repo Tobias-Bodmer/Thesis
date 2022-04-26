@@ -21,6 +21,7 @@ declare namespace Game {
     let enemies: Enemy.Enemy[];
     let bullets: Bullets.Bullet[];
     let items: Items.Item[];
+    let coolDowns: Entity.Cooldown[];
     let enemiesJSON: Entity.Entity[];
     let internalItemJSON: Items.InternalItem[];
     let buffItemJSON: Items.BuffItem[];
@@ -68,30 +69,32 @@ declare namespace UI {
 }
 declare namespace Entity {
     class Cooldown {
+        hasCoolDown: boolean;
         private coolDown;
         private currentCooldown;
-        get getCurrentCoolDown(): number;
         myCallback: () => void;
         constructor(_number: number);
-        checkCoolDown(): boolean;
+        startCoolDown(): void;
+        private endCoolDOwn;
+        updateCoolDown(): void;
     }
     class Entity extends Game.ƒAid.NodeSprite {
         private currentAnimationState;
+        private performKnockback;
         tag: Tag.TAG;
         netId: number;
         id: Entity.ID;
         attributes: Attributes;
         collider: Collider.Collider;
-        canMoveX: boolean;
-        canMoveY: boolean;
-        moveDirection: Game.ƒ.Vector3;
-        animationContainer: AnimationGeneration.AnimationContainer;
-        performKnockback: boolean;
-        idleScale: number;
-        buffs: Buff.Buff[];
         items: Array<Items.Item>;
-        currentKnockback: ƒ.Vector3;
         weapon: Weapons.Weapon;
+        buffs: Buff.Buff[];
+        protected canMoveX: boolean;
+        protected canMoveY: boolean;
+        protected moveDirection: Game.ƒ.Vector3;
+        protected animationContainer: AnimationGeneration.AnimationContainer;
+        protected idleScale: number;
+        protected currentKnockback: ƒ.Vector3;
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number);
         update(): void;
         updateCollider(): void;
@@ -176,7 +179,7 @@ declare namespace Enemy {
     }
     class EnemyDash extends Enemy {
         isAttacking: boolean;
-        coolDownDash: Entity.Cooldown;
+        dash: Entity.Cooldown;
         lastMoveDireciton: Game.ƒ.Vector3;
         dashCount: number;
         avatars: Player.Player[];

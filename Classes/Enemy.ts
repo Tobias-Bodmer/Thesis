@@ -178,10 +178,9 @@ namespace Enemy {
                 this.isAttacking = true;
             }
             else if (this.currentBehaviour == Entity.BEHAVIOUR.IDLE) {
-                if (this.coolDown.checkCoolDown()) {
-                    this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW
-                    this.isAttacking = false;
-                }
+                this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW
+                this.isAttacking = false;
+
             }
         }
 
@@ -207,7 +206,7 @@ namespace Enemy {
 
     export class EnemyDash extends Enemy {
         isAttacking = false;
-        coolDownDash = new Entity.Cooldown(3 * Game.frameRate);
+        dash = new Entity.Cooldown(3 * Game.frameRate);
         lastMoveDireciton: Game.ƒ.Vector3;
         dashCount: number = 1;
         avatars: Player.Player[] = [];
@@ -231,7 +230,7 @@ namespace Enemy {
             if (distance > 5) {
                 this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
             }
-            else if (distance < 3 && this.coolDownDash.checkCoolDown()) {
+            else if (distance < 3 && !this.dash.hasCoolDown) {
                 this.doDash();
             }
 
