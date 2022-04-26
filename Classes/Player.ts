@@ -92,7 +92,7 @@ namespace Player {
         }
 
         avatarPrediction() {
-            this.time += Game.ƒ.Loop.timeFrameGame;
+            this.time += Game.ƒ.Loop.timeFrameStartReal;
 
             while (this.time >= 1) {
                 this.positions.push(new ƒ.Vector3(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.translation.z));
@@ -110,6 +110,13 @@ namespace Player {
                         this.correctPosition();
                     }
                 }
+            }
+
+            if (this.hostPositions.length >= 3) {
+                this.hostPositions.slice(0, 1);
+            }
+            if (this.positions.length >= 3) {
+                this.positions.slice(0, 1);
             }
         }
 
