@@ -3,6 +3,7 @@
 namespace Networking {
     export enum FUNCTION {
         CONNECTED,
+        LOADED,
         HOST,
         SETREADY,
         SPAWN,
@@ -65,14 +66,22 @@ namespace Networking {
     async function receiveMessage(_event: CustomEvent | MessageEvent | Event): Promise<void> {
         if (_event instanceof MessageEvent) {
             let message: FudgeNet.Message = JSON.parse(_event.data);
+
+            if (message.content != undefined && message.content.text == FUNCTION.LOADED.toString()) {
+                Game.loaded = true;
+            }
+
             if (message.idSource != client.id) {
                 if (message.command != FudgeNet.COMMAND.SERVER_HEARTBEAT && message.command != FudgeNet.COMMAND.CLIENT_HEARTBEAT) {
                     //Add new client to array clients
                     if (message.content != undefined && message.content.text == FUNCTION.CONNECTED.toString()) {
                         if (message.content.value != client.id && clients.find(element => element == message.content.value) == undefined) {
-                            clients.push({ id: message.content.value, ready: false });
+                            if (clients.find(elem => elem.id == message.content.value) == null) {
+                                clients.push({ id: message.content.value, ready: false });
+                            }
                         }
                     }
+
 
                     //Set client ready
                     if (message.content != undefined && message.content.text == FUNCTION.SETREADY.toString()) {
@@ -362,7 +371,11 @@ namespace Networking {
         }
     }
 
-    export async function spawnPlayer(_type?: Player.PLAYERTYPE) {
+    export function loaded() {
+        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.LOADED } });
+    }
+
+    export function spawnPlayer(_type?: Player.PLAYERTYPE) {
         if (_type == Player.PLAYERTYPE.MELEE) {
             client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.MELEE, attributes: Game.avatar1.attributes, position: Game.avatar1.cmpTransform.mtxLocal.translation, netId: Game.avatar1.netId } })
         } else if (_type == Player.PLAYERTYPE.RANGED) {

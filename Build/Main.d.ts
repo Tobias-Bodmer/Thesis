@@ -26,6 +26,7 @@ declare namespace Game {
     let internalItemJSON: Items.InternalItem[];
     let buffItemJSON: Items.BuffItem[];
     let bulletsJSON: Bullets.Bullet[];
+    let loaded: boolean;
     function loadTextures(): Promise<void>;
     function cameraUpdate(): void;
 }
@@ -515,30 +516,31 @@ declare namespace Level {
 declare namespace Networking {
     enum FUNCTION {
         CONNECTED = 0,
-        HOST = 1,
-        SETREADY = 2,
-        SPAWN = 3,
-        TRANSFORM = 4,
-        AVATARPREDICTION = 5,
-        UPDATEINVENTORY = 6,
-        KNOCKBACKREQUEST = 7,
-        KNOCKBACKPUSH = 8,
-        SPAWNBULLET = 9,
-        BULLETPREDICTION = 10,
-        BULLETTRANSFORM = 11,
-        BULLETDIE = 12,
-        SPAWNENEMY = 13,
-        ENEMYTRANSFORM = 14,
-        ENTITYANIMATIONSTATE = 15,
-        ENEMYDIE = 16,
-        SPAWNINTERNALITEM = 17,
-        UPDATEATTRIBUTES = 18,
-        UPDATEWEAPON = 19,
-        ITEMDIE = 20,
-        SENDROOM = 21,
-        SWITCHROOMREQUEST = 22,
-        UPDATEBUFF = 23,
-        UPDATEUI = 24
+        LOADED = 1,
+        HOST = 2,
+        SETREADY = 3,
+        SPAWN = 4,
+        TRANSFORM = 5,
+        AVATARPREDICTION = 6,
+        UPDATEINVENTORY = 7,
+        KNOCKBACKREQUEST = 8,
+        KNOCKBACKPUSH = 9,
+        SPAWNBULLET = 10,
+        BULLETPREDICTION = 11,
+        BULLETTRANSFORM = 12,
+        BULLETDIE = 13,
+        SPAWNENEMY = 14,
+        ENEMYTRANSFORM = 15,
+        ENTITYANIMATIONSTATE = 16,
+        ENEMYDIE = 17,
+        SPAWNINTERNALITEM = 18,
+        UPDATEATTRIBUTES = 19,
+        UPDATEWEAPON = 20,
+        ITEMDIE = 21,
+        SENDROOM = 22,
+        SWITCHROOMREQUEST = 23,
+        UPDATEBUFF = 24,
+        UPDATEUI = 25
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -553,7 +555,8 @@ declare namespace Networking {
     function conneting(): void;
     function setClientReady(): void;
     function setHost(): void;
-    function spawnPlayer(_type?: Player.PLAYERTYPE): Promise<void>;
+    function loaded(): void;
+    function spawnPlayer(_type?: Player.PLAYERTYPE): void;
     function setClient(): void;
     function updateAvatarPosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3): void;
     function avatarPrediction(_position: Game.ƒ.Vector3, _tick: number): void;
