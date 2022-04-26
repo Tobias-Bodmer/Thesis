@@ -92,7 +92,13 @@ namespace Player {
         }
 
         avatarPrediction() {
-            this.time += Game.ƒ.Loop.timeFrameReal;
+
+            if (this.hostPositions.length > this.positions.length) {
+                this.hostPositions = [];
+                this.positions = [];
+            }
+
+            this.time += 1;
 
             while (this.time >= 1) {
                 this.positions.push(new ƒ.Vector3(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.translation.z));

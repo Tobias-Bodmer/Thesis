@@ -126,7 +126,6 @@ namespace Networking {
                                     Game.avatar2.avatarPrediction();
                                 }
                             }
-
                         }
 
                         if (message.content != undefined && message.content.text == FUNCTION.AVATARPREDICTION.toString()) {
