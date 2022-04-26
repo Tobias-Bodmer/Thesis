@@ -38,6 +38,8 @@ namespace Game {
     export let enemies: Enemy.Enemy[] = [];
     export let bullets: Bullets.Bullet[];
     export let items: Items.Item[] = [];
+
+    export let coolDowns: Entity.Cooldown[] = [];
     //JSON
     export let enemiesJSON: Entity.Entity[];
     export let internalItemJSON: Items.InternalItem[];
@@ -109,7 +111,9 @@ namespace Game {
             //#region count items
             items = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.TAG.ITEM)
             //#endregion
-
+            coolDowns.forEach(_cd => {
+                _cd.updateCoolDown();
+            })
             bullets = <Bullets.Bullet[]>graph.getChildren().filter(element => (<Bullets.Bullet>element).tag == Tag.TAG.BULLET)
             if (Game.connected) {
                 bullets.forEach(element => {

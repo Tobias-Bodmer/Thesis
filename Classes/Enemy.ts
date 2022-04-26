@@ -153,8 +153,7 @@ namespace Enemy {
 
     export class EnemySmash extends Enemy {
         isAttacking = false;
-        coolDown = 2 * Game.frameRate;
-        currentCooldown = this.coolDown;
+        coolDown = new Entity.Cooldown(2 * Game.frameRate);
         avatars: Player.Player[] = [];
         randomPlayer = Math.round(Math.random());
         currentBehaviour: Entity.BEHAVIOUR = Entity.BEHAVIOUR.IDLE;
@@ -172,21 +171,16 @@ namespace Enemy {
             let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
 
             if (this.currentBehaviour == Entity.BEHAVIOUR.ATTACK && this.getCurrentFrame >= (<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["attack"]).frames.length - 1) {
-                this.isAttacking = false;
                 this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
             }
-            if (distance < 2) {
+            else if (distance < 2 && !this.isAttacking) {
                 this.currentBehaviour = Entity.BEHAVIOUR.ATTACK;
                 this.isAttacking = true;
             }
-            if (this.currentBehaviour == Entity.BEHAVIOUR.IDLE) {
-                if (this.currentCooldown > 0) {
-                    this.currentCooldown--;
-                }
-                else {
-                    this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW
-                    this.currentCooldown = this.coolDown;
-                }
+            else if (this.currentBehaviour == Entity.BEHAVIOUR.IDLE) {
+                this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW
+                this.isAttacking = false;
+
             }
         }
 
@@ -201,12 +195,18 @@ namespace Enemy {
                 case Entity.BEHAVIOUR.ATTACK:
                     this.switchAnimation(Entity.ANIMATIONSTATES.ATTACK);
                     this.moveDirection = ƒ.Vector3.ZERO();
+                    break;
+                case Entity.BEHAVIOUR.IDLE:
+                    this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
+                    this.moveDirection = ƒ.Vector3.ZERO();
+                    break;
             }
         }
     }
 
     export class EnemyDash extends Enemy {
         isAttacking = false;
+        dash = new Entity.Cooldown(3 * Game.frameRate);
         lastMoveDireciton: Game.ƒ.Vector3;
         dashCount: number = 1;
         avatars: Player.Player[] = [];
@@ -229,26 +229,25 @@ namespace Enemy {
 
             if (distance > 5) {
                 this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
-                this.isAttacking = false;
             }
-            else if (distance < 3 && !this.isAttacking) {
+            else if (distance < 3 && !this.dash.hasCoolDown) {
                 this.doDash();
             }
 
         }
 
         doDash() {
-            if (!this.isAttacking) {
-                this.isAttacking = true;
-                this.attributes.hitable = false;
-                this.attributes.speed *= 1.1;
-                setTimeout(() => {
-                    this.attributes.speed /= 1.1;
-                    this.attributes.hitable = true;
-                    this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
-                }, 300);
-            }
+            this.isAttacking = true;
+            this.attributes.hitable = false;
+            this.attributes.speed *= 1.1;
+            setTimeout(() => {
+                this.isAttacking = false;
+                this.attributes.speed /= 1.1;
+                this.attributes.hitable = true;
+                this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
+            }, 300);
         }
+
 
         moveBehaviour(): void {
             this.behaviour();
