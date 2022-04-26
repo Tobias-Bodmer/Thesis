@@ -105,8 +105,8 @@ namespace Player {
             }
 
             if (Networking.client.id != Networking.client.idHost) {
-                if (this.tick >= 1 && this.hostPositions[this.tick - 1] != undefined && this.positions[this.tick - 1] != undefined) {
-                    if (!this.hostPositions[this.tick - 1].equals(this.positions[this.tick - 1], 0.1)) {
+                if (this.tick % this.bufferSize >= 5 && this.hostPositions[this.tick % this.bufferSize - 5] != undefined && this.positions[this.tick % this.bufferSize - 5] != undefined) {
+                    if (!this.hostPositions[this.tick % this.bufferSize - 5].equals(this.positions[this.tick % this.bufferSize - 5], 0.1)) {
                         console.log("correct");
                         this.correctPosition();
                     }
