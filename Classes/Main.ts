@@ -36,7 +36,7 @@ namespace Game {
 
     export let entities: Entity.Entity[] = [];
     export let enemies: Enemy.Enemy[] = [];
-    export let bullets: Bullets.Bullet[];
+    export let bullets: Bullets.Bullet[] = [];
     export let items: Items.Item[] = [];
 
     export let coolDowns: Ability.Cooldown[] = [];
