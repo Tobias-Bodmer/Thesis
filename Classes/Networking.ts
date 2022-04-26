@@ -419,7 +419,7 @@ namespace Networking {
 
 
     //#region enemy
-    export function spawnEnemy(_enemyClass: Enemy.EnemyClass, _enemy: Enemy.Enemy, _netId: number) {
+    export function spawnEnemy(_enemyClass: Enemy.ENEMYCLASS, _enemy: Enemy.Enemy, _netId: number) {
         if (Game.connected && client.idHost == client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, enemyClass: _enemyClass, id: _enemy.id, attributes: _enemy.attributes, position: _enemy.mtxLocal.translation, netId: _netId, target: _enemy.target } })
         }

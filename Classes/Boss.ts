@@ -99,9 +99,9 @@ namespace Enemy {
         summon() {
             let target = Math.round(Math.random());
             if (target > 0) {
-                EnemySpawner.spawnByID(EnemyClass.SUMMONORADDS, Entity.ID.SMALLTICK, this.mtxLocal.translation.toVector2(), null, Game.avatar1);
+                EnemySpawner.spawnByID(ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, this.mtxLocal.translation.toVector2(), null, Game.avatar1);
             } else {
-                EnemySpawner.spawnByID(EnemyClass.SUMMONORADDS, Entity.ID.SMALLTICK, this.mtxLocal.translation.toVector2(), null, Game.avatar2);
+                EnemySpawner.spawnByID(ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, this.mtxLocal.translation.toVector2(), null, Game.avatar2);
             }
         }
     }

@@ -1,6 +1,6 @@
 namespace Enemy {
 
-    export enum EnemyClass {
+    export enum ENEMYCLASS {
         ENEMYDUMB,
         ENEMYDASH,
         ENEMYSMASH,

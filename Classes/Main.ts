@@ -47,7 +47,6 @@ namespace Game {
     //#endregion "PublicVariables"
 
     //#region "PrivateVariables"
-    let item1: Items.Item;
     let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
     let playerType: Player.PLAYERTYPE;
     const damper: number = 3.5;
@@ -84,8 +83,6 @@ namespace Game {
                 }, 100);
             }
         }
-
-
     }
 
     function update(): void {
@@ -153,7 +150,7 @@ namespace Game {
         loadTextures();
         loadJSON();
 
-        //add sprite to graphe for startscreen
+        //TODO: add sprite to graphe for startscreen
         document.getElementById("Startscreen").style.visibility = "visible";
         document.getElementById("StartGame").addEventListener("click", () => {
             document.getElementById("Startscreen").style.visibility = "hidden";
@@ -162,71 +159,12 @@ namespace Game {
 
             waitOnConnection();
 
-            async function waitOnConnection() {
-                if (Networking.client.socket.readyState == Networking.client.socket.OPEN) {
-                    Networking.setClient();
-                }
-                if (Networking.clients.filter(elem => elem.ready == true).length >= 2 && Networking.client.idHost != undefined) {
-                    if (Networking.client.id == Networking.client.idHost) {
-                        document.getElementById("IMHOST").style.visibility = "visible";
-                    }
-
-                    await init();
-                    gamestate = GAMESTATES.PLAYING;
-                    await Networking.spawnPlayer(playerType);
-                    // EnemySpawner.spawnEnemies();
-
-                    if (Networking.client.id == Networking.client.idHost) {
-                        EnemySpawner.spawnByID(Enemy.EnemyClass.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
-                    }
-
-                    //#region init Items
-                    if (Networking.client.id == Networking.client.idHost) {
-                        // item1 = new Items.BuffItem(Items.ITEMID.TOXICRELATIONSHIP, new ƒ.Vector2(0, 2), null);
-                        let item2 = new Items.InternalItem(Items.ITEMID.PROJECTILESUP, new ƒ.Vector2(0, -2), null);
-                        let item3 = new Items.InternalItem(Items.ITEMID.HOMECOMING, new ƒ.Vector2(-2, 0), null);
-
-
-                        // graph.appendChild(item1);
-                        graph.appendChild(item2);
-                        graph.appendChild(item3);
-
-                    }
-                    //#endregion
-                } else {
-                    setTimeout(waitOnConnection, 300);
-                }
-            }
-
             document.getElementById("Host").addEventListener("click", Networking.setHost);
 
             waitForHost();
 
             waitForLobby();
 
-            function waitForHost() {
-                if (Networking.clients.length >= 2) {
-                    document.getElementById("Hostscreen").style.visibility = "visible";
-                    return;
-                } else {
-                    setTimeout(() => {
-                        waitForHost();
-                    }, 200);
-                }
-            }
-
-            function waitForLobby() {
-                if (Networking.clients.length >= 2 && Networking.client.idHost != undefined && (Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id].dataChannel != undefined &&
-                    (Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id].dataChannel.readyState == "open"))) {
-                    document.getElementById("Hostscreen").style.visibility = "hidden";
-                    document.getElementById("Lobbyscreen").style.visibility = "visible";
-                    connected = true;
-                } else {
-                    setTimeout(() => {
-                        waitForLobby();
-                    }, 200);
-                }
-            }
         });
         document.getElementById("Option").addEventListener("click", () => {
             // document.getElementById("Startscreen").style.visibility = "hidden";
@@ -242,6 +180,89 @@ namespace Game {
                 document.getElementById("Startscreen").style.visibility = "visible";
             });
         });
+    }
+
+    function waitForHost() {
+        if (Networking.clients.length >= 2) {
+            document.getElementById("Hostscreen").style.visibility = "visible";
+            return;
+        } else {
+            setTimeout(() => {
+                waitForHost();
+            }, 200);
+        }
+    }
+
+    function waitForLobby() {
+        if (Networking.clients.length >= 2 && Networking.client.idHost != undefined && (Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id].dataChannel != undefined &&
+            (Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id].dataChannel.readyState == "open"))) {
+            document.getElementById("Hostscreen").style.visibility = "hidden";
+            document.getElementById("Lobbyscreen").style.visibility = "visible";
+            connected = true;
+        } else {
+            setTimeout(() => {
+                waitForLobby();
+            }, 200);
+        }
+    }
+
+    async function waitOnConnection() {
+        if (Networking.client.socket.readyState == Networking.client.socket.OPEN) {
+            Networking.setClient();
+        }
+        if (Networking.clients.filter(elem => elem.ready == true).length >= 2 && Networking.client.idHost != undefined) {
+            if (Networking.client.id == Networking.client.idHost) {
+                document.getElementById("IMHOST").style.visibility = "visible";
+            }
+
+            await init();
+            gamestate = GAMESTATES.PLAYING;
+            await Networking.spawnPlayer(playerType);
+            // EnemySpawner.spawnEnemies();
+
+            if (Networking.client.id == Networking.client.idHost) {
+                EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
+            }
+
+            //#region init Items
+            if (Networking.client.id == Networking.client.idHost) {
+                // item1 = new Items.BuffItem(Items.ITEMID.TOXICRELATIONSHIP, new ƒ.Vector2(0, 2), null);
+                let item2 = new Items.InternalItem(Items.ITEMID.PROJECTILESUP, new ƒ.Vector2(0, -2), null);
+                let item3 = new Items.InternalItem(Items.ITEMID.HOMECOMING, new ƒ.Vector2(-2, 0), null);
+
+
+                // graph.appendChild(item1);
+                graph.appendChild(item2);
+                graph.appendChild(item3);
+
+            }
+            //#endregion
+        } else {
+            setTimeout(waitOnConnection, 300);
+        }
+    }
+
+    function playerChoice(_e: Event) {
+        if ((<HTMLButtonElement>_e.target).id == "Ranged") {
+            avatar1 = new Player.Ranged(Entity.ID.RANGED, new Entity.Attributes(10, 5, 5, 1, 2, 5));
+            playerType = Player.PLAYERTYPE.RANGED;
+        }
+        if ((<HTMLButtonElement>_e.target).id == "Melee") {
+            avatar1 = new Player.Melee(Entity.ID.MELEE, new Entity.Attributes(10, 1, 5, 1, 2, 10));
+            playerType = Player.PLAYERTYPE.MELEE;
+        }
+        document.getElementById("Lobbyscreen").style.visibility = "hidden";
+
+        readySate();
+
+        function readySate() {
+            if (Networking.clients.length >= 2 && Networking.client.idHost != undefined) {
+                Networking.setClientReady();
+            }
+            if (Networking.clients.filter(elem => elem.ready == true).length < 2) {
+                setTimeout(() => { readySate() }, 200);
+            }
+        }
     }
 
     async function loadJSON() {
@@ -309,29 +330,6 @@ namespace Game {
 
 
         AnimationGeneration.generateAnimationObjects();
-    }
-
-    function playerChoice(_e: Event) {
-        if ((<HTMLButtonElement>_e.target).id == "Ranged") {
-            avatar1 = new Player.Ranged(Entity.ID.RANGED, new Entity.Attributes(10, 5, 5, 1, 2, 5));
-            playerType = Player.PLAYERTYPE.RANGED;
-        }
-        if ((<HTMLButtonElement>_e.target).id == "Melee") {
-            avatar1 = new Player.Melee(Entity.ID.MELEE, new Entity.Attributes(10, 1, 5, 1, 2, 10));
-            playerType = Player.PLAYERTYPE.MELEE;
-        }
-        document.getElementById("Lobbyscreen").style.visibility = "hidden";
-
-        readySate();
-
-        function readySate() {
-            if (Networking.clients.length >= 2 && Networking.client.idHost != undefined) {
-                Networking.setClientReady();
-            }
-            if (Networking.clients.filter(elem => elem.ready == true).length < 2) {
-                setTimeout(() => { readySate() }, 200);
-            }
-        }
     }
 
     function draw(): void {

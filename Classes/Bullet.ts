@@ -173,11 +173,12 @@ namespace Bullets {
         async collisionDetection() {
             let newPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
             this.collider.position = newPosition;
-            let colliders: any[] = [];
+            let colliders: ƒ.Node[] = [];
             if (this._owner.tag == Tag.TAG.PLAYER) {
                 colliders = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY);
             }
-            colliders.forEach((element) => {
+            colliders.forEach((_elem) => {
+                let element: Enemy.Enemy = (<Enemy.Enemy>_elem);
                 if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
                     if ((<Enemy.Enemy>element).attributes.healthPoints > 0) {
                         if (element instanceof Enemy.SummonorAdds) {
@@ -197,7 +198,8 @@ namespace Bullets {
             })
             if (this._owner.tag == Tag.TAG.ENEMY) {
                 colliders = Game.graph.getChildren().filter(element => (<Player.Player>element).tag == Tag.TAG.PLAYER);
-                colliders.forEach((element) => {
+                colliders.forEach((_elem) => {
+                    let element: Player.Player = (<Player.Player>_elem);
                     if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
                         if ((<Player.Player>element).attributes.healthPoints > 0 && (<Player.Player>element).attributes.hitable) {
                             (<Player.Player>element).getDamage(this.hitPointsScale);
@@ -212,7 +214,8 @@ namespace Bullets {
 
             colliders = [];
             colliders = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.TAG.ROOM)).walls;
-            colliders.forEach((element) => {
+            colliders.forEach((_elem) => {
+                let element: Generation.Wall = (<Generation.Wall>_elem);
                 if (this.collider.collidesRect(element.collider)) {
                     this.lifetime = 0;
                 }

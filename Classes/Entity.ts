@@ -80,7 +80,7 @@ namespace Entity {
             this.calculateCollider(wallColliders, mewDirection);
         }
 
-        public calculateCollider(_collider: any[], _direction: ƒ.Vector3) {
+        public calculateCollider(_collider: Collider.Collider[] | Game.ƒ.Rectangle[], _direction: ƒ.Vector3) {
             _collider.forEach((element) => {
                 if (element instanceof Collider.Collider) {
                     if (this.collider.collides(element)) {
