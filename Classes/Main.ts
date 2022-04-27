@@ -240,8 +240,9 @@ namespace Game {
 
             waitForLobby();
             function waitForLobby() {
-                if (Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id] != undefined && (Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id].dataChannel != undefined &&
-                    (Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id].dataChannel.readyState == "open"))) {
+                if (Networking.clients.length > 1 && Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id] != undefined &&
+                    (Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id].dataChannel != undefined &&
+                        (Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id].dataChannel.readyState == "open"))) {
                     document.getElementById("Hostscreen").style.visibility = "hidden";
                     document.getElementById("Lobbyscreen").style.visibility = "visible";
                     connected = true;
