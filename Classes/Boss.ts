@@ -75,6 +75,7 @@ namespace Enemy {
         }
 
         defencePhase(): void {
+            //TODO: make if dependent from teleport animation frame
             if (!this.mtxLocal.translation.equals(new ƒ.Vector2(0, -13).toVector3(), 1)) {
                 this.moveDirection = this.moveSimple(new ƒ.Vector2(0, -13)).toVector3();
             } else {

@@ -240,7 +240,7 @@ namespace Game {
 
             waitForLobby();
             function waitForLobby() {
-                if (Networking.clients.length >= 2 && Networking.client.idHost != undefined && (Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id].dataChannel != undefined &&
+                if (Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id] != undefined && (Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id].dataChannel != undefined &&
                     (Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id].dataChannel.readyState == "open"))) {
                     document.getElementById("Hostscreen").style.visibility = "hidden";
                     document.getElementById("Lobbyscreen").style.visibility = "visible";
