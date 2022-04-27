@@ -3,7 +3,7 @@ namespace Networking {
         protected timer: number = 0;
         protected currentTick: number = 0;
         protected minTimeBetweenTicks: number;
-        protected gameTickRate: number = 60
+        protected gameTickRate: number = 60;
         protected bufferSize: number = 1024;
 
         protected ownerNetId: number; get owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.ownerNetId) };
@@ -22,11 +22,15 @@ namespace Networking {
         protected processMovement(input: Interfaces.InputPayload): Interfaces.StatePayload {
             //TODO: implement whole movement calculation inclusive collision
             //do movement 
-            if (input.inputVector.magnitude != 0) {
-                input.inputVector.normalize();
+            console.log(input.inputVector.magnitude);
+            let cloneInputVector = input.inputVector.clone;
+            if (cloneInputVector.magnitude > 0) {
+                cloneInputVector.normalize();
                 // input.inputVector.scale(1 / Game.frameRate * this.owner.attributes.speed);
             }
-            (<Player.Player>this.owner).move(input.inputVector);
+            (<Player.Player>this.owner).move(cloneInputVector);
+            // (<Player.Player>this.owner).mtxLocal.translate(input.inputVector);
+
 
             let newStatePayload: Interfaces.StatePayload = { tick: input.tick, position: this.owner.mtxLocal.translation }
             return newStatePayload;
@@ -41,7 +45,7 @@ namespace Networking {
         private horizontalInput: number;
         private verticalInput: number;
 
-        private AsyncTolerance: number = 0.01;
+        private AsyncTolerance: number = 0.0001;
 
 
         constructor(_ownerNetId: number) {
@@ -54,7 +58,7 @@ namespace Networking {
             this.horizontalInput = InputSystem.move().x;
             this.verticalInput = InputSystem.move().y;
             this.timer += Game.ƒ.Loop.timeFrameGame * 0.001;
-            while (this.timer > this.minTimeBetweenTicks) {
+            while (this.timer >= this.minTimeBetweenTicks) {
                 this.timer -= this.minTimeBetweenTicks;
                 this.handleTick();
                 this.currentTick++;
@@ -89,7 +93,7 @@ namespace Networking {
             let positionError: number = Game.ƒ.Vector3.DIFFERENCE(this.latestServerState.position, this.stateBuffer[serverStateBufferIndex].position).magnitude;
             if (positionError > this.AsyncTolerance) {
                 console.warn("you need to be updated to: X:" + this.latestServerState.position.x + " Y: " + this.latestServerState.position.y);
-
+                console.warn(this.latestServerState.position.x, this.latestServerState.position.y);
                 this.owner.mtxLocal.translation = this.latestServerState.position;
 
                 this.stateBuffer[serverStateBufferIndex] = this.latestServerState;
@@ -122,7 +126,7 @@ namespace Networking {
 
         public update() {
             this.timer += Game.ƒ.Loop.timeFrameGame * 0.001;
-            while (this.timer > this.minTimeBetweenTicks) {
+            while (this.timer >= this.minTimeBetweenTicks) {
                 this.timer -= this.minTimeBetweenTicks;
                 this.handleTick();
                 this.currentTick++;
@@ -132,7 +136,6 @@ namespace Networking {
         handleTick() {
 
             let bufferIndex = -1;
-            console.log(this.inputQueue.getQueueLength());
             while (this.inputQueue.getQueueLength() > 0) {
                 let inputPayload: Interfaces.InputPayload = this.inputQueue.dequeue();
 
