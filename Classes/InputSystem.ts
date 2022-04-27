@@ -46,6 +46,14 @@ namespace InputSystem {
                 ability();
             }
         }
+
+        if (_e.code.toUpperCase() != "ESC") {
+            if (Game.gamestate == Game.GAMESTATES.PLAYING) {
+                Game.pause(true, true);
+            } else {
+                Game.playing(true, true);
+            }
+        }
     }
 
     function keyboardUpEvent(_e: KeyboardEvent) {

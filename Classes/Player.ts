@@ -21,8 +21,8 @@ namespace Player {
 
         public move(_direction: ƒ.Vector3) {
 
-            if (_direction.magnitude != 0) {
-                _direction = Game.ƒ.Vector3.NORMALIZATION(_direction, 1)
+            if (_direction.magnitude > 0) {
+                _direction.normalize();
                 this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
             }
             else if (_direction.magnitude == 0) {

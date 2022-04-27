@@ -17,6 +17,7 @@ namespace Game {
     export let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("Canvas");
     // window.addEventListener("load", init);
     window.addEventListener("load", start);
+
     document.getElementById("Ranged").addEventListener("click", playerChoice);
     document.getElementById("Melee").addEventListener("click", playerChoice);
     //#endregion "DomElements"
@@ -79,6 +80,8 @@ namespace Game {
     }
 
     function update(): void {
+
+        pauseCheck();
 
         if (Game.gamestate == Game.GAMESTATES.PLAYING) {
             InputSystem.move();
@@ -250,8 +253,14 @@ namespace Game {
 
         });
         document.getElementById("Option").addEventListener("click", () => {
-            // document.getElementById("Startscreen").style.visibility = "hidden";
-            // document.getElementById("Optionscreen").style.visibility = "visible";
+            document.getElementById("Startscreen").style.visibility = "hidden";
+            document.getElementById("Optionscreen").style.visibility = "visible";
+
+            document.getElementById("BackOption").addEventListener("click", () => {
+                document.getElementById("Creditscreen").style.visibility = "hidden";
+                document.getElementById("Optionscreen").style.visibility = "hidden";
+                document.getElementById("Startscreen").style.visibility = "visible";
+            });
         });
         document.getElementById("Credits").addEventListener("click", () => {
             document.getElementById("Startscreen").style.visibility = "hidden";
@@ -277,6 +286,54 @@ namespace Game {
         document.getElementById("Lobbyscreen").style.visibility = "hidden";
         readySate();
 
+    }
+
+    function pauseCheck() {
+        if ((window.screenX < -window.screen.availWidth) && (window.screenY < -window.screen.availHeight)) {
+            pause(true, false);
+
+            setTimeout(() => {
+                pauseCheck();
+            }, 100);
+        } else {
+            playing(true, false);
+        }
+    }
+
+    export function pause(_sync: boolean, _triggerOption: boolean) {
+        if (gamestate == GAMESTATES.PLAYING) {
+            console.warn("pause");
+            if (_sync) {
+                Networking.setGamestate(false);
+            } if (_triggerOption) {
+                document.getElementById("Optionscreen").style.visibility = "visible";
+
+                let back = document.getElementById("BackOption");
+                let backClone = back.cloneNode(true);
+
+                back.parentNode.replaceChild(backClone, back);
+
+                document.getElementById("BackOption").addEventListener("click", () => {
+                    document.getElementById("Optionscreen").style.visibility = "hidden";
+                });
+            }
+            gamestate = GAMESTATES.PAUSE;
+            ƒ.Loop.stop();
+        }
+    }
+
+    export function playing(_sync: boolean, _triggerOption: boolean) {
+        if (gamestate == GAMESTATES.PAUSE) {
+            console.warn("playing");
+            if (_sync) {
+                Networking.setGamestate(true);
+            }
+            if (_triggerOption) {
+                document.getElementById("Optionscreen").style.visibility = "hidden";
+            }
+            gamestate = GAMESTATES.PLAYING;
+            ƒ.Loop.continue();
+        }
     }
 
     async function loadJSON() {

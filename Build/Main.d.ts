@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -27,6 +27,8 @@ declare namespace Game {
     let buffItemJSON: Items.BuffItem[];
     let bulletsJSON: Bullets.Bullet[];
     let loaded: boolean;
+    function pause(_sync: boolean, _triggerOption: boolean): void;
+    function playing(_sync: boolean, _triggerOption: boolean): void;
     function loadTextures(): Promise<void>;
     function cameraUpdate(): void;
 }
@@ -560,32 +562,33 @@ declare namespace Level {
 declare namespace Networking {
     enum FUNCTION {
         CONNECTED = 0,
-        LOADED = 1,
-        HOST = 2,
-        SETREADY = 3,
-        SPAWN = 4,
-        TRANSFORM = 5,
-        CLIENTMOVEMENT = 6,
-        SERVERBUFFER = 7,
-        UPDATEINVENTORY = 8,
-        KNOCKBACKREQUEST = 9,
-        KNOCKBACKPUSH = 10,
-        SPAWNBULLET = 11,
-        BULLETPREDICTION = 12,
-        BULLETTRANSFORM = 13,
-        BULLETDIE = 14,
-        SPAWNENEMY = 15,
-        ENEMYTRANSFORM = 16,
-        ENTITYANIMATIONSTATE = 17,
-        ENEMYDIE = 18,
-        SPAWNINTERNALITEM = 19,
-        UPDATEATTRIBUTES = 20,
-        UPDATEWEAPON = 21,
-        ITEMDIE = 22,
-        SENDROOM = 23,
-        SWITCHROOMREQUEST = 24,
-        UPDATEBUFF = 25,
-        UPDATEUI = 26
+        SETGAMESTATE = 1,
+        LOADED = 2,
+        HOST = 3,
+        SETREADY = 4,
+        SPAWN = 5,
+        TRANSFORM = 6,
+        CLIENTMOVEMENT = 7,
+        SERVERBUFFER = 8,
+        UPDATEINVENTORY = 9,
+        KNOCKBACKREQUEST = 10,
+        KNOCKBACKPUSH = 11,
+        SPAWNBULLET = 12,
+        BULLETPREDICTION = 13,
+        BULLETTRANSFORM = 14,
+        BULLETDIE = 15,
+        SPAWNENEMY = 16,
+        ENEMYTRANSFORM = 17,
+        ENTITYANIMATIONSTATE = 18,
+        ENEMYDIE = 19,
+        SPAWNINTERNALITEM = 20,
+        UPDATEATTRIBUTES = 21,
+        UPDATEWEAPON = 22,
+        ITEMDIE = 23,
+        SENDROOM = 24,
+        SWITCHROOMREQUEST = 25,
+        UPDATEBUFF = 26,
+        UPDATEUI = 27
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -599,6 +602,7 @@ declare namespace Networking {
     let currentIDs: number[];
     function connecting(): void;
     function setClientReady(): void;
+    function setGamestate(_playing: boolean): void;
     function setHost(): void;
     function loaded(): void;
     function spawnPlayer(_type?: Player.PLAYERTYPE): void;
