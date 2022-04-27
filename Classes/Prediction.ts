@@ -23,11 +23,12 @@ namespace Networking {
             //TODO: implement whole movement calculation inclusive collision
             //do movement 
             console.log(input.inputVector.magnitude);
-            if (input.inputVector.magnitude > 0) {
-                input.inputVector.normalize();
+            let cloneInputVector = input.inputVector.clone;
+            if (cloneInputVector.magnitude > 0) {
+                cloneInputVector.normalize();
                 // input.inputVector.scale(1 / Game.frameRate * this.owner.attributes.speed);
-                (<Player.Player>this.owner).move(input.inputVector);
             }
+            (<Player.Player>this.owner).move(cloneInputVector);
             // (<Player.Player>this.owner).mtxLocal.translate(input.inputVector);
 
 
@@ -44,7 +45,7 @@ namespace Networking {
         private horizontalInput: number;
         private verticalInput: number;
 
-        private AsyncTolerance: number = 1;
+        private AsyncTolerance: number = 0.0001;
 
 
         constructor(_ownerNetId: number) {
