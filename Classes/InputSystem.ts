@@ -47,7 +47,7 @@ namespace InputSystem {
             }
         }
 
-        if (_e.code.toUpperCase() != "ESC") {
+        if (_e.code.toUpperCase() == "ESCAPE") {
             if (Game.gamestate == Game.GAMESTATES.PLAYING) {
                 Game.pause(true, true);
             } else {

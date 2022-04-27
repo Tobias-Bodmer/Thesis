@@ -85,6 +85,7 @@ namespace Game {
 
         if (Game.gamestate == Game.GAMESTATES.PLAYING) {
             InputSystem.move();
+
             Game.avatar1.predict();
             if (Networking.client.id == Networking.client.idHost) {
                 avatar2.getItemCollision();
