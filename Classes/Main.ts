@@ -95,11 +95,11 @@ namespace Game {
 
 
             if (Game.connected) {
-                if (Networking.client.id != Networking.client.idHost) {
+                if (Networking.client.id == Networking.client.idHost) {
                     // Game.avatar1.avatarPrediction();
+                    Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
                 }
 
-                Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
             }
 
             //#region count items
