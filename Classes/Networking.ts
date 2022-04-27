@@ -91,8 +91,8 @@ namespace Networking {
                         let inputVector = new Game.ƒ.Vector3(message.content.vector.data[0], message.content.vector.data[1], message.content.vector.data[2]);
                         let input: Interfaces.InputPayload = { tick: message.content.tick, inputVector: inputVector }
                         if (entity != undefined) {
-                            (<Player.Player>entity).server.onClientInput(input);
                             (<Player.Player>entity).server.updateEntityToCheck(message.content.netId);
+                            (<Player.Player>entity).server.onClientInput(input);
                         }
                     }
 

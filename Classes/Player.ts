@@ -30,9 +30,7 @@ namespace Player {
             }
 
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
-
             _direction.scale((1 / 60 * this.attributes.speed));
-
             this.moveDirection.add(_direction);
 
             this.collide(this.moveDirection);
@@ -53,6 +51,7 @@ namespace Player {
                 this.client.update();
             }
             else {
+                this.move(InputSystem.move());
                 this.server.update();
             }
         }
@@ -72,13 +71,13 @@ namespace Player {
             this.calculateCollider(enemiesCollider, _direction);
 
             if (this.canMoveX && this.canMoveY) {
-                this.cmpTransform.mtxLocal.translate(_direction, false);
+                this.cmpTransform.mtxLocal.translate(_direction);
             } else if (this.canMoveX && !this.canMoveY) {
                 _direction = new ƒ.Vector3(_direction.x, 0, _direction.z)
-                this.cmpTransform.mtxLocal.translate(_direction, false);
+                this.cmpTransform.mtxLocal.translate(_direction);
             } else if (!this.canMoveX && this.canMoveY) {
                 _direction = new ƒ.Vector3(0, _direction.y, _direction.z)
-                this.cmpTransform.mtxLocal.translate(_direction, false);
+                this.cmpTransform.mtxLocal.translate(_direction);
             }
         }
 

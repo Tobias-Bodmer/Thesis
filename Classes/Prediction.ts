@@ -20,12 +20,14 @@ namespace Networking {
         }
 
         protected processMovement(input: Interfaces.InputPayload): Interfaces.StatePayload {
-            //do movement
+            //TODO: implement whole movement calculation inclusive collision
+            //do movement 
             if (input.inputVector.magnitude != 0) {
                 input.inputVector.normalize();
-                input.inputVector.scale(1 / Game.frameRate * this.owner.attributes.speed);
+                // input.inputVector.scale(1 / Game.frameRate * this.owner.attributes.speed);
             }
-            this.owner.mtxLocal.translate(input.inputVector);
+            (<Player.Player>this.owner).move(input.inputVector);
+
             let newStatePayload: Interfaces.StatePayload = { tick: input.tick, position: this.owner.mtxLocal.translation }
             return newStatePayload;
         }
