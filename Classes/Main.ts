@@ -47,6 +47,8 @@ namespace Game {
 
     export let bulletsJSON: Bullets.Bullet[];
     export let loaded = false;
+
+
     //#endregion "PublicVariables"
 
     //#region "PrivateVariables"
@@ -80,6 +82,7 @@ namespace Game {
 
         if (Game.gamestate == Game.GAMESTATES.PLAYING) {
             InputSystem.move();
+            Game.avatar1.predict();
             if (Networking.client.id == Networking.client.idHost) {
                 avatar2.getItemCollision();
             }
@@ -177,7 +180,7 @@ namespace Game {
         document.getElementById("StartGame").addEventListener("click", () => {
             document.getElementById("Startscreen").style.visibility = "hidden";
 
-            Networking.conneting();
+            Networking.connecting();
 
             waitOnConnection();
             async function waitOnConnection() {

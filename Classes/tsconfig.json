@@ -63,6 +63,7 @@
     "Interfaces.ts",
     "Items.ts",
     "AnimationGeneration.ts",
+    "Prediction.ts",
     "./"
   ]
 }

@@ -16,4 +16,14 @@ namespace Interfaces {
     export interface IDamageable {
         getDamage(): void;
     }
+
+    export interface InputPayload {
+        tick: number;
+        inputVector: Game.ƒ.Vector3;
+    }
+
+    export interface StatePayload {
+        tick: number;
+        position: Game.ƒ.Vector3;
+    }
 }

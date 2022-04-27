@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -221,6 +221,14 @@ declare namespace Interfaces {
     interface IDamageable {
         getDamage(): void;
     }
+    interface InputPayload {
+        tick: number;
+        inputVector: Game.ƒ.Vector3;
+    }
+    interface StatePayload {
+        tick: number;
+        position: Game.ƒ.Vector3;
+    }
 }
 declare namespace Items {
     enum ITEMID {
@@ -311,6 +319,42 @@ declare namespace AnimationGeneration {
     export function getAnimationById(_id: Entity.ID): AnimationContainer;
     export function generateAnimationFromGrid(_class: MyAnimationClass): void;
     export {};
+}
+declare namespace Networking {
+    abstract class Prediction {
+        protected timer: number;
+        protected currentTick: number;
+        protected minTimeBetweenTicks: number;
+        protected gameTickRate: number;
+        protected bufferSize: number;
+        protected ownerNetId: number;
+        get owner(): Entity.Entity;
+        protected stateBuffer: Interfaces.StatePayload[];
+        constructor(_ownerNetId: number);
+        protected handleTick(): void;
+        protected processMovement(input: Interfaces.InputPayload): Interfaces.StatePayload;
+    }
+    class ClientPrediction extends Prediction {
+        private inputBuffer;
+        private latestServerState;
+        private lastProcessedState;
+        private horizontalInput;
+        private verticalInput;
+        private AsyncTolerance;
+        constructor(_ownerNetId: number);
+        update(): void;
+        protected handleTick(): void;
+        onServerMovementState(_serverState: Interfaces.StatePayload): void;
+        private handleServerReconciliation;
+    }
+    class ServerPrediction extends Prediction {
+        private inputQueue;
+        constructor(_ownerNetId: number);
+        updateEntityToCheck(_netId: number): void;
+        update(): void;
+        handleTick(): void;
+        onClientInput(inputPayload: Interfaces.InputPayload): void;
+    }
 }
 declare namespace Ability {
     abstract class Ability {
@@ -506,7 +550,7 @@ declare namespace Calculation {
 }
 declare namespace InputSystem {
     function calcPositionFromDegree(_degrees: number, _distance: number): ƒ.Vector2;
-    function move(): void;
+    function move(): Game.ƒ.Vector3;
 }
 declare namespace Level {
     class Landscape extends ƒ.Node {
@@ -521,26 +565,27 @@ declare namespace Networking {
         SETREADY = 3,
         SPAWN = 4,
         TRANSFORM = 5,
-        AVATARPREDICTION = 6,
-        UPDATEINVENTORY = 7,
-        KNOCKBACKREQUEST = 8,
-        KNOCKBACKPUSH = 9,
-        SPAWNBULLET = 10,
-        BULLETPREDICTION = 11,
-        BULLETTRANSFORM = 12,
-        BULLETDIE = 13,
-        SPAWNENEMY = 14,
-        ENEMYTRANSFORM = 15,
-        ENTITYANIMATIONSTATE = 16,
-        ENEMYDIE = 17,
-        SPAWNINTERNALITEM = 18,
-        UPDATEATTRIBUTES = 19,
-        UPDATEWEAPON = 20,
-        ITEMDIE = 21,
-        SENDROOM = 22,
-        SWITCHROOMREQUEST = 23,
-        UPDATEBUFF = 24,
-        UPDATEUI = 25
+        CLIENTMOVEMENT = 6,
+        SERVERBUFFER = 7,
+        UPDATEINVENTORY = 8,
+        KNOCKBACKREQUEST = 9,
+        KNOCKBACKPUSH = 10,
+        SPAWNBULLET = 11,
+        BULLETPREDICTION = 12,
+        BULLETTRANSFORM = 13,
+        BULLETDIE = 14,
+        SPAWNENEMY = 15,
+        ENEMYTRANSFORM = 16,
+        ENTITYANIMATIONSTATE = 17,
+        ENEMYDIE = 18,
+        SPAWNINTERNALITEM = 19,
+        UPDATEATTRIBUTES = 20,
+        UPDATEWEAPON = 21,
+        ITEMDIE = 22,
+        SENDROOM = 23,
+        SWITCHROOMREQUEST = 24,
+        UPDATEBUFF = 25,
+        UPDATEUI = 26
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -552,14 +597,15 @@ declare namespace Networking {
     let someoneIsHost: boolean;
     let enemy: Enemy.Enemy;
     let currentIDs: number[];
-    function conneting(): void;
+    function connecting(): void;
     function setClientReady(): void;
     function setHost(): void;
     function loaded(): void;
     function spawnPlayer(_type?: Player.PLAYERTYPE): void;
     function setClient(): void;
     function updateAvatarPosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3): void;
-    function avatarPrediction(_position: Game.ƒ.Vector3, _tick: number): void;
+    function sendClientInput(_netId: number, _inputPayload: Interfaces.InputPayload): void;
+    function sendServerBuffer(_netId: number, _buffer: Interfaces.StatePayload): void;
     function knockbackRequest(_netId: number, _knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function knockbackPush(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function updateInventory(_itemId: Items.ITEMID, _itemNetId: number, _netId: number): void;
@@ -589,19 +635,15 @@ declare namespace Player {
     }
     abstract class Player extends Entity.Entity implements Interfaces.IKnockbackable {
         weapon: Weapons.Weapon;
-        tick: number;
-        bufferSize: number;
-        positions: ƒ.Vector3[];
-        hostPositions: ƒ.Vector3[];
-        time: number;
+        client: Networking.ClientPrediction;
+        server: Networking.ServerPrediction;
         readonly abilityCount: number;
         currentabilityCount: number;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _netId?: number);
         move(_direction: ƒ.Vector3): void;
+        predict(): void;
         collide(_direction: Game.ƒ.Vector3): void;
         getItemCollision(): void;
-        avatarPrediction(): void;
-        correctPosition(): Promise<void>;
         attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
         doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: ƒ.Vector3): void;

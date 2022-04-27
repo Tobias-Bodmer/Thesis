@@ -7,18 +7,16 @@ namespace Player {
     export abstract class Player extends Entity.Entity implements Interfaces.IKnockbackable {
         public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId, Weapons.AIM.NORMAL);
 
-        public tick: number = 0;
-        public bufferSize: number = 1024;
-        public positions: ƒ.Vector3[] = [];
-        public hostPositions: ƒ.Vector3[] = [];
-        time: number = 0;
-
+        public client: Networking.ClientPrediction;
+        public server: Networking.ServerPrediction;
         readonly abilityCount: number = 1;
         currentabilityCount: number = this.abilityCount;
 
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _netId?: number) {
             super(_id, _attributes, _netId);
             this.tag = Tag.TAG.PLAYER;
+            this.client = new Networking.ClientPrediction(this.netId);
+            this.server = new Networking.ServerPrediction(this.netId);
         }
 
         public move(_direction: ƒ.Vector3) {
@@ -47,6 +45,16 @@ namespace Player {
             });
 
             this.moveDirection.subtract(_direction);
+
+        }
+
+        public predict() {
+            if (Networking.client.idHost != Networking.client.id) {
+                this.client.update();
+            }
+            else {
+                this.server.update();
+            }
         }
 
         collide(_direction: Game.ƒ.Vector3): void {
@@ -92,48 +100,8 @@ namespace Player {
             })
         }
 
-        avatarPrediction() {
-            this.time += Game.ƒ.Loop.timeFrameGame * 0.001;
-
-           
-            if (this.hostPositions.length >= this.bufferSize) {
-                this.hostPositions = [];
-            }
-
-            while (this.time >= (1 / Game.frameRate)) {
-                this.positions[this.tick % this.bufferSize] = (new ƒ.Vector3(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.translation.z));
-                if (Game.connected) {
-                    Networking.avatarPrediction(this.cmpTransform.mtxLocal.translation, this.tick);
-                }
-                this.tick++;
-                this.time -= (1 / Game.frameRate);
-            }
-
-            if (Networking.client.id != Networking.client.idHost) {
-                if (this.tick % this.bufferSize >= 5 && this.hostPositions[this.tick % this.bufferSize - 5] != undefined && this.positions[this.tick % this.bufferSize - 5] != undefined) {
-                    if (!this.hostPositions[this.tick % this.bufferSize - 5].equals(this.positions[this.tick % this.bufferSize - 5], 0.1)) {
-                        this.correctPosition();
-                    }
-                }
-            }
 
 
-            // if (this.hostPositions.length >= 3) {
-            //     this.hostPositions.slice(0, 1);
-            // }
-            // if (this.positions.length >= 3) {
-            //     this.positions.slice(0, 1);
-            // }
-        }
-
-        async correctPosition() {
-            if (this.hostPositions[this.tick % this.bufferSize] != undefined) {
-                this.cmpTransform.mtxLocal.translation = this.hostPositions[this.tick % this.bufferSize];
-                console.log("correct");
-            } else {
-                setTimeout(() => { this.correctPosition }, 100);
-            }
-        }
 
         public attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean) {
             this.weapon.shoot(this.mtxLocal.translation.toVector2(), _direction, _netId, _sync);

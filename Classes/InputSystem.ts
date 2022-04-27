@@ -55,7 +55,7 @@ namespace InputSystem {
         }
     }
 
-    export function move() {
+    export function move(): Game.ƒ.Vector3 {
         let moveVector: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
 
         if (controller.get("W")) {
@@ -71,7 +71,8 @@ namespace InputSystem {
             moveVector.x += 1;
         }
 
-        Game.avatar1.move(moveVector);
+        // Game.avatar1.move(moveVector);
+        return moveVector;
     }
 
     function ability() {
@@ -88,7 +89,7 @@ namespace InputSystem {
                     //left mouse button player.attack
                     let direction: Game.ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(mousePosition, Game.avatar1.mtxLocal.translation);
                     rotateToMouse(e_);
-            // console.clear();
+                    // console.clear();
                     Game.avatar1.attack(direction, null, true);
                     break;
                 case 2:
