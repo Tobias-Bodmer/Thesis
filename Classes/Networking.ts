@@ -3,6 +3,7 @@
 namespace Networking {
     export enum FUNCTION {
         CONNECTED,
+        SETGAMESTATE,
         LOADED,
         HOST,
         SETREADY,
@@ -72,6 +73,11 @@ namespace Networking {
                 Game.loaded = true;
             }
 
+            if (message.command == FudgeNet.COMMAND.SERVER_HEARTBEAT) {
+                //TODO: need maurice!
+                //TODO: do prediction here?
+            }
+
             if (message.idSource != client.id) {
                 if (message.command != FudgeNet.COMMAND.SERVER_HEARTBEAT && message.command != FudgeNet.COMMAND.CLIENT_HEARTBEAT) {
                     //Add new client to array clients
@@ -80,6 +86,15 @@ namespace Networking {
                             if (clients.find(elem => elem.id == message.content.value) == null) {
                                 clients.push({ id: message.content.value, ready: false });
                             }
+                        }
+                    }
+
+                    if (message.content != undefined && message.content.text == FUNCTION.SETGAMESTATE.toString()) {
+                        console.log("Networking:" + message.content.playing);
+                        if (message.content.playing) {
+                            Game.playing(false, true);
+                        } else if (!message.content.playing) {
+                            Game.pause(false, true);
                         }
                     }
 
@@ -371,6 +386,10 @@ namespace Networking {
     export function setClientReady() {
         clients.find(element => element.id == client.id).ready = true;
         client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SETREADY, netId: client.id } });
+    }
+
+    export function setGamestate(_playing: boolean) {
+        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.SETGAMESTATE, playing: _playing } });
     }
 
 

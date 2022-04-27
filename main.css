@@ -78,8 +78,8 @@ canvas {
 #Optionscreen {
     position: absolute;
     visibility: hidden;
-    top: 100px;
-    left: 10px;
+    top: 121px;
+    left: 9px;
     height: 600px;
     width: 1000px;
     font-family: 'MinecraftiaRegular';
