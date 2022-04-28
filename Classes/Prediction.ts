@@ -22,18 +22,15 @@ namespace Networking {
         protected processMovement(input: Interfaces.InputPayload): Interfaces.StatePayload {
             //TODO: implement whole movement calculation inclusive collision
             //do movement 
-            let cloneInputVector = input.inputVector.clone;
-            if (cloneInputVector.magnitude > 0) {
-                cloneInputVector.normalize();
-                // input.inputVector.scale(1 / Game.frameRate * this.owner.attributes.speed);
+            if (input != undefined) {
+                let cloneInputVector = input.inputVector.clone;
+                if (cloneInputVector.magnitude > 0) {
+                    cloneInputVector.normalize();
+                }
+                (<Player.Player>this.owner).move(cloneInputVector);
+          
             }
-            // console.log((<Player.Player>this.owner).mtxLocal.translation.clone.toString());
-            (<Player.Player>this.owner).move(cloneInputVector);
-            // console.log((<Player.Player>this.owner).mtxLocal.translation.clone.toString());
-
-
-            // cloneInputVector.scale((this.minTimeBetweenTicks * this.owner.attributes.speed));
-            // (<Player.Player>this.owner).mtxLocal.translate(cloneInputVector);
+         
 
 
             let newStatePayload: Interfaces.StatePayload = { tick: input.tick, position: this.owner.mtxLocal.translation }
@@ -82,7 +79,7 @@ namespace Networking {
             this.stateBuffer[bufferIndex] = this.processMovement(inputPayload);
 
             //send inputPayload to host
-                Networking.sendClientInput(this.ownerNetId, inputPayload);
+            Networking.sendClientInput(this.ownerNetId, inputPayload);
         }
 
 
