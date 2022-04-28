@@ -71,12 +71,8 @@ namespace Networking {
 
             let inputPayload: Interfaces.InputPayload = { tick: this.currentTick, inputVector: new ƒ.Vector3(this.horizontalInput, this.verticalInput, 0) };
             this.inputBuffer[bufferIndex] = inputPayload;
-
-            try {
-                this.stateBuffer[bufferIndex] = this.processMovement(inputPayload);
-            } catch (error) {
-                console.log(inputPayload);
-            }
+            console.log(inputPayload.tick + "___" + inputPayload.inputVector.clone);
+            this.stateBuffer[bufferIndex] = this.processMovement(inputPayload);
 
             //send inputPayload to host
             Networking.sendClientInput(this.ownerNetId, inputPayload);
