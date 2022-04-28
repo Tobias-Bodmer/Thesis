@@ -30,7 +30,13 @@ namespace Player {
             }
 
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
-            _direction.scale((1 / 60 * this.attributes.speed));
+
+            if (Networking.client.id == Networking.client.idHost && this == Game.avatar1) {
+                _direction.scale((1 / Game.frameRate * this.attributes.speed));
+            } else {
+                _direction.scale((this.client.minTimeBetweenTicks * this.attributes.speed));
+
+            }
             this.moveDirection.add(_direction);
 
             this.collide(this.moveDirection);

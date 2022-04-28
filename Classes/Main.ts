@@ -25,6 +25,7 @@ namespace Game {
     //#region "PublicVariables"
     export let gamestate: GAMESTATES = GAMESTATES.PAUSE;
     export let viewport: ƒ.Viewport = new ƒ.Viewport();
+    export let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
     export let graph: ƒ.Node = new ƒ.Node("Graph");
 
     export let avatar1: Player.Player;
@@ -53,7 +54,6 @@ namespace Game {
     //#endregion "PublicVariables"
 
     //#region "PrivateVariables"
-    let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
     let playerType: Player.PLAYERTYPE;
     const damper: number = 3.5;
     //#endregion "PrivateVariables"
@@ -71,6 +71,7 @@ namespace Game {
 
         ƒAid.addStandardLightComponents(graph);
 
+        cmpCamera.mtxPivot.translation = ƒ.Vector3.ZERO();
         cmpCamera.mtxPivot.translateZ(25);
         cmpCamera.mtxPivot.rotateY(180);
 
@@ -304,7 +305,6 @@ namespace Game {
 
     export function pause(_sync: boolean, _triggerOption: boolean) {
         if (gamestate == GAMESTATES.PLAYING) {
-            console.warn("pause");
             if (_sync) {
                 Networking.setGamestate(false);
             } if (_triggerOption) {
@@ -326,7 +326,6 @@ namespace Game {
 
     export function playing(_sync: boolean, _triggerOption: boolean) {
         if (gamestate == GAMESTATES.PAUSE) {
-            console.warn("playing");
             if (_sync) {
                 Networking.setGamestate(true);
             }
@@ -407,11 +406,16 @@ namespace Game {
 
     function draw(): void {
         viewport.draw();
+        console.log("----------------------------------------------------------------------------------------------------");
     }
 
     export function cameraUpdate() {
-        let direction = ƒ.Vector2.DIFFERENCE(avatar1.cmpTransform.mtxLocal.translation.toVector2(), cmpCamera.mtxPivot.translation.toVector2());
-        direction.scale(1 / frameRate * damper);
+        let direction = ƒ.Vector2.DIFFERENCE(avatar1.mtxLocal.translation.toVector2(), cmpCamera.mtxPivot.translation.toVector2());
+        if (Networking.client.id == Networking.client.idHost) {
+            direction.scale(1 / frameRate * damper);
+        } else {
+            direction.scale(avatar1.client.minTimeBetweenTicks * damper);
+        }
         cmpCamera.mtxPivot.translate(new ƒ.Vector3(-direction.x, direction.y, 0), true);
     }
 

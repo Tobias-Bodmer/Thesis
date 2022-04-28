@@ -90,7 +90,6 @@ namespace Networking {
                     }
 
                     if (message.content != undefined && message.content.text == FUNCTION.SETGAMESTATE.toString()) {
-                        console.log("Networking:" + message.content.playing);
                         if (message.content.playing) {
                             Game.playing(false, true);
                         } else if (!message.content.playing) {

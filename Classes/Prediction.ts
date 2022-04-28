@@ -2,8 +2,8 @@ namespace Networking {
     export abstract class Prediction {
         protected timer: number = 0;
         protected currentTick: number = 0;
-        protected minTimeBetweenTicks: number;
-        protected gameTickRate: number = 60;
+        public minTimeBetweenTicks: number;
+        protected gameTickRate: number = 62.5;
         protected bufferSize: number = 1024;
 
         protected ownerNetId: number; get owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.ownerNetId) };
@@ -22,14 +22,18 @@ namespace Networking {
         protected processMovement(input: Interfaces.InputPayload): Interfaces.StatePayload {
             //TODO: implement whole movement calculation inclusive collision
             //do movement 
-            console.log(input.inputVector.magnitude);
             let cloneInputVector = input.inputVector.clone;
             if (cloneInputVector.magnitude > 0) {
                 cloneInputVector.normalize();
                 // input.inputVector.scale(1 / Game.frameRate * this.owner.attributes.speed);
             }
+            // console.log((<Player.Player>this.owner).mtxLocal.translation.clone.toString());
             (<Player.Player>this.owner).move(cloneInputVector);
-            // (<Player.Player>this.owner).mtxLocal.translate(input.inputVector);
+            // console.log((<Player.Player>this.owner).mtxLocal.translation.clone.toString());
+
+
+            // cloneInputVector.scale((this.minTimeBetweenTicks * this.owner.attributes.speed));
+            // (<Player.Player>this.owner).mtxLocal.translate(cloneInputVector);
 
 
             let newStatePayload: Interfaces.StatePayload = { tick: input.tick, position: this.owner.mtxLocal.translation }
@@ -45,7 +49,7 @@ namespace Networking {
         private horizontalInput: number;
         private verticalInput: number;
 
-        private AsyncTolerance: number = 0.0001;
+        private AsyncTolerance: number = 0.1;
 
 
         constructor(_ownerNetId: number) {
@@ -93,7 +97,7 @@ namespace Networking {
             let positionError: number = Game.ƒ.Vector3.DIFFERENCE(this.latestServerState.position, this.stateBuffer[serverStateBufferIndex].position).magnitude;
             if (positionError > this.AsyncTolerance) {
                 console.warn("you need to be updated to: X:" + this.latestServerState.position.x + " Y: " + this.latestServerState.position.y);
-                console.warn(this.latestServerState.position.x, this.latestServerState.position.y);
+                console.warn(this.stateBuffer[serverStateBufferIndex].position.x, this.stateBuffer[serverStateBufferIndex].position.y);
                 this.owner.mtxLocal.translation = this.latestServerState.position;
 
                 this.stateBuffer[serverStateBufferIndex] = this.latestServerState;

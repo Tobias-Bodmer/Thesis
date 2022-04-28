@@ -11,6 +11,7 @@ declare namespace Game {
     let canvas: HTMLCanvasElement;
     let gamestate: GAMESTATES;
     let viewport: ƒ.Viewport;
+    let cmpCamera: ƒ.ComponentCamera;
     let graph: ƒ.Node;
     let avatar1: Player.Player;
     let avatar2: Player.Player;
@@ -326,7 +327,7 @@ declare namespace Networking {
     abstract class Prediction {
         protected timer: number;
         protected currentTick: number;
-        protected minTimeBetweenTicks: number;
+        minTimeBetweenTicks: number;
         protected gameTickRate: number;
         protected bufferSize: number;
         protected ownerNetId: number;
