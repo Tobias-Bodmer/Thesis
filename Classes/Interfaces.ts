@@ -28,4 +28,18 @@ namespace Interfaces {
         position: Game.ƒ.Vector3;
         doesAbility: boolean;
     }
+    export interface RoomExits {
+        north: boolean;
+        east: boolean;
+        south: boolean;
+        west: boolean;
+    }
+
+    export interface Room {
+        coordinates: Game.ƒ.Vector3;
+        exits: RoomExits;
+        roomType: Generation.ROOMTYPE;
+        direction: RoomExits;
+
+    }
 }

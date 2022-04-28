@@ -1,7 +1,7 @@
 namespace Generation {
 
     let numberOfRooms: number = 3;
-    let usedPositions: [number, number][] = [];
+    let usedPositions: Game.ƒ.Vector2[] = [];
     export let rooms: Room[] = [];
 
     //spawn chances
@@ -9,7 +9,7 @@ namespace Generation {
     let treasureRoomSpawnChance: number = 100;
 
     export function generateRooms(): void {
-        let startCoords: [number, number] = [0, 0];
+        let startCoords: Game.ƒ.Vector2 = Game.ƒ.Vector2.ZERO();
 
         rooms.push(new Room("roomStart", startCoords, calcPathExits(startCoords), Generation.ROOMTYPE.START))
         usedPositions.push(startCoords);
@@ -42,7 +42,7 @@ namespace Generation {
         sendRoom(rooms[0]);
     }
 
-    function sendRoom(_room: Room, _direciton?: [boolean, boolean, boolean, boolean]) {
+    function sendRoom(_room: Room, _direciton?: Interfaces.RoomExits) {
         Networking.sendRoom(_room.name, _room.coordinates, _room.exits, _room.roomType, _direciton);
     }
 
@@ -51,12 +51,12 @@ namespace Generation {
         let randomNumber: number = Math.round(Math.random() * (numberOfExits - 1));
         let possibleExitIndex: number[] = getExitIndex(_currentRoom.exits);
         console.log(_roomType + ": " + possibleExitIndex + "____ " + randomNumber);
-        let newRoomPosition: [number, number];
+        let newRoomPosition: Game.ƒ.Vector2;
         let newRoom: Room;
 
         switch (possibleExitIndex[randomNumber]) {
             case 0: // north
-                newRoomPosition = [_currentRoom.coordinates[0], _currentRoom.coordinates[1] + 1];
+                newRoomPosition = new Game.ƒ.Vector2(_currentRoom.coordinates.x, _currentRoom.coordinates.y + 1);
                 newRoom = new Room("roomNormal", (newRoomPosition), calcPathExits(newRoomPosition), _roomType);
                 rooms.push(newRoom);
                 _currentRoom.neighbourN = newRoom;
@@ -64,7 +64,7 @@ namespace Generation {
                 usedPositions.push(newRoomPosition);
                 break;
             case 1: // east
-                newRoomPosition = [_currentRoom.coordinates[0] + 1, _currentRoom.coordinates[1]];
+                newRoomPosition = new Game.ƒ.Vector2(_currentRoom.coordinates.x + 1, _currentRoom.coordinates.y);
                 newRoom = new Room("roomNormal", (newRoomPosition), calcPathExits(newRoomPosition), _roomType);
                 rooms.push(newRoom);
                 _currentRoom.neighbourE = newRoom;
@@ -72,7 +72,7 @@ namespace Generation {
                 usedPositions.push(newRoomPosition);
                 break;
             case 2: // south
-                newRoomPosition = [_currentRoom.coordinates[0], _currentRoom.coordinates[1] - 1];
+                newRoomPosition = new Game.ƒ.Vector2(_currentRoom.coordinates.x, _currentRoom.coordinates.y - 1);
                 newRoom = new Room("roomNormal", (newRoomPosition), calcPathExits(newRoomPosition), _roomType);
                 rooms.push(newRoom);
                 _currentRoom.neighbourS = newRoom;
@@ -80,17 +80,18 @@ namespace Generation {
                 usedPositions.push(newRoomPosition);
                 break;
             case 3: //west
-                newRoomPosition = [_currentRoom.coordinates[0] - 1, _currentRoom.coordinates[1]];
+                newRoomPosition = new Game.ƒ.Vector2(_currentRoom.coordinates.x - 1, _currentRoom.coordinates.y);
                 newRoom = new Room("roomNormal", (newRoomPosition), calcPathExits(newRoomPosition), _roomType);
                 rooms.push(newRoom);
                 _currentRoom.neighbourW = newRoom;
                 newRoom.neighbourE = _currentRoom;
                 usedPositions.push(newRoomPosition);
                 break;
-
+                
+            }
+            // _currentRoom.setRoomCoordinates();
+            
         }
-
-    }
 
     function addSpecialRooms(): void {
         rooms.forEach(room => {
@@ -115,22 +116,37 @@ namespace Generation {
     }
 
 
-    function countBool(_bool: [boolean, boolean, boolean, boolean]): number {
+    function countBool(_exits: Interfaces.RoomExits): number {
         let counter: number = 0;
-        _bool.forEach(bool => {
-            if (bool) {
-                counter++;
-            }
-        });
+        if (_exits.north) {
+            counter++;
+        }
+        if (_exits.east) {
+            counter++;
+        }
+        if (_exits.south) {
+            counter++;
+        }
+        if (_exits.west) {
+            counter++;
+        }
         return counter;
     }
 
-    function getExitIndex(_exits: [boolean, boolean, boolean, boolean]): number[] {
+
+    function getExitIndex(_exits: Interfaces.RoomExits): number[] {
         let numbers: number[] = [];
-        for (let i = 0; i < _exits.length; i++) {
-            if (_exits[i]) {
-                numbers.push(i)
-            }
+        if (_exits.north) {
+            numbers.push(0)
+        }
+        if (_exits.east) {
+            numbers.push(1)
+        }
+        if (_exits.west) {
+            numbers.push(2)
+        }
+        if (_exits.south) {
+            numbers.push(3)
         }
         return numbers;
 
@@ -141,72 +157,66 @@ namespace Generation {
      * @returns boolean for each direction north, east, south, west
      */
 
-    function calcPathExits(_position: [number, number]): [boolean, boolean, boolean, boolean] {
-        let north: boolean = false;
-        let east: boolean = false;
-        let south: boolean = false;
-        let west: boolean = false;
-        let roomNeighbours: [number, number][];
+    function calcPathExits(_position: Game.ƒ.Vector2): Interfaces.RoomExits {
+        let exits: Interfaces.RoomExits = { north: false, east: false, south: false, west: false };
+        let roomNeighbours: Game.ƒ.Vector2[];
         roomNeighbours = sliceNeighbours(getNeighbours(_position));
         for (let i = 0; i < roomNeighbours.length; i++) {
-            if (roomNeighbours[i][1] - _position[1] == -1) {
-                south = true;
+            if (roomNeighbours[i].y - _position.y == -1) {
+                exits.south = true;
             }
-            if (roomNeighbours[i][0] - _position[0] == -1) {
-                west = true;
+            if (roomNeighbours[i].x - _position.x == -1) {
+                exits.west = true;
             }
-            if (roomNeighbours[i][1] - _position[1] == 1) {
-                north = true;
+            if (roomNeighbours[i].y - _position.y == 1) {
+                exits.north = true;
             }
-            if (roomNeighbours[i][0] - _position[0] == 1) {
-                east = true;
+            if (roomNeighbours[i].x - _position.x == 1) {
+                exits.east = true;
             }
         }
-        return [north, east, south, west];
+        return exits;
     }
 
-    function calcRoomDoors(_room: Generation.Room): [boolean, boolean, boolean, boolean] {
-        let north: boolean = false;
-        let east: boolean = false;
-        let south: boolean = false;
-        let west: boolean = false;
+    function calcRoomDoors(_room: Generation.Room): Interfaces.RoomExits {
+        let exits: Interfaces.RoomExits = { north: false, east: false, south: false, west: false };
         if (_room.neighbourN != undefined) {
-            north = true;
+            exits.north = true;
         }
         if (_room.neighbourE != undefined) {
-            east = true;
+            exits.east = true;
         }
         if (_room.neighbourS != undefined) {
-            south = true;
+            exits.south = true;
         }
         if (_room.neighbourW != undefined) {
-            west = true;
+            exits.west = true;
         }
-        return [north, east, south, west];
+        return exits;
     }
 
 
-    function getNeighbours(_position: [number, number]): [number, number][] {
-        let neighbours: [number, number][] = []
-        neighbours.push([_position[0], _position[1] - 1]); // down
-        neighbours.push([_position[0] - 1, _position[1]]); // left
-        neighbours.push([_position[0], _position[1] + 1]); // up
-        neighbours.push([_position[0] + 1, _position[1]]); // right
+    function getNeighbours(_position: Game.ƒ.Vector2): Game.ƒ.Vector2[] {
+        let neighbours: Game.ƒ.Vector2[] = []
+        neighbours.push(new Game.ƒ.Vector2(_position.x, _position.y - 1)); // down
+        neighbours.push(new Game.ƒ.Vector2(_position.x - 1, _position.y)); // left
+        neighbours.push(new Game.ƒ.Vector2(_position.x, _position.y + 1)); // up
+        neighbours.push(new Game.ƒ.Vector2(_position.x + 1, _position.y)); // right
         return neighbours;
     }
 
-    function sliceNeighbours(_neighbours: [number, number][]): [number, number][] {
+    function sliceNeighbours(_neighbours: Game.ƒ.Vector2[]): Game.ƒ.Vector2[] {
         let neighbours = _neighbours;
         let toRemoveIndex: number[] = [];
         for (let i = 0; i < neighbours.length; i++) {
             // check ich position already used
             usedPositions.forEach(room => {
-                if (neighbours[i][0] == room[0] && neighbours[i][1] == room[1]) {
+                if (neighbours[i].x == room.x && neighbours[i].y == room.y) {
                     toRemoveIndex.push(i);
                 }
             })
         }
-        let copy: [number, number][] = [];
+        let copy: Game.ƒ.Vector2[] = [];
         toRemoveIndex.forEach(index => {
             delete neighbours[index];
         });
@@ -216,30 +226,34 @@ namespace Generation {
         return copy;
     }
 
-    export function switchRoom(_currentRoom: Room, _direction: [boolean, boolean, boolean, boolean]) {
+    export function switchRoom(_currentRoom: Room, _direction: Interfaces.RoomExits) {
         if (_currentRoom.finished) {
-            if (_direction[0]) {
-                sendRoom(_currentRoom.neighbourN, [false, false, true, false]);
-                addRoomToGraph(_currentRoom.neighbourN, [false, false, true, false]);
+            if (_direction.north) {
+                let exits: Interfaces.RoomExits = { north: false, east: false, south: true, west: false };
+                sendRoom(_currentRoom.neighbourN, exits);
+                addRoomToGraph(_currentRoom.neighbourN, exits);
             }
-            if (_direction[1]) {
-                sendRoom(_currentRoom.neighbourE, [false, false, false, true]);
-                addRoomToGraph(_currentRoom.neighbourE, [false, false, false, true]);
+            if (_direction.east) {
+                let exits: Interfaces.RoomExits = { north: false, east: false, south: false, west: true };
+                sendRoom(_currentRoom.neighbourE, exits);
+                addRoomToGraph(_currentRoom.neighbourE, exits);
             }
-            if (_direction[2]) {
-                sendRoom(_currentRoom.neighbourS, [true, false, false, false]);
-                addRoomToGraph(_currentRoom.neighbourS, [true, false, false, false]);
+            if (_direction.south) {
+                let exits: Interfaces.RoomExits = { north: true, east: false, south: false, west: false };
+                sendRoom(_currentRoom.neighbourS, exits);
+                addRoomToGraph(_currentRoom.neighbourS, exits);
             }
-            if (_direction[3]) {
-                sendRoom(_currentRoom.neighbourW, [false, true, false, false]);
-                addRoomToGraph(_currentRoom.neighbourW, [false, true, false, false]);
+            if (_direction.west) {
+                let exits: Interfaces.RoomExits = { north: false, east: true, south: false, west: false };
+                sendRoom(_currentRoom.neighbourW, exits);
+                addRoomToGraph(_currentRoom.neighbourW, exits);
             }
 
             EnemySpawner.spawnEnemies();
         }
     }
 
-    export function addRoomToGraph(_room: Room, _direciton?: [boolean, boolean, boolean, boolean]) {
+    export function addRoomToGraph(_room: Room, _direciton?: Interfaces.RoomExits) {
         let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => (<any>elem).tag != Tag.TAG.PLAYER);
 
         oldObjects.forEach((elem) => {
@@ -255,21 +269,25 @@ namespace Generation {
         let newPosition: Game.ƒ.Vector3 = _room.cmpTransform.mtxLocal.translation.clone;
 
         if (_direciton != null) {
-            if (_direciton[0]) {
+            if (_direciton.north) {
                 newPosition.y += _room.roomSize / 2 - 2;
             }
-            if (_direciton[1]) {
+            if (_direciton.east) {
                 newPosition.x += _room.roomSize / 2 - 2;
             }
-            if (_direciton[2]) {
+            if (_direciton.south) {
                 newPosition.y -= _room.roomSize / 2 - 2;
             }
-            if (_direciton[3]) {
+            if (_direciton.west) {
                 newPosition.x -= _room.roomSize / 2 - 2;
             }
         }
         newPosition.z = 0;
+
         Game.avatar1.cmpTransform.mtxLocal.translation = newPosition;
+        if (Networking.client.id == Networking.client.idHost) {
+            Game.avatar2.cmpTransform.mtxLocal.translation = newPosition;
+        }
 
 
         if (Networking.client.id != Networking.client.idHost) {

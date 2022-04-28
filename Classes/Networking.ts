@@ -358,7 +358,8 @@ namespace Networking {
                         }
                         //send room 
                         if (message.content != undefined && message.content.text == FUNCTION.SENDROOM.toString()) {
-                            let room: Generation.Room = new Generation.Room(message.content.name, message.content.coordiantes, message.content.exits, message.content.roomType);
+                            let coordiantes: Game.ƒ.Vector2 = new Game.ƒ.Vector2(message.content.coordiantes.data[0], message.content.coordiantes.data[1]);
+                            let room: Generation.Room = new Generation.Room(message.content.name, coordiantes, message.content.exits, message.content.roomType);
 
                             if (message.content.direciton != null) {
                                 Generation.addRoomToGraph(room, message.content.direciton);
@@ -368,8 +369,8 @@ namespace Networking {
                         }
                         //send request to switch rooms
                         if (message.content != undefined && message.content.text == FUNCTION.SWITCHROOMREQUEST.toString()) {
-                            let currentroom = Generation.rooms.find(elem => elem.coordinates[0] == (<[number, number]>message.content.coordiantes)[0] &&
-                                elem.coordinates[1] == (<[number, number]>message.content.coordiantes)[1]);
+                            let coordiantes: Game.ƒ.Vector2 = new Game.ƒ.Vector2(message.content.coordiantes.data[0], message.content.coordiantes.data[1]);
+                            let currentroom = Generation.rooms.find(elem => elem.coordinates.equals(coordiantes));
 
                             Generation.switchRoom(currentroom, message.content.direction);
                         }
@@ -551,12 +552,12 @@ namespace Networking {
 
 
     //#region room
-    export function sendRoom(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: Generation.ROOMTYPE, _direciton?: [boolean, boolean, boolean, boolean]) {
+    export function sendRoom(_name: string, _coordiantes: Game.ƒ.Vector2, _exits: Interfaces.RoomExits, _roomType: Generation.ROOMTYPE, _direciton?: Interfaces.RoomExits) {
         if (Game.connected && client.idHost == client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SENDROOM, name: _name, coordiantes: _coordiantes, exits: _exits, roomType: _roomType, direciton: _direciton } })
         }
     }
-    export function switchRoomRequest(_coordiantes: [number, number], _direction: [boolean, boolean, boolean, boolean]) {
+    export function switchRoomRequest(_coordiantes: Game.ƒ.Vector2, _direction: Interfaces.RoomExits) {
         if (Game.connected && client.idHost != client.id) {
             client.dispatch({ route: undefined, idTarget: client.idHost, content: { text: FUNCTION.SWITCHROOMREQUEST, coordiantes: _coordiantes, direction: _direction } })
         }

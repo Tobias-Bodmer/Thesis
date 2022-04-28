@@ -234,6 +234,18 @@ declare namespace Interfaces {
         position: Game.ƒ.Vector3;
         doesAbility: boolean;
     }
+    interface RoomExits {
+        north: boolean;
+        east: boolean;
+        south: boolean;
+        west: boolean;
+    }
+    interface Room {
+        coordinates: Game.ƒ.Vector3;
+        exits: RoomExits;
+        roomType: Generation.ROOMTYPE;
+        direction: RoomExits;
+    }
 }
 declare namespace Items {
     enum ITEMID {
@@ -632,8 +644,8 @@ declare namespace Networking {
     function removeItem(_netId: number): void;
     function updateBuffList(_buffList: Buff.Buff[], _netId: number): void;
     function updateUI(_position: Game.ƒ.Vector2, _value: number): void;
-    function sendRoom(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: Generation.ROOMTYPE, _direciton?: [boolean, boolean, boolean, boolean]): void;
-    function switchRoomRequest(_coordiantes: [number, number], _direction: [boolean, boolean, boolean, boolean]): void;
+    function sendRoom(_name: string, _coordiantes: Game.ƒ.Vector2, _exits: Interfaces.RoomExits, _roomType: Generation.ROOMTYPE, _direciton?: Interfaces.RoomExits): void;
+    function switchRoomRequest(_coordiantes: Game.ƒ.Vector2, _direction: Interfaces.RoomExits): void;
     function idGenerator(): number;
     function popID(_id: number): void;
 }
@@ -684,7 +696,7 @@ declare namespace Generation {
     class Room extends ƒ.Node {
         tag: Tag.TAG;
         roomType: ROOMTYPE;
-        coordinates: [number, number];
+        coordinates: Game.ƒ.Vector2;
         walls: Wall[];
         doors: Door[];
         finished: boolean;
@@ -694,7 +706,7 @@ declare namespace Generation {
         neighbourS: Room;
         neighbourW: Room;
         roomSize: number;
-        exits: [boolean, boolean, boolean, boolean];
+        exits: Interfaces.RoomExits;
         mesh: ƒ.MeshQuad;
         cmpMesh: ƒ.ComponentMesh;
         startRoomMat: ƒ.Material;
@@ -704,7 +716,8 @@ declare namespace Generation {
         challengeRoomMat: ƒ.Material;
         bossRoomMat: ƒ.Material;
         cmpMaterial: ƒ.ComponentMaterial;
-        constructor(_name: string, _coordiantes: [number, number], _exits: [boolean, boolean, boolean, boolean], _roomType: ROOMTYPE);
+        constructor(_name: string, _coordiantes: Game.ƒ.Vector2, _exits: Interfaces.RoomExits, _roomType: ROOMTYPE);
+        private addWalls;
         setDoors(): void;
         getRoomSize(): number;
     }
@@ -712,7 +725,7 @@ declare namespace Generation {
         tag: Tag.TAG;
         collider: Game.ƒ.Rectangle;
         wallThickness: number;
-        constructor(_position: Game.ƒ.Vector2, _width: number, _direction: [boolean, boolean, boolean, boolean]);
+        constructor(_position: Game.ƒ.Vector2, _width: number, _direction: Interfaces.RoomExits);
     }
     class Door extends ƒ.Node {
         tag: Tag.TAG;
@@ -720,16 +733,16 @@ declare namespace Generation {
         doorWidth: number;
         doorThickness: number;
         parentRoom: Room;
-        direction: [boolean, boolean, boolean, boolean];
-        constructor(_parent: Room, _position: Game.ƒ.Vector2, _direction: [boolean, boolean, boolean, boolean], _roomSize: number);
+        direction: Interfaces.RoomExits;
+        constructor(_parent: Room, _position: Game.ƒ.Vector2, _direction: Interfaces.RoomExits, _roomSize: number);
         changeRoom(): void;
     }
 }
 declare namespace Generation {
     let rooms: Room[];
     function generateRooms(): void;
-    function switchRoom(_currentRoom: Room, _direction: [boolean, boolean, boolean, boolean]): void;
-    function addRoomToGraph(_room: Room, _direciton?: [boolean, boolean, boolean, boolean]): void;
+    function switchRoom(_currentRoom: Room, _direction: Interfaces.RoomExits): void;
+    function addRoomToGraph(_room: Room, _direciton?: Interfaces.RoomExits): void;
 }
 declare namespace Tag {
     enum TAG {
