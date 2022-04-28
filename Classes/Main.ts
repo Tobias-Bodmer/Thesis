@@ -34,7 +34,7 @@ namespace Game {
     export let currentRoom: Generation.Room;
 
     export let connected: boolean = false;
-    export let frameRate: number = 60;
+    export let deltaTime: number;
 
     export let entities: Entity.Entity[] = [];
     export let enemies: Enemy.Enemy[] = [];
@@ -49,12 +49,9 @@ namespace Game {
 
     export let bulletsJSON: Bullets.Bullet[];
     export let loaded = false;
-
-
     //#endregion "PublicVariables"
 
     //#region "PrivateVariables"
-    let playerType: Player.PLAYERTYPE;
     const damper: number = 3.5;
     //#endregion "PrivateVariables"
 
@@ -81,69 +78,53 @@ namespace Game {
     }
 
     function update(): void {
-
+        deltaTime = Game.ƒ.Loop.timeFrameGame * 0.001;
         pauseCheck();
-        
-        if (Game.gamestate == Game.GAMESTATES.PLAYING) {
-            InputSystem.move();
-            
-            Game.avatar1.predict();
-            if (Networking.client.id == Networking.client.idHost) {
-                avatar2.getItemCollision();
-            }
-        }
+
+        Game.avatar1.predict();
+
         draw();
-        
 
-        if (Game.gamestate == Game.GAMESTATES.PLAYING) {
-            cameraUpdate();
+        cameraUpdate();
 
-
-            if (Game.connected) {
-                if (Networking.client.id == Networking.client.idHost) {
-                    // Game.avatar1.avatarPrediction();
-                    Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
-                }
-
-            }
-
-            //#region count items
-            items = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.TAG.ITEM)
-            //#endregion
-            coolDowns.forEach(_cd => {
-                _cd.updateCoolDown();
-            })
-            bullets = <Bullets.Bullet[]>graph.getChildren().filter(element => (<Bullets.Bullet>element).tag == Tag.TAG.BULLET)
-            if (Game.connected) {
-                bullets.forEach(element => {
-                    element.update();
-                })
-            }
-
-            let damageUI: UI.DamageUI[] = <UI.DamageUI[]>graph.getChildren().filter(element => (<UI.DamageUI>element).tag == Tag.TAG.DAMAGEUI)
-            damageUI.forEach(element => {
-                element.move();
-                element.lifespan(graph);
-            })
-
-            entities = <Entity.Entity[]>graph.getChildren().filter(child => (<Entity.Entity>child) instanceof Entity.Entity);
-            entities.forEach(element => {
-                element.updateBuffs();
-                if (Game.connected && Networking.client.idHost == Networking.client.id) {
-                    element.update();
-                }
-            })
-
-            enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY)
-
-            currentRoom = (<Generation.Room>Game.graph.getChildren().find(elem => (<Generation.Room>elem).tag == Tag.TAG.ROOM));
-            if (currentRoom.enemyCount <= 0) {
-                currentRoom.finished = true;
-            }
-
-
-            UI.updateUI();
+        if (Networking.client.id == Networking.client.idHost) {
+            Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
         }
+
+        items = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.TAG.ITEM)
+        coolDowns.forEach(_cd => {
+            _cd.updateCoolDown();
+        })
+        bullets = <Bullets.Bullet[]>graph.getChildren().filter(element => (<Bullets.Bullet>element).tag == Tag.TAG.BULLET)
+        if (Game.connected) {
+            bullets.forEach(element => {
+                element.update();
+            })
+        }
+
+        let damageUI: UI.DamageUI[] = <UI.DamageUI[]>graph.getChildren().filter(element => (<UI.DamageUI>element).tag == Tag.TAG.DAMAGEUI)
+        damageUI.forEach(element => {
+            element.move();
+            element.lifespan(graph);
+        })
+
+        entities = <Entity.Entity[]>graph.getChildren().filter(child => (<Entity.Entity>child) instanceof Entity.Entity);
+        entities.forEach(element => {
+            element.updateBuffs();
+            if (Game.connected && Networking.client.idHost == Networking.client.id) {
+                element.update();
+            }
+        })
+
+        enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY)
+
+        currentRoom = (<Generation.Room>Game.graph.getChildren().find(elem => (<Generation.Room>elem).tag == Tag.TAG.ROOM));
+        if (currentRoom.enemyCount <= 0) {
+            currentRoom.finished = true;
+        }
+
+        UI.updateUI();
+
     }
 
     function setClient() {
@@ -168,7 +149,7 @@ namespace Game {
             Networking.loaded();
         }
         if (Game.loaded) {
-            ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, frameRate);
+            ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, deltaTime);
         } else {
             setTimeout(() => {
                 startLoop();
@@ -215,7 +196,7 @@ namespace Game {
                         graph.appendChild(item3);
                     }
 
-                    Networking.spawnPlayer(playerType);
+                    Networking.spawnPlayer();
                     //#endregion
 
                     startLoop();
@@ -280,11 +261,9 @@ namespace Game {
     function playerChoice(_e: Event) {
         if ((<HTMLButtonElement>_e.target).id == "Ranged") {
             avatar1 = new Player.Ranged(Entity.ID.RANGED, new Entity.Attributes(10000, 5, 5, 1, 2, 5));
-            playerType = Player.PLAYERTYPE.RANGED;
         }
         if ((<HTMLButtonElement>_e.target).id == "Melee") {
             avatar1 = new Player.Melee(Entity.ID.MELEE, new Entity.Attributes(10000, 1, 5, 1, 2, 10));
-            playerType = Player.PLAYERTYPE.MELEE;
         }
         document.getElementById("Lobbyscreen").style.visibility = "hidden";
         readySate();
@@ -406,13 +385,12 @@ namespace Game {
 
     function draw(): void {
         viewport.draw();
-        console.log("----------------------------------------------------------------------------------------------------");
     }
 
     export function cameraUpdate() {
         let direction = ƒ.Vector2.DIFFERENCE(avatar1.mtxLocal.translation.toVector2(), cmpCamera.mtxPivot.translation.toVector2());
         if (Networking.client.id == Networking.client.idHost) {
-            direction.scale(1 / frameRate * damper);
+            direction.scale(deltaTime * damper);
         } else {
             direction.scale(avatar1.client.minTimeBetweenTicks * damper);
         }

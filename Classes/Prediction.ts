@@ -5,7 +5,6 @@ namespace Networking {
         public minTimeBetweenTicks: number;
         protected gameTickRate: number = 62.5;
         protected bufferSize: number = 1024;
-
         protected ownerNetId: number; get owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.ownerNetId) };
 
         protected stateBuffer: Interfaces.StatePayload[];
@@ -26,10 +25,15 @@ namespace Networking {
             if (cloneInputVector.magnitude > 0) {
                 cloneInputVector.normalize();
             }
+
+            if (Networking.client.id == Networking.client.idHost && input.doesAbility) {
+                (<Player.Player>this.owner).doAbility();
+            }
+
             (<Player.Player>this.owner).move(cloneInputVector);
 
 
-            let newStatePayload: Interfaces.StatePayload = { tick: input.tick, position: this.owner.mtxLocal.translation }
+            let newStatePayload: Interfaces.StatePayload = { tick: input.tick, position: this.owner.mtxLocal.translation, doesAbility: input.doesAbility }
             return newStatePayload;
         }
     }
@@ -41,6 +45,7 @@ namespace Networking {
         private lastProcessedState: Interfaces.StatePayload;
         private horizontalInput: number;
         private verticalInput: number;
+        protected doesAbility: boolean;
 
         private AsyncTolerance: number = 0.1;
 
@@ -54,7 +59,7 @@ namespace Networking {
         public update() {
             this.horizontalInput = InputSystem.move().x;
             this.verticalInput = InputSystem.move().y;
-            this.timer += Game.ƒ.Loop.timeFrameGame * 0.001;
+            this.timer += Game.deltaTime;
             while (this.timer >= this.minTimeBetweenTicks) {
                 this.timer -= this.minTimeBetweenTicks;
                 this.handleTick();
@@ -68,14 +73,23 @@ namespace Networking {
                 this.handleServerReconciliation();
             }
             let bufferIndex = this.currentTick % this.bufferSize;
-
-            let inputPayload: Interfaces.InputPayload = { tick: this.currentTick, inputVector: new ƒ.Vector3(this.horizontalInput, this.verticalInput, 0) };
+            this.switchAvatarAbilityState();
+            let inputPayload: Interfaces.InputPayload = { tick: this.currentTick, inputVector: new ƒ.Vector3(this.horizontalInput, this.verticalInput, 0), doesAbility: this.doesAbility };
             this.inputBuffer[bufferIndex] = inputPayload;
-            console.log(inputPayload.tick + "___" + inputPayload.inputVector.clone);
+            // console.log(inputPayload.tick + "___" + inputPayload.inputVector.clone);
             this.stateBuffer[bufferIndex] = this.processMovement(inputPayload);
 
             //send inputPayload to host
             Networking.sendClientInput(this.ownerNetId, inputPayload);
+        }
+
+        switchAvatarAbilityState() {
+            if (this.owner.id == Entity.ID.RANGED) {
+                this.doesAbility = (<Player.Ranged>this.owner).dash.doesAbility;
+            }
+            else {
+                this.doesAbility = (<Player.Melee>this.owner).block.doesAbility;
+            }
         }
 
 
@@ -90,7 +104,6 @@ namespace Networking {
             let positionError: number = Game.ƒ.Vector3.DIFFERENCE(this.latestServerState.position, this.stateBuffer[serverStateBufferIndex].position).magnitude;
             if (positionError > this.AsyncTolerance) {
                 console.warn("you need to be updated to: X:" + this.latestServerState.position.x + " Y: " + this.latestServerState.position.y);
-                console.warn(this.stateBuffer[serverStateBufferIndex].position.x, this.stateBuffer[serverStateBufferIndex].position.y);
                 this.owner.mtxLocal.translation = this.latestServerState.position;
 
                 this.stateBuffer[serverStateBufferIndex] = this.latestServerState;
@@ -98,7 +111,7 @@ namespace Networking {
                 let tickToProcess = (this.latestServerState.tick + 1);
 
                 while (tickToProcess < this.currentTick) {
-                    let statePayload: Interfaces.StatePayload = this.processMovement(this.inputBuffer[tickToProcess%this.bufferSize]);
+                    let statePayload: Interfaces.StatePayload = this.processMovement(this.inputBuffer[tickToProcess % this.bufferSize]);
 
                     let bufferIndex = tickToProcess % this.bufferSize;
                     this.stateBuffer[bufferIndex] = statePayload;
@@ -122,7 +135,7 @@ namespace Networking {
         }
 
         public update() {
-            this.timer += Game.ƒ.Loop.timeFrameGame * 0.001;
+            this.timer += Game.deltaTime;
             while (this.timer >= this.minTimeBetweenTicks) {
                 this.timer -= this.minTimeBetweenTicks;
                 this.handleTick();

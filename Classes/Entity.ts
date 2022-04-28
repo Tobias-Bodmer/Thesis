@@ -1,5 +1,5 @@
 namespace Entity {
-    
+
     export class Entity extends Game.ƒAid.NodeSprite {
         private currentAnimationState: ANIMATIONSTATES;
         private performKnockback: boolean = false;
@@ -45,10 +45,10 @@ namespace Entity {
         }
 
         public update() {
-            this.updateCollider();
+            this.setCollider();
         }
 
-        updateCollider() {
+        public setCollider() {
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
         }
 
@@ -76,7 +76,7 @@ namespace Entity {
             let mewDirection = _direction.clone;
             if (!mewDirection.equals(Game.ƒ.Vector3.ZERO())) {
                 mewDirection.normalize();
-                mewDirection.scale((1 / Game.frameRate * this.attributes.speed));
+                mewDirection.scale((Game.deltaTime * this.attributes.speed));
             }
             this.calculateCollider(wallColliders, mewDirection);
         }
@@ -203,7 +203,7 @@ namespace Entity {
             if (!this.performKnockback) {
                 this.performKnockback = true;
                 let direction: Game.ƒ.Vector3 = Game.ƒ.Vector2.DIFFERENCE(this.cmpTransform.mtxLocal.translation.toVector2(), _position.toVector2()).toVector3(0);
-                let knockBackScaling: number = Game.frameRate * this.attributes.scale;
+                let knockBackScaling: number = Game.deltaTime * this.attributes.scale;
 
                 direction.normalize();
 

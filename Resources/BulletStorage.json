@@ -6,7 +6,7 @@
             "speed": 15,
             "hitPointsScale": 1,
             "lifetime": 60,
-            "knockbackForce": 40,
+            "knockbackForce": 400,
             "killcount": 1
         },
         {

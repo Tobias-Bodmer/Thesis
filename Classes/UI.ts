@@ -79,7 +79,7 @@ namespace UI {
     export class DamageUI extends ƒ.Node {
         public tag: Tag.TAG = Tag.TAG.DAMAGEUI;
         up: number = 0.15;
-        lifetime: number = 0.5 * Game.frameRate;
+        lifetime: number = 0.5 * 60;
         randomX: number = Math.random() * 0.05 - Math.random() * 0.05;
         async lifespan(_graph: ƒ.Node) {
             if (this.lifetime >= 0 && this.lifetime != null) {

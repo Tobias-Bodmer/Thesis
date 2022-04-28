@@ -98,23 +98,23 @@ namespace Networking {
                     }
 
 
-                    //get client movements
+                    //FROM CLIENT 
                     if (message.content != undefined && message.content.text == FUNCTION.CLIENTMOVEMENT.toString()) {
                         let players: Entity.Entity[] = Game.entities.filter(entity => entity.tag == Tag.TAG.PLAYER);
                         let entity: Entity.Entity = players.find(player => player.netId != message.content.netId);
-                        let inputVector = new Game.ƒ.Vector3(message.content.vector.data[0], message.content.vector.data[1], message.content.vector.data[2]);
-                        let input: Interfaces.InputPayload = { tick: message.content.tick, inputVector: inputVector }
+                        let inputVector = new Game.ƒ.Vector3(message.content.input.inputVector.data[0], message.content.input.inputVector.data[1], message.content.input.inputVector.data[2]);
+                        let input: Interfaces.InputPayload = { tick: message.content.input.tick, inputVector: inputVector, doesAbility: message.content.input.doesAbility }
                         if (entity != undefined) {
                             (<Player.Player>entity).server.updateEntityToCheck(message.content.netId);
                             (<Player.Player>entity).server.onClientInput(input);
                         }
                     }
 
-                    // get server movements
+                    // TO CLIENT
                     if (message.content != undefined && message.content.text == FUNCTION.SERVERBUFFER.toString()) {
                         let entity = Game.entities.find(entity => entity.netId == message.content.netId);
-                        let position = new Game.ƒ.Vector3(message.content.vector.data[0], message.content.vector.data[1], message.content.vector.data[2]);
-                        let state: Interfaces.StatePayload = { tick: message.content.tick, position: position };
+                        let position = new Game.ƒ.Vector3(message.content.buffer.position.data[0], message.content.buffer.position.data[1], message.content.buffer.position.data[2]);
+                        let state: Interfaces.StatePayload = { tick: message.content.buffer.tick, position: position, doesAbility: message.content.buffer.doesAbility };
                         if (entity != undefined) {
                             (<Player.Player>entity).client.onServerMovementState(state);
                         }
@@ -130,14 +130,12 @@ namespace Networking {
                     //Spawn avatar2 as ranged or melee 
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
                         let netId: number = message.content.netId
-                        if (message.content.type == Player.PLAYERTYPE.MELEE) {
+                        if (message.content.type == Entity.ID.MELEE) {
                             const attributes: Entity.Attributes = message.content.attributes;
                             Game.avatar2 = new Player.Melee(Entity.ID.MELEE, attributes, netId);
-
-
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], 0);
                             Game.graph.addChild(Game.avatar2);
-                        } else if (message.content.type == Player.PLAYERTYPE.RANGED) {
+                        } else if (message.content.type == Entity.ID.RANGED) {
                             const attributes: Entity.Attributes = message.content.attributes
                             Game.avatar2 = new Player.Ranged(Entity.ID.RANGED, attributes, netId);
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], 0);
@@ -216,7 +214,7 @@ namespace Networking {
                                         break;
                                 }
 
-                                bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed)
+                                bullet.flyDirection.scale(Game.deltaTime * bullet.speed)
 
                                 Game.graph.addChild(bullet);
                             }
@@ -270,7 +268,7 @@ namespace Networking {
                             let enemy = Game.enemies.find(enem => enem.netId == message.content.netId);
                             if (enemy != undefined) {
                                 enemy.cmpTransform.mtxLocal.translation = new ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
-                                enemy.updateCollider();
+                                enemy.setCollider();
                             }
                         }
                         //Sync animation state
@@ -409,15 +407,14 @@ namespace Networking {
         client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.LOADED } });
     }
 
-    export function spawnPlayer(_type?: Player.PLAYERTYPE) {
-        if (_type == Player.PLAYERTYPE.MELEE) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.MELEE, attributes: Game.avatar1.attributes, position: Game.avatar1.cmpTransform.mtxLocal.translation, netId: Game.avatar1.netId } })
-        } else if (_type == Player.PLAYERTYPE.RANGED) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.RANGED, attributes: Game.avatar1.attributes, position: Game.avatar1.cmpTransform.mtxLocal.translation, netId: Game.avatar1.netId } })
+    export function spawnPlayer() {
+        if (Game.avatar1.id == Entity.ID.MELEE) {
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Entity.ID.MELEE, attributes: Game.avatar1.attributes, position: Game.avatar1.cmpTransform.mtxLocal.translation, netId: Game.avatar1.netId } })
         } else {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Player.PLAYERTYPE.RANGED, attributes: Game.avatar1.attributes, position: Game.avatar1.cmpTransform.mtxLocal.translation, netId: Game.avatar1.netId } })
+            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.SPAWN, type: Entity.ID.RANGED, attributes: Game.avatar1.attributes, position: Game.avatar1.cmpTransform.mtxLocal.translation, netId: Game.avatar1.netId } })
         }
     }
+
 
     export function setClient() {
         client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: Networking.FUNCTION.CONNECTED, value: Networking.client.id } });
@@ -428,12 +425,12 @@ namespace Networking {
     }
 
     export function sendClientInput(_netId: number, _inputPayload: Interfaces.InputPayload) {
-        client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.CLIENTMOVEMENT, netId: _netId, tick: _inputPayload.tick, vector: _inputPayload.inputVector } })
+        client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.CLIENTMOVEMENT, netId: _netId, input: _inputPayload } })
     }
 
     export function sendServerBuffer(_netId: number, _buffer: Interfaces.StatePayload) {
         if (Networking.client.idHost == Networking.client.id) {
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.SERVERBUFFER, netId: _netId, tick: _buffer.tick, vector: _buffer.position } })
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.SERVERBUFFER, netId: _netId, buffer: _buffer } })
         }
     }
 

@@ -17,7 +17,7 @@ declare namespace Game {
     let avatar2: Player.Player;
     let currentRoom: Generation.Room;
     let connected: boolean;
-    let frameRate: number;
+    let deltaTime: number;
     let entities: Entity.Entity[];
     let enemies: Enemy.Enemy[];
     let bullets: Bullets.Bullet[];
@@ -91,7 +91,7 @@ declare namespace Entity {
         protected currentKnockback: ƒ.Vector3;
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number);
         update(): void;
-        updateCollider(): void;
+        setCollider(): void;
         updateBuffs(): void;
         collide(_direction: ƒ.Vector3): void;
         calculateCollider(_collider: Collider.Collider[] | Game.ƒ.Rectangle[], _direction: ƒ.Vector3): void;
@@ -227,10 +227,12 @@ declare namespace Interfaces {
     interface InputPayload {
         tick: number;
         inputVector: Game.ƒ.Vector3;
+        doesAbility: boolean;
     }
     interface StatePayload {
         tick: number;
         position: Game.ƒ.Vector3;
+        doesAbility: boolean;
     }
 }
 declare namespace Items {
@@ -343,10 +345,12 @@ declare namespace Networking {
         private lastProcessedState;
         private horizontalInput;
         private verticalInput;
+        protected doesAbility: boolean;
         private AsyncTolerance;
         constructor(_ownerNetId: number);
         update(): void;
         protected handleTick(): void;
+        switchAvatarAbilityState(): void;
         onServerMovementState(_serverState: Interfaces.StatePayload): void;
         private handleServerReconciliation;
     }
@@ -606,7 +610,7 @@ declare namespace Networking {
     function setGamestate(_playing: boolean): void;
     function setHost(): void;
     function loaded(): void;
-    function spawnPlayer(_type?: Player.PLAYERTYPE): void;
+    function spawnPlayer(): void;
     function setClient(): void;
     function updateAvatarPosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3): void;
     function sendClientInput(_netId: number, _inputPayload: Interfaces.InputPayload): void;
@@ -634,10 +638,6 @@ declare namespace Networking {
     function popID(_id: number): void;
 }
 declare namespace Player {
-    enum PLAYERTYPE {
-        RANGED = 0,
-        MELEE = 1
-    }
     abstract class Player extends Entity.Entity implements Interfaces.IKnockbackable {
         weapon: Weapons.Weapon;
         client: Networking.ClientPrediction;
@@ -646,6 +646,7 @@ declare namespace Player {
         currentabilityCount: number;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _netId?: number);
         move(_direction: ƒ.Vector3): void;
+        protected scaleMoveVector(_direction: Game.ƒ.Vector3): void;
         predict(): void;
         collide(_direction: Game.ƒ.Vector3): void;
         getItemCollision(): void;
@@ -655,7 +656,7 @@ declare namespace Player {
         doAbility(): void;
     }
     class Melee extends Player {
-        protected block: Ability.Block;
+        block: Ability.Block;
         readonly abilityCooldownTime: number;
         currentabilityCooldownTime: number;
         weapon: Weapons.Weapon;
@@ -663,7 +664,7 @@ declare namespace Player {
         doAbility(): void;
     }
     class Ranged extends Player {
-        private dash;
+        dash: Ability.Dash;
         performAbility: boolean;
         lastMoveDirection: Game.ƒ.Vector3;
         move(_direction: ƒ.Vector3): void;

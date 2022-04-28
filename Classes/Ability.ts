@@ -5,7 +5,7 @@ namespace Ability {
         protected abilityCount: number;
         protected currentabilityCount: number;
         protected duration: number;
-        public doesAbility: boolean;
+        public doesAbility: boolean = false;
 
         constructor(_ownerNetId: number, _duration: number, _abilityCount: number, _cooldownTime: number) {
             this.ownerNetId = _ownerNetId;

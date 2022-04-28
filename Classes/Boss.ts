@@ -7,7 +7,7 @@ namespace Enemy {
         summonChance: number = 5;
         summonCooldown: number = 120;
         summonCurrentCooldown: number = 0;
-        private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 0, 5, 5 * Game.frameRate)
+        private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 0, 5, 5 * 60)
 
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _attributes, _position, _netId);

@@ -1,8 +1,4 @@
 namespace Player {
-    export enum PLAYERTYPE {
-        RANGED,
-        MELEE
-    }
 
     export abstract class Player extends Entity.Entity implements Interfaces.IKnockbackable {
         public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId, Weapons.AIM.NORMAL);
@@ -29,17 +25,15 @@ namespace Player {
                 this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
             }
 
-            this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
+            this.setCollider();
 
-            if (Networking.client.id == Networking.client.idHost && this == Game.avatar1) {
-                _direction.scale((0.001 * Game.ƒ.Loop.timeFrameGame * this.attributes.speed));
-            } else {
-                _direction.scale((this.client.minTimeBetweenTicks * this.attributes.speed));
+            this.scaleMoveVector(_direction);
 
-            }
             this.moveDirection.add(_direction);
 
             this.collide(this.moveDirection);
+
+            this.moveDirection.subtract(_direction);
 
             let doors: Generation.Door[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.TAG.ROOM)).doors;
             doors.forEach((element) => {
@@ -47,9 +41,14 @@ namespace Player {
                     (<Generation.Door>element).changeRoom();
                 }
             });
+        }
 
-            this.moveDirection.subtract(_direction);
-
+        protected scaleMoveVector(_direction: Game.ƒ.Vector3) {
+            if (Networking.client.id == Networking.client.idHost && this == Game.avatar1) {
+                _direction.scale((Game.deltaTime * this.attributes.speed));
+            } else {
+                _direction.scale((this.client.minTimeBetweenTicks * this.attributes.speed));
+            }
         }
 
         public predict() {
@@ -62,7 +61,7 @@ namespace Player {
             }
         }
 
-        collide(_direction: Game.ƒ.Vector3): void {
+        public collide(_direction: Game.ƒ.Vector3): void {
             super.collide(_direction);
 
             if (Networking.client.id == Networking.client.idHost) {
@@ -126,7 +125,7 @@ namespace Player {
     }
 
     export class Melee extends Player {
-        protected block: Ability.Block = new Ability.Block(this.netId, 600, 1, 5 * Game.frameRate);
+        public block: Ability.Block = new Ability.Block(this.netId, 600, 1, 5 * 60);
         readonly abilityCooldownTime: number = 40;
         currentabilityCooldownTime: number = this.abilityCooldownTime;
 
@@ -144,7 +143,7 @@ namespace Player {
     }
     export class Ranged extends Player {
 
-        private dash: Ability.Dash = new Ability.Dash(this.netId, 150, 1, 5 * Game.frameRate, 2);
+        public dash: Ability.Dash = new Ability.Dash(this.netId, 150, 1, 5 *60, 2);
         performAbility: boolean = false;
         lastMoveDirection: Game.ƒ.Vector3;
 

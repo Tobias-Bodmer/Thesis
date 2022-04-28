@@ -20,10 +20,12 @@ namespace Interfaces {
     export interface InputPayload {
         tick: number;
         inputVector: Game.ƒ.Vector3;
+        doesAbility: boolean;
     }
 
     export interface StatePayload {
         tick: number;
         position: Game.ƒ.Vector3;
+        doesAbility: boolean;
     }
 }

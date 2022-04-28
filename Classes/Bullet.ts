@@ -25,7 +25,7 @@ namespace Bullets {
 
         public hitPointsScale: number;
         public speed: number = 20;
-        lifetime: number = 1 * Game.frameRate;
+        lifetime: number = 1 * 60;
         knockbackForce: number = 4;
         type: BULLETTYPE;
 
@@ -114,7 +114,7 @@ namespace Bullets {
         }
 
         bulletPrediction() {
-            this.time += Game.ƒ.Loop.timeFrameGame;
+            this.time += Game.deltaTime;
 
             while (this.time >= 1) {
                 this.positions.push(new ƒ.Vector3(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.translation.z));
@@ -243,7 +243,7 @@ namespace Bullets {
             super(_name, _speed, _hitPoints, _lifetime, _knockbackForce, _killcount, _position, _direction, _ownerId, _netId);
             this.speed = 20;
             this.hitPointsScale = 1;
-            this.lifetime = 1 * Game.frameRate;
+            this.lifetime = 1 * 60;
             this.killcount = 1;
             if (_target != null) {
                 this.target = _target;

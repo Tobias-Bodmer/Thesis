@@ -81,8 +81,8 @@ namespace Enemy {
                 _direction.add(knockback);
 
 
-                _direction.scale((1 / Game.frameRate * this.attributes.speed));
-                knockback.scale((1 / Game.frameRate * this.attributes.speed));
+                _direction.scale((Game.deltaTime * this.attributes.speed));
+                knockback.scale((Game.deltaTime * this.attributes.speed));
 
 
                 super.collide(_direction);
@@ -160,7 +160,7 @@ namespace Enemy {
 
     export class EnemySmash extends Enemy {
         isAttacking = false;
-        coolDown = new Ability.Cooldown(50 * Game.frameRate);
+        coolDown = new Ability.Cooldown(50 * 60);
         avatars: Player.Player[] = [];
         randomPlayer = Math.round(Math.random());
         currentBehaviour: Entity.BEHAVIOUR = Entity.BEHAVIOUR.IDLE;
@@ -212,7 +212,7 @@ namespace Enemy {
     }
 
     export class EnemyDash extends Enemy {
-        protected dash = new Ability.Dash(this.netId, 300, 1, 250 * Game.frameRate, 5);
+        protected dash = new Ability.Dash(this.netId, 300, 1, 250 * 60, 5);
         lastMoveDireciton: Game.ƒ.Vector3;
         dashCount: number = 1;
         avatars: Player.Player[] = [];
