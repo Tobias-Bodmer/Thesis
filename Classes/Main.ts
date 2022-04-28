@@ -83,17 +83,17 @@ namespace Game {
     function update(): void {
 
         pauseCheck();
-
+        
         if (Game.gamestate == Game.GAMESTATES.PLAYING) {
             InputSystem.move();
-
+            
             Game.avatar1.predict();
             if (Networking.client.id == Networking.client.idHost) {
                 avatar2.getItemCollision();
             }
         }
-
         draw();
+        
 
         if (Game.gamestate == Game.GAMESTATES.PLAYING) {
             cameraUpdate();

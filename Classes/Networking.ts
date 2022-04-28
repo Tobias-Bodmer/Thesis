@@ -428,7 +428,6 @@ namespace Networking {
     }
 
     export function sendClientInput(_netId: number, _inputPayload: Interfaces.InputPayload) {
-
         client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.CLIENTMOVEMENT, netId: _netId, tick: _inputPayload.tick, vector: _inputPayload.inputVector } })
     }
 

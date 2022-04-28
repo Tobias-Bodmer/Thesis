@@ -82,7 +82,7 @@ namespace Networking {
             this.stateBuffer[bufferIndex] = this.processMovement(inputPayload);
 
             //send inputPayload to host
-            Networking.sendClientInput(this.ownerNetId, inputPayload);
+                Networking.sendClientInput(this.ownerNetId, inputPayload);
         }
 
 

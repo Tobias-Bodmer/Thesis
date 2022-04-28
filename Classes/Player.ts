@@ -32,7 +32,7 @@ namespace Player {
             this.collider.position = this.cmpTransform.mtxLocal.translation.toVector2();
 
             if (Networking.client.id == Networking.client.idHost && this == Game.avatar1) {
-                _direction.scale((1 / Game.frameRate * this.attributes.speed));
+                _direction.scale((0.001 * Game.ƒ.Loop.timeFrameGame * this.attributes.speed));
             } else {
                 _direction.scale((this.client.minTimeBetweenTicks * this.attributes.speed));
 
