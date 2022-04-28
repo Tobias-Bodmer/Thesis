@@ -22,15 +22,11 @@ namespace Networking {
         protected processMovement(input: Interfaces.InputPayload): Interfaces.StatePayload {
             //TODO: implement whole movement calculation inclusive collision
             //do movement 
-            if (input != undefined) {
-                let cloneInputVector = input.inputVector.clone;
-                if (cloneInputVector.magnitude > 0) {
-                    cloneInputVector.normalize();
-                }
-                (<Player.Player>this.owner).move(cloneInputVector);
-          
+            let cloneInputVector = input.inputVector.clone;
+            if (cloneInputVector.magnitude > 0) {
+                cloneInputVector.normalize();
             }
-         
+            (<Player.Player>this.owner).move(cloneInputVector);
 
 
             let newStatePayload: Interfaces.StatePayload = { tick: input.tick, position: this.owner.mtxLocal.translation }
@@ -76,7 +72,11 @@ namespace Networking {
             let inputPayload: Interfaces.InputPayload = { tick: this.currentTick, inputVector: new ƒ.Vector3(this.horizontalInput, this.verticalInput, 0) };
             this.inputBuffer[bufferIndex] = inputPayload;
 
-            this.stateBuffer[bufferIndex] = this.processMovement(inputPayload);
+            try {
+                this.stateBuffer[bufferIndex] = this.processMovement(inputPayload);
+            } catch (error) {
+                console.log(inputPayload);
+            }
 
             //send inputPayload to host
             Networking.sendClientInput(this.ownerNetId, inputPayload);
