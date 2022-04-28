@@ -96,10 +96,9 @@ namespace Networking {
                 this.stateBuffer[serverStateBufferIndex] = this.latestServerState;
 
                 let tickToProcess = (this.latestServerState.tick + 1);
-                console.log(tickToProcess);
 
                 while (tickToProcess < this.currentTick) {
-                    let statePayload: Interfaces.StatePayload = this.processMovement(this.inputBuffer[tickToProcess]);
+                    let statePayload: Interfaces.StatePayload = this.processMovement(this.inputBuffer[tickToProcess%this.bufferSize]);
 
                     let bufferIndex = tickToProcess % this.bufferSize;
                     this.stateBuffer[bufferIndex] = statePayload;
