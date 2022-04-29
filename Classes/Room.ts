@@ -18,6 +18,7 @@ namespace Generation {
         public doors: Door[] = [];
         public finished: boolean = false;
         public enemyCount: number;
+        public positionUpdated: boolean = false;
         neighbourN: Room;
         neighbourE: Room;
         neighbourS: Room;
@@ -42,8 +43,6 @@ namespace Generation {
             this.coordinates = _coordiantes;
             this.exits = _exits;
             this.roomType = _roomType;
-
-
 
             switch (_roomType) {
                 case ROOMTYPE.START:
@@ -82,35 +81,21 @@ namespace Generation {
             this.addComponent(this.cmpMaterial);
 
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(this.coordinates.x * this.roomSize, this.coordinates.y * this.roomSize, -0.01);
-           
-            this.addWalls();
 
-            this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.update)
+            this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate)
         }
 
-        protected update = (_event: Event): void => {
+        protected eventUpdate = (_event: Event): void => {
+            this.update();
+        }
+
+        public update(): void {
             if (this.enemyCount <= 0) {
                 this.finished = true;
             }
         }
 
-        // public setRoomCoordinates(): void {
-        //     if (this.neighbourN != undefined) {
-        //         this.neighbourN.mtxLocal.translation = new ƒ.Vector3(this.neighbourN.coordinates.x * (this.roomSize / 2 + this.neighbourN.roomSize / 2), this.neighbourN.coordinates.y * (this.roomSize / 2 + this.neighbourN.roomSize / 2), -0.01);
-        //     }
-        //     if (this.neighbourE != undefined) {
-        //         this.neighbourE.mtxLocal.translation = new ƒ.Vector3(this.neighbourE.coordinates.x * (this.roomSize / 2 + this.neighbourE.roomSize / 2), this.neighbourE.coordinates.y * (this.roomSize / 2 + this.neighbourE.roomSize / 2), -0.01);
-        //     }
-        //     if (this.neighbourS != undefined) {
-        //         this.neighbourS.mtxLocal.translation = new ƒ.Vector3(this.neighbourS.coordinates.x * (this.roomSize / 2 + this.neighbourS.roomSize / 2), this.neighbourS.coordinates.y * (this.roomSize / 2 + this.neighbourS.roomSize / 2), -0.01);
-        //     }
-        //     if (this.neighbourW != undefined) {
-        //         this.neighbourW.mtxLocal.translation = new ƒ.Vector3(this.neighbourW.coordinates.x * (this.roomSize / 2 + this.neighbourW.roomSize / 2), this.neighbourW.coordinates.y * (this.roomSize / 2 + this.neighbourW.roomSize / 2), -0.01);
-        //     }
-
-        // }
-
-        private addWalls(): void {
+        public addWalls(): void {
             this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, <Interfaces.RoomExits>{ north: true, east: false, south: false, west: false }));
             this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, <Interfaces.RoomExits>{ north: false, east: true, south: false, west: false }));
             this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, <Interfaces.RoomExits>{ north: false, east: false, south: true, west: false }));

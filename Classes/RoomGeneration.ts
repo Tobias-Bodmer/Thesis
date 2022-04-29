@@ -25,25 +25,42 @@ namespace Generation {
             // console.log(room.coordinates + " " + room.exits + " " + room.roomType.toString());
         })
 
+        placeRoomsLocal(rooms[0]);
+
         for (let i = 0; i < rooms.length; i++) {
             rooms[i].setDoors();
+            rooms[i].addWalls();
         }
 
-        Game.graph.addChild(rooms[0]);
-        Game.graph.appendChild(rooms[0].walls[0]);
-        Game.graph.appendChild(rooms[0].walls[1]);
-        Game.graph.appendChild(rooms[0].walls[2]);
-        Game.graph.appendChild(rooms[0].walls[3]);
-
-        for (let i = 0; i < rooms[0].doors.length; i++) {
-            Game.graph.addChild(rooms[0].doors[i]);
-        }
-
-        sendRoom(rooms[0]);
+        addRoomToGraph(rooms[0]);
+        sendRoom(<Interfaces.Room>{ coordinates: rooms[0].coordinates, direction: null, exits: rooms[0].exits, roomType: rooms[0].roomType, translation: rooms[0].mtxLocal.translation });
     }
 
-    function sendRoom(_room: Room, _direciton?: Interfaces.RoomExits) {
-        Networking.sendRoom(_room.name, _room.coordinates, _room.exits, _room.roomType, _direciton);
+    function placeRoomsLocal(_firstRoom: Room) {
+        if (_firstRoom.neighbourN != undefined && !_firstRoom.neighbourN.positionUpdated) {
+            _firstRoom.neighbourN.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourN.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourN.roomSize / 2), _firstRoom.neighbourN.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourN.roomSize / 2), -0.01);
+            _firstRoom.neighbourN.positionUpdated = true;
+            placeRoomsLocal(_firstRoom.neighbourN);
+        }
+        if (_firstRoom.neighbourE != undefined && !_firstRoom.neighbourE.positionUpdated) {
+            _firstRoom.neighbourE.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourE.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourE.roomSize / 2), _firstRoom.neighbourE.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourE.roomSize / 2), -0.01);
+            _firstRoom.neighbourE.positionUpdated = true;
+            placeRoomsLocal(_firstRoom.neighbourE);
+        }
+        if (_firstRoom.neighbourS != undefined && !_firstRoom.neighbourS.positionUpdated) {
+            _firstRoom.neighbourS.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourS.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourS.roomSize / 2), _firstRoom.neighbourS.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourS.roomSize / 2), -0.01);
+            _firstRoom.neighbourS.positionUpdated = true;
+            placeRoomsLocal(_firstRoom.neighbourS);
+        }
+        if (_firstRoom.neighbourW != undefined && !_firstRoom.neighbourW.positionUpdated) {
+            _firstRoom.neighbourW.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourW.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourW.roomSize / 2), _firstRoom.neighbourW.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourW.roomSize / 2), -0.01);
+            _firstRoom.neighbourW.positionUpdated = true;
+            placeRoomsLocal(_firstRoom.neighbourW);
+        }
+    }
+
+    function sendRoom(_room: Interfaces.Room) {
+        Networking.sendRoom(_room);
     }
 
     function addRoom(_currentRoom: Room, _roomType: Generation.ROOMTYPE): void {
@@ -87,11 +104,11 @@ namespace Generation {
                 newRoom.neighbourE = _currentRoom;
                 usedPositions.push(newRoomPosition);
                 break;
-                
-            }
-            // _currentRoom.setRoomCoordinates();
-            
+
         }
+        // _currentRoom.setRoomCoordinates();
+
+    }
 
     function addSpecialRooms(): void {
         rooms.forEach(room => {
@@ -230,22 +247,22 @@ namespace Generation {
         if (_currentRoom.finished) {
             if (_direction.north) {
                 let exits: Interfaces.RoomExits = { north: false, east: false, south: true, west: false };
-                sendRoom(_currentRoom.neighbourN, exits);
+                sendRoom(<Interfaces.Room>{ coordinates: _currentRoom.neighbourN.coordinates, direction: exits, exits: _currentRoom.neighbourN.exits, roomType: _currentRoom.neighbourN.roomType, translation: _currentRoom.neighbourN.mtxLocal.translation });
                 addRoomToGraph(_currentRoom.neighbourN, exits);
             }
             if (_direction.east) {
                 let exits: Interfaces.RoomExits = { north: false, east: false, south: false, west: true };
-                sendRoom(_currentRoom.neighbourE, exits);
+                sendRoom(<Interfaces.Room>{ coordinates: _currentRoom.neighbourE.coordinates, direction: exits, exits: _currentRoom.neighbourE.exits, roomType: _currentRoom.neighbourE.roomType, translation: _currentRoom.neighbourE.mtxLocal.translation });
                 addRoomToGraph(_currentRoom.neighbourE, exits);
             }
             if (_direction.south) {
                 let exits: Interfaces.RoomExits = { north: true, east: false, south: false, west: false };
-                sendRoom(_currentRoom.neighbourS, exits);
+                sendRoom(<Interfaces.Room>{ coordinates: _currentRoom.neighbourS.coordinates, direction: exits, exits: _currentRoom.neighbourS.exits, roomType: _currentRoom.neighbourS.roomType, translation: _currentRoom.neighbourS.mtxLocal.translation });
                 addRoomToGraph(_currentRoom.neighbourS, exits);
             }
             if (_direction.west) {
                 let exits: Interfaces.RoomExits = { north: false, east: true, south: false, west: false };
-                sendRoom(_currentRoom.neighbourW, exits);
+                sendRoom(<Interfaces.Room>{ coordinates: _currentRoom.neighbourW.coordinates, direction: exits, exits: _currentRoom.neighbourW.exits, roomType: _currentRoom.neighbourW.roomType, translation: _currentRoom.neighbourW.mtxLocal.translation });
                 addRoomToGraph(_currentRoom.neighbourW, exits);
             }
 
@@ -266,29 +283,30 @@ namespace Generation {
         Game.graph.addChild(_room.walls[2]);
         Game.graph.addChild(_room.walls[3]);
 
-        let newPosition: Game.ƒ.Vector3 = _room.cmpTransform.mtxLocal.translation.clone;
+        if (_direciton != undefined) {
+            let newPosition: Game.ƒ.Vector3 = _room.cmpTransform.mtxLocal.translation.clone;
 
-        if (_direciton != null) {
-            if (_direciton.north) {
-                newPosition.y += _room.roomSize / 2 - 2;
+            if (_direciton != null) {
+                if (_direciton.north) {
+                    newPosition.y += _room.roomSize / 2 - 2;
+                }
+                if (_direciton.east) {
+                    newPosition.x += _room.roomSize / 2 - 2;
+                }
+                if (_direciton.south) {
+                    newPosition.y -= _room.roomSize / 2 - 2;
+                }
+                if (_direciton.west) {
+                    newPosition.x -= _room.roomSize / 2 - 2;
+                }
             }
-            if (_direciton.east) {
-                newPosition.x += _room.roomSize / 2 - 2;
-            }
-            if (_direciton.south) {
-                newPosition.y -= _room.roomSize / 2 - 2;
-            }
-            if (_direciton.west) {
-                newPosition.x -= _room.roomSize / 2 - 2;
+            newPosition.z = 0;
+
+            Game.avatar1.cmpTransform.mtxLocal.translation = newPosition;
+            if (Networking.client.id == Networking.client.idHost) {
+                Game.avatar2.cmpTransform.mtxLocal.translation = newPosition;
             }
         }
-        newPosition.z = 0;
-
-        Game.avatar1.cmpTransform.mtxLocal.translation = newPosition;
-        if (Networking.client.id == Networking.client.idHost) {
-            Game.avatar2.cmpTransform.mtxLocal.translation = newPosition;
-        }
-
 
         if (Networking.client.id != Networking.client.idHost) {
             _room.setDoors();

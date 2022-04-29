@@ -35,7 +35,7 @@ namespace Enemy {
                 this.move(this.moveDirection);
                 Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId);
             }
-        }
+        };
 
         public doKnockback(_body: Entity.Entity): void {
             // (<Player.Player>_body).getKnockback(this.attributes.knockbackForce, this.cmpTransform.mtxLocal.translation);
@@ -121,10 +121,6 @@ namespace Enemy {
             super(_id, _attributes, _position, _netId);
         }
 
-        update(): void {
-            super.update();
-        }
-
         behaviour() {
             let target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
             let distance = ƒ.Vector3.DIFFERENCE(target, this.cmpTransform.mtxLocal.translation).magnitude;
@@ -168,9 +164,6 @@ namespace Enemy {
             super(_id, _attributes, _position, _netId);
         }
 
-        public update(): void {
-            super.update();
-        }
         behaviour() {
             this.avatars = [Game.avatar1, Game.avatar2];
             this.target = (<Player.Player>this.avatars[this.randomPlayer]).mtxLocal.translation.toVector2();
@@ -221,10 +214,6 @@ namespace Enemy {
             super(_id, _attributes, _position, _netId);
         }
 
-        public update(): void {
-            super.update();
-        }
-
         behaviour() {
             this.avatars = [Game.avatar1, Game.avatar2]
             this.target = (<Player.Player>this.avatars[this.randomPlayer]).mtxLocal.translation.toVector2();
@@ -239,9 +228,6 @@ namespace Enemy {
             }
 
         }
-
-
-
 
         moveBehaviour(): void {
             this.behaviour();
@@ -274,10 +260,6 @@ namespace Enemy {
             super(_id, _attributes, _position, _netId);
         }
 
-        public update(): void {
-            super.update();
-        }
-
         moveBehaviour(): void {
             this.patrol();
         }
@@ -307,10 +289,6 @@ namespace Enemy {
             super(_id, _attributes, _position, _netId);
 
             this.weapon = new Weapons.Weapon(60, 1, Bullets.BULLETTYPE.STANDARD, 2, this.netId, Weapons.AIM.HOMING);
-        }
-
-        update() {
-            super.update();
         }
 
         moveBehaviour(): void {
@@ -363,10 +341,6 @@ namespace Enemy {
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _target: Player.Player, _netId?: number) {
             super(_id, _attributes, _position, _netId);
             this.avatar = _target;
-        }
-
-        public update(): void {
-            super.update();
         }
 
         behaviour() {

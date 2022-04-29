@@ -57,10 +57,10 @@ namespace Interfaces {
     }
 
     export interface Room {
-        coordinates: Game.ƒ.Vector3;
+        coordinates: Game.ƒ.Vector2;
         exits: RoomExits;
         roomType: Generation.ROOMTYPE;
         direction: RoomExits;
-
+        translation: Game.ƒ.Vector3;
     }
 }

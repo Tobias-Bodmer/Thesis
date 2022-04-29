@@ -82,11 +82,15 @@ namespace Bullets {
             this.direction = _direction;
             this.owner = _ownerId;
 
-            this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.update);
+            this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
         }
 
 
-        public update = (_event: Event): void => {
+        public eventUpdate = (_event: Event): void => {
+            this.update();
+        };
+
+        public update() {
             this.cmpTransform.mtxLocal.translate(this.flyDirection);
             this.collisionDetection();
             this.despawn();
@@ -244,12 +248,11 @@ namespace Bullets {
             // }
             this.targetDirection = _direction;
             if (Networking.client.idHost == Networking.client.id) {
-                this.setTarget(Game.avatar2.netId);
+                this.setTarget(Game.avatar1.netId);
             }
-
-            this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.update);
         }
-        update = (_event: Event): void => {
+
+        public update(): void {
             if (Networking.client.id == Networking.client.idHost) {
                 this.calculateHoming();
             } else {
@@ -257,11 +260,13 @@ namespace Bullets {
                     this.calculateHoming();
                 }
             }
-            super.update(_event);
+            super.update();
         }
 
         setTarget(_netID: number) {
-            this.target = Game.entities.find(ent => ent.netId == _netID).mtxLocal.translation;
+            if (Game.entities.find(ent => ent.netId == _netID) != undefined) {
+                this.target = Game.entities.find(ent => ent.netId == _netID).mtxLocal.translation;
+            }
         }
 
         calculateHoming() {

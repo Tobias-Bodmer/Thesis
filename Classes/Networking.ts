@@ -72,7 +72,7 @@ namespace Networking {
             if (message.content != undefined && message.content.text == FUNCTION.LOADED.toString()) {
                 Game.loaded = true;
             }
-            
+
             if (message.idSource != client.id) {
                 if (message.command != FudgeNet.COMMAND.SERVER_HEARTBEAT && message.command != FudgeNet.COMMAND.CLIENT_HEARTBEAT) {
                     //Add new client to array clients
@@ -357,13 +357,19 @@ namespace Networking {
                         }
                         //send room 
                         if (message.content != undefined && message.content.text == FUNCTION.SENDROOM.toString()) {
-                            let coordiantes: Game.ƒ.Vector2 = new Game.ƒ.Vector2(message.content.coordiantes.data[0], message.content.coordiantes.data[1]);
-                            let room: Generation.Room = new Generation.Room(message.content.name, coordiantes, message.content.exits, message.content.roomType);
+                            let coordiantes: Game.ƒ.Vector2 = new Game.ƒ.Vector2(message.content.room.coordinates.data[0], message.content.room.coordinates.data[1]);
+                            let tanslation: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.room.translation.data[0], message.content.room.translation.data[1], message.content.room.translation.data[2]);
+                            let room: Interfaces.Room = { coordinates: coordiantes, direction: message.content.room.direction, exits: message.content.room.exits, roomType: message.content.room.roomType, translation: tanslation };
 
-                            if (message.content.direciton != null) {
-                                Generation.addRoomToGraph(room, message.content.direciton);
+                            let newRoom: Generation.Room = new Generation.Room("room", room.coordinates, room.exits, room.roomType);
+                            newRoom.mtxLocal.translation = room.translation;
+                            newRoom.addWalls();
+                            newRoom.setDoors();
+
+                            if (room.direction != null) {
+                                Generation.addRoomToGraph(newRoom, room.direction);
                             } else {
-                                Generation.addRoomToGraph(room);
+                                Generation.addRoomToGraph(newRoom);
                             }
                         }
                         //send request to switch rooms
@@ -556,9 +562,9 @@ namespace Networking {
 
 
     //#region room
-    export function sendRoom(_name: string, _coordiantes: Game.ƒ.Vector2, _exits: Interfaces.RoomExits, _roomType: Generation.ROOMTYPE, _direciton?: Interfaces.RoomExits) {
+    export function sendRoom(_room: Interfaces.Room) {
         if (Game.connected && client.idHost == client.id) {
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SENDROOM, name: _name, coordiantes: _coordiantes, exits: _exits, roomType: _roomType, direciton: _direciton } })
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SENDROOM, room: _room } })
         }
     }
     export function switchRoomRequest(_coordiantes: Game.ƒ.Vector2, _direction: Interfaces.RoomExits) {

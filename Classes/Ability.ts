@@ -106,16 +106,20 @@ namespace Ability {
         public startCoolDown() {
             this.hasCoolDown = true
             Game.coolDowns.push(this);
-            Game.ƒ.Loop.addEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.updateCoolDown);
+            Game.ƒ.Loop.addEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
         }
 
         private endCoolDOwn() {
             Game.coolDowns = Game.coolDowns.filter(cd => cd != this);
             this.hasCoolDown = false;
-            Game.ƒ.Loop.removeEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.updateCoolDown);
+            Game.ƒ.Loop.removeEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
         }
 
-        public updateCoolDown = (_event: Event): void => {
+        public eventUpdate = (_event: Event): void => {
+            this.updateCoolDown();
+        }
+
+        public updateCoolDown(): void {
             if (this.currentCooldown > 0) {
                 this.currentCooldown--;
             }

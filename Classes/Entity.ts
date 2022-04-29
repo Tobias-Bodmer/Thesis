@@ -43,10 +43,14 @@ namespace Entity {
             this.mtxLocal.scale(new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale));
             this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2, this.netId);
 
-            this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.update);
+            this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
         }
 
-        public update = (_event: Event): void => {
+        public eventUpdate = (_event: Event): void => {
+            this.update();
+        };
+
+        public update(): void {
             this.updateBuffs();
             if (Game.connected && Networking.client.idHost == Networking.client.id) {
                 this.setCollider();

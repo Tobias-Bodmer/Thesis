@@ -15,10 +15,6 @@ namespace Enemy {
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), this.mtxLocal.scaling.x / 2, this.netId);
         }
 
-        update(): void {
-            super.update();
-        }
-
         cooldown(): void {
             if (this.summonCurrentCooldown > 0) {
                 this.summonCurrentCooldown--;

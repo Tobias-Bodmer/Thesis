@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -54,8 +54,9 @@ declare namespace UI {
         up: number;
         lifetime: number;
         randomX: number;
-        lifespan(_graph: ƒ.Node): Promise<void>;
+        lifespan(): Promise<void>;
         constructor(_position: ƒ.Vector3, _damage: number);
+        update: (_event: Event) => void;
         move(): Promise<void>;
         loadTexture(_damage: number): void;
     }
@@ -93,6 +94,7 @@ declare namespace Entity {
         protected idleScale: number;
         protected currentKnockback: ƒ.Vector3;
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number);
+        eventUpdate: (_event: Event) => void;
         update(): void;
         setCollider(): void;
         updateBuffs(): void;
@@ -158,7 +160,6 @@ declare namespace Enemy {
     }
     class EnemyDumb extends Enemy {
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
-        update(): void;
         behaviour(): void;
         moveBehaviour(): void;
     }
@@ -169,7 +170,6 @@ declare namespace Enemy {
         randomPlayer: number;
         currentBehaviour: Entity.BEHAVIOUR;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
-        update(): void;
         behaviour(): void;
         moveBehaviour(): void;
     }
@@ -180,7 +180,6 @@ declare namespace Enemy {
         avatars: Player.Player[];
         randomPlayer: number;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
-        update(): void;
         behaviour(): void;
         moveBehaviour(): void;
     }
@@ -189,7 +188,6 @@ declare namespace Enemy {
         waitTime: number;
         currenPointIndex: number;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
-        update(): void;
         moveBehaviour(): void;
         patrol(): void;
     }
@@ -197,7 +195,6 @@ declare namespace Enemy {
         viewRadius: number;
         gotRecognized: boolean;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
-        update(): void;
         moveBehaviour(): void;
         getDamage(_value: number): void;
         shoot(_netId?: number): void;
@@ -206,7 +203,6 @@ declare namespace Enemy {
         avatar: Player.Player;
         randomPlayer: number;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _target: Player.Player, _netId?: number);
-        update(): void;
         behaviour(): void;
         moveBehaviour(): void;
     }
@@ -250,10 +246,11 @@ declare namespace Interfaces {
         west: boolean;
     }
     interface Room {
-        coordinates: Game.ƒ.Vector3;
+        coordinates: Game.ƒ.Vector2;
         exits: RoomExits;
         roomType: Generation.ROOMTYPE;
         direction: RoomExits;
+        translation: Game.ƒ.Vector3;
     }
 }
 declare namespace Items {
@@ -449,6 +446,7 @@ declare namespace Ability {
         constructor(_number: number);
         startCoolDown(): void;
         private endCoolDOwn;
+        eventUpdate: (_event: Event) => void;
         updateCoolDown(): void;
     }
 }
@@ -478,7 +476,6 @@ declare namespace Enemy {
         summonCurrentCooldown: number;
         private summon;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
-        update(): void;
         cooldown(): void;
         behaviour(): void;
         getDamage(_value: number): void;
@@ -554,6 +551,7 @@ declare namespace Bullets {
         killcount: number;
         despawn(): Promise<void>;
         constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _netId?: number);
+        eventUpdate: (_event: Event) => void;
         update(): void;
         doKnockback(_body: ƒAid.NodeSprite): void;
         getKnockback(_knockbackForce: number, _position: ƒ.Vector3): void;
@@ -573,7 +571,7 @@ declare namespace Bullets {
         rotateSpeed: number;
         targetDirection: ƒ.Vector3;
         constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _target?: ƒ.Vector3, _netId?: number);
-        update(): Promise<void>;
+        update(): void;
         setTarget(_netID: number): void;
         calculateHoming(): void;
     }
@@ -682,7 +680,7 @@ declare namespace Networking {
     function removeItem(_netId: number): void;
     function updateBuffList(_buffList: Buff.Buff[], _netId: number): void;
     function updateUI(_position: Game.ƒ.Vector2, _value: number): void;
-    function sendRoom(_name: string, _coordiantes: Game.ƒ.Vector2, _exits: Interfaces.RoomExits, _roomType: Generation.ROOMTYPE, _direciton?: Interfaces.RoomExits): void;
+    function sendRoom(_room: Interfaces.Room): void;
     function switchRoomRequest(_coordiantes: Game.ƒ.Vector2, _direction: Interfaces.RoomExits): void;
     function idGenerator(_object: Object): number;
     function popID(_id: number): void;
@@ -738,6 +736,7 @@ declare namespace Generation {
         doors: Door[];
         finished: boolean;
         enemyCount: number;
+        positionUpdated: boolean;
         neighbourN: Room;
         neighbourE: Room;
         neighbourS: Room;
@@ -754,7 +753,9 @@ declare namespace Generation {
         bossRoomMat: ƒ.Material;
         cmpMaterial: ƒ.ComponentMaterial;
         constructor(_name: string, _coordiantes: Game.ƒ.Vector2, _exits: Interfaces.RoomExits, _roomType: ROOMTYPE);
-        private addWalls;
+        protected eventUpdate: (_event: Event) => void;
+        update(): void;
+        addWalls(): void;
         setDoors(): void;
         getRoomSize(): number;
     }

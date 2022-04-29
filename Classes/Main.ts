@@ -80,8 +80,6 @@ namespace Game {
         cmpCamera.mtxPivot.rotateY(180);
 
         viewport.initialize("Viewport", graph, cmpCamera, canvas);
-
-        draw();
     }
 
     function update(): void {
@@ -90,7 +88,6 @@ namespace Game {
 
         Game.avatar1.predict();
 
-        draw();
 
         cameraUpdate();
 
@@ -112,7 +109,7 @@ namespace Game {
         //     })
         // }
 
-        let damageUI: UI.DamageUI[] = <UI.DamageUI[]>graph.getChildren().filter(element => (<UI.DamageUI>element).tag == Tag.TAG.DAMAGEUI)
+        // let damageUI: UI.DamageUI[] = <UI.DamageUI[]>graph.getChildren().filter(element => (<UI.DamageUI>element).tag == Tag.TAG.DAMAGEUI)
         // damageUI.forEach(element => {
         //     element.move();
         //     element.lifespan(graph);
@@ -129,9 +126,11 @@ namespace Game {
         enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY)
 
         currentRoom = (<Generation.Room>Game.graph.getChildren().find(elem => (<Generation.Room>elem).tag == Tag.TAG.ROOM));
-        
+
 
         UI.updateUI();
+
+        draw();
     }
 
     function setClient() {
