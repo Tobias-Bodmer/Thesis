@@ -98,9 +98,10 @@ namespace Game {
         }
 
         items = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.TAG.ITEM)
-        coolDowns.forEach(_cd => {
-            _cd.updateCoolDown();
-        })
+        // coolDowns.forEach(_cd => {
+        //     _cd.updateCoolDown();
+        // })
+
         bullets = <Bullets.Bullet[]>graph.getChildren().filter(element => (<Bullets.Bullet>element).tag == Tag.TAG.BULLET)
         if (Game.connected) {
             bullets.forEach(element => {
@@ -109,28 +110,25 @@ namespace Game {
         }
 
         let damageUI: UI.DamageUI[] = <UI.DamageUI[]>graph.getChildren().filter(element => (<UI.DamageUI>element).tag == Tag.TAG.DAMAGEUI)
-        damageUI.forEach(element => {
-            element.move();
-            element.lifespan(graph);
-        })
+        // damageUI.forEach(element => {
+        //     element.move();
+        //     element.lifespan(graph);
+        // })
 
         entities = <Entity.Entity[]>graph.getChildren().filter(child => (<Entity.Entity>child) instanceof Entity.Entity);
-        entities.forEach(element => {
-            element.updateBuffs();
-            if (Game.connected && Networking.client.idHost == Networking.client.id) {
-                element.update();
-            }
-        })
+        // entities.forEach(element => {
+        //     element.updateBuffs();
+        //     if (Game.connected && Networking.client.idHost == Networking.client.id) {
+        //         element.update();
+        //     }
+        // })
 
         enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY)
 
         currentRoom = (<Generation.Room>Game.graph.getChildren().find(elem => (<Generation.Room>elem).tag == Tag.TAG.ROOM));
-        if (currentRoom.enemyCount <= 0) {
-            currentRoom.finished = true;
-        }
+        
 
         UI.updateUI();
-
     }
 
     function setClient() {

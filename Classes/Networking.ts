@@ -72,12 +72,7 @@ namespace Networking {
             if (message.content != undefined && message.content.text == FUNCTION.LOADED.toString()) {
                 Game.loaded = true;
             }
-
-            if (message.command == FudgeNet.COMMAND.SERVER_HEARTBEAT) {
-                //TODO: need maurice!
-                //TODO: do prediction here?
-            }
-
+            
             if (message.idSource != client.id) {
                 if (message.command != FudgeNet.COMMAND.SERVER_HEARTBEAT && message.command != FudgeNet.COMMAND.CLIENT_HEARTBEAT) {
                     //Add new client to array clients

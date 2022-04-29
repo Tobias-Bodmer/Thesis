@@ -42,10 +42,21 @@ namespace Entity {
             else {
                 this.netId = Networking.idGenerator(this)
             }
+            if (AnimationGeneration.getAnimationById(this.id) != null) {
+                let ani = AnimationGeneration.getAnimationById(this.id);
+                this.animationContainer = ani;
+                this.idleScale = ani.scale.find(animation => animation[0] == "idle")[1];
+            }
+            this.addComponent(new ƒ.ComponentTransform());
+            this.mtxLocal.scale(new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale));
+            this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2, this.netId);
         }
 
-        public update() {
-            this.setCollider();
+        public update = (_event: Event): void => {
+            this.updateBuffs();
+            if (Game.connected && Networking.client.idHost == Networking.client.id) {
+                this.setCollider();
+            }
         }
 
         public setCollider() {

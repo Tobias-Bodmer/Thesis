@@ -36,6 +36,7 @@ namespace Bullets {
                     Networking.popID(this.netId);
                     Networking.removeBullet(this.netId);
                     Game.graph.removeChild(this);
+
                 }
             }
         }
@@ -236,6 +237,8 @@ namespace Bullets {
             if (Networking.client.idHost == Networking.client.id) {
                 this.setTarget(Game.avatar2.netId);
             }
+
+            // this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.update);
         }
         public move(_direction: Game.ƒ.Vector3) {
             super.move(_direction);
