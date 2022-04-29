@@ -98,19 +98,15 @@ namespace Networking {
                     }
 
 
-                    //FROM CLIENT 
+                    //FROM CLIENT INPUT VECTORS FROM AVATAR
                     if (message.content != undefined && message.content.text == FUNCTION.CLIENTMOVEMENT.toString()) {
-                        let players: Entity.Entity[] = Game.entities.filter(entity => entity.tag == Tag.TAG.PLAYER);
-                        let entity: Entity.Entity = players.find(player => player.netId != message.content.netId);
                         let inputVector = new Game.ƒ.Vector3(message.content.input.inputVector.data[0], message.content.input.inputVector.data[1], message.content.input.inputVector.data[2]);
                         let input: Interfaces.InputAvatarPayload = { tick: message.content.input.tick, inputVector: inputVector, doesAbility: message.content.input.doesAbility }
-                        if (entity != undefined) {
-                            (<Player.Player>entity).server.updateEntityToCheck(message.content.netId);
-                            (<Player.Player>entity).server.onClientInput(input);
-                        }
+                        Game.serverPredictionAvatar.updateEntityToCheck(message.content.netId);
+                        Game.serverPredictionAvatar.onClientInput(input);
                     }
 
-                    // TO CLIENT
+                    // TO CLIENT CALCULATED POSITION FOR AVATAR
                     if (message.content != undefined && message.content.text == FUNCTION.SERVERBUFFER.toString()) {
                         let entity = Game.entities.find(entity => entity.netId == message.content.netId);
                         let position = new Game.ƒ.Vector3(message.content.buffer.position.data[0], message.content.buffer.position.data[1], message.content.buffer.position.data[2]);
@@ -118,6 +114,14 @@ namespace Networking {
                         if (entity != undefined) {
                             (<Player.Player>entity).client.onServerMovementState(state);
                         }
+                    }
+
+                    if (message.content != undefined && message.content.text == FUNCTION.BULLETTRANSFORM.toString()) {
+                        let inputVector = new Game.ƒ.Vector3(message.content.input.inputVector.data[0], message.content.input.inputVector.data[1], message.content.input.inputVector.data[2]);
+                        let input: Interfaces.InputAvatarPayload = { tick: message.content.input.tick, inputVector: inputVector, doesAbility: message.content.input.doesAbility }
+                        Game.serverPredictionBullet.updateEntityToCheck(message.content.netId);
+                        Game.serverPredictionBullet.onClientInput(input);
+
                     }
 
                     //Set client ready
@@ -425,6 +429,7 @@ namespace Networking {
         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.TRANSFORM, value: _position, rotation: _rotation } })
     }
 
+
     export function sendClientInput(_netId: number, _inputPayload: Interfaces.InputAvatarPayload) {
         client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.CLIENTMOVEMENT, netId: _netId, input: _inputPayload } })
     }
@@ -457,16 +462,20 @@ namespace Networking {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.SPAWNBULLET, aimType: _aimType, direction: _direction, ownerNetId: _ownerNetId, bulletNetId: _bulletNetId, bulletTarget: _bulletTarget } })
         }
     }
-    export function updateBullet(_position: ƒ.Vector3, _rotation: ƒ.Vector3, _netId: number, _tick?: number) {
-        if (Game.connected && client.idHost == client.id) {
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.BULLETTRANSFORM, position: _position, rotation: _rotation, netId: _netId, tick: _tick } })
-        }
+    export function sendBulletInput(_netId: number, _inputPayload: Interfaces.InputBulletPayload) {
+        client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.BULLETTRANSFORM, netId: _netId, input: _inputPayload } })
     }
-    export function predictionBullet(_position: ƒ.Vector3, _netId: number, _tick?: number) {
-        if (Game.connected && client.idHost == client.id) {
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.BULLETPREDICTION, position: _position, netId: _netId, tick: _tick } })
-        }
-    }
+
+    // export function updateBullet(_position: ƒ.Vector3, _rotation: ƒ.Vector3, _netId: number, _tick?: number) {
+    //     if (Game.connected && client.idHost == client.id) {
+    //         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.BULLETTRANSFORM, position: _position, rotation: _rotation, netId: _netId, tick: _tick } })
+    //     }
+    // }
+    // export function predictionBullet(_position: ƒ.Vector3, _netId: number, _tick?: number) {
+    //     if (Game.connected && client.idHost == client.id) {
+    //         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.BULLETPREDICTION, position: _position, netId: _netId, tick: _tick } })
+    //     }
+    // }
     export function removeBullet(_netId: number) {
         if (Game.connected && client.idHost == client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.BULLETDIE, netId: _netId } })

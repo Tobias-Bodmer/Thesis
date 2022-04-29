@@ -33,6 +33,113 @@ namespace Networking {
             return newStatePayload;
         }
     }
+
+    export class ServerBulletPrediction extends BulletPrediction {
+        private inputQueue: Queue = new Queue();
+
+        public updateEntityToCheck(_netId: number) {
+            this.ownerNetId = _netId;
+        }
+
+        public update() {
+            this.timer += Game.deltaTime;
+            while (this.timer >= this.minTimeBetweenTicks) {
+                this.timer -= this.minTimeBetweenTicks;
+                this.handleTick();
+                this.currentTick++;
+            }
+        }
+
+        handleTick() {
+
+            let bufferIndex = -1;
+            while (this.inputQueue.getQueueLength() > 0) {
+                let inputPayload: Interfaces.InputAvatarPayload = this.inputQueue.dequeue();
+
+                bufferIndex = inputPayload.tick % this.bufferSize;
+                let statePayload: Interfaces.StatePayload = this.processMovement(inputPayload)
+                this.stateBuffer[bufferIndex] = statePayload;
+            }
+
+            if (bufferIndex != -1) {
+                //Send to client new position
+                Networking.sendServerBuffer(this.ownerNetId, this.stateBuffer[bufferIndex]);
+            }
+        }
+
+        public onClientInput(inputPayload: Interfaces.InputAvatarPayload) {
+            this.inputQueue.enqueue(inputPayload);
+        }
+    }
+
+    export class ClientBulletPrediction extends BulletPrediction {
+        private inputBuffer: Interfaces.InputBulletPayload[];
+        private latestServerState: Interfaces.StatePayload;
+        private lastProcessedState: Interfaces.StatePayload;
+        private flyDirection: Game.ƒ.Vector3;
+
+        private AsyncTolerance: number = 0.1;
+
+
+        constructor(_ownerNetId: number) {
+            super(_ownerNetId);
+            this.inputBuffer = new Array<Interfaces.InputAvatarPayload>(this.bufferSize);
+        }
+
+
+        public update() {
+            this.flyDirection = (<Bullets.Bullet>this.owner).flyDirection;
+            this.timer += Game.deltaTime;
+            while (this.timer >= this.minTimeBetweenTicks) {
+                this.timer -= this.minTimeBetweenTicks;
+                this.handleTick();
+                this.currentTick++;
+            }
+        }
+
+        protected handleTick() {
+
+            if (this.latestServerState != this.lastProcessedState) {
+                this.handleServerReconciliation();
+            }
+            let bufferIndex = this.currentTick % this.bufferSize;
+            let inputPayload: Interfaces.InputBulletPayload = { tick: this.currentTick, inputVector: this.flyDirection };
+            this.inputBuffer[bufferIndex] = inputPayload;
+            // console.log(inputPayload.tick + "___" + inputPayload.inputVector.clone);
+            this.stateBuffer[bufferIndex] = this.processMovement(inputPayload);
+
+            //send inputPayload to host
+            Networking.sendBulletInput(this.ownerNetId, inputPayload);
+        }
+
+        public onServerMovementState(_serverState: Interfaces.StatePayload) {
+            this.latestServerState = _serverState;
+        }
+
+        private handleServerReconciliation() {
+            this.lastProcessedState = this.latestServerState;
+
+            let serverStateBufferIndex = this.latestServerState.tick % this.bufferSize;
+            let positionError: number = Game.ƒ.Vector3.DIFFERENCE(this.latestServerState.position, this.stateBuffer[serverStateBufferIndex].position).magnitude;
+            if (positionError > this.AsyncTolerance) {
+                console.warn(this.owner.name + " need to be updated to: X:" + this.latestServerState.position.x + " Y: " + this.latestServerState.position.y);
+                this.owner.mtxLocal.translation = this.latestServerState.position;
+
+                this.stateBuffer[serverStateBufferIndex] = this.latestServerState;
+
+                let tickToProcess = (this.latestServerState.tick + 1);
+
+                while (tickToProcess < this.currentTick) {
+                    let statePayload: Interfaces.StatePayload = this.processMovement(this.inputBuffer[tickToProcess % this.bufferSize]);
+
+                    let bufferIndex = tickToProcess % this.bufferSize;
+                    this.stateBuffer[bufferIndex] = statePayload;
+
+                    tickToProcess++;
+                }
+            }
+        }
+    }
     //#endregion
     //#region  avatar Precdiction
     abstract class AvatarPrediction extends Prediction {
@@ -142,10 +249,6 @@ namespace Networking {
     export class ServerPrediction extends AvatarPrediction {
 
         private inputQueue: Queue = new Queue();
-
-        constructor(_ownerNetId: number) {
-            super(_ownerNetId);
-        }
 
         public updateEntityToCheck(_netId: number) {
             this.ownerNetId = _netId;

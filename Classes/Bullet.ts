@@ -83,22 +83,10 @@ namespace Bullets {
         }
 
 
-        async update() {
-            if (Networking.client.id == Networking.client.idHost) {
-                this.cmpTransform.mtxLocal.translate(this.flyDirection);
-                if (this._owner == Game.avatar2) {
-                    this.bulletPrediction();
-                } else {
-                    Networking.updateBullet(this.mtxLocal.translation, this.mtxLocal.rotation, this.netId);
-                }
-                this.collisionDetection();
-                this.despawn();
-            } else {
-                if (this._owner == Game.avatar1) {
-                    this.cmpTransform.mtxLocal.translate(this.flyDirection);
-                    this.bulletPrediction();
-                }
-            }
+        public update() {
+            this.cmpTransform.mtxLocal.translate(this.flyDirection);
+            this.collisionDetection();
+            this.despawn();
         }
 
         doKnockback(_body: ƒAid.NodeSprite): void {
@@ -119,7 +107,7 @@ namespace Bullets {
             while (this.time >= 1) {
                 this.positions.push(new ƒ.Vector3(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.translation.z));
                 if (Game.connected) {
-                    Networking.predictionBullet(this.cmpTransform.mtxLocal.translation, this.netId, this.tick);
+                    // Networking.predictionBullet(this.cmpTransform.mtxLocal.translation, this.netId, this.tick);
                 }
                 this.tick++;
                 this.time -= 1;

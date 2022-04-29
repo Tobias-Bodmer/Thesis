@@ -36,6 +36,9 @@ namespace Game {
     export let connected: boolean = false;
     export let deltaTime: number;
 
+    export let serverPredictionBullet: Networking.ServerBulletPrediction;
+    export let serverPredictionAvatar: Networking.ServerPrediction;
+
     export let currentNetObj: Interfaces.NetworkObjects;
 
     export let entities: Entity.Entity[] = [];
@@ -64,6 +67,8 @@ namespace Game {
 
         if (Networking.client.id == Networking.client.idHost) {
             Generation.generateRooms();
+            serverPredictionBullet = new Networking.ServerBulletPrediction(null);
+            serverPredictionAvatar = new Networking.ServerPrediction(null);
         }
 
         graph.appendChild(avatar1);
@@ -91,8 +96,10 @@ namespace Game {
 
         if (Networking.client.id == Networking.client.idHost) {
             Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
+            serverPredictionBullet.update();
+            serverPredictionAvatar.update();
         }
-       
+
         items = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.TAG.ITEM)
         coolDowns.forEach(_cd => {
             _cd.updateCoolDown();

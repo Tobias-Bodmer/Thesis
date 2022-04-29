@@ -4,7 +4,6 @@ namespace Player {
         public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId, Weapons.AIM.NORMAL);
 
         public client: Networking.ClientPrediction;
-        public server: Networking.ServerPrediction;
         readonly abilityCount: number = 1;
         currentabilityCount: number = this.abilityCount;
 
@@ -12,7 +11,6 @@ namespace Player {
             super(_id, _attributes, _netId);
             this.tag = Tag.TAG.PLAYER;
             this.client = new Networking.ClientPrediction(this.netId);
-            this.server = new Networking.ServerPrediction(this.netId);
         }
 
         public move(_direction: ƒ.Vector3) {
@@ -57,7 +55,6 @@ namespace Player {
             }
             else {
                 this.move(InputSystem.move());
-                this.server.update();
             }
         }
 

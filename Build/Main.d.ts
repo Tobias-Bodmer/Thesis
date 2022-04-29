@@ -18,6 +18,8 @@ declare namespace Game {
     let currentRoom: Generation.Room;
     let connected: boolean;
     let deltaTime: number;
+    let serverPredictionBullet: Networking.ServerBulletPrediction;
+    let serverPredictionAvatar: Networking.ServerPrediction;
     let currentNetObj: Interfaces.NetworkObjects;
     let entities: Entity.Entity[];
     let enemies: Enemy.Enemy[];
@@ -358,6 +360,28 @@ declare namespace Networking {
         protected handleTick(): void;
         protected processMovement(input: Interfaces.InputAvatarPayload): Interfaces.StatePayload;
     }
+    abstract class BulletPrediction extends Prediction {
+        protected processMovement(input: Interfaces.InputBulletPayload): Interfaces.StatePayload;
+    }
+    export class ServerBulletPrediction extends BulletPrediction {
+        private inputQueue;
+        updateEntityToCheck(_netId: number): void;
+        update(): void;
+        handleTick(): void;
+        onClientInput(inputPayload: Interfaces.InputAvatarPayload): void;
+    }
+    export class ClientBulletPrediction extends BulletPrediction {
+        private inputBuffer;
+        private latestServerState;
+        private lastProcessedState;
+        private flyDirection;
+        private AsyncTolerance;
+        constructor(_ownerNetId: number);
+        update(): void;
+        protected handleTick(): void;
+        onServerMovementState(_serverState: Interfaces.StatePayload): void;
+        private handleServerReconciliation;
+    }
     abstract class AvatarPrediction extends Prediction {
         protected processMovement(input: Interfaces.InputAvatarPayload): Interfaces.StatePayload;
     }
@@ -378,7 +402,6 @@ declare namespace Networking {
     }
     export class ServerPrediction extends AvatarPrediction {
         private inputQueue;
-        constructor(_ownerNetId: number);
         updateEntityToCheck(_netId: number): void;
         update(): void;
         handleTick(): void;
@@ -531,7 +554,7 @@ declare namespace Bullets {
         killcount: number;
         despawn(): Promise<void>;
         constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _netId?: number);
-        update(): Promise<void>;
+        update(): void;
         doKnockback(_body: ƒAid.NodeSprite): void;
         getKnockback(_knockbackForce: number, _position: ƒ.Vector3): void;
         updateRotation(_direction: ƒ.Vector3): void;
@@ -647,8 +670,7 @@ declare namespace Networking {
     function knockbackPush(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function updateInventory(_itemId: Items.ITEMID, _itemNetId: number, _netId: number): void;
     function spawnBullet(_aimType: Weapons.AIM, _direction: ƒ.Vector3, _bulletNetId: number, _ownerNetId: number, _bulletTarget?: ƒ.Vector3): void;
-    function updateBullet(_position: ƒ.Vector3, _rotation: ƒ.Vector3, _netId: number, _tick?: number): void;
-    function predictionBullet(_position: ƒ.Vector3, _netId: number, _tick?: number): void;
+    function sendBulletInput(_netId: number, _inputPayload: Interfaces.InputBulletPayload): void;
     function removeBullet(_netId: number): void;
     function spawnEnemy(_enemyClass: Enemy.ENEMYCLASS, _enemy: Enemy.Enemy, _netId: number): void;
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number): void;
@@ -669,7 +691,6 @@ declare namespace Player {
     abstract class Player extends Entity.Entity implements Interfaces.IKnockbackable {
         weapon: Weapons.Weapon;
         client: Networking.ClientPrediction;
-        server: Networking.ServerPrediction;
         readonly abilityCount: number;
         currentabilityCount: number;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _netId?: number);
