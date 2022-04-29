@@ -39,6 +39,7 @@ namespace Bullets {
                     Networking.popID(this.netId);
                     Networking.removeBullet(this.netId);
                     Game.graph.removeChild(this);
+
                 }
             }
         }
@@ -80,10 +81,12 @@ namespace Bullets {
             this.flyDirection = ƒ.Vector3.X();
             this.direction = _direction;
             this.owner = _ownerId;
+
+            this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.update);
         }
 
 
-        public update() {
+        public update = (_event: Event): void => {
             this.cmpTransform.mtxLocal.translate(this.flyDirection);
             this.collisionDetection();
             this.despawn();
@@ -243,8 +246,10 @@ namespace Bullets {
             if (Networking.client.idHost == Networking.client.id) {
                 this.setTarget(Game.avatar2.netId);
             }
+
+            this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.update);
         }
-        async update(): Promise<void> {
+        update = (_event: Event): void => {
             if (Networking.client.id == Networking.client.idHost) {
                 this.calculateHoming();
             } else {
@@ -252,7 +257,7 @@ namespace Bullets {
                     this.calculateHoming();
                 }
             }
-            super.update()
+            super.update(_event);
         }
 
         setTarget(_netID: number) {

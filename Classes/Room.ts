@@ -84,6 +84,14 @@ namespace Generation {
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(this.coordinates.x * this.roomSize, this.coordinates.y * this.roomSize, -0.01);
            
             this.addWalls();
+
+            this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.update)
+        }
+
+        protected update = (_event: Event): void => {
+            if (this.enemyCount <= 0) {
+                this.finished = true;
+            }
         }
 
         // public setRoomCoordinates(): void {

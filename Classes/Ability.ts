@@ -101,19 +101,21 @@ namespace Ability {
         constructor(_number: number) {
             this.coolDown = _number;
             this.currentCooldown = _number;
-
         }
+
         public startCoolDown() {
             this.hasCoolDown = true
             Game.coolDowns.push(this);
+            Game.ƒ.Loop.addEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.updateCoolDown);
         }
 
         private endCoolDOwn() {
             Game.coolDowns = Game.coolDowns.filter(cd => cd != this);
             this.hasCoolDown = false;
+            Game.ƒ.Loop.removeEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.updateCoolDown);
         }
 
-        public updateCoolDown() {
+        public updateCoolDown = (_event: Event): void => {
             if (this.currentCooldown > 0) {
                 this.currentCooldown--;
             }

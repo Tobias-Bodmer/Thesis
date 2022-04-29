@@ -81,11 +81,11 @@ namespace UI {
         up: number = 0.15;
         lifetime: number = 0.5 * 60;
         randomX: number = Math.random() * 0.05 - Math.random() * 0.05;
-        async lifespan(_graph: ƒ.Node) {
+        async lifespan() {
             if (this.lifetime >= 0 && this.lifetime != null) {
                 this.lifetime--;
                 if (this.lifetime < 0) {
-                    _graph.removeChild(this);
+                    Game.graph.removeChild(this);
                 }
             }
         }
@@ -106,12 +106,20 @@ namespace UI {
             this.addComponent(cmpMaterial);
 
             this.loadTexture(_damage);
+
+            this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.update);
+        }
+
+        update = (_event: Event): void => {
+            this.move();
+            this.lifespan();
         }
 
         async move() {
             this.cmpTransform.mtxLocal.translate(new ƒ.Vector3(this.randomX, this.up, 0));
             this.cmpTransform.mtxLocal.scale(ƒ.Vector3.ONE(1.01));
         }
+
         loadTexture(_damage: number) {
             let newTxt: ƒ.TextureImage = new ƒ.TextureImage();
             let newCoat: ƒ.CoatRemissiveTextured = new ƒ.CoatRemissiveTextured();
