@@ -92,6 +92,12 @@ namespace Weapons {
             }
             return magazine;
         }
+
+        getBulletByBulletType(_type: Bullets.BULLETTYPE) {
+            const ref = Game.bulletsJSON.find(bullet => bullet.type == _type)
+
+
+        }
     }
 
     export enum AIM {

@@ -39,7 +39,7 @@ namespace Networking {
     export let posUpdate: ƒ.Vector3;
     export let someoneIsHost: boolean = false;
     export let enemy: Enemy.Enemy;
-    export let currentIDs: number[] = [];
+    export let currentIDs: Interfaces.NetworkObjects[] = [];
 
     document.getElementById("HostSpawn").addEventListener("click", () => { spawnPlayer() }, true);
     let IPConnection = <HTMLInputElement>document.getElementById("IPConnection");
@@ -103,7 +103,7 @@ namespace Networking {
                         let players: Entity.Entity[] = Game.entities.filter(entity => entity.tag == Tag.TAG.PLAYER);
                         let entity: Entity.Entity = players.find(player => player.netId != message.content.netId);
                         let inputVector = new Game.ƒ.Vector3(message.content.input.inputVector.data[0], message.content.input.inputVector.data[1], message.content.input.inputVector.data[2]);
-                        let input: Interfaces.InputPayload = { tick: message.content.input.tick, inputVector: inputVector, doesAbility: message.content.input.doesAbility }
+                        let input: Interfaces.InputAvatarPayload = { tick: message.content.input.tick, inputVector: inputVector, doesAbility: message.content.input.doesAbility }
                         if (entity != undefined) {
                             (<Player.Player>entity).server.updateEntityToCheck(message.content.netId);
                             (<Player.Player>entity).server.onClientInput(input);
@@ -114,7 +114,7 @@ namespace Networking {
                     if (message.content != undefined && message.content.text == FUNCTION.SERVERBUFFER.toString()) {
                         let entity = Game.entities.find(entity => entity.netId == message.content.netId);
                         let position = new Game.ƒ.Vector3(message.content.buffer.position.data[0], message.content.buffer.position.data[1], message.content.buffer.position.data[2]);
-                        let state: Interfaces.StatePayload = { tick: message.content.buffer.tick, position: position, doesAbility: message.content.buffer.doesAbility };
+                        let state: Interfaces.StatePayload = { tick: message.content.buffer.tick, position: position };
                         if (entity != undefined) {
                             (<Player.Player>entity).client.onServerMovementState(state);
                         }
@@ -425,7 +425,7 @@ namespace Networking {
         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.TRANSFORM, value: _position, rotation: _rotation } })
     }
 
-    export function sendClientInput(_netId: number, _inputPayload: Interfaces.InputPayload) {
+    export function sendClientInput(_netId: number, _inputPayload: Interfaces.InputAvatarPayload) {
         client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.CLIENTMOVEMENT, netId: _netId, input: _inputPayload } })
     }
 
@@ -567,13 +567,13 @@ namespace Networking {
 
 
 
-    export function idGenerator(): number {
+    export function idGenerator(_object: Object): number {
         let id = Math.floor(Math.random() * 1000);
-        if (currentIDs.find(curID => curID == id)) {
-            idGenerator();
+        if (currentIDs.find(element => element.netId == id)) {
+            idGenerator(_object);
         }
         else {
-            currentIDs.push(id);
+            currentIDs.push(<Interfaces.NetworkObjects>{ netId: id, netObjectNode: _object });
         }
 
         return id;
@@ -581,13 +581,7 @@ namespace Networking {
 
     export function popID(_id: number) {
         let index: number;
-        for (let i = 0; i < currentIDs.length; i++) {
-            if (currentIDs[i] == _id) {
-                index = i;
-                break;
-            }
-        }
-        currentIDs.splice(index, 1);
+        currentIDs = currentIDs.filter(elem => elem.netId != _id)
     }
 
     window.addEventListener("beforeunload", onUnload, false);

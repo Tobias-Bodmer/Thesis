@@ -18,6 +18,7 @@ declare namespace Game {
     let currentRoom: Generation.Room;
     let connected: boolean;
     let deltaTime: number;
+    let currentNetObj: Interfaces.NetworkObjects;
     let entities: Entity.Entity[];
     let enemies: Enemy.Enemy[];
     let bullets: Bullets.Bullet[];
@@ -141,7 +142,6 @@ declare namespace Enemy {
     class Enemy extends Entity.Entity implements Interfaces.IKnockbackable {
         currentBehaviour: Entity.BEHAVIOUR;
         target: ƒ.Vector2;
-        lifetime: number;
         moveDirection: Game.ƒ.Vector3;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
         update(): void;
@@ -224,7 +224,15 @@ declare namespace Interfaces {
     interface IDamageable {
         getDamage(): void;
     }
-    interface InputPayload {
+    interface NetworkObjects {
+        netId: number;
+        netObjectNode: Game.ƒ.Node;
+    }
+    interface InputBulletPayload {
+        tick: number;
+        inputVector: Game.ƒ.Vector3;
+    }
+    interface InputAvatarPayload {
         tick: number;
         inputVector: Game.ƒ.Vector3;
         doesAbility: boolean;
@@ -232,7 +240,6 @@ declare namespace Interfaces {
     interface StatePayload {
         tick: number;
         position: Game.ƒ.Vector3;
-        doesAbility: boolean;
     }
     interface RoomExits {
         north: boolean;
@@ -338,20 +345,23 @@ declare namespace AnimationGeneration {
     export {};
 }
 declare namespace Networking {
-    abstract class Prediction {
+    export abstract class Prediction {
         protected timer: number;
         protected currentTick: number;
         minTimeBetweenTicks: number;
         protected gameTickRate: number;
         protected bufferSize: number;
         protected ownerNetId: number;
-        get owner(): Entity.Entity;
+        get owner(): Game.ƒ.Node;
         protected stateBuffer: Interfaces.StatePayload[];
         constructor(_ownerNetId: number);
         protected handleTick(): void;
-        protected processMovement(input: Interfaces.InputPayload): Interfaces.StatePayload;
+        protected processMovement(input: Interfaces.InputAvatarPayload): Interfaces.StatePayload;
     }
-    class ClientPrediction extends Prediction {
+    abstract class AvatarPrediction extends Prediction {
+        protected processMovement(input: Interfaces.InputAvatarPayload): Interfaces.StatePayload;
+    }
+    export class ClientPrediction extends AvatarPrediction {
         private inputBuffer;
         private latestServerState;
         private lastProcessedState;
@@ -366,14 +376,15 @@ declare namespace Networking {
         onServerMovementState(_serverState: Interfaces.StatePayload): void;
         private handleServerReconciliation;
     }
-    class ServerPrediction extends Prediction {
+    export class ServerPrediction extends AvatarPrediction {
         private inputQueue;
         constructor(_ownerNetId: number);
         updateEntityToCheck(_netId: number): void;
         update(): void;
         handleTick(): void;
-        onClientInput(inputPayload: Interfaces.InputPayload): void;
+        onClientInput(inputPayload: Interfaces.InputAvatarPayload): void;
     }
+    export {};
 }
 declare namespace Ability {
     abstract class Ability {
@@ -402,6 +413,11 @@ declare namespace Ability {
     class SpawnSummoners extends Ability {
         protected activateAbility(): void;
         protected deactivateAbility(): void;
+    }
+    class circleShooot extends Ability {
+        private bulletAmount;
+        private bullets;
+        protected activateAbility(): void;
     }
     class Cooldown {
         hasCoolDown: boolean;
@@ -616,7 +632,7 @@ declare namespace Networking {
     let posUpdate: ƒ.Vector3;
     let someoneIsHost: boolean;
     let enemy: Enemy.Enemy;
-    let currentIDs: number[];
+    let currentIDs: Interfaces.NetworkObjects[];
     function connecting(): void;
     function setClientReady(): void;
     function setGamestate(_playing: boolean): void;
@@ -625,7 +641,7 @@ declare namespace Networking {
     function spawnPlayer(): void;
     function setClient(): void;
     function updateAvatarPosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3): void;
-    function sendClientInput(_netId: number, _inputPayload: Interfaces.InputPayload): void;
+    function sendClientInput(_netId: number, _inputPayload: Interfaces.InputAvatarPayload): void;
     function sendServerBuffer(_netId: number, _buffer: Interfaces.StatePayload): void;
     function knockbackRequest(_netId: number, _knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function knockbackPush(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
@@ -646,7 +662,7 @@ declare namespace Networking {
     function updateUI(_position: Game.ƒ.Vector2, _value: number): void;
     function sendRoom(_name: string, _coordiantes: Game.ƒ.Vector2, _exits: Interfaces.RoomExits, _roomType: Generation.ROOMTYPE, _direciton?: Interfaces.RoomExits): void;
     function switchRoomRequest(_coordiantes: Game.ƒ.Vector2, _direction: Interfaces.RoomExits): void;
-    function idGenerator(): number;
+    function idGenerator(_object: Object): number;
     function popID(_id: number): void;
 }
 declare namespace Player {
@@ -772,6 +788,7 @@ declare namespace Weapons {
         fire(_magazine: Bullets.Bullet[], _sync?: boolean): void;
         setBulletDirection(_magazine: Bullets.Bullet[]): Bullets.Bullet[];
         loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.BULLETTYPE, _netId?: number): Bullets.Bullet[];
+        getBulletByBulletType(_type: Bullets.BULLETTYPE): void;
     }
     enum AIM {
         NORMAL = 0,

@@ -36,6 +36,8 @@ namespace Game {
     export let connected: boolean = false;
     export let deltaTime: number;
 
+    export let currentNetObj: Interfaces.NetworkObjects;
+
     export let entities: Entity.Entity[] = [];
     export let enemies: Enemy.Enemy[] = [];
     export let bullets: Bullets.Bullet[] = [];
@@ -90,7 +92,7 @@ namespace Game {
         if (Networking.client.id == Networking.client.idHost) {
             Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
         }
-
+       
         items = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.TAG.ITEM)
         coolDowns.forEach(_cd => {
             _cd.updateCoolDown();

@@ -16,8 +16,18 @@ namespace Interfaces {
     export interface IDamageable {
         getDamage(): void;
     }
+    export interface NetworkObjects {
+        netId: number;
+        netObjectNode: Game.ƒ.Node;
+    }
 
-    export interface InputPayload {
+    export interface InputBulletPayload {
+        tick: number;
+        inputVector: Game.ƒ.Vector3;
+    }
+
+
+    export interface InputAvatarPayload {
         tick: number;
         inputVector: Game.ƒ.Vector3;
         doesAbility: boolean;
@@ -26,8 +36,19 @@ namespace Interfaces {
     export interface StatePayload {
         tick: number;
         position: Game.ƒ.Vector3;
-        doesAbility: boolean;
     }
+
+    // export interface BulletInformation {
+    //     speed: number;
+    //     hitPoint: number;
+    //     lifeTime: number;
+    //     knockbackForce: number;
+    //     passthroughEnemy: number;
+    //     position: Game.ƒ.Vector2;
+    //     direction: Game.ƒ.Vector2;
+    //     rotationDeg: number;
+    //     homingTarget?: Game.ƒ.Vector2;
+    // }
     export interface RoomExits {
         north: boolean;
         east: boolean;

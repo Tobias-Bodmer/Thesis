@@ -5,7 +5,7 @@ namespace Networking {
         public minTimeBetweenTicks: number;
         protected gameTickRate: number = 62.5;
         protected bufferSize: number = 1024;
-        protected ownerNetId: number; get owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.ownerNetId) };
+        protected ownerNetId: number; get owner(): Game.ƒ.Node { return Networking.currentIDs.find(elem => elem.netId == this.ownerNetId).netObjectNode };
 
         protected stateBuffer: Interfaces.StatePayload[];
 
@@ -18,9 +18,26 @@ namespace Networking {
         protected handleTick() {
         }
 
-        protected processMovement(input: Interfaces.InputPayload): Interfaces.StatePayload {
+        protected processMovement(input: Interfaces.InputAvatarPayload): Interfaces.StatePayload {
             //TODO: implement whole movement calculation inclusive collision
             //do movement 
+            return null;
+        }
+    }//#region  bullet Prediction
+    abstract class BulletPrediction extends Prediction {
+        protected processMovement(input: Interfaces.InputBulletPayload): Interfaces.StatePayload {
+            let cloneInputVector = input.inputVector.clone;
+            (<Bullets.Bullet>this.owner).mtxLocal.translate(cloneInputVector);
+
+            let newStatePayload: Interfaces.StatePayload = { tick: input.tick, position: this.owner.mtxLocal.translation }
+            return newStatePayload;
+        }
+    }
+    //#endregion
+    //#region  avatar Precdiction
+    abstract class AvatarPrediction extends Prediction {
+
+        protected processMovement(input: Interfaces.InputAvatarPayload): Interfaces.StatePayload {
             let cloneInputVector = input.inputVector.clone;
             if (cloneInputVector.magnitude > 0) {
                 cloneInputVector.normalize();
@@ -33,14 +50,14 @@ namespace Networking {
             (<Player.Player>this.owner).move(cloneInputVector);
 
 
-            let newStatePayload: Interfaces.StatePayload = { tick: input.tick, position: this.owner.mtxLocal.translation, doesAbility: input.doesAbility }
+            let newStatePayload: Interfaces.StatePayload = { tick: input.tick, position: this.owner.mtxLocal.translation }
             return newStatePayload;
         }
     }
 
-    export class ClientPrediction extends Prediction {
+    export class ClientPrediction extends AvatarPrediction {
 
-        private inputBuffer: Interfaces.InputPayload[];
+        private inputBuffer: Interfaces.InputAvatarPayload[];
         private latestServerState: Interfaces.StatePayload;
         private lastProcessedState: Interfaces.StatePayload;
         private horizontalInput: number;
@@ -52,7 +69,7 @@ namespace Networking {
 
         constructor(_ownerNetId: number) {
             super(_ownerNetId);
-            this.inputBuffer = new Array<Interfaces.InputPayload>(this.bufferSize);
+            this.inputBuffer = new Array<Interfaces.InputAvatarPayload>(this.bufferSize);
         }
 
 
@@ -74,7 +91,7 @@ namespace Networking {
             }
             let bufferIndex = this.currentTick % this.bufferSize;
             this.switchAvatarAbilityState();
-            let inputPayload: Interfaces.InputPayload = { tick: this.currentTick, inputVector: new ƒ.Vector3(this.horizontalInput, this.verticalInput, 0), doesAbility: this.doesAbility };
+            let inputPayload: Interfaces.InputAvatarPayload = { tick: this.currentTick, inputVector: new ƒ.Vector3(this.horizontalInput, this.verticalInput, 0), doesAbility: this.doesAbility };
             this.inputBuffer[bufferIndex] = inputPayload;
             // console.log(inputPayload.tick + "___" + inputPayload.inputVector.clone);
             this.stateBuffer[bufferIndex] = this.processMovement(inputPayload);
@@ -84,7 +101,7 @@ namespace Networking {
         }
 
         switchAvatarAbilityState() {
-            if (this.owner.id == Entity.ID.RANGED) {
+            if ((<Entity.Entity>this.owner).id == Entity.ID.RANGED) {
                 this.doesAbility = (<Player.Ranged>this.owner).dash.doesAbility;
             }
             else {
@@ -122,7 +139,7 @@ namespace Networking {
         }
     }
 
-    export class ServerPrediction extends Prediction {
+    export class ServerPrediction extends AvatarPrediction {
 
         private inputQueue: Queue = new Queue();
 
@@ -147,7 +164,7 @@ namespace Networking {
 
             let bufferIndex = -1;
             while (this.inputQueue.getQueueLength() > 0) {
-                let inputPayload: Interfaces.InputPayload = this.inputQueue.dequeue();
+                let inputPayload: Interfaces.InputAvatarPayload = this.inputQueue.dequeue();
 
                 bufferIndex = inputPayload.tick % this.bufferSize;
                 let statePayload: Interfaces.StatePayload = this.processMovement(inputPayload)
@@ -160,21 +177,21 @@ namespace Networking {
             }
         }
 
-        public onClientInput(inputPayload: Interfaces.InputPayload) {
+        public onClientInput(inputPayload: Interfaces.InputAvatarPayload) {
             this.inputQueue.enqueue(inputPayload);
         }
     }
-
+    //#endregion
 
 
     class Queue {
-        private items: Interfaces.InputPayload[];
+        private items: Interfaces.InputAvatarPayload[];
 
         constructor() {
             this.items = [];
         }
 
-        enqueue(_item: Interfaces.InputPayload) {
+        enqueue(_item: Interfaces.InputAvatarPayload) {
             this.items.push(_item);
         }
 

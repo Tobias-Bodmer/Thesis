@@ -143,7 +143,7 @@ namespace Player {
     }
     export class Ranged extends Player {
 
-        public dash: Ability.Dash = new Ability.Dash(this.netId, 150, 1, 5 *60, 2);
+        public dash: Ability.Dash = new Ability.Dash(this.netId, 150, 1, 5 * 60, 2);
         performAbility: boolean = false;
         lastMoveDirection: Game.ƒ.Vector3;
 
@@ -152,7 +152,9 @@ namespace Player {
                 super.move(this.lastMoveDirection);
             } else {
                 super.move(_direction);
-                this.lastMoveDirection = _direction;
+                if (_direction.magnitude > 0) {
+                    this.lastMoveDirection = _direction;
+                }
             }
         }
 

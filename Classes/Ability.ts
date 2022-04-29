@@ -84,6 +84,16 @@ namespace Ability {
         }
     }
 
+    export class circleShooot extends Ability {
+        private bulletAmount: number;
+        private bullets: Bullets.Bullet[] = [];
+        protected activateAbility(): void {
+            for (let i = 0; i < this.bulletAmount; i++) {
+                this.bullets.push()
+            }
+        }
+    }
+
     export class Cooldown {
         public hasCoolDown: boolean
         private coolDown: number

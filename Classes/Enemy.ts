@@ -15,7 +15,6 @@ namespace Enemy {
     export class Enemy extends Entity.Entity implements Interfaces.IKnockbackable {
         currentBehaviour: Entity.BEHAVIOUR;
         target: ƒ.Vector2;
-        lifetime: number;
         moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
 
 
