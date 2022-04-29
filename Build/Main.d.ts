@@ -16,6 +16,7 @@ declare namespace Game {
     let avatar1: Player.Player;
     let avatar2: Player.Player;
     let currentRoom: Generation.Room;
+    let miniMap: UI.Minimap;
     let connected: boolean;
     let deltaTime: number;
     let serverPredictionAvatar: Networking.ServerPrediction;
@@ -612,6 +613,23 @@ declare namespace Level {
         constructor(_name: string);
     }
 }
+declare namespace UI {
+    class Minimap extends Game.ƒ.Node {
+        tag: Tag.TAG;
+        private allCoordinates;
+        private roomMinimapsize;
+        private miniRooms;
+        offsetX: number;
+        offsetY: number;
+        private currentRoom;
+        private pointer;
+        constructor(_coordinates: Game.ƒ.Vector2[]);
+        createMiniRooms(): void;
+        eventUpdate: (_event: Event) => void;
+        private setCurrentRoom;
+        update(): void;
+    }
+}
 declare namespace Networking {
     enum FUNCTION {
         CONNECTED = 0,
@@ -777,6 +795,7 @@ declare namespace Generation {
     }
 }
 declare namespace Generation {
+    let usedPositions: Game.ƒ.Vector2[];
     let rooms: Room[];
     function generateRooms(): void;
     function switchRoom(_currentRoom: Room, _direction: Interfaces.RoomExits): void;

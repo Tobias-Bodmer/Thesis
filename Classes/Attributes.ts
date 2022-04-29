@@ -27,7 +27,7 @@ namespace Entity {
             this.updateScaleDependencies();
         }
 
-        updateScaleDependencies() {
+        public updateScaleDependencies() {
             this.maxHealthPoints = Math.round(this.maxHealthPoints * (100 + (10 * this.scale)) / 100);
             this.healthPoints = Math.round(this.healthPoints * (100 + (10 * this.scale)) / 100);
             this.attackPoints = Math.round(this.attackPoints * this.scale);

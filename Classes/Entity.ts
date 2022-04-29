@@ -47,9 +47,6 @@ namespace Entity {
                 this.animationContainer = ani;
                 this.idleScale = ani.scale.find(animation => animation[0] == "idle")[1];
             }
-            this.addComponent(new ƒ.ComponentTransform());
-            this.mtxLocal.scale(new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale));
-            this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2, this.netId);
 
             this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
         }

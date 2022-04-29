@@ -79,6 +79,8 @@ namespace Bullets {
             this.direction = _direction;
             this.owner = _ownerId;
 
+            this.clientPrediction = new Networking.ClientBulletPrediction(this.netId);
+            this.serverPrediction = new Networking.ServerBulletPrediction(this.netId);
             this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
         }
 
@@ -88,9 +90,7 @@ namespace Bullets {
         };
 
         public update() {
-            this.cmpTransform.mtxLocal.translate(this.flyDirection);
-            this.clientPrediction = new Networking.ClientBulletPrediction(this.netId);
-            this.serverPrediction = new Networking.ServerBulletPrediction(this.netId);
+            this.predict();
         }
 
 

@@ -32,6 +32,7 @@ namespace Game {
     export let avatar2: Player.Player;
 
     export let currentRoom: Generation.Room;
+    export let miniMap: UI.Minimap;
 
     export let connected: boolean = false;
     export let deltaTime: number;
@@ -83,51 +84,26 @@ namespace Game {
     function update(): void {
         deltaTime = Game.ƒ.Loop.timeFrameGame * 0.001;
         pauseCheck();
-
         Game.avatar1.predict();
-
-
         cameraUpdate();
 
         if (Networking.client.id == Networking.client.idHost) {
             Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
             serverPredictionAvatar.update();
         }
-
-        items = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.TAG.ITEM)
-        // coolDowns.forEach(_cd => {
-        //     _cd.updateCoolDown();
-        // })
-
-        bullets = <Bullets.Bullet[]>graph.getChildren().filter(element => (<Bullets.Bullet>element).tag == Tag.TAG.BULLET)
-        if (Game.connected) {
-            bullets.forEach(element => {
-                element.predict();
-            })
-        }
-
-        // let damageUI: UI.DamageUI[] = <UI.DamageUI[]>graph.getChildren().filter(element => (<UI.DamageUI>element).tag == Tag.TAG.DAMAGEUI)
-        // damageUI.forEach(element => {
-        //     element.move();
-        //     element.lifespan(graph);
-        // })
-
-        entities = <Entity.Entity[]>graph.getChildren().filter(child => (<Entity.Entity>child) instanceof Entity.Entity);
-        // entities.forEach(element => {
-        //     element.updateBuffs();
-        //     if (Game.connected && Networking.client.idHost == Networking.client.id) {
-        //         element.update();
-        //     }
-        // })
-
-        enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY)
-
-        currentRoom = (<Generation.Room>Game.graph.getChildren().find(elem => (<Generation.Room>elem).tag == Tag.TAG.ROOM));
-
+        findGameObjects();
 
         UI.updateUI();
 
         draw();
+    }
+
+    function findGameObjects(): void {
+        items = <Items.Item[]>graph.getChildren().filter(element => (<Items.Item>element).tag == Tag.TAG.ITEM);
+        bullets = <Bullets.Bullet[]>graph.getChildren().filter(element => (<Bullets.Bullet>element).tag == Tag.TAG.BULLET);
+        entities = <Entity.Entity[]>graph.getChildren().filter(child => (<Entity.Entity>child) instanceof Entity.Entity);
+        enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY);
+        currentRoom = (<Generation.Room>Game.graph.getChildren().find(elem => (<Generation.Room>elem).tag == Tag.TAG.ROOM));
     }
 
     function setClient() {
@@ -200,7 +176,12 @@ namespace Game {
                     }
 
                     Networking.spawnPlayer();
-                    //#endregion
+
+                    if (Networking.client.id == Networking.client.idHost) {
+                        miniMap = new UI.Minimap(Generation.usedPositions);
+                        graph.addChild(miniMap);
+
+                    }
 
                     startLoop();
                 } else {
@@ -398,6 +379,7 @@ namespace Game {
             direction.scale(avatar1.client.minTimeBetweenTicks * damper);
         }
         cmpCamera.mtxPivot.translate(new ƒ.Vector3(-direction.x, direction.y, 0), true);
+        miniMap.mtxLocal.translation = new ƒ.Vector3(cmpCamera.mtxPivot.translation.x + miniMap.offsetX, cmpCamera.mtxPivot.translation.y + miniMap.offsetY, 0);
     }
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);

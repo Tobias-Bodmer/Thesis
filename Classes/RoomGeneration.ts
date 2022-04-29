@@ -1,7 +1,7 @@
 namespace Generation {
 
-    let numberOfRooms: number = 3;
-    let usedPositions: Game.ƒ.Vector2[] = [];
+    let numberOfRooms: number = 2;
+    export let usedPositions: Game.ƒ.Vector2[] = [];
     export let rooms: Room[] = [];
 
     //spawn chances
@@ -11,7 +11,7 @@ namespace Generation {
     export function generateRooms(): void {
         let startCoords: Game.ƒ.Vector2 = Game.ƒ.Vector2.ZERO();
 
-        rooms.push(new Room("roomStart", startCoords, calcPathExits(startCoords), Generation.ROOMTYPE.START))
+        rooms.push(new Room("roomStart", startCoords, <Interfaces.RoomExits>{ north: true, east: true, south: true, west: true }, Generation.ROOMTYPE.START))
         usedPositions.push(startCoords);
 
         for (let i: number = 0; i < numberOfRooms; i++) {
@@ -21,10 +21,12 @@ namespace Generation {
         addSpecialRooms();
         addRoom(rooms[rooms.length - 3], Generation.ROOMTYPE.MERCHANT);
         rooms.forEach(room => {
-            room.exits = calcRoomDoors(room);
-            // console.log(room.coordinates + " " + room.exits + " " + room.roomType.toString());
+            calcRoomDoors(room);
+            console.log(room.coordinates + " " + room.exits.north + " " + room.exits.east + " " + room.exits.south + " " + room.exits.west + " " + room.roomType.toString());
         })
-
+        // usedPositions.forEach(element => {
+        //     console.log(element.x + "-" + element.y);
+        // });
         placeRoomsLocal(rooms[0]);
 
         for (let i = 0; i < rooms.length; i++) {
@@ -65,46 +67,97 @@ namespace Generation {
 
     function addRoom(_currentRoom: Room, _roomType: Generation.ROOMTYPE): void {
         let numberOfExits: number = countBool(_currentRoom.exits);
-        let randomNumber: number = Math.round(Math.random() * (numberOfExits - 1));
+        let randomNumber: number = Math.round(Math.random() * (numberOfExits));
         let possibleExitIndex: number[] = getExitIndex(_currentRoom.exits);
-        console.log(_roomType + ": " + possibleExitIndex + "____ " + randomNumber);
+        // console.log(_roomType + ": " + possibleExitIndex + "____ " + randomNumber);
         let newRoomPosition: Game.ƒ.Vector2;
         let newRoom: Room;
+        let newCoord: Game.ƒ.Vector2;
+        let defaultExits: Interfaces.RoomExits = <Interfaces.RoomExits>{ north: true, east: true, south: true, west: true };
 
+
+        console.log(numberOfExits);
+        console.log(possibleExitIndex[randomNumber]);
         switch (possibleExitIndex[randomNumber]) {
             case 0: // north
                 newRoomPosition = new Game.ƒ.Vector2(_currentRoom.coordinates.x, _currentRoom.coordinates.y + 1);
-                newRoom = new Room("roomNormal", (newRoomPosition), calcPathExits(newRoomPosition), _roomType);
-                rooms.push(newRoom);
-                _currentRoom.neighbourN = newRoom;
-                newRoom.neighbourS = _currentRoom;
-                usedPositions.push(newRoomPosition);
+                newCoord = usedPositions.find(room => room.equals(newRoomPosition));
+                if (newCoord == undefined) {
+                    newRoom = new Room("roomNormal", (newRoomPosition), defaultExits, _roomType);
+                    rooms.push(newRoom);
+                    _currentRoom.neighbourN = newRoom;
+                    _currentRoom.exits.north = false;
+                    newRoom.neighbourS = _currentRoom;
+                    newRoom.exits.south = false;
+                    usedPositions.push(newRoomPosition);
+                } else {
+                    let foundRoom = rooms.find(room => room.coordinates.equals(newCoord))
+                    _currentRoom.neighbourN = foundRoom;
+                    foundRoom.neighbourS = _currentRoom;
+                    _currentRoom.exits.north = false;
+                    addRoom(_currentRoom, _roomType);
+                }
                 break;
             case 1: // east
                 newRoomPosition = new Game.ƒ.Vector2(_currentRoom.coordinates.x + 1, _currentRoom.coordinates.y);
-                newRoom = new Room("roomNormal", (newRoomPosition), calcPathExits(newRoomPosition), _roomType);
-                rooms.push(newRoom);
-                _currentRoom.neighbourE = newRoom;
-                newRoom.neighbourW = _currentRoom;
-                usedPositions.push(newRoomPosition);
+                newCoord = usedPositions.find(room => room.equals(newRoomPosition));
+                if (newCoord == undefined) {
+                    newRoom = new Room("roomNormal", (newRoomPosition), defaultExits, _roomType);
+                    rooms.push(newRoom);
+                    _currentRoom.neighbourE = newRoom;
+                    _currentRoom.exits.east = false;
+                    newRoom.neighbourW = _currentRoom;
+                    newRoom.exits.west = false;
+                    usedPositions.push(newRoomPosition);
+                } else {
+                    let foundRoom = rooms.find(room => room.coordinates.equals(newCoord))
+                    _currentRoom.neighbourE = foundRoom;
+                    foundRoom.neighbourW = _currentRoom;
+                    _currentRoom.exits.east = false;
+                    addRoom(_currentRoom, _roomType);
+                }
+
                 break;
             case 2: // south
                 newRoomPosition = new Game.ƒ.Vector2(_currentRoom.coordinates.x, _currentRoom.coordinates.y - 1);
-                newRoom = new Room("roomNormal", (newRoomPosition), calcPathExits(newRoomPosition), _roomType);
-                rooms.push(newRoom);
-                _currentRoom.neighbourS = newRoom;
-                newRoom.neighbourN = _currentRoom;
-                usedPositions.push(newRoomPosition);
+                newCoord = usedPositions.find(room => room.equals(newRoomPosition));
+                if (newCoord == undefined) {
+                    newRoom = new Room("roomNormal", (newRoomPosition), defaultExits, _roomType);
+                    rooms.push(newRoom);
+                    _currentRoom.neighbourS = newRoom;
+                    _currentRoom.exits.south = false;
+                    newRoom.neighbourN = _currentRoom;
+                    newRoom.exits.north = false;
+                    usedPositions.push(newRoomPosition);
+                } else {
+                    let foundRoom = rooms.find(room => room.coordinates.equals(newCoord))
+                    _currentRoom.neighbourS = foundRoom;
+                    foundRoom.neighbourN = _currentRoom;
+                    _currentRoom.exits.south = false;
+                    addRoom(_currentRoom, _roomType);
+                }
                 break;
             case 3: //west
                 newRoomPosition = new Game.ƒ.Vector2(_currentRoom.coordinates.x - 1, _currentRoom.coordinates.y);
-                newRoom = new Room("roomNormal", (newRoomPosition), calcPathExits(newRoomPosition), _roomType);
-                rooms.push(newRoom);
-                _currentRoom.neighbourW = newRoom;
-                newRoom.neighbourE = _currentRoom;
-                usedPositions.push(newRoomPosition);
+                newCoord = usedPositions.find(room => room.equals(newRoomPosition));
+                if (newCoord == undefined) {
+                    newRoom = new Room("roomNormal", (newRoomPosition), defaultExits, _roomType);
+                    rooms.push(newRoom);
+                    _currentRoom.neighbourW = newRoom;
+                    _currentRoom.exits.west = false;
+                    newRoom.neighbourE = _currentRoom;
+                    newRoom.exits.east = false;
+                    usedPositions.push(newRoomPosition);
+                } else {
+                    let foundRoom = rooms.find(room => room.coordinates.equals(newCoord))
+                    _currentRoom.neighbourW = foundRoom;
+                    foundRoom.neighbourE = _currentRoom;
+                    _currentRoom.exits.west = false;
+                    addRoom(_currentRoom, _roomType);
+                }
                 break;
-
+            default:
+                break;
         }
         // _currentRoom.setRoomCoordinates();
 
@@ -112,7 +165,7 @@ namespace Generation {
 
     function addSpecialRooms(): void {
         rooms.forEach(room => {
-            room.exits = calcPathExits(room.coordinates);
+            // room.exits = calcPathExits(room.coordinates);
             if (isSpawning(treasureRoomSpawnChance)) {
                 addRoom(room, Generation.ROOMTYPE.TREASURE);
                 return;
@@ -134,7 +187,7 @@ namespace Generation {
 
 
     function countBool(_exits: Interfaces.RoomExits): number {
-        let counter: number = 0;
+        let counter: number = -1;
         if (_exits.north) {
             counter++;
         }
@@ -168,80 +221,43 @@ namespace Generation {
         return numbers;
 
     }
-    /**
-     * calculates possible exits for new rooms
-     * @param _position position of room
-     * @returns boolean for each direction north, east, south, west
-     */
 
-    function calcPathExits(_position: Game.ƒ.Vector2): Interfaces.RoomExits {
-        let exits: Interfaces.RoomExits = { north: false, east: false, south: false, west: false };
-        let roomNeighbours: Game.ƒ.Vector2[];
-        roomNeighbours = sliceNeighbours(getNeighbours(_position));
-        for (let i = 0; i < roomNeighbours.length; i++) {
-            if (roomNeighbours[i].y - _position.y == -1) {
-                exits.south = true;
+    function calcRoomDoors(_room: Generation.Room) {
+        if (usedPositions.find(room => room.equals(new Game.ƒ.Vector2(_room.coordinates.x, _room.coordinates.y + 1))) != undefined) {
+            _room.exits.north = true;
+            if (_room.neighbourN == undefined) {
+                _room.neighbourN = rooms.find(room => room.coordinates.equals(new Game.ƒ.Vector2(_room.coordinates.x, _room.coordinates.y + 1)));
             }
-            if (roomNeighbours[i].x - _position.x == -1) {
-                exits.west = true;
+        } else {
+            _room.exits.north = false;
+        }
+        if (usedPositions.find(room => room.equals(new Game.ƒ.Vector2(_room.coordinates.x + 1, _room.coordinates.y))) != undefined) {
+            _room.exits.east = true;
+            if (_room.neighbourE == undefined) {
+                _room.neighbourE = rooms.find(room => room.coordinates.equals(new Game.ƒ.Vector2(_room.coordinates.x + 1, _room.coordinates.y)));
             }
-            if (roomNeighbours[i].y - _position.y == 1) {
-                exits.north = true;
+        } else {
+            _room.exits.east = false;
+        }
+        if (usedPositions.find(room => room.equals(new Game.ƒ.Vector2(_room.coordinates.x, _room.coordinates.y - 1))) != undefined) {
+            _room.exits.south = true;
+            if (_room.neighbourS == undefined) {
+                _room.neighbourS = rooms.find(room => room.coordinates.equals(new Game.ƒ.Vector2(_room.coordinates.x, _room.coordinates.y - 1)));
             }
-            if (roomNeighbours[i].x - _position.x == 1) {
-                exits.east = true;
+        } else {
+            _room.exits.south = false;
+        }
+        if (usedPositions.find(room => room.equals(new Game.ƒ.Vector2(_room.coordinates.x - 1, _room.coordinates.y))) != undefined) {
+            _room.exits.west = true;
+            if (_room.neighbourW == undefined) {
+                _room.neighbourW = rooms.find(room => room.coordinates.equals(new Game.ƒ.Vector2(_room.coordinates.x - 1, _room.coordinates.y)));
             }
+        } else {
+            _room.exits.west = false;
         }
-        return exits;
-    }
-
-    function calcRoomDoors(_room: Generation.Room): Interfaces.RoomExits {
-        let exits: Interfaces.RoomExits = { north: false, east: false, south: false, west: false };
-        if (_room.neighbourN != undefined) {
-            exits.north = true;
-        }
-        if (_room.neighbourE != undefined) {
-            exits.east = true;
-        }
-        if (_room.neighbourS != undefined) {
-            exits.south = true;
-        }
-        if (_room.neighbourW != undefined) {
-            exits.west = true;
-        }
-        return exits;
     }
 
 
-    function getNeighbours(_position: Game.ƒ.Vector2): Game.ƒ.Vector2[] {
-        let neighbours: Game.ƒ.Vector2[] = []
-        neighbours.push(new Game.ƒ.Vector2(_position.x, _position.y - 1)); // down
-        neighbours.push(new Game.ƒ.Vector2(_position.x - 1, _position.y)); // left
-        neighbours.push(new Game.ƒ.Vector2(_position.x, _position.y + 1)); // up
-        neighbours.push(new Game.ƒ.Vector2(_position.x + 1, _position.y)); // right
-        return neighbours;
-    }
-
-    function sliceNeighbours(_neighbours: Game.ƒ.Vector2[]): Game.ƒ.Vector2[] {
-        let neighbours = _neighbours;
-        let toRemoveIndex: number[] = [];
-        for (let i = 0; i < neighbours.length; i++) {
-            // check ich position already used
-            usedPositions.forEach(room => {
-                if (neighbours[i].x == room.x && neighbours[i].y == room.y) {
-                    toRemoveIndex.push(i);
-                }
-            })
-        }
-        let copy: Game.ƒ.Vector2[] = [];
-        toRemoveIndex.forEach(index => {
-            delete neighbours[index];
-        });
-        neighbours.forEach(n => {
-            copy.push(n);
-        });
-        return copy;
-    }
 
     export function switchRoom(_currentRoom: Room, _direction: Interfaces.RoomExits) {
         if (_currentRoom.finished) {
@@ -302,8 +318,8 @@ namespace Generation {
             }
             newPosition.z = 0;
 
-            Game.avatar1.cmpTransform.mtxLocal.translation = newPosition;
             if (Networking.client.id == Networking.client.idHost) {
+                Game.avatar1.cmpTransform.mtxLocal.translation = newPosition;
                 Game.avatar2.cmpTransform.mtxLocal.translation = newPosition;
             }
         }
