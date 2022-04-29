@@ -36,7 +36,6 @@ namespace Game {
     export let connected: boolean = false;
     export let deltaTime: number;
 
-    export let serverPredictionBullet: Networking.ServerBulletPrediction;
     export let serverPredictionAvatar: Networking.ServerPrediction;
 
     export let currentNetObj: Interfaces.NetworkObjects;
@@ -67,7 +66,6 @@ namespace Game {
 
         if (Networking.client.id == Networking.client.idHost) {
             Generation.generateRooms();
-            serverPredictionBullet = new Networking.ServerBulletPrediction(null);
             serverPredictionAvatar = new Networking.ServerPrediction(null);
         }
 
@@ -96,7 +94,6 @@ namespace Game {
 
         if (Networking.client.id == Networking.client.idHost) {
             Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
-            serverPredictionBullet.update();
             serverPredictionAvatar.update();
         }
 
@@ -107,7 +104,7 @@ namespace Game {
         bullets = <Bullets.Bullet[]>graph.getChildren().filter(element => (<Bullets.Bullet>element).tag == Tag.TAG.BULLET)
         if (Game.connected) {
             bullets.forEach(element => {
-                element.update();
+                element.predict();
             })
         }
 
@@ -189,9 +186,9 @@ namespace Game {
                     gamestate = GAMESTATES.PLAYING;
                     // EnemySpawner.spawnEnemies();
 
-                    if (Networking.client.id == Networking.client.idHost) {
-                        EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
-                    }
+                    // if (Networking.client.id == Networking.client.idHost) {
+                    //     EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
+                    // }
 
                     //#region init Items
                     if (Networking.client.id == Networking.client.idHost) {

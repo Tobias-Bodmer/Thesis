@@ -18,7 +18,6 @@ declare namespace Game {
     let currentRoom: Generation.Room;
     let connected: boolean;
     let deltaTime: number;
-    let serverPredictionBullet: Networking.ServerBulletPrediction;
     let serverPredictionAvatar: Networking.ServerPrediction;
     let currentNetObj: Interfaces.NetworkObjects;
     let entities: Entity.Entity[];
@@ -368,7 +367,7 @@ declare namespace Networking {
         updateEntityToCheck(_netId: number): void;
         update(): void;
         handleTick(): void;
-        onClientInput(inputPayload: Interfaces.InputAvatarPayload): void;
+        onClientInput(inputPayload: Interfaces.InputBulletPayload): void;
     }
     export class ClientBulletPrediction extends BulletPrediction {
         private inputBuffer;
@@ -539,9 +538,8 @@ declare namespace Bullets {
         owner: number;
         get _owner(): Entity.Entity;
         netId: number;
-        tick: number;
-        positions: ƒ.Vector3[];
-        hostPositions: ƒ.Vector3[];
+        clientPrediction: Networking.ClientBulletPrediction;
+        serverPrediction: Networking.ServerBulletPrediction;
         flyDirection: ƒ.Vector3;
         direction: ƒ.Vector3;
         collider: Collider.Collider;
@@ -552,30 +550,29 @@ declare namespace Bullets {
         type: BULLETTYPE;
         time: number;
         killcount: number;
-        despawn(): Promise<void>;
+        despawn(): void;
         constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _netId?: number);
-        update(): void;
+        predict(): void;
+        move(_direction: Game.ƒ.Vector3): void;
         doKnockback(_body: ƒAid.NodeSprite): void;
         getKnockback(_knockbackForce: number, _position: ƒ.Vector3): void;
-        updateRotation(_direction: ƒ.Vector3): void;
-        bulletPrediction(): void;
-        correctPosition(): Promise<void>;
-        loadTexture(): void;
+        protected updateRotation(_direction: ƒ.Vector3): void;
+        protected loadTexture(): void;
         setBuff(_target: Entity.Entity): void;
-        collisionDetection(): Promise<void>;
+        collisionDetection(): void;
     }
     class MeleeBullet extends Bullet {
         constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
-        loadTexture(): Promise<void>;
+        loadTexture(): void;
     }
     class HomingBullet extends Bullet {
         target: ƒ.Vector3;
         rotateSpeed: number;
         targetDirection: ƒ.Vector3;
         constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _target?: ƒ.Vector3, _netId?: number);
-        update(): Promise<void>;
+        move(_direction: Game.ƒ.Vector3): void;
         setTarget(_netID: number): void;
-        calculateHoming(): void;
+        private calculateHoming;
     }
 }
 declare namespace Collider {
@@ -630,7 +627,7 @@ declare namespace Networking {
         KNOCKBACKREQUEST = 10,
         KNOCKBACKPUSH = 11,
         SPAWNBULLET = 12,
-        BULLETPREDICTION = 13,
+        BULLETPREDICT = 13,
         BULLETTRANSFORM = 14,
         BULLETDIE = 15,
         SPAWNENEMY = 16,
@@ -671,6 +668,7 @@ declare namespace Networking {
     function updateInventory(_itemId: Items.ITEMID, _itemNetId: number, _netId: number): void;
     function spawnBullet(_aimType: Weapons.AIM, _direction: ƒ.Vector3, _bulletNetId: number, _ownerNetId: number, _bulletTarget?: ƒ.Vector3): void;
     function sendBulletInput(_netId: number, _inputPayload: Interfaces.InputBulletPayload): void;
+    function updateBullet(_position: ƒ.Vector3, _rotation: ƒ.Vector3, _netId: number): void;
     function removeBullet(_netId: number): void;
     function spawnEnemy(_enemyClass: Enemy.ENEMYCLASS, _enemy: Enemy.Enemy, _netId: number): void;
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number): void;

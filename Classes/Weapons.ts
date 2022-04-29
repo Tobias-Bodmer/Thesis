@@ -48,7 +48,6 @@ namespace Weapons {
 
         fire(_magazine: Bullets.Bullet[], _sync?: boolean) {
             _magazine.forEach(bullet => {
-                bullet.flyDirection.scale(Game.deltaTime * bullet.speed)
                 Game.graph.addChild(bullet);
                 if (_sync) {
                     if (bullet instanceof Bullets.HomingBullet) {
