@@ -53,8 +53,9 @@ declare namespace UI {
         up: number;
         lifetime: number;
         randomX: number;
-        lifespan(_graph: ƒ.Node): Promise<void>;
+        lifespan(): Promise<void>;
         constructor(_position: ƒ.Vector3, _damage: number);
+        update: (_event: Event) => void;
         move(): Promise<void>;
         loadTexture(_damage: number): void;
     }
@@ -92,7 +93,7 @@ declare namespace Entity {
         protected idleScale: number;
         protected currentKnockback: ƒ.Vector3;
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number);
-        update(): void;
+        update: (_event: Event) => void;
         setCollider(): void;
         updateBuffs(): void;
         collide(_direction: ƒ.Vector3): void;
@@ -448,7 +449,7 @@ declare namespace Ability {
         constructor(_number: number);
         startCoolDown(): void;
         private endCoolDOwn;
-        updateCoolDown(): void;
+        updateCoolDown: (_event: Event) => void;
     }
 }
 declare namespace Entity {
@@ -752,6 +753,7 @@ declare namespace Generation {
         bossRoomMat: ƒ.Material;
         cmpMaterial: ƒ.ComponentMaterial;
         constructor(_name: string, _coordiantes: Game.ƒ.Vector2, _exits: Interfaces.RoomExits, _roomType: ROOMTYPE);
+        protected update: (_event: Event) => void;
         private addWalls;
         setDoors(): void;
         getRoomSize(): number;
