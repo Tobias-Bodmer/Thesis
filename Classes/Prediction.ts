@@ -19,17 +19,18 @@ namespace Networking {
         }
 
         protected processMovement(input: Interfaces.InputAvatarPayload): Interfaces.StatePayload {
-            //TODO: implement whole movement calculation inclusive collision
-            //do movement 
             return null;
         }
+
+
     }//#region  bullet Prediction
     abstract class BulletPrediction extends Prediction {
         protected processMovement(input: Interfaces.InputBulletPayload): Interfaces.StatePayload {
             let cloneInputVector = input.inputVector.clone;
-            (<Bullets.Bullet>this.owner).mtxLocal.translate(cloneInputVector);
+            let bullet: Bullets.Bullet = <Bullets.Bullet>this.owner;
+            bullet.move(cloneInputVector);
 
-            let newStatePayload: Interfaces.StatePayload = { tick: input.tick, position: this.owner.mtxLocal.translation }
+            let newStatePayload: Interfaces.StatePayload = { tick: input.tick, position: bullet.mtxLocal.translation }
             return newStatePayload;
         }
     }
@@ -54,7 +55,7 @@ namespace Networking {
 
             let bufferIndex = -1;
             while (this.inputQueue.getQueueLength() > 0) {
-                let inputPayload: Interfaces.InputAvatarPayload = this.inputQueue.dequeue();
+                let inputPayload: Interfaces.InputBulletPayload = <Interfaces.InputBulletPayload>this.inputQueue.dequeue();
 
                 bufferIndex = inputPayload.tick % this.bufferSize;
                 let statePayload: Interfaces.StatePayload = this.processMovement(inputPayload)
@@ -67,7 +68,7 @@ namespace Networking {
             }
         }
 
-        public onClientInput(inputPayload: Interfaces.InputAvatarPayload) {
+        public onClientInput(inputPayload: Interfaces.InputBulletPayload) {
             this.inputQueue.enqueue(inputPayload);
         }
     }
@@ -83,12 +84,12 @@ namespace Networking {
 
         constructor(_ownerNetId: number) {
             super(_ownerNetId);
-            this.inputBuffer = new Array<Interfaces.InputAvatarPayload>(this.bufferSize);
+            this.inputBuffer = new Array<Interfaces.InputBulletPayload>(this.bufferSize);
+            this.flyDirection = (<Bullets.Bullet>this.owner).flyDirection;
         }
 
 
         public update() {
-            this.flyDirection = (<Bullets.Bullet>this.owner).flyDirection;
             this.timer += Game.deltaTime;
             while (this.timer >= this.minTimeBetweenTicks) {
                 this.timer -= this.minTimeBetweenTicks;
@@ -102,6 +103,7 @@ namespace Networking {
             if (this.latestServerState != this.lastProcessedState) {
                 this.handleServerReconciliation();
             }
+
             let bufferIndex = this.currentTick % this.bufferSize;
             let inputPayload: Interfaces.InputBulletPayload = { tick: this.currentTick, inputVector: this.flyDirection };
             this.inputBuffer[bufferIndex] = inputPayload;
@@ -267,7 +269,7 @@ namespace Networking {
 
             let bufferIndex = -1;
             while (this.inputQueue.getQueueLength() > 0) {
-                let inputPayload: Interfaces.InputAvatarPayload = this.inputQueue.dequeue();
+                let inputPayload: Interfaces.InputAvatarPayload = <Interfaces.InputAvatarPayload>this.inputQueue.dequeue();
 
                 bufferIndex = inputPayload.tick % this.bufferSize;
                 let statePayload: Interfaces.StatePayload = this.processMovement(inputPayload)
@@ -288,17 +290,17 @@ namespace Networking {
 
 
     class Queue {
-        private items: Interfaces.InputAvatarPayload[];
+        private items: any[];
 
         constructor() {
             this.items = [];
         }
 
-        enqueue(_item: Interfaces.InputAvatarPayload) {
+        enqueue(_item: Interfaces.InputAvatarPayload | Interfaces.InputBulletPayload) {
             this.items.push(_item);
         }
 
-        dequeue() {
+        dequeue(): Interfaces.InputAvatarPayload | Interfaces.InputBulletPayload {
             return this.items.shift();
         }
 

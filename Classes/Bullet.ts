@@ -13,11 +13,8 @@ namespace Bullets {
         public tag: Tag.TAG = Tag.TAG.BULLET;
         owner: number; get _owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.owner) };
         public netId: number;
-
-        public tick: number = 0;
-        public positions: ƒ.Vector3[] = [];
-        public hostPositions: ƒ.Vector3[] = [];
-
+        public clientPrediction: Networking.ClientBulletPrediction;
+        public serverPrediction: Networking.ServerBulletPrediction;
         public flyDirection: ƒ.Vector3;
         direction: ƒ.Vector3;
 
@@ -32,7 +29,7 @@ namespace Bullets {
         time: number = 0;
         killcount: number = 1;
 
-        async despawn() {
+        public despawn() {
             if (this.lifetime >= 0 && this.lifetime != null) {
                 this.lifetime--;
                 if (this.lifetime < 0) {
@@ -74,8 +71,8 @@ namespace Bullets {
             let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(mtrSolidWhite);
             this.addComponent(cmpMaterial);
 
-            let newPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
-            this.collider = new Collider.Collider(newPosition, this.cmpTransform.mtxLocal.scaling.y / 1.5, this.netId);
+            let colliderPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
+            this.collider = new Collider.Collider(colliderPosition, this.cmpTransform.mtxLocal.scaling.y / 1.5, this.netId);
             this.updateRotation(_direction);
             this.loadTexture();
             this.flyDirection = ƒ.Vector3.X();
@@ -92,52 +89,52 @@ namespace Bullets {
 
         public update() {
             this.cmpTransform.mtxLocal.translate(this.flyDirection);
+            this.clientPrediction = new Networking.ClientBulletPrediction(this.netId);
+            this.serverPrediction = new Networking.ServerBulletPrediction(this.netId);
+        }
+
+
+        public predict() {
+            if (Networking.client.idHost != Networking.client.id && this._owner == Game.avatar1) {
+                this.clientPrediction.update();
+            }
+            else {
+                if (this._owner == Game.avatar2) {
+                    this.serverPrediction.update();
+                } else {
+                    this.move(this.flyDirection.clone);
+                    Networking.updateBullet(this.mtxLocal.translation, this.mtxLocal.rotation, this.netId);
+                }
+            }
+            if (Networking.client.idHost == Networking.client.id) {
+                this.despawn();
+            }
+        }
+        public move(_direction: Game.ƒ.Vector3) {
+            _direction.normalize();
+            if (Networking.client.idHost == Networking.client.id && this._owner == Game.avatar2) {
+                _direction.scale(this.clientPrediction.minTimeBetweenTicks * this.speed);
+            }
+            else {
+                _direction.scale(Game.deltaTime * this.speed);
+            }
+            this.cmpTransform.mtxLocal.translate(_direction);
             this.collisionDetection();
-            this.despawn();
         }
 
-        doKnockback(_body: ƒAid.NodeSprite): void {
-            (<Enemy.Enemy>_body).getKnockback(this.knockbackForce, this.cmpTransform.mtxLocal.translation);
+
+        public doKnockback(_body: ƒAid.NodeSprite): void {
         }
 
-        getKnockback(_knockbackForce: number, _position: ƒ.Vector3): void {
-
+        public getKnockback(_knockbackForce: number, _position: ƒ.Vector3): void {
         }
 
-        updateRotation(_direction: ƒ.Vector3) {
+        protected updateRotation(_direction: ƒ.Vector3) {
             this.mtxLocal.rotateZ(Calculation.calcDegree(this.cmpTransform.mtxLocal.translation, ƒ.Vector3.SUM(_direction, this.cmpTransform.mtxLocal.translation)) + 90);
         }
 
-        bulletPrediction() {
-            this.time += Game.deltaTime;
 
-            while (this.time >= 1) {
-                this.positions.push(new ƒ.Vector3(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.translation.z));
-                if (Game.connected) {
-                    // Networking.predictionBullet(this.cmpTransform.mtxLocal.translation, this.netId, this.tick);
-                }
-                this.tick++;
-                this.time -= 1;
-            }
-
-            if (Networking.client.id != Networking.client.idHost) {
-                if (this.tick >= 1 && this.hostPositions[this.tick - 1] != undefined && this.positions[this.tick - 1] != undefined) {
-                    if (this.hostPositions[this.tick - 1].x != this.positions[this.tick - 1].x || this.hostPositions[this.tick - 1].y != this.positions[this.tick - 1].y) {
-                        this.correctPosition();
-                    }
-                }
-            }
-        }
-
-        async correctPosition() {
-            if (this.hostPositions[this.tick] != undefined) {
-                this.cmpTransform.mtxLocal.translation = this.hostPositions[this.tick];
-            } else {
-                setTimeout(() => { this.correctPosition }, 100);
-            }
-        }
-
-        loadTexture() {
+        protected loadTexture() {
             let newTxt: ƒ.TextureImage = new ƒ.TextureImage();
             let newCoat: ƒ.CoatRemissiveTextured = new ƒ.CoatRemissiveTextured();
             let newMtr: ƒ.Material = new ƒ.Material("mtr", ƒ.ShaderFlatTextured, newCoat);
@@ -162,7 +159,7 @@ namespace Bullets {
             })
         }
 
-        async collisionDetection() {
+        public collisionDetection() {
             let newPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
             this.collider.position = newPosition;
             let colliders: ƒ.Node[] = [];
@@ -224,7 +221,7 @@ namespace Bullets {
             this.killcount = 4;
         }
 
-        async loadTexture() {
+        public loadTexture() {
 
         }
     }
@@ -253,6 +250,11 @@ namespace Bullets {
         }
 
         public update(): void {
+
+            // this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.update);
+        }
+        public move(_direction: Game.ƒ.Vector3) {
+            super.move(_direction);
             if (Networking.client.id == Networking.client.idHost) {
                 this.calculateHoming();
             } else {
@@ -269,7 +271,7 @@ namespace Bullets {
             }
         }
 
-        calculateHoming() {
+        private calculateHoming() {
             let newDirection = ƒ.Vector3.DIFFERENCE(this.target, this.mtxLocal.translation);
             if (newDirection.x != 0 && newDirection.y != 0) {
                 newDirection.normalize();

@@ -15,7 +15,7 @@ namespace Networking {
         KNOCKBACKREQUEST,
         KNOCKBACKPUSH,
         SPAWNBULLET,
-        BULLETPREDICTION,
+        BULLETPREDICT,
         BULLETTRANSFORM,
         BULLETDIE,
         SPAWNENEMY,
@@ -103,19 +103,30 @@ namespace Networking {
 
                     // TO CLIENT CALCULATED POSITION FOR AVATAR
                     if (message.content != undefined && message.content.text == FUNCTION.SERVERBUFFER.toString()) {
-                        let entity = Game.entities.find(entity => entity.netId == message.content.netId);
+                        let netObj: Interfaces.NetworkObjects = Networking.currentIDs.find(entity => entity.netId == message.content.netId);
                         let position = new Game.ƒ.Vector3(message.content.buffer.position.data[0], message.content.buffer.position.data[1], message.content.buffer.position.data[2]);
                         let state: Interfaces.StatePayload = { tick: message.content.buffer.tick, position: position };
-                        if (entity != undefined) {
-                            (<Player.Player>entity).client.onServerMovementState(state);
+                        if (netObj != undefined) {
+                            let obj = netObj.netObjectNode;
+                            if (obj instanceof Player.Player) {
+                                (<Player.Player>obj).client.onServerMovementState(state);
+                            } else {
+                                (<Bullets.Bullet>obj).clientPrediction.onServerMovementState(state);
+
+                            }
                         }
                     }
-
-                    if (message.content != undefined && message.content.text == FUNCTION.BULLETTRANSFORM.toString()) {
+                    //FROM CLIENT BULLET VECTORS
+                    if (message.content != undefined && message.content.text == FUNCTION.BULLETPREDICT.toString()) {
                         let inputVector = new Game.ƒ.Vector3(message.content.input.inputVector.data[0], message.content.input.inputVector.data[1], message.content.input.inputVector.data[2]);
-                        let input: Interfaces.InputAvatarPayload = { tick: message.content.input.tick, inputVector: inputVector, doesAbility: message.content.input.doesAbility }
-                        Game.serverPredictionBullet.updateEntityToCheck(message.content.netId);
-                        Game.serverPredictionBullet.onClientInput(input);
+                        let input: Interfaces.InputBulletPayload = { tick: message.content.input.tick, inputVector: inputVector }
+                        let temp: Interfaces.NetworkObjects = Networking.currentIDs.find(elem => elem.netId == message.content.netId);
+                        let bullet: Bullets.Bullet;
+                        if (temp != undefined) {
+                            bullet = <Bullets.Bullet>temp.netObjectNode;
+                            bullet.serverPrediction.updateEntityToCheck(message.content.netId);
+                            bullet.serverPrediction.onClientInput(input);
+                        }
 
                     }
 
@@ -213,8 +224,6 @@ namespace Networking {
                                         break;
                                 }
 
-                                bullet.flyDirection.scale(Game.deltaTime * bullet.speed)
-
                                 Game.graph.addChild(bullet);
                             }
                         }
@@ -229,13 +238,6 @@ namespace Networking {
                             }
                         }
 
-                        //Predict bullet transform from host to client
-                        if (message.content != undefined && message.content.text == FUNCTION.BULLETPREDICTION.toString()) {
-                            if (Game.bullets.find(element => element.netId == message.content.netId) != null) {
-                                let newPosition: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
-                                Game.bullets.find(element => element.netId == message.content.netId).hostPositions[message.content.tick] = newPosition;
-                            }
-                        }
 
                         //Kill bullet at the client from host
                         if (message.content != undefined && message.content.text == FUNCTION.BULLETDIE.toString()) {
@@ -464,19 +466,14 @@ namespace Networking {
         }
     }
     export function sendBulletInput(_netId: number, _inputPayload: Interfaces.InputBulletPayload) {
-        client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.BULLETTRANSFORM, netId: _netId, input: _inputPayload } })
+        client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.BULLETPREDICT, netId: _netId, input: _inputPayload } })
     }
 
-    // export function updateBullet(_position: ƒ.Vector3, _rotation: ƒ.Vector3, _netId: number, _tick?: number) {
-    //     if (Game.connected && client.idHost == client.id) {
-    //         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.BULLETTRANSFORM, position: _position, rotation: _rotation, netId: _netId, tick: _tick } })
-    //     }
-    // }
-    // export function predictionBullet(_position: ƒ.Vector3, _netId: number, _tick?: number) {
-    //     if (Game.connected && client.idHost == client.id) {
-    //         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.BULLETPREDICTION, position: _position, netId: _netId, tick: _tick } })
-    //     }
-    // }
+    export function updateBullet(_position: ƒ.Vector3, _rotation: ƒ.Vector3, _netId: number) {
+        if (Game.connected && client.idHost == client.id) {
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.BULLETTRANSFORM, position: _position, rotation: _rotation, netId: _netId } })
+        }
+    }
     export function removeBullet(_netId: number) {
         if (Game.connected && client.idHost == client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.BULLETDIE, netId: _netId } })
