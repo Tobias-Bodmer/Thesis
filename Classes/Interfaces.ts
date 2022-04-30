@@ -16,24 +16,24 @@ namespace Interfaces {
     export interface IDamageable {
         getDamage(): void;
     }
-    export interface NetworkObjects {
+    export interface INetworkObjects {
         netId: number;
         netObjectNode: Game.ƒ.Node;
     }
 
-    export interface InputBulletPayload {
+    export interface IInputBulletPayload {
         tick: number;
         inputVector: Game.ƒ.Vector3;
     }
 
 
-    export interface InputAvatarPayload {
+    export interface IInputAvatarPayload {
         tick: number;
         inputVector: Game.ƒ.Vector3;
         doesAbility: boolean;
     }
 
-    export interface StatePayload {
+    export interface IStatePayload {
         tick: number;
         position: Game.ƒ.Vector3;
     }
@@ -49,18 +49,23 @@ namespace Interfaces {
     //     rotationDeg: number;
     //     homingTarget?: Game.ƒ.Vector2;
     // }
-    export interface RoomExits {
+    export interface IRoomExits {
         north: boolean;
         east: boolean;
         south: boolean;
         west: boolean;
     }
 
-    export interface Room {
+    export interface IRoom {
         coordinates: Game.ƒ.Vector2;
-        exits: RoomExits;
+        exits: IRoomExits;
         roomType: Generation.ROOMTYPE;
-        direction: RoomExits;
+        direction: IRoomExits;
         translation: Game.ƒ.Vector3;
+    }
+
+    export interface IMinimapInfos {
+        coords: Game.ƒ.Vector2;
+        roomType: Generation.ROOMTYPE;
     }
 }

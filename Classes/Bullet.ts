@@ -46,7 +46,7 @@ namespace Bullets {
 
             if (_netId != undefined) {
                 Networking.popID(this.netId);
-                Networking.currentIDs.push(<Interfaces.NetworkObjects>{ netId: _netId, netObjectNode: this });
+                Networking.currentIDs.push(<Interfaces.INetworkObjects>{ netId: _netId, netObjectNode: this });
                 this.netId = _netId;
             }
             else {

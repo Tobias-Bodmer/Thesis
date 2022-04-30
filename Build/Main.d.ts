@@ -20,7 +20,7 @@ declare namespace Game {
     let connected: boolean;
     let deltaTime: number;
     let serverPredictionAvatar: Networking.ServerPrediction;
-    let currentNetObj: Interfaces.NetworkObjects;
+    let currentNetObj: Interfaces.INetworkObjects;
     let entities: Entity.Entity[];
     let enemies: Enemy.Enemy[];
     let bullets: Bullets.Bullet[];
@@ -222,35 +222,39 @@ declare namespace Interfaces {
     interface IDamageable {
         getDamage(): void;
     }
-    interface NetworkObjects {
+    interface INetworkObjects {
         netId: number;
         netObjectNode: Game.ƒ.Node;
     }
-    interface InputBulletPayload {
+    interface IInputBulletPayload {
         tick: number;
         inputVector: Game.ƒ.Vector3;
     }
-    interface InputAvatarPayload {
+    interface IInputAvatarPayload {
         tick: number;
         inputVector: Game.ƒ.Vector3;
         doesAbility: boolean;
     }
-    interface StatePayload {
+    interface IStatePayload {
         tick: number;
         position: Game.ƒ.Vector3;
     }
-    interface RoomExits {
+    interface IRoomExits {
         north: boolean;
         east: boolean;
         south: boolean;
         west: boolean;
     }
-    interface Room {
+    interface IRoom {
         coordinates: Game.ƒ.Vector2;
-        exits: RoomExits;
+        exits: IRoomExits;
         roomType: Generation.ROOMTYPE;
-        direction: RoomExits;
+        direction: IRoomExits;
         translation: Game.ƒ.Vector3;
+    }
+    interface IMinimapInfos {
+        coords: Game.ƒ.Vector2;
+        roomType: Generation.ROOMTYPE;
     }
 }
 declare namespace Items {
@@ -352,20 +356,20 @@ declare namespace Networking {
         protected bufferSize: number;
         protected ownerNetId: number;
         get owner(): Game.ƒ.Node;
-        protected stateBuffer: Interfaces.StatePayload[];
+        protected stateBuffer: Interfaces.IStatePayload[];
         constructor(_ownerNetId: number);
         protected handleTick(): void;
-        protected processMovement(input: Interfaces.InputAvatarPayload): Interfaces.StatePayload;
+        protected processMovement(input: Interfaces.IInputAvatarPayload): Interfaces.IStatePayload;
     }
     abstract class BulletPrediction extends Prediction {
-        protected processMovement(input: Interfaces.InputBulletPayload): Interfaces.StatePayload;
+        protected processMovement(input: Interfaces.IInputBulletPayload): Interfaces.IStatePayload;
     }
     export class ServerBulletPrediction extends BulletPrediction {
         private inputQueue;
         updateEntityToCheck(_netId: number): void;
         update(): void;
         handleTick(): void;
-        onClientInput(inputPayload: Interfaces.InputBulletPayload): void;
+        onClientInput(inputPayload: Interfaces.IInputBulletPayload): void;
     }
     export class ClientBulletPrediction extends BulletPrediction {
         private inputBuffer;
@@ -376,11 +380,11 @@ declare namespace Networking {
         constructor(_ownerNetId: number);
         update(): void;
         protected handleTick(): void;
-        onServerMovementState(_serverState: Interfaces.StatePayload): void;
+        onServerMovementState(_serverState: Interfaces.IStatePayload): void;
         private handleServerReconciliation;
     }
     abstract class AvatarPrediction extends Prediction {
-        protected processMovement(input: Interfaces.InputAvatarPayload): Interfaces.StatePayload;
+        protected processMovement(input: Interfaces.IInputAvatarPayload): Interfaces.IStatePayload;
     }
     export class ClientPrediction extends AvatarPrediction {
         private inputBuffer;
@@ -394,7 +398,7 @@ declare namespace Networking {
         update(): void;
         protected handleTick(): void;
         switchAvatarAbilityState(): void;
-        onServerMovementState(_serverState: Interfaces.StatePayload): void;
+        onServerMovementState(_serverState: Interfaces.IStatePayload): void;
         private handleServerReconciliation;
     }
     export class ServerPrediction extends AvatarPrediction {
@@ -402,7 +406,7 @@ declare namespace Networking {
         updateEntityToCheck(_netId: number): void;
         update(): void;
         handleTick(): void;
-        onClientInput(inputPayload: Interfaces.InputAvatarPayload): void;
+        onClientInput(inputPayload: Interfaces.IInputAvatarPayload): void;
     }
     export {};
 }
@@ -623,8 +627,8 @@ declare namespace UI {
         offsetY: number;
         private currentRoom;
         private pointer;
-        constructor(_coordinates: Game.ƒ.Vector2[]);
-        createMiniRooms(): void;
+        constructor(_coordinates: Game.ƒ.Vector2[], _minimapInfo?: Interfaces.IMinimapInfos[]);
+        createMiniRooms(_roomTypes?: Interfaces.IMinimapInfos[]): void;
         eventUpdate: (_event: Event) => void;
         private setCurrentRoom;
         update(): void;
@@ -659,7 +663,8 @@ declare namespace Networking {
         SENDROOM = 24,
         SWITCHROOMREQUEST = 25,
         UPDATEBUFF = 26,
-        UPDATEUI = 27
+        UPDATEUI = 27,
+        SPWANMINIMAP = 28
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -670,7 +675,7 @@ declare namespace Networking {
     let posUpdate: ƒ.Vector3;
     let someoneIsHost: boolean;
     let enemy: Enemy.Enemy;
-    let currentIDs: Interfaces.NetworkObjects[];
+    let currentIDs: Interfaces.INetworkObjects[];
     function connecting(): void;
     function setClientReady(): void;
     function setGamestate(_playing: boolean): void;
@@ -679,13 +684,14 @@ declare namespace Networking {
     function spawnPlayer(): void;
     function setClient(): void;
     function updateAvatarPosition(_position: ƒ.Vector3, _rotation: ƒ.Vector3): void;
-    function sendClientInput(_netId: number, _inputPayload: Interfaces.InputAvatarPayload): void;
-    function sendServerBuffer(_netId: number, _buffer: Interfaces.StatePayload): void;
+    function sendClientInput(_netId: number, _inputPayload: Interfaces.IInputAvatarPayload): void;
+    function sendServerBuffer(_netId: number, _buffer: Interfaces.IStatePayload): void;
     function knockbackRequest(_netId: number, _knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function knockbackPush(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function updateInventory(_itemId: Items.ITEMID, _itemNetId: number, _netId: number): void;
+    function spawnMinimap(_coordinates: Game.ƒ.Vector2[]): void;
     function spawnBullet(_aimType: Weapons.AIM, _direction: ƒ.Vector3, _bulletNetId: number, _ownerNetId: number, _bulletTarget?: ƒ.Vector3): void;
-    function sendBulletInput(_netId: number, _inputPayload: Interfaces.InputBulletPayload): void;
+    function sendBulletInput(_netId: number, _inputPayload: Interfaces.IInputBulletPayload): void;
     function updateBullet(_position: ƒ.Vector3, _rotation: ƒ.Vector3, _netId: number): void;
     function removeBullet(_netId: number): void;
     function spawnEnemy(_enemyClass: Enemy.ENEMYCLASS, _enemy: Enemy.Enemy, _netId: number): void;
@@ -698,8 +704,8 @@ declare namespace Networking {
     function removeItem(_netId: number): void;
     function updateBuffList(_buffList: Buff.Buff[], _netId: number): void;
     function updateUI(_position: Game.ƒ.Vector2, _value: number): void;
-    function sendRoom(_room: Interfaces.Room): void;
-    function switchRoomRequest(_coordiantes: Game.ƒ.Vector2, _direction: Interfaces.RoomExits): void;
+    function sendRoom(_room: Interfaces.IRoom): void;
+    function switchRoomRequest(_coordiantes: Game.ƒ.Vector2, _direction: Interfaces.IRoomExits): void;
     function idGenerator(_object: Object): number;
     function popID(_id: number): void;
 }
@@ -760,7 +766,7 @@ declare namespace Generation {
         neighbourS: Room;
         neighbourW: Room;
         roomSize: number;
-        exits: Interfaces.RoomExits;
+        exits: Interfaces.IRoomExits;
         mesh: ƒ.MeshQuad;
         cmpMesh: ƒ.ComponentMesh;
         startRoomMat: ƒ.Material;
@@ -770,7 +776,7 @@ declare namespace Generation {
         challengeRoomMat: ƒ.Material;
         bossRoomMat: ƒ.Material;
         cmpMaterial: ƒ.ComponentMaterial;
-        constructor(_name: string, _coordiantes: Game.ƒ.Vector2, _exits: Interfaces.RoomExits, _roomType: ROOMTYPE);
+        constructor(_name: string, _coordiantes: Game.ƒ.Vector2, _exits: Interfaces.IRoomExits, _roomType: ROOMTYPE);
         protected eventUpdate: (_event: Event) => void;
         update(): void;
         addWalls(): void;
@@ -781,7 +787,7 @@ declare namespace Generation {
         tag: Tag.TAG;
         collider: Game.ƒ.Rectangle;
         wallThickness: number;
-        constructor(_position: Game.ƒ.Vector2, _width: number, _direction: Interfaces.RoomExits);
+        constructor(_position: Game.ƒ.Vector2, _width: number, _direction: Interfaces.IRoomExits);
     }
     class Door extends ƒ.Node {
         tag: Tag.TAG;
@@ -789,8 +795,8 @@ declare namespace Generation {
         doorWidth: number;
         doorThickness: number;
         parentRoom: Room;
-        direction: Interfaces.RoomExits;
-        constructor(_parent: Room, _position: Game.ƒ.Vector2, _direction: Interfaces.RoomExits, _roomSize: number);
+        direction: Interfaces.IRoomExits;
+        constructor(_parent: Room, _position: Game.ƒ.Vector2, _direction: Interfaces.IRoomExits, _roomSize: number);
         changeRoom(): void;
     }
 }
@@ -798,8 +804,8 @@ declare namespace Generation {
     let usedPositions: Game.ƒ.Vector2[];
     let rooms: Room[];
     function generateRooms(): void;
-    function switchRoom(_currentRoom: Room, _direction: Interfaces.RoomExits): void;
-    function addRoomToGraph(_room: Room, _direciton?: Interfaces.RoomExits): void;
+    function switchRoom(_currentRoom: Room, _direction: Interfaces.IRoomExits): void;
+    function addRoomToGraph(_room: Room, _direciton?: Interfaces.IRoomExits): void;
 }
 declare namespace Tag {
     enum TAG {

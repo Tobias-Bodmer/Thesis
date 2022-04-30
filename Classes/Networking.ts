@@ -29,7 +29,8 @@ namespace Networking {
         SENDROOM,
         SWITCHROOMREQUEST,
         UPDATEBUFF,
-        UPDATEUI
+        UPDATEUI,
+        SPWANMINIMAP
     }
 
     import ƒClient = FudgeNet.FudgeClient;
@@ -39,7 +40,7 @@ namespace Networking {
     export let posUpdate: ƒ.Vector3;
     export let someoneIsHost: boolean = false;
     export let enemy: Enemy.Enemy;
-    export let currentIDs: Interfaces.NetworkObjects[] = [];
+    export let currentIDs: Interfaces.INetworkObjects[] = [];
 
     document.getElementById("HostSpawn").addEventListener("click", () => { spawnPlayer() }, true);
     let IPConnection = <HTMLInputElement>document.getElementById("IPConnection");
@@ -92,20 +93,32 @@ namespace Networking {
                         }
                     }
 
+                    //SPAWN MINIMAP BY CLIENT
+                    if (message.content != undefined && message.content.text == FUNCTION.SPWANMINIMAP.toString()) {
+                        let coordinates: Game.ƒ.Vector2[] = [];
+                        let rooms: Interfaces.IMinimapInfos[] = [];
+                        (<Array<any>>message.content.miniMapInfos).forEach(element => {
+                            coordinates.push(new Game.ƒ.Vector2(element.coords.data[0], element.coords.data[1]));
+                            rooms.push({ coords: new Game.ƒ.Vector2(element.coords.data[0], element.coords.data[1]), roomType: element.roomType });
+                        });
+
+                        Game.miniMap = new UI.Minimap(coordinates, rooms);
+                        Game.graph.addChild(Game.miniMap);
+                    }
 
                     //FROM CLIENT INPUT VECTORS FROM AVATAR
                     if (message.content != undefined && message.content.text == FUNCTION.CLIENTMOVEMENT.toString()) {
                         let inputVector = new Game.ƒ.Vector3(message.content.input.inputVector.data[0], message.content.input.inputVector.data[1], message.content.input.inputVector.data[2]);
-                        let input: Interfaces.InputAvatarPayload = { tick: message.content.input.tick, inputVector: inputVector, doesAbility: message.content.input.doesAbility }
+                        let input: Interfaces.IInputAvatarPayload = { tick: message.content.input.tick, inputVector: inputVector, doesAbility: message.content.input.doesAbility }
                         Game.serverPredictionAvatar.updateEntityToCheck(message.content.netId);
                         Game.serverPredictionAvatar.onClientInput(input);
                     }
 
                     // TO CLIENT CALCULATED POSITION FOR AVATAR
                     if (message.content != undefined && message.content.text == FUNCTION.SERVERBUFFER.toString()) {
-                        let netObj: Interfaces.NetworkObjects = Networking.currentIDs.find(entity => entity.netId == message.content.netId);
+                        let netObj: Interfaces.INetworkObjects = Networking.currentIDs.find(entity => entity.netId == message.content.netId);
                         let position = new Game.ƒ.Vector3(message.content.buffer.position.data[0], message.content.buffer.position.data[1], message.content.buffer.position.data[2]);
-                        let state: Interfaces.StatePayload = { tick: message.content.buffer.tick, position: position };
+                        let state: Interfaces.IStatePayload = { tick: message.content.buffer.tick, position: position };
                         if (netObj != undefined) {
                             let obj = netObj.netObjectNode;
                             if (obj instanceof Player.Player) {
@@ -119,8 +132,8 @@ namespace Networking {
                     //FROM CLIENT BULLET VECTORS
                     if (message.content != undefined && message.content.text == FUNCTION.BULLETPREDICT.toString()) {
                         let inputVector = new Game.ƒ.Vector3(message.content.input.inputVector.data[0], message.content.input.inputVector.data[1], message.content.input.inputVector.data[2]);
-                        let input: Interfaces.InputBulletPayload = { tick: message.content.input.tick, inputVector: inputVector }
-                        let temp: Interfaces.NetworkObjects = Networking.currentIDs.find(elem => elem.netId == message.content.netId);
+                        let input: Interfaces.IInputBulletPayload = { tick: message.content.input.tick, inputVector: inputVector }
+                        let temp: Interfaces.INetworkObjects = Networking.currentIDs.find(elem => elem.netId == message.content.netId);
                         let bullet: Bullets.Bullet;
                         if (temp != undefined) {
                             bullet = <Bullets.Bullet>temp.netObjectNode;
@@ -361,7 +374,7 @@ namespace Networking {
                         if (message.content != undefined && message.content.text == FUNCTION.SENDROOM.toString()) {
                             let coordiantes: Game.ƒ.Vector2 = new Game.ƒ.Vector2(message.content.room.coordinates.data[0], message.content.room.coordinates.data[1]);
                             let tanslation: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.room.translation.data[0], message.content.room.translation.data[1], message.content.room.translation.data[2]);
-                            let room: Interfaces.Room = { coordinates: coordiantes, direction: message.content.room.direction, exits: message.content.room.exits, roomType: message.content.room.roomType, translation: tanslation };
+                            let room: Interfaces.IRoom = { coordinates: coordiantes, direction: message.content.room.direction, exits: message.content.room.exits, roomType: message.content.room.roomType, translation: tanslation };
 
                             let newRoom: Generation.Room = new Generation.Room("room", room.coordinates, room.exits, room.roomType);
                             newRoom.mtxLocal.translation = room.translation;
@@ -433,11 +446,11 @@ namespace Networking {
     }
 
 
-    export function sendClientInput(_netId: number, _inputPayload: Interfaces.InputAvatarPayload) {
+    export function sendClientInput(_netId: number, _inputPayload: Interfaces.IInputAvatarPayload) {
         client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.CLIENTMOVEMENT, netId: _netId, input: _inputPayload } })
     }
 
-    export function sendServerBuffer(_netId: number, _buffer: Interfaces.StatePayload) {
+    export function sendServerBuffer(_netId: number, _buffer: Interfaces.IStatePayload) {
         if (Networking.client.idHost == Networking.client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.SERVERBUFFER, netId: _netId, buffer: _buffer } })
         }
@@ -454,6 +467,16 @@ namespace Networking {
     export function updateInventory(_itemId: Items.ITEMID, _itemNetId: number, _netId: number) {
         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.UPDATEINVENTORY, itemId: _itemId, itemNetId: _itemNetId, netId: _netId } })
     }
+
+    export function spawnMinimap(_coordinates: Game.ƒ.Vector2[]) {
+        if (client.id == client.idHost) {
+            let miniMapInfos: Interfaces.IMinimapInfos[] = [];
+            _coordinates.forEach(coords => {
+                miniMapInfos.push({ coords: coords, roomType: Generation.rooms.find(room => room.coordinates == coords).roomType });
+            });
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPWANMINIMAP, miniMapInfos: miniMapInfos } })
+        }
+    }
     //#endregion
 
 
@@ -465,7 +488,7 @@ namespace Networking {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.SPAWNBULLET, aimType: _aimType, direction: _direction, ownerNetId: _ownerNetId, bulletNetId: _bulletNetId, bulletTarget: _bulletTarget } })
         }
     }
-    export function sendBulletInput(_netId: number, _inputPayload: Interfaces.InputBulletPayload) {
+    export function sendBulletInput(_netId: number, _inputPayload: Interfaces.IInputBulletPayload) {
         client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.BULLETPREDICT, netId: _netId, input: _inputPayload } })
     }
 
@@ -559,12 +582,12 @@ namespace Networking {
 
 
     //#region room
-    export function sendRoom(_room: Interfaces.Room) {
+    export function sendRoom(_room: Interfaces.IRoom) {
         if (Game.connected && client.idHost == client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SENDROOM, room: _room } })
         }
     }
-    export function switchRoomRequest(_coordiantes: Game.ƒ.Vector2, _direction: Interfaces.RoomExits) {
+    export function switchRoomRequest(_coordiantes: Game.ƒ.Vector2, _direction: Interfaces.IRoomExits) {
         if (Game.connected && client.idHost != client.id) {
             client.dispatch({ route: undefined, idTarget: client.idHost, content: { text: FUNCTION.SWITCHROOMREQUEST, coordiantes: _coordiantes, direction: _direction } })
         }
@@ -580,7 +603,7 @@ namespace Networking {
             idGenerator(_object);
         }
         else {
-            currentIDs.push(<Interfaces.NetworkObjects>{ netId: id, netObjectNode: _object });
+            currentIDs.push(<Interfaces.INetworkObjects>{ netId: id, netObjectNode: _object });
         }
 
         return id;

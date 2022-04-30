@@ -7,30 +7,30 @@ namespace Networking {
         protected bufferSize: number = 1024;
         protected ownerNetId: number; get owner(): Game.ƒ.Node { return Networking.currentIDs.find(elem => elem.netId == this.ownerNetId).netObjectNode };
 
-        protected stateBuffer: Interfaces.StatePayload[];
+        protected stateBuffer: Interfaces.IStatePayload[];
 
         constructor(_ownerNetId: number) {
             this.minTimeBetweenTicks = 1 / this.gameTickRate;
-            this.stateBuffer = new Array<Interfaces.StatePayload>(this.bufferSize);
+            this.stateBuffer = new Array<Interfaces.IStatePayload>(this.bufferSize);
             this.ownerNetId = _ownerNetId;
         }
 
         protected handleTick() {
         }
 
-        protected processMovement(input: Interfaces.InputAvatarPayload): Interfaces.StatePayload {
+        protected processMovement(input: Interfaces.IInputAvatarPayload): Interfaces.IStatePayload {
             return null;
         }
 
 
     }//#region  bullet Prediction
     abstract class BulletPrediction extends Prediction {
-        protected processMovement(input: Interfaces.InputBulletPayload): Interfaces.StatePayload {
+        protected processMovement(input: Interfaces.IInputBulletPayload): Interfaces.IStatePayload {
             let cloneInputVector = input.inputVector.clone;
             let bullet: Bullets.Bullet = <Bullets.Bullet>this.owner;
             bullet.move(cloneInputVector);
 
-            let newStatePayload: Interfaces.StatePayload = { tick: input.tick, position: bullet.mtxLocal.translation }
+            let newStatePayload: Interfaces.IStatePayload = { tick: input.tick, position: bullet.mtxLocal.translation }
             return newStatePayload;
         }
     }
@@ -55,10 +55,10 @@ namespace Networking {
 
             let bufferIndex = -1;
             while (this.inputQueue.getQueueLength() > 0) {
-                let inputPayload: Interfaces.InputBulletPayload = <Interfaces.InputBulletPayload>this.inputQueue.dequeue();
+                let inputPayload: Interfaces.IInputBulletPayload = <Interfaces.IInputBulletPayload>this.inputQueue.dequeue();
 
                 bufferIndex = inputPayload.tick % this.bufferSize;
-                let statePayload: Interfaces.StatePayload = this.processMovement(inputPayload)
+                let statePayload: Interfaces.IStatePayload = this.processMovement(inputPayload)
                 this.stateBuffer[bufferIndex] = statePayload;
             }
 
@@ -68,15 +68,15 @@ namespace Networking {
             }
         }
 
-        public onClientInput(inputPayload: Interfaces.InputBulletPayload) {
+        public onClientInput(inputPayload: Interfaces.IInputBulletPayload) {
             this.inputQueue.enqueue(inputPayload);
         }
     }
 
     export class ClientBulletPrediction extends BulletPrediction {
-        private inputBuffer: Interfaces.InputBulletPayload[];
-        private latestServerState: Interfaces.StatePayload;
-        private lastProcessedState: Interfaces.StatePayload;
+        private inputBuffer: Interfaces.IInputBulletPayload[];
+        private latestServerState: Interfaces.IStatePayload;
+        private lastProcessedState: Interfaces.IStatePayload;
         private flyDirection: Game.ƒ.Vector3;
 
         private AsyncTolerance: number = 0.1;
@@ -84,7 +84,7 @@ namespace Networking {
 
         constructor(_ownerNetId: number) {
             super(_ownerNetId);
-            this.inputBuffer = new Array<Interfaces.InputBulletPayload>(this.bufferSize);
+            this.inputBuffer = new Array<Interfaces.IInputBulletPayload>(this.bufferSize);
             this.flyDirection = (<Bullets.Bullet>this.owner).flyDirection;
         }
 
@@ -105,7 +105,7 @@ namespace Networking {
             }
 
             let bufferIndex = this.currentTick % this.bufferSize;
-            let inputPayload: Interfaces.InputBulletPayload = { tick: this.currentTick, inputVector: this.flyDirection };
+            let inputPayload: Interfaces.IInputBulletPayload = { tick: this.currentTick, inputVector: this.flyDirection };
             this.inputBuffer[bufferIndex] = inputPayload;
             // console.log(inputPayload.tick + "___" + inputPayload.inputVector.clone);
             this.stateBuffer[bufferIndex] = this.processMovement(inputPayload);
@@ -114,7 +114,7 @@ namespace Networking {
             Networking.sendBulletInput(this.ownerNetId, inputPayload);
         }
 
-        public onServerMovementState(_serverState: Interfaces.StatePayload) {
+        public onServerMovementState(_serverState: Interfaces.IStatePayload) {
             this.latestServerState = _serverState;
         }
 
@@ -132,7 +132,7 @@ namespace Networking {
                 let tickToProcess = (this.latestServerState.tick + 1);
 
                 while (tickToProcess < this.currentTick) {
-                    let statePayload: Interfaces.StatePayload = this.processMovement(this.inputBuffer[tickToProcess % this.bufferSize]);
+                    let statePayload: Interfaces.IStatePayload = this.processMovement(this.inputBuffer[tickToProcess % this.bufferSize]);
 
                     let bufferIndex = tickToProcess % this.bufferSize;
                     this.stateBuffer[bufferIndex] = statePayload;
@@ -146,7 +146,7 @@ namespace Networking {
     //#region  avatar Precdiction
     abstract class AvatarPrediction extends Prediction {
 
-        protected processMovement(input: Interfaces.InputAvatarPayload): Interfaces.StatePayload {
+        protected processMovement(input: Interfaces.IInputAvatarPayload): Interfaces.IStatePayload {
             let cloneInputVector = input.inputVector.clone;
             if (cloneInputVector.magnitude > 0) {
                 cloneInputVector.normalize();
@@ -159,16 +159,16 @@ namespace Networking {
             (<Player.Player>this.owner).move(cloneInputVector);
 
 
-            let newStatePayload: Interfaces.StatePayload = { tick: input.tick, position: this.owner.mtxLocal.translation }
+            let newStatePayload: Interfaces.IStatePayload = { tick: input.tick, position: this.owner.mtxLocal.translation }
             return newStatePayload;
         }
     }
 
     export class ClientPrediction extends AvatarPrediction {
 
-        private inputBuffer: Interfaces.InputAvatarPayload[];
-        private latestServerState: Interfaces.StatePayload;
-        private lastProcessedState: Interfaces.StatePayload;
+        private inputBuffer: Interfaces.IInputAvatarPayload[];
+        private latestServerState: Interfaces.IStatePayload;
+        private lastProcessedState: Interfaces.IStatePayload;
         private horizontalInput: number;
         private verticalInput: number;
         protected doesAbility: boolean;
@@ -178,7 +178,7 @@ namespace Networking {
 
         constructor(_ownerNetId: number) {
             super(_ownerNetId);
-            this.inputBuffer = new Array<Interfaces.InputAvatarPayload>(this.bufferSize);
+            this.inputBuffer = new Array<Interfaces.IInputAvatarPayload>(this.bufferSize);
         }
 
 
@@ -200,7 +200,7 @@ namespace Networking {
             }
             let bufferIndex = this.currentTick % this.bufferSize;
             this.switchAvatarAbilityState();
-            let inputPayload: Interfaces.InputAvatarPayload = { tick: this.currentTick, inputVector: new ƒ.Vector3(this.horizontalInput, this.verticalInput, 0), doesAbility: this.doesAbility };
+            let inputPayload: Interfaces.IInputAvatarPayload = { tick: this.currentTick, inputVector: new ƒ.Vector3(this.horizontalInput, this.verticalInput, 0), doesAbility: this.doesAbility };
             this.inputBuffer[bufferIndex] = inputPayload;
             // console.log(inputPayload.tick + "___" + inputPayload.inputVector.clone);
             this.stateBuffer[bufferIndex] = this.processMovement(inputPayload);
@@ -219,7 +219,7 @@ namespace Networking {
         }
 
 
-        public onServerMovementState(_serverState: Interfaces.StatePayload) {
+        public onServerMovementState(_serverState: Interfaces.IStatePayload) {
             this.latestServerState = _serverState;
         }
 
@@ -237,7 +237,7 @@ namespace Networking {
                 let tickToProcess = (this.latestServerState.tick + 1);
 
                 while (tickToProcess < this.currentTick) {
-                    let statePayload: Interfaces.StatePayload = this.processMovement(this.inputBuffer[tickToProcess % this.bufferSize]);
+                    let statePayload: Interfaces.IStatePayload = this.processMovement(this.inputBuffer[tickToProcess % this.bufferSize]);
 
                     let bufferIndex = tickToProcess % this.bufferSize;
                     this.stateBuffer[bufferIndex] = statePayload;
@@ -269,10 +269,10 @@ namespace Networking {
 
             let bufferIndex = -1;
             while (this.inputQueue.getQueueLength() > 0) {
-                let inputPayload: Interfaces.InputAvatarPayload = <Interfaces.InputAvatarPayload>this.inputQueue.dequeue();
+                let inputPayload: Interfaces.IInputAvatarPayload = <Interfaces.IInputAvatarPayload>this.inputQueue.dequeue();
 
                 bufferIndex = inputPayload.tick % this.bufferSize;
-                let statePayload: Interfaces.StatePayload = this.processMovement(inputPayload)
+                let statePayload: Interfaces.IStatePayload = this.processMovement(inputPayload)
                 this.stateBuffer[bufferIndex] = statePayload;
             }
 
@@ -282,7 +282,7 @@ namespace Networking {
             }
         }
 
-        public onClientInput(inputPayload: Interfaces.InputAvatarPayload) {
+        public onClientInput(inputPayload: Interfaces.IInputAvatarPayload) {
             this.inputQueue.enqueue(inputPayload);
         }
     }
@@ -296,11 +296,11 @@ namespace Networking {
             this.items = [];
         }
 
-        enqueue(_item: Interfaces.InputAvatarPayload | Interfaces.InputBulletPayload) {
+        enqueue(_item: Interfaces.IInputAvatarPayload | Interfaces.IInputBulletPayload) {
             this.items.push(_item);
         }
 
-        dequeue(): Interfaces.InputAvatarPayload | Interfaces.InputBulletPayload {
+        dequeue(): Interfaces.IInputAvatarPayload | Interfaces.IInputBulletPayload {
             return this.items.shift();
         }
 

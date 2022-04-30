@@ -36,7 +36,6 @@ namespace EnemySpawner {
         }
     }
 
-
     export function spawnByID(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2, _attributes?: Entity.Attributes, _target?: Player.Player, _netID?: number) {
         let enemy: Enemy.Enemy;
         let ref = null;

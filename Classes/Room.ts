@@ -24,7 +24,7 @@ namespace Generation {
         neighbourS: Room;
         neighbourW: Room;
         roomSize: number = 30;
-        exits: Interfaces.RoomExits; // N E S W
+        exits: Interfaces.IRoomExits; // N E S W
         mesh: ƒ.MeshQuad = new ƒ.MeshQuad;
         cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(this.mesh);
         startRoomMat: ƒ.Material = new ƒ.Material("startRoomMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtStartRoom));
@@ -38,7 +38,7 @@ namespace Generation {
         cmpMaterial: ƒ.ComponentMaterial;
 
 
-        constructor(_name: string, _coordiantes: Game.ƒ.Vector2, _exits: Interfaces.RoomExits, _roomType: ROOMTYPE) {
+        constructor(_name: string, _coordiantes: Game.ƒ.Vector2, _exits: Interfaces.IRoomExits, _roomType: ROOMTYPE) {
             super(_name);
             this.coordinates = _coordiantes;
             this.exits = _exits;
@@ -96,27 +96,27 @@ namespace Generation {
         }
 
         public addWalls(): void {
-            this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, <Interfaces.RoomExits>{ north: true, east: false, south: false, west: false }));
-            this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, <Interfaces.RoomExits>{ north: false, east: true, south: false, west: false }));
-            this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, <Interfaces.RoomExits>{ north: false, east: false, south: true, west: false }));
-            this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, <Interfaces.RoomExits>{ north: false, east: false, south: false, west: true }));
+            this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, <Interfaces.IRoomExits>{ north: true, east: false, south: false, west: false }));
+            this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, <Interfaces.IRoomExits>{ north: false, east: true, south: false, west: false }));
+            this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, <Interfaces.IRoomExits>{ north: false, east: false, south: true, west: false }));
+            this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, <Interfaces.IRoomExits>{ north: false, east: false, south: false, west: true }));
         }
 
         public setDoors(): void {
             if (this.exits.north) {
-                let exit: Interfaces.RoomExits = { north: true, east: false, south: false, west: false };
+                let exit: Interfaces.IRoomExits = { north: true, east: false, south: false, west: false };
                 this.doors.push(new Door(this, this.cmpTransform.mtxLocal.translation.toVector2(), exit, this.roomSize));
             }
             if (this.exits.east) {
-                let exit: Interfaces.RoomExits = { north: false, east: true, south: false, west: false };
+                let exit: Interfaces.IRoomExits = { north: false, east: true, south: false, west: false };
                 this.doors.push(new Door(this, this.cmpTransform.mtxLocal.translation.toVector2(), exit, this.roomSize));
             }
             if (this.exits.south) {
-                let exit: Interfaces.RoomExits = { north: false, east: false, south: true, west: false };
+                let exit: Interfaces.IRoomExits = { north: false, east: false, south: true, west: false };
                 this.doors.push(new Door(this, this.cmpTransform.mtxLocal.translation.toVector2(), exit, this.roomSize));
             }
             if (this.exits.west) {
-                let exit: Interfaces.RoomExits = { north: false, east: false, south: false, west: true };
+                let exit: Interfaces.IRoomExits = { north: false, east: false, south: false, west: true };
                 this.doors.push(new Door(this, this.cmpTransform.mtxLocal.translation.toVector2(), exit, this.roomSize));
             }
 
@@ -135,7 +135,7 @@ namespace Generation {
         public collider: Game.ƒ.Rectangle;
         public wallThickness: number = 3;
 
-        constructor(_position: Game.ƒ.Vector2, _width: number, _direction: Interfaces.RoomExits) {
+        constructor(_position: Game.ƒ.Vector2, _width: number, _direction: Interfaces.IRoomExits) {
             super("Wall");
 
             this.addComponent(new ƒ.ComponentTransform());
@@ -176,9 +176,9 @@ namespace Generation {
         public doorThickness: number = 1;
         public parentRoom: Room;
 
-        direction: Interfaces.RoomExits;
+        direction: Interfaces.IRoomExits;
 
-        constructor(_parent: Room, _position: Game.ƒ.Vector2, _direction: Interfaces.RoomExits, _roomSize: number) {
+        constructor(_parent: Room, _position: Game.ƒ.Vector2, _direction: Interfaces.IRoomExits, _roomSize: number) {
             super("Door");
 
             this.direction = _direction;

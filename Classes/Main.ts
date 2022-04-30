@@ -39,7 +39,7 @@ namespace Game {
 
     export let serverPredictionAvatar: Networking.ServerPrediction;
 
-    export let currentNetObj: Interfaces.NetworkObjects;
+    export let currentNetObj: Interfaces.INetworkObjects;
 
     export let entities: Entity.Entity[] = [];
     export let enemies: Enemy.Enemy[] = [];
@@ -180,7 +180,6 @@ namespace Game {
                     if (Networking.client.id == Networking.client.idHost) {
                         miniMap = new UI.Minimap(Generation.usedPositions);
                         graph.addChild(miniMap);
-
                     }
 
                     startLoop();

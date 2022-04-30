@@ -11,7 +11,7 @@ namespace Generation {
     export function generateRooms(): void {
         let startCoords: Game.ƒ.Vector2 = Game.ƒ.Vector2.ZERO();
 
-        rooms.push(new Room("roomStart", startCoords, <Interfaces.RoomExits>{ north: true, east: true, south: true, west: true }, Generation.ROOMTYPE.START))
+        rooms.push(new Room("roomStart", startCoords, <Interfaces.IRoomExits>{ north: true, east: true, south: true, west: true }, Generation.ROOMTYPE.START))
         usedPositions.push(startCoords);
 
         for (let i: number = 0; i < numberOfRooms; i++) {
@@ -35,7 +35,7 @@ namespace Generation {
         }
 
         addRoomToGraph(rooms[0]);
-        sendRoom(<Interfaces.Room>{ coordinates: rooms[0].coordinates, direction: null, exits: rooms[0].exits, roomType: rooms[0].roomType, translation: rooms[0].mtxLocal.translation });
+        sendRoom(<Interfaces.IRoom>{ coordinates: rooms[0].coordinates, direction: null, exits: rooms[0].exits, roomType: rooms[0].roomType, translation: rooms[0].mtxLocal.translation });
     }
 
     function placeRoomsLocal(_firstRoom: Room) {
@@ -61,7 +61,7 @@ namespace Generation {
         }
     }
 
-    function sendRoom(_room: Interfaces.Room) {
+    function sendRoom(_room: Interfaces.IRoom) {
         Networking.sendRoom(_room);
     }
 
@@ -73,7 +73,7 @@ namespace Generation {
         let newRoomPosition: Game.ƒ.Vector2;
         let newRoom: Room;
         let newCoord: Game.ƒ.Vector2;
-        let defaultExits: Interfaces.RoomExits = <Interfaces.RoomExits>{ north: true, east: true, south: true, west: true };
+        let defaultExits: Interfaces.IRoomExits = <Interfaces.IRoomExits>{ north: true, east: true, south: true, west: true };
 
 
         console.log(numberOfExits);
@@ -186,7 +186,7 @@ namespace Generation {
     }
 
 
-    function countBool(_exits: Interfaces.RoomExits): number {
+    function countBool(_exits: Interfaces.IRoomExits): number {
         let counter: number = -1;
         if (_exits.north) {
             counter++;
@@ -204,7 +204,7 @@ namespace Generation {
     }
 
 
-    function getExitIndex(_exits: Interfaces.RoomExits): number[] {
+    function getExitIndex(_exits: Interfaces.IRoomExits): number[] {
         let numbers: number[] = [];
         if (_exits.north) {
             numbers.push(0)
@@ -259,26 +259,26 @@ namespace Generation {
 
 
 
-    export function switchRoom(_currentRoom: Room, _direction: Interfaces.RoomExits) {
+    export function switchRoom(_currentRoom: Room, _direction: Interfaces.IRoomExits) {
         if (_currentRoom.finished) {
             if (_direction.north) {
-                let exits: Interfaces.RoomExits = { north: false, east: false, south: true, west: false };
-                sendRoom(<Interfaces.Room>{ coordinates: _currentRoom.neighbourN.coordinates, direction: exits, exits: _currentRoom.neighbourN.exits, roomType: _currentRoom.neighbourN.roomType, translation: _currentRoom.neighbourN.mtxLocal.translation });
+                let exits: Interfaces.IRoomExits = { north: false, east: false, south: true, west: false };
+                sendRoom(<Interfaces.IRoom>{ coordinates: _currentRoom.neighbourN.coordinates, direction: exits, exits: _currentRoom.neighbourN.exits, roomType: _currentRoom.neighbourN.roomType, translation: _currentRoom.neighbourN.mtxLocal.translation });
                 addRoomToGraph(_currentRoom.neighbourN, exits);
             }
             if (_direction.east) {
-                let exits: Interfaces.RoomExits = { north: false, east: false, south: false, west: true };
-                sendRoom(<Interfaces.Room>{ coordinates: _currentRoom.neighbourE.coordinates, direction: exits, exits: _currentRoom.neighbourE.exits, roomType: _currentRoom.neighbourE.roomType, translation: _currentRoom.neighbourE.mtxLocal.translation });
+                let exits: Interfaces.IRoomExits = { north: false, east: false, south: false, west: true };
+                sendRoom(<Interfaces.IRoom>{ coordinates: _currentRoom.neighbourE.coordinates, direction: exits, exits: _currentRoom.neighbourE.exits, roomType: _currentRoom.neighbourE.roomType, translation: _currentRoom.neighbourE.mtxLocal.translation });
                 addRoomToGraph(_currentRoom.neighbourE, exits);
             }
             if (_direction.south) {
-                let exits: Interfaces.RoomExits = { north: true, east: false, south: false, west: false };
-                sendRoom(<Interfaces.Room>{ coordinates: _currentRoom.neighbourS.coordinates, direction: exits, exits: _currentRoom.neighbourS.exits, roomType: _currentRoom.neighbourS.roomType, translation: _currentRoom.neighbourS.mtxLocal.translation });
+                let exits: Interfaces.IRoomExits = { north: true, east: false, south: false, west: false };
+                sendRoom(<Interfaces.IRoom>{ coordinates: _currentRoom.neighbourS.coordinates, direction: exits, exits: _currentRoom.neighbourS.exits, roomType: _currentRoom.neighbourS.roomType, translation: _currentRoom.neighbourS.mtxLocal.translation });
                 addRoomToGraph(_currentRoom.neighbourS, exits);
             }
             if (_direction.west) {
-                let exits: Interfaces.RoomExits = { north: false, east: true, south: false, west: false };
-                sendRoom(<Interfaces.Room>{ coordinates: _currentRoom.neighbourW.coordinates, direction: exits, exits: _currentRoom.neighbourW.exits, roomType: _currentRoom.neighbourW.roomType, translation: _currentRoom.neighbourW.mtxLocal.translation });
+                let exits: Interfaces.IRoomExits = { north: false, east: true, south: false, west: false };
+                sendRoom(<Interfaces.IRoom>{ coordinates: _currentRoom.neighbourW.coordinates, direction: exits, exits: _currentRoom.neighbourW.exits, roomType: _currentRoom.neighbourW.roomType, translation: _currentRoom.neighbourW.mtxLocal.translation });
                 addRoomToGraph(_currentRoom.neighbourW, exits);
             }
 
@@ -286,7 +286,7 @@ namespace Generation {
         }
     }
 
-    export function addRoomToGraph(_room: Room, _direciton?: Interfaces.RoomExits) {
+    export function addRoomToGraph(_room: Room, _direciton?: Interfaces.IRoomExits) {
         let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => (<any>elem).tag != Tag.TAG.PLAYER);
 
         oldObjects.forEach((elem) => {
@@ -344,5 +344,7 @@ namespace Generation {
             randomItemId = Math.floor(Math.random() * (Object.keys(Items.ITEMID).length / 2 - 1));
             Game.graph.addChild(new Items.InternalItem(randomItemId, position));
         }
+
+        Game.currentRoom = _room;
     }
 }

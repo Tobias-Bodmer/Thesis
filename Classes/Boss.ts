@@ -72,33 +72,33 @@ namespace Enemy {
 
         defencePhase(): void {
             //TODO: make if dependent from teleport animation frame
-            if (!this.mtxLocal.translation.equals(new ƒ.Vector2(0, -13).toVector3(), 1)) {
-                this.moveDirection = this.moveSimple(new ƒ.Vector2(0, -13)).toVector3();
-            } else {
-                if (!this.beginDefencePhase) {
-                    this.defencePhaseCurrentTime = Math.round(this.defencePhaseTime + Math.random() * 120);
-                    this.beginDefencePhase = true;
-                }
-                if (this.defencePhaseCurrentTime > 0) {
-                    if (this.mtxLocal.translation.equals(new ƒ.Vector2(0, -13).toVector3(), 1)) {
-                        this.mtxLocal.translation = new ƒ.Vector2(0, -13).toVector3();
-                        // if (this.summonCurrentCooldown <= 0) {
-                        // if (this.summon.doesAbility) {
-                        let nextState = Math.round(Math.random() * 100);
-
-                        if (nextState <= this.summonChance) {
-                            // this.summon();
-                            this.summon.doAbility();
-                            this.summonCurrentCooldown = this.summonCooldown;
-                        }
-                        // }
-                    }
-                    this.defencePhaseCurrentTime--;
-                } else {
-                    this.damageTaken = 0;
-                    this.beginDefencePhase = false;
-                }
+            // if (!this.mtxLocal.translation.equals(new ƒ.Vector2(0, -13).toVector3(), 1)) {
+            this.moveDirection = this.moveSimple(new ƒ.Vector2(0, -13)).toVector3();
+            // } else {
+            if (!this.beginDefencePhase) {
+                this.defencePhaseCurrentTime = Math.round(this.defencePhaseTime + Math.random() * 120);
+                this.beginDefencePhase = true;
             }
+            if (this.defencePhaseCurrentTime > 0) {
+                if (this.mtxLocal.translation.equals(new ƒ.Vector2(0, -13).toVector3(), 1)) {
+                    this.mtxLocal.translation = new ƒ.Vector2(0, -13).toVector3();
+                    // if (this.summonCurrentCooldown <= 0) {
+                    // if (this.summon.doesAbility) {
+                    let nextState = Math.round(Math.random() * 100);
+
+                    if (nextState <= this.summonChance) {
+                        // this.summon();
+                        this.summon.doAbility();
+                        this.summonCurrentCooldown = this.summonCooldown;
+                    }
+                    // }
+                }
+                this.defencePhaseCurrentTime--;
+            } else {
+                this.damageTaken = 0;
+                this.beginDefencePhase = false;
+            }
+            // }
         }
 
         // summon() {
