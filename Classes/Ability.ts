@@ -76,7 +76,11 @@ namespace Ability {
     export class SpawnSummoners extends Ability {
         protected activateAbility(): void {
             if (Networking.client.id == Networking.client.idHost) {
-                EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, this.owner.mtxLocal.translation.toVector2(), null, Game.avatar1, null);
+                if (Math.round(Math.random()) > 0) {
+                    EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, this.owner.mtxLocal.translation.toVector2(), null, Game.avatar1, null);
+                } else {
+                    EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, this.owner.mtxLocal.translation.toVector2(), null, Game.avatar2, null);
+                }
             }
         }
         protected deactivateAbility(): void {

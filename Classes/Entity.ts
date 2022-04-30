@@ -221,7 +221,7 @@ namespace Entity {
 
                 direction.normalize();
 
-                direction.scale(_knockbackForce * (1 / knockBackScaling));
+                direction.scale(_knockbackForce * knockBackScaling);
 
                 this.currentKnockback.add(direction);
             }

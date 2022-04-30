@@ -66,9 +66,13 @@ namespace UI {
         }
 
         update(): void {
-            if (this.currentRoom != undefined && this.currentRoom != Game.currentRoom) {
-                this.miniRooms.find(room => room.coordinates.equals(Game.currentRoom.coordinates)).isDiscovered();
-                this.setCurrentRoom(Game.currentRoom);
+            if (this.currentRoom != undefined) {
+                if (this.currentRoom != Game.currentRoom) {
+                    this.miniRooms.find(room => room.coordinates.equals(Game.currentRoom.coordinates)).isDiscovered();
+                    this.setCurrentRoom(Game.currentRoom);
+                }
+
+                this.pointer.mtxLocal.translation = this.miniRooms.find(room => room.coordinates.equals(Game.currentRoom.coordinates)).mtxLocal.translation;
             }
         }
     }
