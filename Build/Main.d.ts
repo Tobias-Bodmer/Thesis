@@ -94,6 +94,7 @@ declare namespace Entity {
         protected animationContainer: AnimationGeneration.AnimationContainer;
         protected idleScale: number;
         protected currentKnockback: ƒ.Vector3;
+        shadow: Shadow;
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number);
         eventUpdate: (_event: Event) => void;
         update(): void;
@@ -166,7 +167,6 @@ declare namespace Enemy {
         moveBehaviour(): void;
     }
     class EnemySmash extends Enemy {
-        isAttacking: boolean;
         coolDown: Ability.Cooldown;
         avatars: Player.Player[];
         randomPlayer: number;
@@ -834,6 +834,16 @@ declare namespace Generation {
     function generateRooms(): void;
     function switchRoom(_currentRoom: Room, _direction: Interfaces.IRoomExits): void;
     function addRoomToGraph(_room: Room, _direciton?: Interfaces.IRoomExits): void;
+}
+declare namespace Entity {
+    let txtShadow: Game.ƒ.TextureImage;
+    class Shadow extends Game.ƒ.Node {
+        private mesh;
+        private shadowMatt;
+        shadowParent: Game.ƒ.Node;
+        constructor(_parent: Game.ƒ.Node);
+        updateShadowPos(): void;
+    }
 }
 declare namespace Tag {
     enum TAG {

@@ -19,6 +19,7 @@ namespace Networking {
         }
 
         protected processMovement(input: Interfaces.IInputAvatarPayload): Interfaces.IStatePayload {
+
             return null;
         }
 
