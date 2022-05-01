@@ -95,13 +95,10 @@ namespace Player {
                     }
                     if (item instanceof Items.BuffItem) {
                         console.log(item.name + ": " + item.description + " smth changed to: " + Buff.BUFFID[(<Items.BuffItem>item).buff[0].id].toString());
-
                     }
                 }
             })
         }
-
-
 
 
         public attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean) {

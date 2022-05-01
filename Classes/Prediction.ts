@@ -86,8 +86,8 @@ namespace Networking {
             super(_ownerNetId);
             this.inputBuffer = new Array<Interfaces.IInputBulletPayload>(this.bufferSize);
         }
-        
-        
+
+
         public update() {
             try {
                 this.flyDirection = (<Bullets.Bullet>this.owner).flyDirection;
@@ -111,7 +111,7 @@ namespace Networking {
             let bufferIndex = this.currentTick % this.bufferSize;
             let inputPayload: Interfaces.IInputBulletPayload = { tick: this.currentTick, inputVector: this.flyDirection };
             this.inputBuffer[bufferIndex] = inputPayload;
-            console.log(inputPayload.tick + "___" + inputPayload.inputVector);
+            // console.log(inputPayload.tick + "___" + inputPayload.inputVector);
             this.stateBuffer[bufferIndex] = this.processMovement(inputPayload);
 
             //send inputPayload to host

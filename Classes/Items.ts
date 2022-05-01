@@ -160,15 +160,17 @@ namespace Items {
             switch (this.id) {
                 case ITEMID.ICEBUCKETCHALLENGE:
                     _avatar.attributes.coolDownReduction = Calculation.subPercentageAmountToValue(_avatar.attributes.coolDownReduction, this.value);
-                    Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
+                    Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.coolDownReduction, type: Entity.ATTRIBUTETYPE.COOLDOWNREDUCTION }, _avatar.netId);
                     break;
                 case ITEMID.DMGUP:
                     _avatar.attributes.attackPoints += this.value;
-                    Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
+                    Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.attackPoints, type: Entity.ATTRIBUTETYPE.ATTACKPOINTS }, _avatar.netId);
+
                     break;
                 case ITEMID.SPEEDUP:
                     _avatar.attributes.speed = Calculation.subPercentageAmountToValue(_avatar.attributes.speed, this.value);
-                    Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
+                    Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.speed, type: Entity.ATTRIBUTETYPE.SPEED }, _avatar.netId);
+
                     break;
                 case ITEMID.PROJECTILESUP:
                     _avatar.weapon.projectileAmount += this.value;
@@ -176,25 +178,24 @@ namespace Items {
                     break;
                 case ITEMID.HEALTHUP:
                     _avatar.attributes.maxHealthPoints = Calculation.addPercentageAmountToValue(_avatar.attributes.maxHealthPoints, this.value);
-                    Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
+                    Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.maxHealthPoints, type: Entity.ATTRIBUTETYPE.MAXHEALTHPOINTS }, _avatar.netId);
+
                     break;
                 case ITEMID.SCALEUP:
                     _avatar.attributes.scale = Calculation.addPercentageAmountToValue(_avatar.attributes.scale, this.value);
-                    _avatar.attributes.updateScaleDependencies();
-                    _avatar.mtxLocal.scale(new ƒ.Vector3(_avatar.attributes.scale, _avatar.attributes.scale, _avatar.attributes.scale));
-                    Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
+                    _avatar.updateScale();
+                    Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.scale, type: Entity.ATTRIBUTETYPE.SCALE }, _avatar.netId);
                     //TODO: set new collider and sync over network
                     break;
                 case ITEMID.SCALEDOWN:
                     _avatar.attributes.scale = Calculation.subPercentageAmountToValue(_avatar.attributes.scale, this.value);
-                    _avatar.attributes.updateScaleDependencies();
-                    _avatar.mtxLocal.scale(new ƒ.Vector3(_avatar.attributes.scale, _avatar.attributes.scale, _avatar.attributes.scale));
-                    Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
+                    _avatar.updateScale();
+                    Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.scale, type: Entity.ATTRIBUTETYPE.SCALE }, _avatar.netId);
                     //TODO: set new collider and sync over network
                     break;
                 case ITEMID.ARMORUP:
                     _avatar.attributes.armor += this.value;
-                    Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
+                    Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.armor, type: Entity.ATTRIBUTETYPE.ARMOR }, _avatar.netId);
                     break;
                 case ITEMID.HOMECOMING:
                     if (_avatar instanceof Player.Ranged) {

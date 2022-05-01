@@ -154,14 +154,14 @@ namespace Networking {
                     //Spawn avatar2 as ranged or melee 
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
                         let netId: number = message.content.netId
+                        let attributes: Entity.Attributes = new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale, message.content.attributes.knockbackForce, message.content.attributes.armor, message.content.attributes.coolDownReduction);
                         if (message.content.type == Entity.ID.MELEE) {
-                            const attributes: Entity.Attributes = message.content.attributes;
                             Game.avatar2 = new Player.Melee(Entity.ID.MELEE, attributes, netId);
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], 0);
                             Game.graph.addChild(Game.avatar2);
                         } else if (message.content.type == Entity.ID.RANGED) {
-                            const attributes: Entity.Attributes = message.content.attributes
-                            Game.avatar2 = new Player.Ranged(Entity.ID.RANGED, attributes, netId);
+                            Game.avatar2 = new Player.Ranged(Entity.ID.RANGED, attributes,
+                                netId);
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], 0);
                             Game.graph.addChild(Game.avatar2);
                         }
@@ -239,7 +239,6 @@ namespace Networking {
                                 }
 
                                 Game.graph.addChild(bullet);
-                                console.log("bullet spawned with id" + bullet.netId);
                             }
                         }
 
@@ -269,7 +268,7 @@ namespace Networking {
                         //Spawn enemy at the client 
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNENEMY.toString()) {
                             //TODO: change attributes
-                            const attributes: Entity.Attributes = message.content.attributes;
+                            let attributes: Entity.Attributes = new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale, message.content.attributes.knockbackForce, message.content.attributes.armor, message.content.attributes.coolDownReduction);
                             EnemySpawner.networkSpawnById(
                                 message.content.enemyClass,
                                 message.content.id,
@@ -350,10 +349,37 @@ namespace Networking {
 
                         //apply item attributes
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEATTRIBUTES.toString()) {
-                            const tempAttributes: Entity.Attributes = message.content.attributes;
                             let entity = Game.entities.find(elem => elem.netId == message.content.netId);
-                            entity.attributes = tempAttributes;
-                            entity.mtxLocal.scale(new ƒ.Vector3(Game.avatar2.attributes.scale, Game.avatar2.attributes.scale, Game.avatar2.attributes.scale));
+                            switch (message.content.payload.type) {
+                                case Entity.ATTRIBUTETYPE.HEALTHPOINTS:
+                                    entity.attributes.healthPoints = message.content.payload.value;
+                                    break;
+                                case Entity.ATTRIBUTETYPE.MAXHEALTHPOINTS:
+                                    entity.attributes.maxHealthPoints = message.content.payload.value
+                                    break;
+                                case Entity.ATTRIBUTETYPE.KNOCKBACKFORCE:
+                                    entity.attributes.knockbackForce = message.content.payload.value
+                                    break;
+                                case Entity.ATTRIBUTETYPE.HITABLE:
+                                    entity.attributes.hitable = message.content.payload.value
+                                    break;
+                                case Entity.ATTRIBUTETYPE.ARMOR:
+                                    entity.attributes.armor = message.content.payload.value
+                                    break;
+                                case Entity.ATTRIBUTETYPE.SPEED:
+                                    entity.attributes.speed = message.content.payload.value
+                                    break;
+                                case Entity.ATTRIBUTETYPE.ATTACKPOINTS:
+                                    entity.attributes.attackPoints = message.content.payload.value
+                                    break;
+                                case Entity.ATTRIBUTETYPE.COOLDOWNREDUCTION:
+                                    entity.attributes.coolDownReduction = message.content.payload.value
+                                    break;
+                                case Entity.ATTRIBUTETYPE.SCALE:
+                                    entity.attributes.scale = message.content.payload.value
+                                    entity.updateScale();
+                                    break;
+                            }
                         }
 
                         //apply weapon
@@ -533,12 +559,12 @@ namespace Networking {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNINTERNALITEM, item: _item, id: _id, position: _position, netId: _netId } });
         }
     }
-    export function updateEntityAttributes(_attributes: Entity.Attributes, _netId: number) {
+    export function updateEntityAttributes(_attributePayload: Interfaces.IAttributeValuePayload, _netId: number) {
         if (client.idHost != client.id) {
-            client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.UPDATEATTRIBUTES, attributes: _attributes, netId: _netId } });
+            client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.UPDATEATTRIBUTES, payload: _attributePayload, netId: _netId } });
         }
         else {
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEATTRIBUTES, attributes: _attributes, netId: _netId } });
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEATTRIBUTES, payload: _attributePayload, netId: _netId } });
         }
     }
     export function updateAvatarWeapon(_weapon: Weapons.Weapon, _targetNetId: number) {

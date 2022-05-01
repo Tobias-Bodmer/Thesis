@@ -31,7 +31,7 @@ namespace Entity {
                 this.idleScale = ani.scale.find(animation => animation[0] == "idle")[1];
             }
             this.addComponent(new ƒ.ComponentTransform());
-            this.mtxLocal.scale(new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale));
+            this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale);
             this.collider = new Collider.Collider(this.cmpTransform.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2, this.netId);
             if (_netId != undefined) {
                 if (this.netId != undefined) {
@@ -61,6 +61,12 @@ namespace Entity {
             if (Game.connected && Networking.client.idHost == Networking.client.id) {
                 this.setCollider();
             }
+        }
+
+        public updateScale() {
+            this.attributes.updateScaleDependencies();
+            this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale);
+            this.collider.setScale(this.cmpTransform.mtxLocal.scaling.x / 2);
         }
 
         public setCollider() {

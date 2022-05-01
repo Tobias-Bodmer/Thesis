@@ -177,8 +177,8 @@ namespace Game {
                     //#region init Items
                     if (Networking.client.id == Networking.client.idHost) {
                         // item1 = new Items.BuffItem(Items.ITEMID.TOXICRELATIONSHIP, new ƒ.Vector2(0, 2), null);
-                        let item2 = new Items.InternalItem(Items.ITEMID.PROJECTILESUP, new ƒ.Vector2(0, -2), null);
-                        let item3 = new Items.InternalItem(Items.ITEMID.HOMECOMING, new ƒ.Vector2(-2, 0), null);
+                        let item2 = new Items.InternalItem(Items.ITEMID.SCALEDOWN, new ƒ.Vector2(0, -2), null);
+                        let item3 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(-2, 0), null);
 
 
                         // graph.appendChild(item1);

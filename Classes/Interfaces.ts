@@ -16,6 +16,11 @@ namespace Interfaces {
     export interface IDamageable {
         getDamage(): void;
     }
+    export interface IAttributeValuePayload {
+        value: number;
+        type: Entity.ATTRIBUTETYPE;
+    }
+
     export interface INetworkable {
         netId: number;
     }

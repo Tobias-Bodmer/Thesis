@@ -22,6 +22,11 @@ namespace Collider {
             this.ownerNetId = _netId;
         }
 
+        public setScale(_scaleAmount: number) {
+            this.radius = 1;
+            this.radius * _scaleAmount;
+        }
+
         collides(_collider: Collider): boolean {
             let distance: ƒ.Vector2 = ƒ.Vector2.DIFFERENCE(this.position, _collider.position);
             if (this.radius + _collider.radius > distance.magnitude) {

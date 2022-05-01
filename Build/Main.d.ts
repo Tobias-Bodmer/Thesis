@@ -97,6 +97,7 @@ declare namespace Entity {
         constructor(_id: Entity.ID, _attributes: Attributes, _netId: number);
         eventUpdate: (_event: Event) => void;
         update(): void;
+        updateScale(): void;
         setCollider(): void;
         updateBuffs(): void;
         collide(_direction: ƒ.Vector3): void;
@@ -222,6 +223,10 @@ declare namespace Interfaces {
     }
     interface IDamageable {
         getDamage(): void;
+    }
+    interface IAttributeValuePayload {
+        value: number;
+        type: Entity.ATTRIBUTETYPE;
     }
     interface INetworkable {
         netId: number;
@@ -459,6 +464,17 @@ declare namespace Ability {
     }
 }
 declare namespace Entity {
+    enum ATTRIBUTETYPE {
+        HEALTHPOINTS = 0,
+        MAXHEALTHPOINTS = 1,
+        KNOCKBACKFORCE = 2,
+        HITABLE = 3,
+        ARMOR = 4,
+        SPEED = 5,
+        ATTACKPOINTS = 6,
+        COOLDOWNREDUCTION = 7,
+        SCALE = 8
+    }
     class Attributes {
         healthPoints: number;
         maxHealthPoints: number;
@@ -594,6 +610,7 @@ declare namespace Collider {
         get right(): number;
         get bottom(): number;
         constructor(_position: ƒ.Vector2, _radius: number, _netId: number);
+        setScale(_scaleAmount: number): void;
         collides(_collider: Collider): boolean;
         collidesRect(_collider: Game.ƒ.Rectangle): boolean;
         getIntersection(_collider: Collider): number;
@@ -703,7 +720,7 @@ declare namespace Networking {
     function updateEntityAnimationState(_state: Entity.ANIMATIONSTATES, _netId: number): void;
     function removeEnemy(_netId: number): void;
     function spawnItem(_item: Items.Item, _id: number, _position: ƒ.Vector2, _netId: number): void;
-    function updateEntityAttributes(_attributes: Entity.Attributes, _netId: number): void;
+    function updateEntityAttributes(_attributePayload: Interfaces.IAttributeValuePayload, _netId: number): void;
     function updateAvatarWeapon(_weapon: Weapons.Weapon, _targetNetId: number): void;
     function removeItem(_netId: number): void;
     function updateBuffList(_buffList: Buff.Buff[], _netId: number): void;
