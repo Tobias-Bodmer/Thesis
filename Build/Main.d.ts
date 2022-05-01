@@ -167,7 +167,6 @@ declare namespace Enemy {
         moveBehaviour(): void;
     }
     class EnemySmash extends Enemy {
-        isAttacking: boolean;
         coolDown: Ability.Cooldown;
         avatars: Player.Player[];
         randomPlayer: number;

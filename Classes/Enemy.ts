@@ -154,7 +154,6 @@ namespace Enemy {
     }
 
     export class EnemySmash extends Enemy {
-        isAttacking = false;
         coolDown = new Ability.Cooldown(5 * 60);
         avatars: Player.Player[] = [];
         randomPlayer = Math.round(Math.random());
@@ -172,14 +171,12 @@ namespace Enemy {
             if (this.currentBehaviour == Entity.BEHAVIOUR.ATTACK && this.getCurrentFrame >= (<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["attack"]).frames.length - 1) {
                 this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
             }
-            else if (distance < 2 && !this.isAttacking) {
+            else if (distance < 3 && !this.coolDown.hasCoolDown) {
                 this.currentBehaviour = Entity.BEHAVIOUR.ATTACK;
-                this.isAttacking = true;
+                this.coolDown.startCoolDown()
             }
             else if (this.currentBehaviour == Entity.BEHAVIOUR.IDLE) {
-                this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW
-                this.isAttacking = false;
-
+                this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
             }
         }
 

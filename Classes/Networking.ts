@@ -162,7 +162,7 @@ namespace Networking {
                         } else if (message.content.type == Entity.ID.RANGED) {
                             Game.avatar2 = new Player.Ranged(Entity.ID.RANGED, attributes,
                                 netId);
-                            Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], 3);
+                            Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], 0);
                             Game.graph.addChild(Game.avatar2);
                         }
                     }
