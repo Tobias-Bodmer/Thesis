@@ -334,7 +334,7 @@ namespace Game {
     export async function loadTextures() {
         await Generation.txtStartRoom.load("./Resources/Image/Rooms/map01.png");
 
-        await Bullets.bulletTxt.load("./Resources/Image/arrow01.png");
+        await Bullets.bulletTxt.load("./Resources/Image/arrow.png");
 
         //UI
         await UI.txtZero.load("./Resources/Image/white0.png");

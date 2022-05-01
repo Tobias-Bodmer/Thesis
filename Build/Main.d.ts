@@ -492,17 +492,22 @@ declare namespace Entity {
 declare namespace Enemy {
     class Summonor extends EnemyShoot {
         damageTaken: number;
+        beginAttackingPhase: boolean;
+        attackingPhaseTime: number;
+        attackingPhaseCurrentTime: number;
         beginDefencePhase: boolean;
         defencePhaseTime: number;
         defencePhaseCurrentTime: number;
         beginShooting: boolean;
-        defencePhaseShootingCount: number;
-        defencePhaseCurrentShootingCount: number;
+        shootingCount: number;
+        currentShootingCount: number;
         summonChance: number;
         summonCooldown: number;
         summonCurrentCooldown: number;
         private summon;
+        private dash;
         private shoot360;
+        private dashWeapon;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
         cooldown(): void;
         behaviour(): void;
@@ -510,7 +515,7 @@ declare namespace Enemy {
         moveBehaviour(): void;
         attackingPhase(): void;
         defencePhase(): void;
-        defencePhaseShooting(): void;
+        shooting360(_beginPhase: boolean): void;
     }
 }
 declare namespace Buff {
@@ -577,6 +582,7 @@ declare namespace Bullets {
         type: BULLETTYPE;
         time: number;
         killcount: number;
+        texturePath: string;
         despawn(): void;
         constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _netId?: number);
         eventUpdate: (_event: Event) => void;
@@ -855,8 +861,8 @@ declare namespace Tag {
 }
 declare namespace Weapons {
     class Weapon {
-        owner: number;
-        get _owner(): Entity.Entity;
+        ownerNetId: number;
+        get owner(): Entity.Entity;
         protected cooldown: Ability.Cooldown;
         cooldownTime: number;
         protected attackCount: number;

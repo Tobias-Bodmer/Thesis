@@ -100,6 +100,7 @@ namespace Ability {
             }
             for (let i = 0; i < this.bulletAmount; i++) {
                 Game.graph.addChild(this.bullets[i]);
+                Networking.spawnBullet(Weapons.AIM.NORMAL, this.bullets[i].direction, this.bullets[i].netId, this.ownerNetId);
             }
         }
     }

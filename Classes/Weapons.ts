@@ -1,6 +1,6 @@
 namespace Weapons {
     export class Weapon {
-        owner: number; get _owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.owner) };
+        ownerNetId: number; get owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.ownerNetId) };
         protected cooldown: Ability.Cooldown;
         public cooldownTime: number;
         protected attackCount: number = 1;
@@ -14,13 +14,11 @@ namespace Weapons {
             this.attackCount = _attackCount;
             this.bulletType = _bulletType;
             this.projectileAmount = _projectileAmount;
-            this.owner = _ownerNetId;
+            this.ownerNetId = _ownerNetId;
             this.aimType = _aimType;
 
             this.cooldown = new Ability.Cooldown(this.cooldownTime);
         }
-
-
 
         public shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _bulletNetId?: number, _sync?: boolean) {
             if (_sync) {
@@ -34,7 +32,7 @@ namespace Weapons {
                     this.fire(magazine, _sync);
                     this.currentAttackCount--;
                     if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
-                        this.cooldown = new Ability.Cooldown(this._owner.attributes.coolDownReduction * this.cooldownTime);
+                        this.cooldown = new Ability.Cooldown(this.owner.attributes.coolDownReduction * this.cooldownTime);
                         this.cooldown.startCoolDown();
                     }
                 }
@@ -51,10 +49,10 @@ namespace Weapons {
                 Game.graph.addChild(bullet);
                 if (_sync) {
                     if (bullet instanceof Bullets.HomingBullet) {
-                        Networking.spawnBullet(this.aimType, bullet.direction, bullet.netId, this.owner, (<Bullets.HomingBullet>bullet).target);
+                        Networking.spawnBullet(this.aimType, bullet.direction, bullet.netId, this.ownerNetId, (<Bullets.HomingBullet>bullet).target);
 
                     } else {
-                        Networking.spawnBullet(this.aimType, bullet.direction, bullet.netId, this.owner);
+                        Networking.spawnBullet(this.aimType, bullet.direction, bullet.netId, this.ownerNetId);
                     }
                 }
             })
@@ -81,10 +79,10 @@ namespace Weapons {
             for (let i = 0; i < this.projectileAmount; i++) {
                 switch (this.aimType) {
                     case AIM.NORMAL:
-                        magazine.push(new Bullets.Bullet(this.bulletType, _position, _direction, this.owner, _netId))
+                        magazine.push(new Bullets.Bullet(this.bulletType, _position, _direction, this.ownerNetId, _netId))
                         break;
                     case AIM.HOMING:
-                        magazine.push(new Bullets.HomingBullet(this.bulletType, _position, _direction, this.owner, null, _netId));
+                        magazine.push(new Bullets.HomingBullet(this.bulletType, _position, _direction, this.ownerNetId, null, _netId));
                         break;
                 }
             }

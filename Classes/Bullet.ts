@@ -29,6 +29,8 @@ namespace Bullets {
         time: number = 0;
         killcount: number = 1;
 
+        texturePath: string;
+
         public despawn() {
             if (this.lifetime >= 0 && this.lifetime != null) {
                 this.lifetime--;
@@ -60,6 +62,7 @@ namespace Bullets {
             this.lifetime = ref.lifetime;
             this.knockbackForce = ref.knockbackForce;
             this.killcount = ref.killcount;
+            this.texturePath = ref.texturePath;
 
             // this.addComponent(new ƒ.ComponentLight(new ƒ.LightPoint(ƒ.Color.CSS("white"))));
 
@@ -137,18 +140,27 @@ namespace Bullets {
 
 
         protected loadTexture() {
-            let newTxt: ƒ.TextureImage = new ƒ.TextureImage();
-            let newCoat: ƒ.CoatRemissiveTextured = new ƒ.CoatRemissiveTextured();
-            let newMtr: ƒ.Material = new ƒ.Material("mtr", ƒ.ShaderFlatTextured, newCoat);
-
-            let oldComCoat: ƒ.ComponentMaterial = new ƒ.ComponentMaterial();
-
-            oldComCoat = this.getComponent(ƒ.ComponentMaterial);
-
-            newTxt = bulletTxt;
-            newCoat.color = ƒ.Color.CSS("WHITE");
-            newCoat.texture = newTxt;
-            oldComCoat.material = newMtr;
+            if (this.texturePath != "" || this.texturePath != null) {
+                let newTxt: ƒ.TextureImage = new ƒ.TextureImage();
+                let newCoat: ƒ.CoatRemissiveTextured = new ƒ.CoatRemissiveTextured();
+                let newMtr: ƒ.Material = new ƒ.Material("mtr", ƒ.ShaderFlatTextured, newCoat);
+    
+                let oldComCoat: ƒ.ComponentMaterial = new ƒ.ComponentMaterial();
+    
+                oldComCoat = this.getComponent(ƒ.ComponentMaterial);
+                
+                switch (this.texturePath) {
+                    case bulletTxt.url:
+                        newTxt = bulletTxt;
+                        break;
+                
+                    default:
+                        break;
+                }
+                newCoat.color = ƒ.Color.CSS("WHITE");
+                newCoat.texture = newTxt;
+                oldComCoat.material = newMtr;
+            }
         }
 
         setBuff(_target: Entity.Entity) {

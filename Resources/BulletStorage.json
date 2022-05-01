@@ -7,7 +7,8 @@
             "hitPointsScale": 1,
             "lifetime": 60,
             "knockbackForce": 6,
-            "killcount": 1
+            "killcount": 1,
+            "texturePath": "./Resources/Image/arrow.png"
         },
         {
             "name": "highspeed",
@@ -16,7 +17,8 @@
             "hitPointsScale": 1.5,
             "lifetime": 30,
             "knockbackForce": 8,
-            "killcount": 2
+            "killcount": 2,
+            "texturePath": "./Resources/Image/arrow.png"
         },
         {
             "name": "slow",
@@ -25,7 +27,8 @@
             "hitPointsScale": 2,
             "lifetime": 360,
             "knockbackForce": 4,
-            "killcount": 8
+            "killcount": 8,
+            "texturePath": "./Resources/Image/arrow.png"
         },
         {
             "name": "melee",
@@ -34,7 +37,18 @@
             "hitPointsScale": 2,
             "lifetime": 6,
             "knockbackForce": 4,
-            "killcount": 8
+            "killcount": 8,
+            "texturePath": ""
+        },
+        {
+            "name": "summonor",
+            "type": 0,
+            "speed": 20,
+            "hitPointsScale": 1,
+            "lifetime": 60,
+            "knockbackForce": 6,
+            "killcount": 1,
+            "texturePath": "./Resources/Image/arrow.png"
         }
     ]
 }
