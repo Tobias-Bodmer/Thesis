@@ -1,7 +1,7 @@
 namespace UI {
     export class Minimap extends Game.ƒ.Node {
         public tag: Tag.TAG = Tag.TAG.PLAYER;
-        private allCoordinates: Game.ƒ.Vector2[] = [];
+        private minmapInfo: Interfaces.IMinimapInfos[];
         private roomMinimapsize: number = 0.5;
         private miniRooms: MiniRoom[] = [];
         public offsetX: number = 11;
@@ -9,15 +9,10 @@ namespace UI {
         private currentRoom: Generation.Room;
         private pointer: Game.ƒ.Node;
 
-        constructor(_coordinates: Game.ƒ.Vector2[], _minimapInfo?: Interfaces.IMinimapInfos[]) {
+        constructor(_minimapInfo: Interfaces.IMinimapInfos[]) {
             super("Minimap");
-            if (_coordinates != null && _minimapInfo == null) {
-                this.allCoordinates = _coordinates;
-            } else {
-                _minimapInfo.forEach(info => {
-                    this.allCoordinates.push(info.coords);
-                });
-            }
+            this.minmapInfo = _minimapInfo;
+
 
             this.pointer = new Game.ƒ.Node("pointer");
             this.pointer.addComponent(new ƒ.ComponentMesh(new Game.ƒ.MeshQuad));
@@ -34,16 +29,18 @@ namespace UI {
             this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
 
 
-            this.createMiniRooms(_minimapInfo);
+            this.createMiniRooms();
 
             this.setCurrentRoom(Game.currentRoom);
 
-            Networking.spawnMinimap(_coordinates);
+            if (Networking.client.id == Networking.client.idHost) {
+                Networking.spawnMinimap(this.minmapInfo);
+            }
         }
 
-        createMiniRooms(_roomTypes?: Interfaces.IMinimapInfos[]) {
-            this.allCoordinates.forEach(element => {
-                this.miniRooms.push(new MiniRoom(element, _roomTypes));
+        createMiniRooms() {
+            this.minmapInfo.forEach(element => {
+                this.miniRooms.push(new MiniRoom(element.coords, element.roomType));
             });
             this.miniRooms.forEach(room => {
                 this.addChild(room);
@@ -55,6 +52,7 @@ namespace UI {
         };
 
         private setCurrentRoom(_room: Generation.Room) {
+            this.miniRooms.find(room => room.coordinates.equals(_room.coordinates)).isDiscovered();
             if (this.currentRoom != undefined) {
                 let subX = this.currentRoom.coordinates.x - _room.coordinates.x;
                 let subY = this.currentRoom.coordinates.y - _room.coordinates.y;
@@ -68,7 +66,6 @@ namespace UI {
         update(): void {
             if (this.currentRoom != undefined) {
                 if (this.currentRoom != Game.currentRoom) {
-                    this.miniRooms.find(room => room.coordinates.equals(Game.currentRoom.coordinates)).isDiscovered();
                     this.setCurrentRoom(Game.currentRoom);
                 }
 
@@ -85,23 +82,18 @@ namespace UI {
 
 
 
-        mesh: ƒ.MeshQuad = new ƒ.MeshQuad;
-        cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(this.mesh);
-        startRoomMat: ƒ.Material = new ƒ.Material("startRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("red", this.opacity)));
-        normalRoomMat: ƒ.Material = new ƒ.Material("normalRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white", this.opacity)));
-        merchantRoomMat: ƒ.Material = new ƒ.Material("merchantRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("green", this.opacity)));
-        treasureRoomMat: ƒ.Material = new ƒ.Material("treasureRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("yellow", this.opacity)));
-        challengeRoomMat: ƒ.Material = new ƒ.Material("challengeRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("blue", this.opacity)));
-        bossRoomMat: ƒ.Material = new ƒ.Material("bossRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("black", this.opacity)));
+        private mesh: ƒ.MeshQuad = new ƒ.MeshQuad;
+        private startRoomMat: ƒ.Material = new ƒ.Material("startRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("red", this.opacity)));
+        private normalRoomMat: ƒ.Material = new ƒ.Material("normalRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white", this.opacity)));
+        private merchantRoomMat: ƒ.Material = new ƒ.Material("merchantRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("green", this.opacity)));
+        private treasureRoomMat: ƒ.Material = new ƒ.Material("treasureRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("yellow", this.opacity)));
+        private challengeRoomMat: ƒ.Material = new ƒ.Material("challengeRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("blue", this.opacity)));
+        private bossRoomMat: ƒ.Material = new ƒ.Material("bossRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("black", this.opacity)));
 
-        constructor(_coordinates: Game.ƒ.Vector2, _rooms?: Interfaces.IMinimapInfos[]) {
+        constructor(_coordinates: Game.ƒ.Vector2, _roomType: Generation.ROOMTYPE) {
             super("MinimapRoom");
             this.coordinates = _coordinates;
-            if (_rooms != null) {
-                this.roomType = _rooms.find(room => room.coords.equals(this.coordinates)).roomType;
-            } else {
-                this.roomType = Generation.rooms.find(room => room.coordinates.equals(this.coordinates)).roomType;
-            }
+            this.roomType = _roomType;
             this.discovered = false;
 
             this.addComponent(new Game.ƒ.ComponentMesh(this.mesh));
@@ -131,7 +123,7 @@ namespace UI {
             this.addComponent(cmpMaterial);
             this.addComponent(new Game.ƒ.ComponentTransform());
             this.mtxLocal.translation = new ƒ.Vector3(this.coordinates.x, this.coordinates.y, 1);
-            // this.activate(false);
+            this.activate(false);
         }
 
         public isDiscovered() {

@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -20,7 +20,7 @@ declare namespace Game {
     let connected: boolean;
     let deltaTime: number;
     let serverPredictionAvatar: Networking.ServerPrediction;
-    let currentNetObj: Interfaces.INetworkObjects;
+    let currentNetObj: Interfaces.INetworkObjects[];
     let entities: Entity.Entity[];
     let enemies: Enemy.Enemy[];
     let bullets: Bullets.Bullet[];
@@ -76,11 +76,12 @@ declare namespace UI {
     }
 }
 declare namespace Entity {
-    class Entity extends Game.ƒAid.NodeSprite {
+    class Entity extends Game.ƒAid.NodeSprite implements Interfaces.INetworkable {
         private currentAnimationState;
         private performKnockback;
         tag: Tag.TAG;
         netId: number;
+        netObjectNode: ƒ.Node;
         id: Entity.ID;
         attributes: Attributes;
         collider: Collider.Collider;
@@ -221,6 +222,9 @@ declare namespace Interfaces {
     }
     interface IDamageable {
         getDamage(): void;
+    }
+    interface INetworkable {
+        netId: number;
     }
     interface INetworkObjects {
         netId: number;
@@ -535,7 +539,7 @@ declare namespace Bullets {
         MELEE = 3
     }
     let bulletTxt: ƒ.TextureImage;
-    class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
+    class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable, Interfaces.INetworkable {
         tag: Tag.TAG;
         owner: number;
         get _owner(): Entity.Entity;
@@ -620,15 +624,15 @@ declare namespace Level {
 declare namespace UI {
     class Minimap extends Game.ƒ.Node {
         tag: Tag.TAG;
-        private allCoordinates;
+        private minmapInfo;
         private roomMinimapsize;
         private miniRooms;
         offsetX: number;
         offsetY: number;
         private currentRoom;
         private pointer;
-        constructor(_coordinates: Game.ƒ.Vector2[], _minimapInfo?: Interfaces.IMinimapInfos[]);
-        createMiniRooms(_roomTypes?: Interfaces.IMinimapInfos[]): void;
+        constructor(_minimapInfo: Interfaces.IMinimapInfos[]);
+        createMiniRooms(): void;
         eventUpdate: (_event: Event) => void;
         private setCurrentRoom;
         update(): void;
@@ -675,7 +679,7 @@ declare namespace Networking {
     let posUpdate: ƒ.Vector3;
     let someoneIsHost: boolean;
     let enemy: Enemy.Enemy;
-    let currentIDs: Interfaces.INetworkObjects[];
+    let currentIDs: number[];
     function connecting(): void;
     function setClientReady(): void;
     function setGamestate(_playing: boolean): void;
@@ -689,7 +693,7 @@ declare namespace Networking {
     function knockbackRequest(_netId: number, _knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function knockbackPush(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function updateInventory(_itemId: Items.ITEMID, _itemNetId: number, _netId: number): void;
-    function spawnMinimap(_coordinates: Game.ƒ.Vector2[]): void;
+    function spawnMinimap(_miniMapInfos: Interfaces.IMinimapInfos[]): void;
     function spawnBullet(_aimType: Weapons.AIM, _direction: ƒ.Vector3, _bulletNetId: number, _ownerNetId: number, _bulletTarget?: ƒ.Vector3): void;
     function sendBulletInput(_netId: number, _inputPayload: Interfaces.IInputBulletPayload): void;
     function updateBullet(_position: ƒ.Vector3, _rotation: ƒ.Vector3, _netId: number): void;
@@ -706,11 +710,13 @@ declare namespace Networking {
     function updateUI(_position: Game.ƒ.Vector2, _value: number): void;
     function sendRoom(_room: Interfaces.IRoom): void;
     function switchRoomRequest(_coordiantes: Game.ƒ.Vector2, _direction: Interfaces.IRoomExits): void;
-    function idGenerator(_object: Object): number;
+    function idGenerator(): number;
     function popID(_id: number): void;
+    function isNetworkObject(_object: any): _object is Interfaces.INetworkable;
+    function getNetId(_object: Game.ƒ.Node): number;
 }
 declare namespace Player {
-    abstract class Player extends Entity.Entity implements Interfaces.IKnockbackable {
+    abstract class Player extends Entity.Entity {
         weapon: Weapons.Weapon;
         client: Networking.ClientPrediction;
         readonly abilityCount: number;

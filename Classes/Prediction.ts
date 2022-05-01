@@ -5,7 +5,7 @@ namespace Networking {
         public minTimeBetweenTicks: number;
         protected gameTickRate: number = 62.5;
         protected bufferSize: number = 1024;
-        protected ownerNetId: number; get owner(): Game.ƒ.Node { return Networking.currentIDs.find(elem => elem.netId == this.ownerNetId).netObjectNode };
+        protected ownerNetId: number; get owner(): Game.ƒ.Node { return Game.currentNetObj.find(elem => elem.netId == this.ownerNetId).netObjectNode };
 
         protected stateBuffer: Interfaces.IStatePayload[];
 
@@ -79,17 +79,21 @@ namespace Networking {
         private lastProcessedState: Interfaces.IStatePayload;
         private flyDirection: Game.ƒ.Vector3;
 
-        private AsyncTolerance: number = 0.1;
+        private AsyncTolerance: number = 0.2;
 
 
         constructor(_ownerNetId: number) {
             super(_ownerNetId);
             this.inputBuffer = new Array<Interfaces.IInputBulletPayload>(this.bufferSize);
-            this.flyDirection = (<Bullets.Bullet>this.owner).flyDirection;
         }
-
-
+        
+        
         public update() {
+            try {
+                this.flyDirection = (<Bullets.Bullet>this.owner).flyDirection;
+            } catch (error) {
+                console.log("cant find owner");
+            }
             this.timer += Game.deltaTime;
             while (this.timer >= this.minTimeBetweenTicks) {
                 this.timer -= this.minTimeBetweenTicks;
@@ -107,7 +111,7 @@ namespace Networking {
             let bufferIndex = this.currentTick % this.bufferSize;
             let inputPayload: Interfaces.IInputBulletPayload = { tick: this.currentTick, inputVector: this.flyDirection };
             this.inputBuffer[bufferIndex] = inputPayload;
-            // console.log(inputPayload.tick + "___" + inputPayload.inputVector.clone);
+            console.log(inputPayload.tick + "___" + inputPayload.inputVector);
             this.stateBuffer[bufferIndex] = this.processMovement(inputPayload);
 
             //send inputPayload to host

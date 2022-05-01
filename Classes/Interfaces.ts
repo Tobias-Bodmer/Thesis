@@ -16,6 +16,10 @@ namespace Interfaces {
     export interface IDamageable {
         getDamage(): void;
     }
+    export interface INetworkable {
+        netId: number;
+    }
+
     export interface INetworkObjects {
         netId: number;
         netObjectNode: Game.ƒ.Node;
@@ -49,6 +53,7 @@ namespace Interfaces {
     //     rotationDeg: number;
     //     homingTarget?: Game.ƒ.Vector2;
     // }
+
     export interface IRoomExits {
         north: boolean;
         east: boolean;

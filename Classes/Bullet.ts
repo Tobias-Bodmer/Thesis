@@ -9,7 +9,7 @@ namespace Bullets {
 
     export let bulletTxt: ƒ.TextureImage = new ƒ.TextureImage();
 
-    export class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable {
+    export class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable, Interfaces.INetworkable {
         public tag: Tag.TAG = Tag.TAG.BULLET;
         owner: number; get _owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.owner) };
         public netId: number;
@@ -46,11 +46,11 @@ namespace Bullets {
 
             if (_netId != undefined) {
                 Networking.popID(this.netId);
-                Networking.currentIDs.push(<Interfaces.INetworkObjects>{ netId: _netId, netObjectNode: this });
+                Networking.currentIDs.push(_netId);
                 this.netId = _netId;
             }
             else {
-                this.netId = Networking.idGenerator(this);
+                this.netId = Networking.idGenerator();
             }
 
             this.speed = _speed;
@@ -79,8 +79,8 @@ namespace Bullets {
             this.direction = _direction;
             this.owner = _ownerId;
 
-            this.clientPrediction = new Networking.ClientBulletPrediction(this.netId);
             this.serverPrediction = new Networking.ServerBulletPrediction(this.netId);
+            this.clientPrediction = new Networking.ClientBulletPrediction(this.netId);
             this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
         }
 

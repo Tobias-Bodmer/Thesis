@@ -40,7 +40,7 @@ namespace Networking {
     export let posUpdate: ƒ.Vector3;
     export let someoneIsHost: boolean = false;
     export let enemy: Enemy.Enemy;
-    export let currentIDs: Interfaces.INetworkObjects[] = [];
+    export let currentIDs: number[] = [];
 
     document.getElementById("HostSpawn").addEventListener("click", () => { spawnPlayer() }, true);
     let IPConnection = <HTMLInputElement>document.getElementById("IPConnection");
@@ -95,14 +95,14 @@ namespace Networking {
 
                     //SPAWN MINIMAP BY CLIENT
                     if (message.content != undefined && message.content.text == FUNCTION.SPWANMINIMAP.toString()) {
-                        let coordinates: Game.ƒ.Vector2[] = [];
-                        let rooms: Interfaces.IMinimapInfos[] = [];
-                        (<Array<any>>message.content.miniMapInfos).forEach(element => {
-                            coordinates.push(new Game.ƒ.Vector2(element.coords.data[0], element.coords.data[1]));
-                            rooms.push({ coords: new Game.ƒ.Vector2(element.coords.data[0], element.coords.data[1]), roomType: element.roomType });
-                        });
+                        let oldMiniMapInfo = message.content.miniMapInfos;
+                        let newMiniMapInfo: Interfaces.IMinimapInfos[] = [];
+                        for (let i = 0; i < oldMiniMapInfo.length; i++) {
+                            let newCoords: Game.ƒ.Vector2 = new Game.ƒ.Vector2(oldMiniMapInfo[i].coords.data[0], oldMiniMapInfo[i].coords.data[1])
+                            newMiniMapInfo.push(<Interfaces.IMinimapInfos>{ coords: newCoords, roomType: oldMiniMapInfo[i].roomType })
+                        }
 
-                        Game.miniMap = new UI.Minimap(coordinates, rooms);
+                        Game.miniMap = new UI.Minimap(newMiniMapInfo);
                         Game.graph.addChild(Game.miniMap);
                     }
 
@@ -116,7 +116,7 @@ namespace Networking {
 
                     // TO CLIENT CALCULATED POSITION FOR AVATAR
                     if (message.content != undefined && message.content.text == FUNCTION.SERVERBUFFER.toString()) {
-                        let netObj: Interfaces.INetworkObjects = Networking.currentIDs.find(entity => entity.netId == message.content.netId);
+                        let netObj: Interfaces.INetworkObjects = Game.currentNetObj.find(entity => entity.netId == message.content.netId);
                         let position = new Game.ƒ.Vector3(message.content.buffer.position.data[0], message.content.buffer.position.data[1], message.content.buffer.position.data[2]);
                         let state: Interfaces.IStatePayload = { tick: message.content.buffer.tick, position: position };
                         if (netObj != undefined) {
@@ -133,10 +133,11 @@ namespace Networking {
                     if (message.content != undefined && message.content.text == FUNCTION.BULLETPREDICT.toString()) {
                         let inputVector = new Game.ƒ.Vector3(message.content.input.inputVector.data[0], message.content.input.inputVector.data[1], message.content.input.inputVector.data[2]);
                         let input: Interfaces.IInputBulletPayload = { tick: message.content.input.tick, inputVector: inputVector }
-                        let temp: Interfaces.INetworkObjects = Networking.currentIDs.find(elem => elem.netId == message.content.netId);
+                        let netObj: Interfaces.INetworkObjects = Game.currentNetObj.find(elem => elem.netId == message.content.netId);
                         let bullet: Bullets.Bullet;
-                        if (temp != undefined) {
-                            bullet = <Bullets.Bullet>temp.netObjectNode;
+                        if (netObj != undefined) {
+                            bullet = <Bullets.Bullet>netObj.netObjectNode;
+                            console.log(bullet + "" + message.content.netId);
                             bullet.serverPrediction.updateEntityToCheck(message.content.netId);
                             bullet.serverPrediction.onClientInput(input);
                         }
@@ -238,6 +239,7 @@ namespace Networking {
                                 }
 
                                 Game.graph.addChild(bullet);
+                                console.log("bullet spawned with id" + bullet.netId);
                             }
                         }
 
@@ -468,14 +470,8 @@ namespace Networking {
         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.UPDATEINVENTORY, itemId: _itemId, itemNetId: _itemNetId, netId: _netId } })
     }
 
-    export function spawnMinimap(_coordinates: Game.ƒ.Vector2[]) {
-        if (client.id == client.idHost) {
-            let miniMapInfos: Interfaces.IMinimapInfos[] = [];
-            _coordinates.forEach(coords => {
-                miniMapInfos.push({ coords: coords, roomType: Generation.rooms.find(room => room.coordinates == coords).roomType });
-            });
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPWANMINIMAP, miniMapInfos: miniMapInfos } })
-        }
+    export function spawnMinimap(_miniMapInfos: Interfaces.IMinimapInfos[]) {
+        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPWANMINIMAP, miniMapInfos: _miniMapInfos } })
     }
     //#endregion
 
@@ -597,21 +593,30 @@ namespace Networking {
 
 
 
-    export function idGenerator(_object: Object): number {
+    export function idGenerator(): number {
         let id = Math.floor(Math.random() * 1000);
-        if (currentIDs.find(element => element.netId == id)) {
-            idGenerator(_object);
+        if (currentIDs.find(element => element == id)) {
+            idGenerator();
         }
         else {
-            currentIDs.push(<Interfaces.INetworkObjects>{ netId: id, netObjectNode: _object });
+            currentIDs.push(id);
         }
 
         return id;
     }
 
     export function popID(_id: number) {
-        let index: number;
-        currentIDs = currentIDs.filter(elem => elem.netId != _id)
+        currentIDs = currentIDs.filter(elem => elem != _id)
+    }
+
+    export function isNetworkObject(_object: any): _object is Interfaces.INetworkable {
+        return "netId" in _object;
+    }
+
+    export function getNetId(_object: Game.ƒ.Node): number {
+        if (isNetworkObject(_object)) {
+            return _object.netId;
+        }
     }
 
     window.addEventListener("beforeunload", onUnload, false);

@@ -24,7 +24,7 @@ namespace Items {
     export abstract class Item extends Game.ƒ.Node {
         public tag: Tag.TAG = Tag.TAG.ITEM;
         id: ITEMID;
-        public netId: number = Networking.idGenerator(this);
+        public netId: number = Networking.idGenerator();
         public description: string;
         public imgSrc: string;
         public collider: Collider.Collider;
@@ -39,7 +39,7 @@ namespace Items {
             this.transform.mtxLocal.translation = _position.toVector3();
             if (_netId != undefined) {
                 Networking.popID(this.netId);
-                Networking.currentIDs.push(<Interfaces.INetworkObjects>{ netId: _netId, netObjectNode: this });
+                Networking.currentIDs.push(_netId);
                 this.netId = _netId;
             }
 

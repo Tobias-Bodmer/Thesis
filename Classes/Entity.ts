@@ -1,10 +1,11 @@
 namespace Entity {
 
-    export class Entity extends Game.ƒAid.NodeSprite {
+    export class Entity extends Game.ƒAid.NodeSprite implements Interfaces.INetworkable {
         private currentAnimationState: ANIMATIONSTATES;
         private performKnockback: boolean = false;
         public tag: Tag.TAG;
         public netId: number;
+        public netObjectNode: ƒ.Node = this;
         public id: Entity.ID;
         public attributes: Attributes;
         public collider: Collider.Collider;
@@ -36,11 +37,11 @@ namespace Entity {
                 if (this.netId != undefined) {
                     Networking.popID(this.netId);
                 }
-                Networking.currentIDs.push(<Interfaces.INetworkObjects>{ netId: _netId, netObjectNode: this });
+                Networking.currentIDs.push(_netId);
                 this.netId = _netId;
             }
             else {
-                this.netId = Networking.idGenerator(this)
+                this.netId = Networking.idGenerator();
             }
             if (AnimationGeneration.getAnimationById(this.id) != null) {
                 let ani = AnimationGeneration.getAnimationById(this.id);

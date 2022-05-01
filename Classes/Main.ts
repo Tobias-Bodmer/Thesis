@@ -39,7 +39,7 @@ namespace Game {
 
     export let serverPredictionAvatar: Networking.ServerPrediction;
 
-    export let currentNetObj: Interfaces.INetworkObjects;
+    export let currentNetObj: Interfaces.INetworkObjects[] = [];
 
     export let entities: Entity.Entity[] = [];
     export let enemies: Enemy.Enemy[] = [];
@@ -104,7 +104,18 @@ namespace Game {
         entities = <Entity.Entity[]>graph.getChildren().filter(child => (<Entity.Entity>child) instanceof Entity.Entity);
         enemies = <Enemy.Enemy[]>graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY);
         currentRoom = (<Generation.Room>Game.graph.getChildren().find(elem => (<Generation.Room>elem).tag == Tag.TAG.ROOM));
+        currentNetObj = setNetObj(graph.getChildren().filter(elem => Networking.isNetworkObject(elem)));
     }
+
+    function setNetObj(_netOj: Game.ƒ.Node[]): Interfaces.INetworkObjects[] {
+        let tempNetObjs: Interfaces.INetworkObjects[] = [];
+        _netOj.forEach(obj => {
+            tempNetObjs.push(<Interfaces.INetworkObjects>{ netId: Networking.getNetId(obj), netObjectNode: obj })
+        })
+        return tempNetObjs;
+    }
+
+
 
     function setClient() {
         if (Networking.client.socket.readyState == Networking.client.socket.OPEN) {
@@ -159,9 +170,9 @@ namespace Game {
                     gamestate = GAMESTATES.PLAYING;
                     // EnemySpawner.spawnEnemies();
 
-                    if (Networking.client.id == Networking.client.idHost) {
-                        EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
-                    }
+                    // if (Networking.client.id == Networking.client.idHost) {
+                    //     EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
+                    // }
 
                     //#region init Items
                     if (Networking.client.id == Networking.client.idHost) {
@@ -178,7 +189,11 @@ namespace Game {
                     Networking.spawnPlayer();
 
                     if (Networking.client.id == Networking.client.idHost) {
-                        miniMap = new UI.Minimap(Generation.usedPositions);
+                        let roomInfos: Interfaces.IMinimapInfos[] = [];
+                        for (let i = 0; i < Generation.usedPositions.length; i++) {
+                            roomInfos.push(<Interfaces.IMinimapInfos>{ coords: Generation.usedPositions[i], roomType: Generation.rooms.find(room => room.coordinates == Generation.usedPositions[i]).roomType })
+                        }
+                        miniMap = new UI.Minimap(roomInfos);
                         graph.addChild(miniMap);
                     }
 
