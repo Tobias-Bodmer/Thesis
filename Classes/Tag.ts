@@ -1,5 +1,5 @@
 namespace Tag {
-    export enum TAG{
+    export enum TAG {
         PLAYER,
         ENEMY,
         BULLET,
@@ -7,6 +7,6 @@ namespace Tag {
         ROOM,
         WALL,
         DOOR,
-        DAMAGEUI
+        UI
     }
 }

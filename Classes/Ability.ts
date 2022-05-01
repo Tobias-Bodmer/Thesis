@@ -88,12 +88,17 @@ namespace Ability {
         }
     }
 
-    export class circleShooot extends Ability {
-        private bulletAmount: number;
+    export class circleShoot extends Ability {
+        public bulletAmount: number;
         private bullets: Bullets.Bullet[] = [];
+
         protected activateAbility(): void {
             for (let i = 0; i < this.bulletAmount; i++) {
-                this.bullets.push()
+                this.bullets.push(new Bullets.Bullet("bullet", 20, 5, 60, 6, 1, this.owner.mtxLocal.translation.toVector2(), Game.ƒ.Vector3.ZERO(), this.ownerNetId));
+                this.bullets[i].mtxLocal.rotateZ((360 / this.bulletAmount * i));
+            }
+            for (let i = 0; i < this.bulletAmount; i++) {
+                Game.graph.addChild(this.bullets[i]);
             }
         }
     }

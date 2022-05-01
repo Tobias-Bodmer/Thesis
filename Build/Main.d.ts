@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -447,8 +447,8 @@ declare namespace Ability {
         protected activateAbility(): void;
         protected deactivateAbility(): void;
     }
-    class circleShooot extends Ability {
-        private bulletAmount;
+    class circleShoot extends Ability {
+        bulletAmount: number;
         private bullets;
         protected activateAbility(): void;
     }
@@ -495,10 +495,14 @@ declare namespace Enemy {
         beginDefencePhase: boolean;
         defencePhaseTime: number;
         defencePhaseCurrentTime: number;
+        beginShooting: boolean;
+        defencePhaseShootingCount: number;
+        defencePhaseCurrentShootingCount: number;
         summonChance: number;
         summonCooldown: number;
         summonCurrentCooldown: number;
         private summon;
+        private shoot360;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
         cooldown(): void;
         behaviour(): void;
@@ -506,6 +510,7 @@ declare namespace Enemy {
         moveBehaviour(): void;
         attackingPhase(): void;
         defencePhase(): void;
+        defencePhaseShooting(): void;
     }
 }
 declare namespace Buff {
@@ -839,7 +844,7 @@ declare namespace Tag {
         ROOM = 4,
         WALL = 5,
         DOOR = 6,
-        DAMAGEUI = 7
+        UI = 7
     }
 }
 declare namespace Weapons {

@@ -170,9 +170,9 @@ namespace Game {
                     gamestate = GAMESTATES.PLAYING;
                     // EnemySpawner.spawnEnemies();
 
-                    // if (Networking.client.id == Networking.client.idHost) {
-                    //     EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
-                    // }
+                    if (Networking.client.id == Networking.client.idHost) {
+                        EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
+                    }
 
                     //#region init Items
                     if (Networking.client.id == Networking.client.idHost) {

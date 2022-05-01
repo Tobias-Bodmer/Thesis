@@ -4,10 +4,14 @@ namespace Enemy {
         beginDefencePhase: boolean = false;
         defencePhaseTime: number = 720;
         defencePhaseCurrentTime: number = 0;
+        beginShooting: boolean = false;
+        defencePhaseShootingCount: number = 3;
+        defencePhaseCurrentShootingCount: number = 0;
         summonChance: number = 5;
         summonCooldown: number = 120;
         summonCurrentCooldown: number = 0;
-        private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 0, 5, 5 * 60)
+        private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 0, 5, 5 * 60);
+        private shoot360: Ability.circleShoot = new Ability.circleShoot(this.netId, 0, 1, 5 * 60);
 
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _attributes, _position, _netId);
@@ -73,7 +77,7 @@ namespace Enemy {
         defencePhase(): void {
             //TODO: make if dependent from teleport animation frame
             // if (!this.mtxLocal.translation.equals(new ƒ.Vector2(0, -13).toVector3(), 1)) {
-            this.mtxLocal.translation = (new ƒ.Vector2(0, -13)).toVector3();
+            this.mtxLocal.translation = (new ƒ.Vector2(0, -12)).toVector3();
             // } else {
             if (!this.beginDefencePhase) {
                 this.defencePhaseCurrentTime = Math.round(this.defencePhaseTime + Math.random() * 120);
@@ -95,19 +99,29 @@ namespace Enemy {
                 }
                 this.defencePhaseCurrentTime--;
             } else {
-                this.damageTaken = 0;
-                this.beginDefencePhase = false;
+                this.mtxLocal.translation = (new ƒ.Vector2(0, 0)).toVector3();
+                this.defencePhaseShooting()
             }
             // }
         }
 
-        // summon() {
-        //     let target = Math.round(Math.random());
-        //     if (target > 0) {
-        //         EnemySpawner.spawnByID(ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, this.mtxLocal.translation.toVector2(), null, Game.avatar1);
-        //     } else {
-        //         EnemySpawner.spawnByID(ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, this.mtxLocal.translation.toVector2(), null, Game.avatar2);
-        //     }
-        // }
+        defencePhaseShooting() {
+            if (!this.beginShooting) {
+                this.defencePhaseCurrentShootingCount = Math.round(this.defencePhaseShootingCount + Math.random() * 2);
+                this.beginShooting = true;
+            } else {
+                if (this.defencePhaseCurrentShootingCount > 0) {
+                    this.shoot360.bulletAmount = Math.round(5 + Math.random() * 8);
+                    this.shoot360.doAbility();
+                    if (this.shoot360.doesAbility) {
+                        this.defencePhaseCurrentShootingCount--;
+                    }
+                } else {
+                    this.damageTaken = 0;
+                    this.beginShooting = false;
+                    this.beginDefencePhase = false;
+                }
+            }
+        }
     }
 }

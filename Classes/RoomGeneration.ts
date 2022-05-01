@@ -287,7 +287,7 @@ namespace Generation {
     }
 
     export function addRoomToGraph(_room: Room, _direciton?: Interfaces.IRoomExits) {
-        let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => (<any>elem).tag != Tag.TAG.PLAYER);
+        let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => ((<any>elem).tag != Tag.TAG.PLAYER) || ((<any>elem).tag != Tag.TAG.UI));
 
         oldObjects.forEach((elem) => {
             Game.graph.removeChild(elem);
