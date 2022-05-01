@@ -223,15 +223,14 @@ namespace Networking {
 
                             if (entity != null) {
                                 let weapon: Weapons.Weapon = entity.weapon;
-                                const ref = Game.bulletsJSON.find(bullet => bullet.type == weapon.bulletType);
                                 let direciton: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]);
                                 switch (<Weapons.AIM>message.content.aimType) {
                                     case Weapons.AIM.NORMAL:
-                                        bullet = new Bullets.Bullet(ref.name, ref.speed, ref.hitPointsScale, ref.lifetime, ref.knockbackForce, ref.killcount, entity.mtxLocal.translation.toVector2(), direciton, entity.netId, message.content.bulletNetId);
+                                        bullet = new Bullets.Bullet(weapon.bulletType, entity.mtxLocal.translation.toVector2(), direciton, entity.netId, message.content.bulletNetId);
                                         break;
                                     case Weapons.AIM.HOMING:
                                         let bulletTarget: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.bulletTarget.data[0], message.content.bulletTarget.data[1], message.content.bulletTarget.data[2]);
-                                        bullet = new Bullets.HomingBullet(ref.name, ref.speed, ref.hitPointsScale, ref.lifetime, ref.knockbackForce, ref.killcount, entity.mtxLocal.translation.toVector2(), direciton, entity.netId, bulletTarget, message.content.bulletNetId);
+                                        bullet = new Bullets.HomingBullet(weapon.bulletType, entity.mtxLocal.translation.toVector2(), direciton, entity.netId, bulletTarget, message.content.bulletNetId);
                                         break;
 
                                     default:

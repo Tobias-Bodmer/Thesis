@@ -82,6 +82,7 @@ namespace Game {
     }
 
     function update(): void {
+        findGameObjects();
         deltaTime = Game.ƒ.Loop.timeFrameGame * 0.001;
         pauseCheck();
         Game.avatar1.predict();
@@ -91,7 +92,6 @@ namespace Game {
             Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
             serverPredictionAvatar.update();
         }
-        findGameObjects();
 
         UI.updateUI();
 
@@ -236,10 +236,6 @@ namespace Game {
                     }, 200);
                 }
             }
-
-            graph.addChild(Game.avatar1.shadow);
-            graph.addChild(Game.avatar2.shadow);
-
         });
         document.getElementById("Option").addEventListener("click", () => {
             document.getElementById("Startscreen").style.visibility = "hidden";

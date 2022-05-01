@@ -79,21 +79,16 @@ namespace Weapons {
         loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.BULLETTYPE, _netId?: number): Bullets.Bullet[] {
             let magazine: Bullets.Bullet[] = [];
             for (let i = 0; i < this.projectileAmount; i++) {
-                const ref = Game.bulletsJSON.find(bullet => bullet.type == _bulletType);
                 switch (this.aimType) {
                     case AIM.NORMAL:
-                        magazine.push(new Bullets.Bullet(ref.name, ref.speed, ref.hitPointsScale, ref.lifetime, ref.knockbackForce, ref.killcount, _position, _direction, this.owner, _netId))
+                        magazine.push(new Bullets.Bullet(this.bulletType, _position, _direction, this.owner, _netId))
                         break;
                     case AIM.HOMING:
-                        magazine.push(new Bullets.HomingBullet(ref.name, ref.speed, ref.hitPointsScale, ref.lifetime, ref.knockbackForce, ref.killcount, _position, _direction, this.owner, null, _netId));
+                        magazine.push(new Bullets.HomingBullet(this.bulletType, _position, _direction, this.owner, null, _netId));
                         break;
                 }
             }
             return magazine;
-        }
-
-        getBulletByBulletType(_type: Bullets.BULLETTYPE) {
-            const ref = Game.bulletsJSON.find(bullet => bullet.type == _type)
         }
     }
 

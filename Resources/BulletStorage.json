@@ -1,7 +1,7 @@
 {
     "standardBullets": [
         {
-            "name": "normalBullet",
+            "name": "standard",
             "type": 0,
             "speed": 20,
             "hitPointsScale": 1,
@@ -10,7 +10,7 @@
             "killcount": 1
         },
         {
-            "name": "highspeedBullet",
+            "name": "highspeed",
             "type": 1,
             "speed": 30,
             "hitPointsScale": 1.5,
@@ -19,7 +19,7 @@
             "killcount": 2
         },
         {
-            "name": "slowBullet",
+            "name": "slow",
             "type": 2,
             "speed": 6,
             "hitPointsScale": 2,
@@ -28,7 +28,7 @@
             "killcount": 8
         },
         {
-            "name": "meeleBullet",
+            "name": "melee",
             "type": 3,
             "speed": 6,
             "hitPointsScale": 2,

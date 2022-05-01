@@ -578,7 +578,7 @@ declare namespace Bullets {
         time: number;
         killcount: number;
         despawn(): void;
-        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _netId?: number);
+        constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _netId?: number);
         eventUpdate: (_event: Event) => void;
         update(): void;
         predict(): void;
@@ -590,15 +590,11 @@ declare namespace Bullets {
         setBuff(_target: Entity.Entity): void;
         collisionDetection(): void;
     }
-    class MeleeBullet extends Bullet {
-        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
-        loadTexture(): void;
-    }
     class HomingBullet extends Bullet {
         target: ƒ.Vector3;
         rotateSpeed: number;
         targetDirection: ƒ.Vector3;
-        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _target?: ƒ.Vector3, _netId?: number);
+        constructor(_bullettype: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _target?: ƒ.Vector3, _netId?: number);
         update(): void;
         move(_direction: Game.ƒ.Vector3): void;
         setTarget(_netID: number): void;
@@ -873,7 +869,6 @@ declare namespace Weapons {
         fire(_magazine: Bullets.Bullet[], _sync?: boolean): void;
         setBulletDirection(_magazine: Bullets.Bullet[]): Bullets.Bullet[];
         loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.BULLETTYPE, _netId?: number): Bullets.Bullet[];
-        getBulletByBulletType(_type: Bullets.BULLETTYPE): void;
     }
     enum AIM {
         NORMAL = 0,

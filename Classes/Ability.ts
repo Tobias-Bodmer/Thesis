@@ -93,8 +93,9 @@ namespace Ability {
         private bullets: Bullets.Bullet[] = [];
 
         protected activateAbility(): void {
+            this.bullets = [];
             for (let i = 0; i < this.bulletAmount; i++) {
-                this.bullets.push(new Bullets.Bullet("bullet", 20, 5, 60, 6, 1, this.owner.mtxLocal.translation.toVector2(), Game.ƒ.Vector3.ZERO(), this.ownerNetId));
+                this.bullets.push(new Bullets.Bullet(Bullets.BULLETTYPE.STANDARD, this.owner.mtxLocal.translation.toVector2(), Game.ƒ.Vector3.ZERO(), this.ownerNetId));
                 this.bullets[i].mtxLocal.rotateZ((360 / this.bulletAmount * i));
             }
             for (let i = 0; i < this.bulletAmount; i++) {
