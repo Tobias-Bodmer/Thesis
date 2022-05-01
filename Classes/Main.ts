@@ -184,9 +184,11 @@ namespace Game {
                         // graph.appendChild(item1);
                         graph.appendChild(item2);
                         graph.appendChild(item3);
+
                     }
 
                     Networking.spawnPlayer();
+
 
                     if (Networking.client.id == Networking.client.idHost) {
                         let roomInfos: Interfaces.IMinimapInfos[] = [];
@@ -197,12 +199,14 @@ namespace Game {
                         graph.addChild(miniMap);
                     }
 
+
                     startLoop();
                 } else {
                     setTimeout(waitOnConnection, 300);
                 }
 
             }
+
 
             document.getElementById("Host").addEventListener("click", Networking.setHost);
 
@@ -232,6 +236,9 @@ namespace Game {
                     }, 200);
                 }
             }
+
+            graph.addChild(Game.avatar1.shadow);
+            graph.addChild(Game.avatar2.shadow);
 
         });
         document.getElementById("Option").addEventListener("click", () => {
@@ -352,6 +359,8 @@ namespace Game {
         await UI.burnParticle.load("./Resources/Image/Particles/poison.png");
         await UI.bleedingParticle.load("./Resources/Image/Particles/bleeding.png");
         await UI.slowParticle.load("./Resources/Image/Particles/slow.png");
+        await Entity.txtShadow.load("./Resources/Image/Particles/shadow.png");
+
 
 
         //ENEMY

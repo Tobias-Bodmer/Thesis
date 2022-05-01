@@ -94,8 +94,6 @@ namespace Weapons {
 
         getBulletByBulletType(_type: Bullets.BULLETTYPE) {
             const ref = Game.bulletsJSON.find(bullet => bullet.type == _type)
-
-
         }
     }
 

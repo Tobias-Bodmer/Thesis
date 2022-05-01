@@ -155,7 +155,7 @@ namespace Enemy {
 
     export class EnemySmash extends Enemy {
         isAttacking = false;
-        coolDown = new Ability.Cooldown(50 * 60);
+        coolDown = new Ability.Cooldown(5 * 60);
         avatars: Player.Player[] = [];
         randomPlayer = Math.round(Math.random());
         currentBehaviour: Entity.BEHAVIOUR = Entity.BEHAVIOUR.IDLE;
@@ -167,7 +167,7 @@ namespace Enemy {
         behaviour() {
             this.avatars = [Game.avatar1, Game.avatar2];
             this.target = (<Player.Player>this.avatars[this.randomPlayer]).mtxLocal.translation.toVector2();
-            let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
+            let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(3), this.cmpTransform.mtxLocal.translation).magnitude;
 
             if (this.currentBehaviour == Entity.BEHAVIOUR.ATTACK && this.getCurrentFrame >= (<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["attack"]).frames.length - 1) {
                 this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
