@@ -41,5 +41,9 @@ namespace Calculation {
         return _baseValue * (100 / (100 + _percentageAmount));
     }
 
+    export function clampNumber(_number: number, _min: number, _max: number) {
+        return Math.max(_min, Math.min(_number, _max));
+    }
+
 
 }

@@ -8,7 +8,7 @@
             "lifetime": 60,
             "knockbackForce": 6,
             "killcount": 1,
-            "texturePath": "./Resources/Image/arrow.png"
+            "texturePath": "./Resources/Image/Projectiles/arrow.png"
         },
         {
             "name": "highspeed",
@@ -18,7 +18,7 @@
             "lifetime": 30,
             "knockbackForce": 8,
             "killcount": 2,
-            "texturePath": "./Resources/Image/arrow.png"
+            "texturePath": "./Resources/Image/Projectiles/arrow.png"
         },
         {
             "name": "slow",
@@ -28,7 +28,7 @@
             "lifetime": 360,
             "knockbackForce": 4,
             "killcount": 8,
-            "texturePath": "./Resources/Image/arrow.png"
+            "texturePath": "./Resources/Image/Projectiles/arrow.png"
         },
         {
             "name": "melee",
@@ -41,14 +41,14 @@
             "texturePath": ""
         },
         {
-            "name": "summonor",
+            "name": "summoner",
             "type": 0,
-            "speed": 20,
+            "speed": 4,
             "hitPointsScale": 1,
-            "lifetime": 60,
+            "lifetime": 300,
             "knockbackForce": 6,
             "killcount": 1,
-            "texturePath": "./Resources/Image/arrow.png"
+            "texturePath": "./Resources/Image/Projectiles/waterBall.png"
         }
     ]
 }

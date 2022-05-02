@@ -562,9 +562,11 @@ declare namespace Bullets {
         STANDARD = 0,
         HIGHSPEED = 1,
         SLOW = 2,
-        MELEE = 3
+        MELEE = 3,
+        SUMMONER = 4
     }
     let bulletTxt: ƒ.TextureImage;
+    let waterBallTxt: ƒ.TextureImage;
     class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable, Interfaces.INetworkable {
         tag: Tag.TAG;
         owner: number;
@@ -657,6 +659,7 @@ declare namespace Calculation {
     function getRotatedVectorByAngle2D(_vectorToRotate: ƒ.Vector3, _angle: number): ƒ.Vector3;
     function addPercentageAmountToValue(_baseValue: number, _percentageAmount: number): number;
     function subPercentageAmountToValue(_baseValue: number, _percentageAmount: number): number;
+    function clampNumber(_number: number, _min: number, _max: number): number;
 }
 declare namespace InputSystem {
     function calcPositionFromDegree(_degrees: number, _distance: number): ƒ.Vector2;
@@ -886,6 +889,7 @@ declare namespace Weapons {
         ownerNetId: number;
         get owner(): Entity.Entity;
         protected cooldown: Ability.Cooldown;
+        get getCoolDown(): Ability.Cooldown;
         protected attackCount: number;
         currentAttackCount: number;
         aimType: AIM;

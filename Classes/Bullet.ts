@@ -4,10 +4,13 @@ namespace Bullets {
         STANDARD,
         HIGHSPEED,
         SLOW,
-        MELEE
+        MELEE,
+        SUMMONER
     }
 
     export let bulletTxt: ƒ.TextureImage = new ƒ.TextureImage();
+    export let waterBallTxt: ƒ.TextureImage = new ƒ.TextureImage();
+
 
     export class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable, Interfaces.INetworkable {
         public tag: Tag.TAG = Tag.TAG.BULLET;
@@ -144,16 +147,19 @@ namespace Bullets {
                 let newTxt: ƒ.TextureImage = new ƒ.TextureImage();
                 let newCoat: ƒ.CoatRemissiveTextured = new ƒ.CoatRemissiveTextured();
                 let newMtr: ƒ.Material = new ƒ.Material("mtr", ƒ.ShaderFlatTextured, newCoat);
-    
+
                 let oldComCoat: ƒ.ComponentMaterial = new ƒ.ComponentMaterial();
-    
+
                 oldComCoat = this.getComponent(ƒ.ComponentMaterial);
-                
+
                 switch (this.texturePath) {
                     case bulletTxt.url:
                         newTxt = bulletTxt;
                         break;
-                
+                    case waterBallTxt.url:
+                        newTxt = waterBallTxt;
+                        break;
+
                     default:
                         break;
                 }

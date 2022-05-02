@@ -174,7 +174,7 @@ namespace Game {
                         //     EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
                         // EnemySpawner.spawnMultipleEnemiesAtRoom(30, Game.currentRoom.mtxLocal.translation.toVector2());
                         // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.ENEMYSMASH, Entity.ID.OGER, new ƒ.Vector2(3, 3), null);
-                        // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
+                        EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
                     }
 
                     //#region init Items
@@ -337,7 +337,8 @@ namespace Game {
     export async function loadTextures() {
         await Generation.txtStartRoom.load("./Resources/Image/Rooms/map01.png");
 
-        await Bullets.bulletTxt.load("./Resources/Image/arrow.png");
+        await Bullets.bulletTxt.load("./Resources/Image/Projectiles/arrow.png");
+        await Bullets.waterBallTxt.load("./Resources/Image/Projectiles/waterBall.png")
 
         //UI
         await UI.txtZero.load("./Resources/Image/white0.png");

@@ -27,7 +27,7 @@ namespace Ability {
                 setTimeout(() => {
                     this.deactivateAbility();
                     this.doesAbility = false;
-                }, this.duration);
+                }, this.duration * Game.deltaTime);
 
                 this.currentabilityCount--;
                 if (this.currentabilityCount <= 0) {

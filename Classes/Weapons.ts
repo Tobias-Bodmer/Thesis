@@ -1,15 +1,16 @@
 namespace Weapons {
     export class Weapon {
         ownerNetId: number; get owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.ownerNetId) };
-        protected cooldown: Ability.Cooldown;
-        protected attackCount: number = 1;
-        public currentAttackCount: number = this.attackCount;
+        protected cooldown: Ability.Cooldown; get getCoolDown() { return this.cooldown };
+        protected attackCount: number;
+        public currentAttackCount: number;
         aimType: AIM;
         bulletType: Bullets.BULLETTYPE = Bullets.BULLETTYPE.STANDARD;
         projectileAmount: number = 1;
 
         constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _ownerNetId: number, _aimType: AIM) {
             this.attackCount = _attackCount;
+            this.currentAttackCount = _attackCount;
             this.bulletType = _bulletType;
             this.projectileAmount = _projectileAmount;
             this.ownerNetId = _ownerNetId;
@@ -23,7 +24,7 @@ namespace Weapons {
                 if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
                     this.currentAttackCount = this.attackCount;
                 }
-                else if (this.currentAttackCount > 0 && !this.cooldown.hasCoolDown) {
+                if (this.currentAttackCount > 0 && !this.cooldown.hasCoolDown) {
                     _direciton.normalize();
                     let magazine: Bullets.Bullet[] = this.loadMagazine(_position, _direciton, this.bulletType, _bulletNetId);
                     this.setBulletDirection(magazine);

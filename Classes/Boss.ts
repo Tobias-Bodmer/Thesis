@@ -17,9 +17,9 @@ namespace Enemy {
 
 
         private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 50, 5, 500);
-        private dash: Ability.Dash = new Ability.Dash(this.netId, 300, 1, 5 * 60, 5);
+        private dash: Ability.Dash = new Ability.Dash(this.netId, 100000, 1, 13 * 60, 2);
         private shoot360: Ability.circleShoot = new Ability.circleShoot(this.netId, 0, 1, 5 * 60);
-        private dashWeapon: Weapons.Weapon = new Weapons.Weapon(100, 1, Bullets.BULLETTYPE.SLOW, 1, this.netId, Weapons.AIM.NORMAL);
+        private dashWeapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.SUMMONER, 1, this.netId, Weapons.AIM.NORMAL);
 
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _attributes, _position, _netId);
@@ -80,7 +80,7 @@ namespace Enemy {
             if (this.attackingPhaseCurrentTime > 0) {
                 let distance = ƒ.Vector3.DIFFERENCE(Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2().toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
 
-                if (distance > 8 || this.dash.doesAbility) {
+                if (distance > 10 || this.dash.doesAbility) {
                     this.moveDirection = Calculation.getRotatedVectorByAngle2D(this.moveSimple(Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2()).toVector3(), 90);
                     if (Math.round(Math.random() * 100) >= 10) {
                         this.dash.doAbility();
@@ -90,8 +90,10 @@ namespace Enemy {
                 }
 
                 if (this.dash.doesAbility) {
-                    this.dashWeapon.shoot(this.mtxLocal.translation.toVector2(), Game.ƒ.Vector2.DIFFERENCE(this.target, this.mtxLocal.translation.toVector2()).toVector3());
+                    this.dashWeapon.shoot(this.mtxLocal.translation.toVector2(), Game.ƒ.Vector2.DIFFERENCE(this.target, this.mtxLocal.translation.toVector2()).toVector3(), null, true);
+                    this.dashWeapon.getCoolDown.setMaxCoolDown = Calculation.clampNumber(Math.random() * 30, 8, 30);
                 }
+
 
 
                 this.attackingPhaseCurrentTime--;

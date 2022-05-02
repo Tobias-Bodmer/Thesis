@@ -207,7 +207,7 @@ namespace Enemy {
     }
 
     export class EnemyDash extends Enemy {
-        protected dash = new Ability.Dash(this.netId, 100, 1, 5 * 60, 3);
+        protected dash = new Ability.Dash(this.netId, 5000, 1, 5 * 60, 3);
         lastMoveDireciton: Game.ƒ.Vector3;
         dashCount: number = 1;
         avatars: Player.Player[] = [];
