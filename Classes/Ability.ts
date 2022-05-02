@@ -92,12 +92,19 @@ namespace Ability {
         }
     }
 
-    export class circleShooot extends Ability {
-        private bulletAmount: number;
+    export class circleShoot extends Ability {
+        public bulletAmount: number;
         private bullets: Bullets.Bullet[] = [];
+
         protected activateAbility(): void {
+            this.bullets = [];
             for (let i = 0; i < this.bulletAmount; i++) {
-                this.bullets.push()
+                this.bullets.push(new Bullets.Bullet(Bullets.BULLETTYPE.STANDARD, this.owner.mtxLocal.translation.toVector2(), Game.ƒ.Vector3.ZERO(), this.ownerNetId));
+                this.bullets[i].mtxLocal.rotateZ((360 / this.bulletAmount * i));
+            }
+            for (let i = 0; i < this.bulletAmount; i++) {
+                Game.graph.addChild(this.bullets[i]);
+                Networking.spawnBullet(Weapons.AIM.NORMAL, this.bullets[i].direction, this.bullets[i].netId, this.ownerNetId);
             }
         }
     }

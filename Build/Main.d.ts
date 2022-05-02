@@ -449,8 +449,8 @@ declare namespace Ability {
         protected activateAbility(): void;
         protected deactivateAbility(): void;
     }
-    class circleShooot extends Ability {
-        private bulletAmount;
+    class circleShoot extends Ability {
+        bulletAmount: number;
         private bullets;
         protected activateAbility(): void;
     }
@@ -494,13 +494,22 @@ declare namespace Entity {
 declare namespace Enemy {
     class Summonor extends EnemyShoot {
         damageTaken: number;
+        beginAttackingPhase: boolean;
+        attackingPhaseTime: number;
+        attackingPhaseCurrentTime: number;
         beginDefencePhase: boolean;
         defencePhaseTime: number;
         defencePhaseCurrentTime: number;
+        beginShooting: boolean;
+        shootingCount: number;
+        currentShootingCount: number;
         summonChance: number;
         summonCooldown: number;
         summonCurrentCooldown: number;
         private summon;
+        private dash;
+        private shoot360;
+        private dashWeapon;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
         cooldown(): void;
         behaviour(): void;
@@ -508,6 +517,7 @@ declare namespace Enemy {
         moveBehaviour(): void;
         attackingPhase(): void;
         defencePhase(): void;
+        shooting360(_beginPhase: boolean): void;
     }
 }
 declare namespace Buff {
@@ -574,8 +584,9 @@ declare namespace Bullets {
         type: BULLETTYPE;
         time: number;
         killcount: number;
+        texturePath: string;
         despawn(): void;
-        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _netId?: number);
+        constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _netId?: number);
         eventUpdate: (_event: Event) => void;
         update(): void;
         predict(): void;
@@ -587,15 +598,11 @@ declare namespace Bullets {
         setBuff(_target: Entity.Entity): void;
         collisionDetection(): void;
     }
-    class MeleeBullet extends Bullet {
-        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number);
-        loadTexture(): void;
-    }
     class HomingBullet extends Bullet {
         target: ƒ.Vector3;
         rotateSpeed: number;
         targetDirection: ƒ.Vector3;
-        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _target?: ƒ.Vector3, _netId?: number);
+        constructor(_bullettype: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _target?: ƒ.Vector3, _netId?: number);
         update(): void;
         move(_direction: Game.ƒ.Vector3): void;
         setTarget(_netID: number): void;
@@ -873,13 +880,13 @@ declare namespace Tag {
         ROOM = 4,
         WALL = 5,
         DOOR = 6,
-        DAMAGEUI = 7
+        UI = 7
     }
 }
 declare namespace Weapons {
     class Weapon {
-        owner: number;
-        get _owner(): Entity.Entity;
+        ownerNetId: number;
+        get owner(): Entity.Entity;
         protected cooldown: Ability.Cooldown;
         cooldownTime: number;
         protected attackCount: number;
@@ -892,7 +899,6 @@ declare namespace Weapons {
         fire(_magazine: Bullets.Bullet[], _sync?: boolean): void;
         setBulletDirection(_magazine: Bullets.Bullet[]): Bullets.Bullet[];
         loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.BULLETTYPE, _netId?: number): Bullets.Bullet[];
-        getBulletByBulletType(_type: Bullets.BULLETTYPE): void;
     }
     enum AIM {
         NORMAL = 0,

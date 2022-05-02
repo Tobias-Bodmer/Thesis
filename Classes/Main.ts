@@ -82,6 +82,7 @@ namespace Game {
     }
 
     function update(): void {
+        findGameObjects();
         deltaTime = Game.ƒ.Loop.timeFrameGame * 0.001;
         pauseCheck();
         Game.avatar1.predict();
@@ -91,7 +92,6 @@ namespace Game {
             Networking.updateAvatarPosition(Game.avatar1.mtxLocal.translation, Game.avatar1.mtxLocal.rotation);
             serverPredictionAvatar.update();
         }
-        findGameObjects();
 
         UI.updateUI();
 
@@ -174,6 +174,7 @@ namespace Game {
                         //     EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
                         EnemySpawner.spawnMultipleEnemiesAtRoom(30, Game.currentRoom.mtxLocal.translation.toVector2());
                         // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.ENEMYSMASH, Entity.ID.OGER, new ƒ.Vector2(3, 3), null);
+                        EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
                     }
 
                     //#region init Items
@@ -238,10 +239,6 @@ namespace Game {
                     }, 200);
                 }
             }
-
-            graph.addChild(Game.avatar1.shadow);
-            graph.addChild(Game.avatar2.shadow);
-
         });
         document.getElementById("Option").addEventListener("click", () => {
             document.getElementById("Startscreen").style.visibility = "hidden";
@@ -340,7 +337,7 @@ namespace Game {
     export async function loadTextures() {
         await Generation.txtStartRoom.load("./Resources/Image/Rooms/map01.png");
 
-        await Bullets.bulletTxt.load("./Resources/Image/arrow01.png");
+        await Bullets.bulletTxt.load("./Resources/Image/arrow.png");
 
         //UI
         await UI.txtZero.load("./Resources/Image/white0.png");

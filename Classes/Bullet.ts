@@ -29,6 +29,8 @@ namespace Bullets {
         time: number = 0;
         killcount: number = 1;
 
+        texturePath: string;
+
         public despawn() {
             if (this.lifetime >= 0 && this.lifetime != null) {
                 this.lifetime--;
@@ -41,8 +43,8 @@ namespace Bullets {
             }
         }
 
-        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _netId?: number) {
-            super(_name);
+        constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _netId?: number) {
+            super(BULLETTYPE[_bulletType]);
 
             if (_netId != undefined) {
                 Networking.popID(this.netId);
@@ -53,11 +55,14 @@ namespace Bullets {
                 this.netId = Networking.idGenerator();
             }
 
-            this.speed = _speed;
-            this.hitPointsScale = _hitPoints;
-            this.lifetime = _lifetime;
-            this.knockbackForce = _knockbackForce;
-            this.killcount = _killcount;
+            let ref = Game.bulletsJSON.find(bullet => bullet.name == BULLETTYPE[_bulletType].toLowerCase());
+
+            this.speed = ref.speed;
+            this.hitPointsScale = ref.hitPointsScale;
+            this.lifetime = ref.lifetime;
+            this.knockbackForce = ref.knockbackForce;
+            this.killcount = ref.killcount;
+            this.texturePath = ref.texturePath;
 
             // this.addComponent(new ƒ.ComponentLight(new ƒ.LightPoint(ƒ.Color.CSS("white"))));
 
@@ -135,18 +140,27 @@ namespace Bullets {
 
 
         protected loadTexture() {
-            let newTxt: ƒ.TextureImage = new ƒ.TextureImage();
-            let newCoat: ƒ.CoatRemissiveTextured = new ƒ.CoatRemissiveTextured();
-            let newMtr: ƒ.Material = new ƒ.Material("mtr", ƒ.ShaderFlatTextured, newCoat);
-
-            let oldComCoat: ƒ.ComponentMaterial = new ƒ.ComponentMaterial();
-
-            oldComCoat = this.getComponent(ƒ.ComponentMaterial);
-
-            newTxt = bulletTxt;
-            newCoat.color = ƒ.Color.CSS("WHITE");
-            newCoat.texture = newTxt;
-            oldComCoat.material = newMtr;
+            if (this.texturePath != "" || this.texturePath != null) {
+                let newTxt: ƒ.TextureImage = new ƒ.TextureImage();
+                let newCoat: ƒ.CoatRemissiveTextured = new ƒ.CoatRemissiveTextured();
+                let newMtr: ƒ.Material = new ƒ.Material("mtr", ƒ.ShaderFlatTextured, newCoat);
+    
+                let oldComCoat: ƒ.ComponentMaterial = new ƒ.ComponentMaterial();
+    
+                oldComCoat = this.getComponent(ƒ.ComponentMaterial);
+                
+                switch (this.texturePath) {
+                    case bulletTxt.url:
+                        newTxt = bulletTxt;
+                        break;
+                
+                    default:
+                        break;
+                }
+                newCoat.color = ƒ.Color.CSS("WHITE");
+                newCoat.texture = newTxt;
+                oldComCoat.material = newMtr;
+            }
         }
 
         setBuff(_target: Entity.Entity) {
@@ -212,27 +226,13 @@ namespace Bullets {
         }
     }
 
-    export class MeleeBullet extends Bullet {
-        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _netId?: number) {
-            super(_name, _speed, _hitPoints, _lifetime, _knockbackForce, _killcount, _position, _direction, _netId);
-            this.speed = 6;
-            this.hitPointsScale = 10;
-            this.lifetime = 6;
-            this.killcount = 4;
-        }
-
-        public loadTexture() {
-
-        }
-    }
-
     export class HomingBullet extends Bullet {
         target: ƒ.Vector3;
         rotateSpeed: number = 2;
         targetDirection: ƒ.Vector3;
 
-        constructor(_name: string, _speed: number, _hitPoints: number, _lifetime: number, _knockbackForce: number, _killcount: number, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _target?: ƒ.Vector3, _netId?: number) {
-            super(_name, _speed, _hitPoints, _lifetime, _knockbackForce, _killcount, _position, _direction, _ownerId, _netId);
+        constructor(_bullettype: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _target?: ƒ.Vector3, _netId?: number) {
+            super(_bullettype, _position, _direction, _ownerId, _netId);
             this.speed = 20;
             this.hitPointsScale = 1;
             this.lifetime = 1 * 60;

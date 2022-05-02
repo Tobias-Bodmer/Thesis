@@ -77,7 +77,7 @@ namespace UI {
     export let txtTen: ƒ.TextureImage = new ƒ.TextureImage();
 
     export class DamageUI extends ƒ.Node {
-        public tag: Tag.TAG = Tag.TAG.DAMAGEUI;
+        public tag: Tag.TAG = Tag.TAG.UI;
         up: number = 0.15;
         lifetime: number = 0.5 * 60;
         randomX: number = Math.random() * 0.05 - Math.random() * 0.05;

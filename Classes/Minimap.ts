@@ -1,6 +1,6 @@
 namespace UI {
     export class Minimap extends Game.ƒ.Node {
-        public tag: Tag.TAG = Tag.TAG.PLAYER;
+        public tag: Tag.TAG = Tag.TAG.UI;
         private minmapInfo: Interfaces.IMinimapInfos[];
         private roomMinimapsize: number = 0.5;
         private miniRooms: MiniRoom[] = [];
