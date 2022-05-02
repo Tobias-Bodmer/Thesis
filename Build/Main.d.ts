@@ -457,6 +457,8 @@ declare namespace Ability {
     class Cooldown {
         hasCoolDown: boolean;
         private coolDown;
+        get getMaxCoolDown(): number;
+        set setMaxCoolDown(_param: number);
         private currentCooldown;
         constructor(_number: number);
         startCoolDown(): void;
@@ -503,15 +505,11 @@ declare namespace Enemy {
         beginShooting: boolean;
         shootingCount: number;
         currentShootingCount: number;
-        summonChance: number;
-        summonCooldown: number;
-        summonCurrentCooldown: number;
         private summon;
         private dash;
         private shoot360;
         private dashWeapon;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
-        cooldown(): void;
         behaviour(): void;
         getDamage(_value: number): void;
         moveBehaviour(): void;
@@ -888,7 +886,6 @@ declare namespace Weapons {
         ownerNetId: number;
         get owner(): Entity.Entity;
         protected cooldown: Ability.Cooldown;
-        cooldownTime: number;
         protected attackCount: number;
         currentAttackCount: number;
         aimType: AIM;

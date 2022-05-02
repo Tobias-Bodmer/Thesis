@@ -80,7 +80,7 @@ namespace Ability {
     export class SpawnSummoners extends Ability {
         protected activateAbility(): void {
             if (Networking.client.id == Networking.client.idHost) {
-                if (Math.round(Math.random()) > 0) {
+                if (Math.round(Math.random()) > 0.5) {
                     EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, this.owner.mtxLocal.translation.toVector2(), null, Game.avatar1, null);
                 } else {
                     EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, this.owner.mtxLocal.translation.toVector2(), null, Game.avatar2, null);
@@ -111,24 +111,21 @@ namespace Ability {
 
     export class Cooldown {
         public hasCoolDown: boolean
-        private coolDown: number
+        private coolDown: number; get getMaxCoolDown(): number { return this.coolDown }; set setMaxCoolDown(_param: number) { this.coolDown = _param }
         private currentCooldown: number;
         constructor(_number: number) {
             this.coolDown = _number;
             this.currentCooldown = _number;
             this.hasCoolDown = false;
+            Game.ƒ.Loop.addEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
         }
 
         public startCoolDown() {
             this.hasCoolDown = true
-            Game.coolDowns.push(this);
-            Game.ƒ.Loop.addEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
         }
 
         private endCoolDOwn() {
-            Game.coolDowns = Game.coolDowns.filter(cd => cd != this);
             this.hasCoolDown = false;
-            Game.ƒ.Loop.removeEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
         }
 
         public eventUpdate = (_event: Event): void => {
@@ -136,12 +133,12 @@ namespace Ability {
         }
 
         public updateCoolDown(): void {
-            if (this.currentCooldown > 0) {
+            if (this.hasCoolDown && this.currentCooldown > 0) {
                 this.currentCooldown--;
             }
-            else {
-                this.currentCooldown = this.coolDown;
+            if (this.currentCooldown <= 0 && this.hasCoolDown) {
                 this.endCoolDOwn();
+                this.currentCooldown = this.coolDown;
             }
         }
     }

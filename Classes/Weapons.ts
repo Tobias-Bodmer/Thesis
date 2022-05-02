@@ -2,7 +2,6 @@ namespace Weapons {
     export class Weapon {
         ownerNetId: number; get owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.ownerNetId) };
         protected cooldown: Ability.Cooldown;
-        public cooldownTime: number;
         protected attackCount: number = 1;
         public currentAttackCount: number = this.attackCount;
         aimType: AIM;
@@ -10,14 +9,13 @@ namespace Weapons {
         projectileAmount: number = 1;
 
         constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _ownerNetId: number, _aimType: AIM) {
-            this.cooldownTime = _cooldownTime;
             this.attackCount = _attackCount;
             this.bulletType = _bulletType;
             this.projectileAmount = _projectileAmount;
             this.ownerNetId = _ownerNetId;
             this.aimType = _aimType;
 
-            this.cooldown = new Ability.Cooldown(this.cooldownTime);
+            this.cooldown = new Ability.Cooldown(_cooldownTime);
         }
 
         public shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _bulletNetId?: number, _sync?: boolean) {
@@ -25,18 +23,19 @@ namespace Weapons {
                 if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
                     this.currentAttackCount = this.attackCount;
                 }
-                if (this.currentAttackCount > 0 && !this.cooldown.hasCoolDown) {
+                else if (this.currentAttackCount > 0 && !this.cooldown.hasCoolDown) {
                     _direciton.normalize();
                     let magazine: Bullets.Bullet[] = this.loadMagazine(_position, _direciton, this.bulletType, _bulletNetId);
                     this.setBulletDirection(magazine);
                     this.fire(magazine, _sync);
                     this.currentAttackCount--;
                     if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
-                        this.cooldown = new Ability.Cooldown(this.owner.attributes.coolDownReduction * this.cooldownTime);
+                        this.cooldown.setMaxCoolDown = this.cooldown.getMaxCoolDown * this.owner.attributes.coolDownReduction;
                         this.cooldown.startCoolDown();
                     }
                 }
-            } else {
+            }
+            else {
                 _direciton.normalize();
                 let magazine: Bullets.Bullet[] = this.loadMagazine(_position, _direciton, this.bulletType, _bulletNetId);
                 this.setBulletDirection(magazine);

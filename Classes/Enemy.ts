@@ -32,7 +32,6 @@ namespace Enemy {
         public update() {
             if (Networking.client.id == Networking.client.idHost) {
                 super.update();
-                this.flocking.update();
                 this.moveBehaviour();
                 this.move(this.moveDirection);
                 Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId);
@@ -165,6 +164,7 @@ namespace Enemy {
             super(_id, _attributes, _position, _netId);
         }
 
+
         behaviour() {
             this.avatars = [Game.avatar1, Game.avatar2];
             this.target = (<Player.Player>this.avatars[this.randomPlayer]).mtxLocal.translation.toVector2();
@@ -219,10 +219,13 @@ namespace Enemy {
 
         }
 
+
+
         behaviour() {
             this.avatars = [Game.avatar1, Game.avatar2]
             this.target = (<Player.Player>this.avatars[this.randomPlayer]).mtxLocal.translation.toVector2();
             let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitudeSquared;
+            this.flocking.update();
 
             if (!this.dash.hasCooldown()) {
                 this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
@@ -231,7 +234,7 @@ namespace Enemy {
                 this.dash.doAbility();
 
             }
-            
+
 
             if (this.moveDirection.magnitudeSquared > 0) {
                 this.switchAnimation(Entity.ANIMATIONSTATES.WALK);

@@ -1,14 +1,18 @@
 namespace Generation {
 
-    let numberOfRooms: number = 2;
-    export let usedPositions: Game.ƒ.Vector2[] = [];
-    export let rooms: Room[] = [];
+    let numberOfRooms: number = 5;
+    export let usedPositions: Game.ƒ.Vector2[];
+    export let rooms: Room[];
 
     //spawn chances
     let challengeRoomSpawnChance: number = 30;
     let treasureRoomSpawnChance: number = 100;
+    let errorCount: number;
 
     export function generateRooms(): void {
+        usedPositions = [];
+        rooms = [];
+        errorCount = 0;
         let startCoords: Game.ƒ.Vector2 = Game.ƒ.Vector2.ZERO();
 
         rooms.push(new Room("roomStart", startCoords, <Interfaces.IRoomExits>{ north: true, east: true, south: true, west: true }, Generation.ROOMTYPE.START))
@@ -75,6 +79,10 @@ namespace Generation {
         let newCoord: Game.ƒ.Vector2;
         let defaultExits: Interfaces.IRoomExits = <Interfaces.IRoomExits>{ north: true, east: true, south: true, west: true };
 
+        if (errorCount > 5) {
+            console.warn("restarted RoomGeneration");
+            generateRooms();
+        }
 
         console.log(numberOfExits);
         console.log(possibleExitIndex[randomNumber]);
@@ -90,11 +98,13 @@ namespace Generation {
                     newRoom.neighbourS = _currentRoom;
                     newRoom.exits.south = false;
                     usedPositions.push(newRoomPosition);
+                    errorCount = 0;
                 } else {
                     let foundRoom = rooms.find(room => room.coordinates.equals(newCoord))
                     _currentRoom.neighbourN = foundRoom;
                     foundRoom.neighbourS = _currentRoom;
                     _currentRoom.exits.north = false;
+                    errorCount++;
                     addRoom(_currentRoom, _roomType);
                 }
                 break;
@@ -109,11 +119,13 @@ namespace Generation {
                     newRoom.neighbourW = _currentRoom;
                     newRoom.exits.west = false;
                     usedPositions.push(newRoomPosition);
+                    errorCount = 0;
                 } else {
                     let foundRoom = rooms.find(room => room.coordinates.equals(newCoord))
                     _currentRoom.neighbourE = foundRoom;
                     foundRoom.neighbourW = _currentRoom;
                     _currentRoom.exits.east = false;
+                    errorCount++;
                     addRoom(_currentRoom, _roomType);
                 }
 
@@ -129,11 +141,13 @@ namespace Generation {
                     newRoom.neighbourN = _currentRoom;
                     newRoom.exits.north = false;
                     usedPositions.push(newRoomPosition);
+                    errorCount = 0;
                 } else {
                     let foundRoom = rooms.find(room => room.coordinates.equals(newCoord))
                     _currentRoom.neighbourS = foundRoom;
                     foundRoom.neighbourN = _currentRoom;
                     _currentRoom.exits.south = false;
+                    errorCount++;
                     addRoom(_currentRoom, _roomType);
                 }
                 break;
@@ -148,11 +162,13 @@ namespace Generation {
                     newRoom.neighbourE = _currentRoom;
                     newRoom.exits.east = false;
                     usedPositions.push(newRoomPosition);
+                    errorCount = 0;
                 } else {
                     let foundRoom = rooms.find(room => room.coordinates.equals(newCoord))
                     _currentRoom.neighbourW = foundRoom;
                     foundRoom.neighbourE = _currentRoom;
                     _currentRoom.exits.west = false;
+                    errorCount++;
                     addRoom(_currentRoom, _roomType);
                 }
                 break;
@@ -287,9 +303,10 @@ namespace Generation {
     }
 
     export function addRoomToGraph(_room: Room, _direciton?: Interfaces.IRoomExits) {
-        let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => ((<any>elem).tag != Tag.TAG.PLAYER) || ((<any>elem).tag != Tag.TAG.UI));
+        let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => ((<any>elem).tag != Tag.TAG.PLAYER));
 
         oldObjects.forEach((elem) => {
+            console.log(elem);
             Game.graph.removeChild(elem);
         });
 

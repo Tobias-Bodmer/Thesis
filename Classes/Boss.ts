@@ -14,14 +14,12 @@ namespace Enemy {
         shootingCount: number = 3;
         currentShootingCount: number = 0;
 
-        summonChance: number = 5;
-        summonCooldown: number = 120;
-        summonCurrentCooldown: number = 0;
 
-        private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 0, 5, 5 * 60);
+
+        private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 50, 5, 500);
         private dash: Ability.Dash = new Ability.Dash(this.netId, 300, 1, 5 * 60, 5);
         private shoot360: Ability.circleShoot = new Ability.circleShoot(this.netId, 0, 1, 5 * 60);
-        private dashWeapon: Weapons.Weapon = new Weapons.Weapon(100, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId, Weapons.AIM.NORMAL);
+        private dashWeapon: Weapons.Weapon = new Weapons.Weapon(100, 1, Bullets.BULLETTYPE.SLOW, 1, this.netId, Weapons.AIM.NORMAL);
 
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _attributes, _position, _netId);
@@ -29,14 +27,8 @@ namespace Enemy {
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), this.mtxLocal.scaling.x / 2, this.netId);
         }
 
-        cooldown(): void {
-            if (this.summonCurrentCooldown > 0) {
-                this.summonCurrentCooldown--;
-            }
-        }
 
         behaviour() {
-            this.cooldown();
             let distance = ƒ.Vector3.DIFFERENCE(Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2().toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
 
             if (distance < 5) {
@@ -89,7 +81,7 @@ namespace Enemy {
                 let distance = ƒ.Vector3.DIFFERENCE(Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2().toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
 
                 if (distance > 8 || this.dash.doesAbility) {
-                    this.moveDirection = this.moveSimple(Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2()).toVector3();
+                    this.moveDirection = Calculation.getRotatedVectorByAngle2D(this.moveSimple(Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2()).toVector3(), 90);
                     if (Math.round(Math.random() * 100) >= 10) {
                         this.dash.doAbility();
                     }
@@ -98,7 +90,7 @@ namespace Enemy {
                 }
 
                 if (this.dash.doesAbility) {
-                    this.dashWeapon.shoot(this.mtxLocal.translation.toVector2(), this.target.toVector3());
+                    this.dashWeapon.shoot(this.mtxLocal.translation.toVector2(), Game.ƒ.Vector2.DIFFERENCE(this.target, this.mtxLocal.translation.toVector2()).toVector3());
                 }
 
 
@@ -121,16 +113,7 @@ namespace Enemy {
             if (this.defencePhaseCurrentTime > 0) {
                 if (this.mtxLocal.translation.equals(new ƒ.Vector2(0, -13).toVector3(), 1)) {
                     this.mtxLocal.translation = new ƒ.Vector2(0, -13).toVector3();
-                    // if (this.summonCurrentCooldown <= 0) {
-                    // if (this.summon.doesAbility) {
-                    let nextState = Math.round(Math.random() * 100);
-
-                    if (nextState <= this.summonChance) {
-                        // this.summon();
-                        this.summon.doAbility();
-                        this.summonCurrentCooldown = this.summonCooldown;
-                    }
-                    // }
+                    this.summon.doAbility();
                 }
                 this.defencePhaseCurrentTime--;
             } else {

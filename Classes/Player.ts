@@ -1,7 +1,7 @@
 namespace Player {
 
     export abstract class Player extends Entity.Entity {
-        public weapon: Weapons.Weapon = new Weapons.Weapon(6, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId, Weapons.AIM.NORMAL);
+        public weapon: Weapons.Weapon = new Weapons.Weapon(60, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId, Weapons.AIM.NORMAL);
 
         public client: Networking.ClientPrediction;
         readonly abilityCount: number = 1;

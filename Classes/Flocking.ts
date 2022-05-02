@@ -55,7 +55,6 @@ namespace Enemy {
                 cohesionMove.scale(1 / this.currentNeighbours.length);
                 cohesionMove.subtract(this.pos);
                 cohesionMove = Calculation.getRotatedVectorByAngle2D(this.myEnemy.moveDirection, Calculation.calcDegree(this.myEnemy.mtxLocal.translation, cohesionMove.toVector3()) / 10).toVector2()
-                console.log(cohesionMove.x + " " + cohesionMove.y);
                 return cohesionMove;
             }
         }
@@ -90,7 +89,6 @@ namespace Enemy {
                 if (nAvoid > 0) {
                     avoidanceMove.scale(1 / nAvoid);
                 }
-                console.log(avoidanceMove.x + " " + avoidanceMove.y);
                 return avoidanceMove;
             }
         }
