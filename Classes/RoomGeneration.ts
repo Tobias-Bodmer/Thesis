@@ -349,6 +349,10 @@ namespace Generation {
             Game.graph.addChild(_room.doors[i]);
         }
 
+        _room.obsticals.forEach(obstical => {
+            Game.graph.addChild(obstical);
+        })
+
         if (_room.roomType == ROOMTYPE.TREASURE && Networking.client.id == Networking.client.idHost) {
             //TODO: add ExternalItems random
             let position: Game.ƒ.Vector2 = _room.mtxLocal.translation.toVector2();

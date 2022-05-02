@@ -81,7 +81,7 @@ namespace Ability {
         private spawnRadius: number = 1;
         protected activateAbility(): void {
             if (Networking.client.id == Networking.client.idHost) {
-                let position: Game.ƒ.Vector2 = new ƒ.Vector2(this.owner.mtxLocal.translation.x + Math.random() * this.spawnRadius, this.owner.mtxLocal.translation.y +2)
+                let position: Game.ƒ.Vector2 = new ƒ.Vector2(this.owner.mtxLocal.translation.x + Math.random() * this.spawnRadius, this.owner.mtxLocal.translation.y + 2)
                 if (Math.round(Math.random()) > 0.5) {
                     EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, position, null, Game.avatar1, null);
                 } else {
@@ -119,15 +119,16 @@ namespace Ability {
             this.coolDown = _number;
             this.currentCooldown = _number;
             this.hasCoolDown = false;
-            Game.ƒ.Loop.addEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
         }
 
         public startCoolDown() {
             this.hasCoolDown = true
+            Game.ƒ.Loop.addEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
         }
 
         private endCoolDOwn() {
             this.hasCoolDown = false;
+            Game.ƒ.Loop.removeEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
         }
 
         public eventUpdate = (_event: Event): void => {

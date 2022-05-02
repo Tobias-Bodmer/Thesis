@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -516,7 +516,7 @@ declare namespace Enemy {
         moveBehaviour(): void;
         attackingPhase(): void;
         defencePhase(): void;
-        shooting360(_beginPhase: boolean): void;
+        shooting360(): void;
     }
 }
 declare namespace Buff {
@@ -645,12 +645,15 @@ declare namespace Enemy {
         avoidWeight: number;
         toTargetWeight: number;
         notToTargetWeight: number;
-        constructor(_enemy: Enemy, _sightRadius: number, _avoidRadius: number, _cohesionWeight: number, _allignWeight: number, _avoidWeight: number, _toTargetWeight: number, _notToTargetWeight: number);
+        obsticalAvoidWeight: number;
+        private obsticalCollider;
+        constructor(_enemy: Enemy, _sightRadius: number, _avoidRadius: number, _cohesionWeight: number, _allignWeight: number, _avoidWeight: number, _toTargetWeight: number, _notToTargetWeight: number, _obsticalAvoidWeight?: number);
         update(): void;
         private findNeighbours;
         calculateCohesionMove(): Game.ƒ.Vector2;
         calculateAllignmentMove(): Game.ƒ.Vector2;
         calculateAvoidanceMove(): Game.ƒ.Vector2;
+        calculateObsticalAvoidanceMove(): Game.ƒ.Vector2;
         doStuff(): Game.ƒ.Vector2;
     }
 }
@@ -814,6 +817,7 @@ declare namespace Generation {
         coordinates: Game.ƒ.Vector2;
         walls: Wall[];
         doors: Door[];
+        obsticals: Obsitcal[];
         finished: boolean;
         enemyCount: number;
         positionUpdated: boolean;
@@ -855,6 +859,13 @@ declare namespace Generation {
         constructor(_parent: Room, _position: Game.ƒ.Vector2, _direction: Interfaces.IRoomExits, _roomSize: number);
         changeRoom(): void;
     }
+    class Obsitcal extends ƒ.Node {
+        tag: Tag.TAG;
+        collider: Collider.Collider;
+        parentRoom: Room;
+        direction: Interfaces.IRoomExits;
+        constructor(_parent: Room, _position: Game.ƒ.Vector2, _scale: number);
+    }
 }
 declare namespace Generation {
     let usedPositions: Game.ƒ.Vector2[];
@@ -882,7 +893,8 @@ declare namespace Tag {
         ROOM = 4,
         WALL = 5,
         DOOR = 6,
-        UI = 7
+        OBSTICAL = 7,
+        UI = 8
     }
 }
 declare namespace Weapons {

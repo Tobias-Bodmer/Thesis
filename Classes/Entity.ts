@@ -93,7 +93,7 @@ namespace Entity {
         collide(_direction: ƒ.Vector3) {
             this.canMoveX = true;
             this.canMoveY = true;
-            let walls: Generation.Wall[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.TAG.ROOM)).walls;
+            let walls: Generation.Wall[] = Game.currentRoom.walls;
             let wallColliders: Game.ƒ.Rectangle[] = [];
             walls.forEach(elem => {
                 wallColliders.push(elem.collider);

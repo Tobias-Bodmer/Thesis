@@ -7,6 +7,7 @@ namespace Tag {
         ROOM,
         WALL,
         DOOR,
+        OBSTICAL,
         UI
     }
 }

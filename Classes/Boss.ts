@@ -16,7 +16,7 @@ namespace Enemy {
 
 
 
-        private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 0,8, 300);
+        private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 0, 8, 300);
         private dash: Ability.Dash = new Ability.Dash(this.netId, 100000, 1, 13 * 60, 2);
         private shoot360: Ability.circleShoot = new Ability.circleShoot(this.netId, 0, 1, 5 * 60);
         private dashWeapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.SUMMONER, 1, this.netId, Weapons.AIM.NORMAL);
@@ -93,17 +93,15 @@ namespace Enemy {
                     this.dashWeapon.shoot(this.mtxLocal.translation.toVector2(), Game.ƒ.Vector2.DIFFERENCE(this.target, this.mtxLocal.translation.toVector2()).toVector3(), null, true);
                     this.dashWeapon.getCoolDown.setMaxCoolDown = Calculation.clampNumber(Math.random() * 30, 8, 30);
                 }
-
-
-
                 this.attackingPhaseCurrentTime--;
             } else {
                 this.mtxLocal.translation = (new ƒ.Vector2(0, 0)).toVector3();
-                this.shooting360(this.beginAttackingPhase);
+                this.shooting360();
             }
         }
 
         defencePhase(): void {
+            this.beginAttackingPhase = false;
             //TODO: make if dependent from teleport animation frame
             // if (!this.mtxLocal.translation.equals(new ƒ.Vector2(0, -13).toVector3(), 1)) {
             this.mtxLocal.translation = (new ƒ.Vector2(0, -12)).toVector3();
@@ -120,12 +118,12 @@ namespace Enemy {
                 this.defencePhaseCurrentTime--;
             } else {
                 this.mtxLocal.translation = (new ƒ.Vector2(0, 0)).toVector3();
-                this.shooting360(this.beginDefencePhase);
+                this.shooting360();
             }
             // }
         }
 
-        shooting360(_beginPhase: boolean) {
+        shooting360() {
             if (!this.beginShooting) {
                 this.currentShootingCount = Math.round(this.shootingCount + Math.random() * 2);
                 this.beginShooting = true;
@@ -137,12 +135,13 @@ namespace Enemy {
                         this.currentShootingCount--;
                     }
                 } else {
-                    if (_beginPhase == this.beginDefencePhase) {
-                        this.damageTaken = 0;
-                    }
-
                     this.beginShooting = false;
-                    _beginPhase = false;
+                    if (this.currentBehaviour == Entity.BEHAVIOUR.SUMMON) {
+                        this.damageTaken = 0;
+                        this.beginDefencePhase = false;
+                    } else {
+                        this.beginAttackingPhase = false;
+                    }
                 }
             }
         }

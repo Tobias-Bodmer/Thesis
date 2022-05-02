@@ -16,6 +16,7 @@ namespace Generation {
         public coordinates: Game.ƒ.Vector2;
         public walls: Wall[] = [];
         public doors: Door[] = [];
+        public obsticals: Obsitcal[] = [];
         public finished: boolean = false;
         public enemyCount: number;
         public positionUpdated: boolean = false;
@@ -49,6 +50,7 @@ namespace Generation {
                     this.enemyCount = 2;
                     this.finished = true;
                     this.cmpMaterial = new ƒ.ComponentMaterial(this.startRoomMat);
+                    this.obsticals.push(new Generation.Obsitcal(this, new ƒ.Vector2(2, 2), 2));
                     break;
                 case ROOMTYPE.NORMAL:
                     this.enemyCount = Math.round(Math.random() * 10) + 20;
@@ -218,6 +220,29 @@ namespace Generation {
             } else {
                 Networking.switchRoomRequest(this.parentRoom.coordinates, this.direction);
             }
+        }
+    }
+
+    export class Obsitcal extends ƒ.Node {
+        public tag: Tag.TAG = Tag.TAG.OBSTICAL;
+        public collider: Collider.Collider;
+        public parentRoom: Room;
+
+        direction: Interfaces.IRoomExits;
+
+        constructor(_parent: Room, _position: Game.ƒ.Vector2, _scale: number) {
+            super("Obstical");
+
+            this.parentRoom = _parent;
+
+            this.addComponent(new ƒ.ComponentTransform());
+            this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshQuad));
+            this.addComponent(new ƒ.ComponentMaterial(new ƒ.Material("black", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("black")))));
+
+            this.mtxLocal.translation = _position.toVector3(0.01);
+            this.mtxLocal.scale(Game.ƒ.Vector3.ONE(_scale));
+
+            this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), this.mtxLocal.scaling.x / 2, null);
         }
     }
 }

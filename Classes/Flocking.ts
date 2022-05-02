@@ -12,8 +12,11 @@ namespace Enemy {
         public avoidWeight: number;
         public toTargetWeight: number;
         public notToTargetWeight: number;
+        public obsticalAvoidWeight: number = 1.5;
 
-        constructor(_enemy: Enemy, _sightRadius: number, _avoidRadius: number, _cohesionWeight: number, _allignWeight: number, _avoidWeight: number, _toTargetWeight: number, _notToTargetWeight: number) {
+        private obsticalCollider: Collider.Collider;
+
+        constructor(_enemy: Enemy, _sightRadius: number, _avoidRadius: number, _cohesionWeight: number, _allignWeight: number, _avoidWeight: number, _toTargetWeight: number, _notToTargetWeight: number, _obsticalAvoidWeight?: number) {
             this.pos = _enemy.mtxLocal.translation.toVector2();
             this.myEnemy = _enemy;
             this.sightRadius = _sightRadius;
@@ -23,11 +26,17 @@ namespace Enemy {
             this.avoidWeight = _avoidWeight;
             this.toTargetWeight = _toTargetWeight;
             this.notToTargetWeight = _notToTargetWeight;
+            if (_obsticalAvoidWeight != null) {
+                this.obsticalAvoidWeight = _obsticalAvoidWeight;
+            }
+
+            this.obsticalCollider = new Collider.Collider(this.pos, this.myEnemy.collider.radius * 1.75, this.myEnemy.netId);
         }
 
         update() {
             this.enemies = Game.enemies;
             this.pos = this.myEnemy.mtxLocal.translation.toVector2();
+            this.obsticalCollider.position = this.pos;
             this.findNeighbours();
         }
 
@@ -93,10 +102,75 @@ namespace Enemy {
             }
         }
 
+        public calculateObsticalAvoidanceMove(): Game.ƒ.Vector2 {
+            let obsticals: Game.ƒ.Node[] = [];
+            Game.currentRoom.walls.forEach(elem => {
+                obsticals.push(elem);
+            });
+            Game.currentRoom.obsticals.forEach(elem => {
+                obsticals.push(elem);
+            });
+            let returnVector: Game.ƒ.Vector2 = Game.ƒ.Vector2.ZERO();
+            let nAvoid: number = 0;
+
+            obsticals.forEach(obstical => {
+                if ((<any>obstical).collider instanceof Game.ƒ.Rectangle && this.obsticalCollider.collidesRect((<any>obstical).collider)) {
+                    let move: Game.ƒ.Vector2 = Game.ƒ.Vector2.DIFFERENCE(this.pos, obstical.mtxLocal.translation.toVector2());
+                    move.normalize();
+
+                    let intersection: Game.ƒ.Rectangle = this.obsticalCollider.getIntersectionRect((<any>obstical).collider);
+                    let areaBeforeMove: number = intersection.width * intersection.height;
+
+                    this.obsticalCollider.position.add(new Game.ƒ.Vector2(move.x, 0));
+                    if (this.obsticalCollider.collidesRect((<any>obstical).collider)) {
+                        intersection = this.obsticalCollider.getIntersectionRect((<any>obstical).collider);
+                        let afterBeforeMove: number = intersection.width * intersection.height;
+
+                        if (areaBeforeMove <= afterBeforeMove) {
+                            returnVector.add(new Game.ƒ.Vector2(0, move.y));
+                        } else {
+                            returnVector.add(new Game.ƒ.Vector2(move.x, 0));
+                        }
+                    } else {
+                        returnVector.add(new Game.ƒ.Vector2(move.x, 0));
+                    }
+
+                    this.obsticalCollider.position.subtract(new Game.ƒ.Vector2(move.x, 0));
+
+                    nAvoid++;
+                }
+                if ((<any>obstical).collider instanceof Collider.Collider && this.obsticalCollider.collides((<any>obstical).collider)) {
+                    let move: Game.ƒ.Vector2 = Game.ƒ.Vector2.DIFFERENCE(this.pos, obstical.mtxLocal.translation.toVector2());
+                    let localAway: Game.ƒ.Vector2 = Game.ƒ.Vector2.SUM(move, this.myEnemy.mtxLocal.translation.toVector2());
+
+                    let distancePos = (Game.ƒ.Vector2.DIFFERENCE(this.myEnemy.target, Game.ƒ.Vector2.SUM(Calculation.getRotatedVectorByAngle2D(localAway.clone.toVector3(), 135).toVector2(), this.myEnemy.mtxLocal.translation.toVector2())));
+                    let distanceNeg = (Game.ƒ.Vector2.DIFFERENCE(this.myEnemy.target, Game.ƒ.Vector2.SUM(Calculation.getRotatedVectorByAngle2D(localAway.clone.toVector3(), -135).toVector2(), this.myEnemy.mtxLocal.translation.toVector2())));
+
+                    if (distanceNeg.magnitudeSquared > distancePos.magnitudeSquared) {
+                        move.add(Calculation.getRotatedVectorByAngle2D(move.clone.toVector3(), 135).toVector2());
+                    } else {
+                        move.add(Calculation.getRotatedVectorByAngle2D(move.clone.toVector3(), -135).toVector2());
+                    }
+
+                    returnVector.add(move);
+
+                    nAvoid++;
+                }
+            })
+
+            if (nAvoid > 0) {
+                returnVector.scale(1 / nAvoid);
+            }
+
+            return returnVector;
+        }
+
         public doStuff(): Game.ƒ.Vector2 {
             let cohesion: Game.ƒ.Vector2 = Game.ƒ.Vector2.ZERO();
             let avoid: Game.ƒ.Vector2 = Game.ƒ.Vector2.ZERO();
             let allign: Game.ƒ.Vector2 = Game.ƒ.Vector2.ZERO();
+            let obsticalAvoid: Game.ƒ.Vector2 = Game.ƒ.Vector2.ZERO();
+
 
             let target = this.myEnemy.moveSimple(this.myEnemy.target);
             if (target.magnitudeSquared > this.toTargetWeight * this.toTargetWeight) {
@@ -126,7 +200,13 @@ namespace Enemy {
                 allign.scale(this.allignWeight);
             }
 
-            let move = Game.ƒ.Vector2.SUM(notToTarget, target, cohesion, avoid, allign);
+            obsticalAvoid = this.calculateObsticalAvoidanceMove();
+            if (obsticalAvoid.magnitudeSquared > this.obsticalAvoidWeight * this.obsticalAvoidWeight) {
+                obsticalAvoid.normalize;
+                obsticalAvoid.scale(this.obsticalAvoidWeight);
+            }
+
+            let move = Game.ƒ.Vector2.SUM(notToTarget, target, cohesion, avoid, allign, obsticalAvoid);
             return move;
         }
     }
