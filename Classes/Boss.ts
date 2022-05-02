@@ -16,7 +16,7 @@ namespace Enemy {
 
 
 
-        private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 50, 5, 500);
+        private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 0,8, 300);
         private dash: Ability.Dash = new Ability.Dash(this.netId, 100000, 1, 13 * 60, 2);
         private shoot360: Ability.circleShoot = new Ability.circleShoot(this.netId, 0, 1, 5 * 60);
         private dashWeapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.SUMMONER, 1, this.netId, Weapons.AIM.NORMAL);

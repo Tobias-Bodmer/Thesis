@@ -236,7 +236,7 @@ namespace Enemy {
             }
 
 
-            if (this.moveDirection.magnitudeSquared > 0) {
+            if (this.moveDirection.magnitudeSquared > 0.0005) {
                 this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
             }
             else {
@@ -355,6 +355,8 @@ namespace Enemy {
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _target: Player.Player, _netId?: number) {
             super(_id, _attributes, _position, _netId);
             this.avatar = _target;
+            this.flocking = new FlockingBehaviour(this, 3, 0.8, 1.5, 1, 1, 0.1, 0);
+
         }
 
         behaviour() {
@@ -369,6 +371,7 @@ namespace Enemy {
             else if (distance < 3) {
                 this.dash.doAbility();
             }
+            this.flocking.update();
         }
 
         moveBehaviour(): void {
@@ -378,7 +381,7 @@ namespace Enemy {
                     this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
                     if (!this.dash.doesAbility) {
                         this.lastMoveDireciton = this.moveDirection;
-                        this.moveDirection = this.moveSimple(this.target).toVector3();
+                        this.moveDirection = this.flocking.doStuff().toVector3();
                     }
                     break;
                 case Entity.BEHAVIOUR.IDLE:

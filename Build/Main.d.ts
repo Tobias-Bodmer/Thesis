@@ -446,6 +446,7 @@ declare namespace Ability {
         protected deactivateAbility(): void;
     }
     class SpawnSummoners extends Ability {
+        private spawnRadius;
         protected activateAbility(): void;
         protected deactivateAbility(): void;
     }
