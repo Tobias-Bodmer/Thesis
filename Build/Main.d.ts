@@ -150,6 +150,7 @@ declare namespace Enemy {
         currentBehaviour: Entity.BEHAVIOUR;
         target: ƒ.Vector2;
         moveDirection: Game.ƒ.Vector3;
+        flocking: FlockingBehaviour;
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
         update(): void;
         doKnockback(_body: Entity.Entity): void;
@@ -430,6 +431,7 @@ declare namespace Ability {
         doesAbility: boolean;
         constructor(_ownerNetId: number, _duration: number, _abilityCount: number, _cooldownTime: number);
         doAbility(): void;
+        hasCooldown(): boolean;
         protected activateAbility(): void;
         protected deactivateAbility(): void;
     }
@@ -618,9 +620,31 @@ declare namespace Collider {
     }
 }
 declare namespace EnemySpawner {
-    function spawnEnemies(): void;
+    function spawnMultipleEnemiesAtRoom(_count: number, _roomPos: Game.ƒ.Vector2): void;
     function spawnByID(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2, _attributes?: Entity.Attributes, _target?: Player.Player, _netID?: number): void;
     function networkSpawnById(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2, _attributes: Entity.Attributes, _netID: number, _target?: number): void;
+}
+declare namespace Enemy {
+    class FlockingBehaviour {
+        private currentNeighbours;
+        sightRadius: number;
+        avoidRadius: number;
+        private enemies;
+        private pos;
+        private myEnemy;
+        cohesionWeight: number;
+        allignWeight: number;
+        avoidWeight: number;
+        toTargetWeight: number;
+        notToTargetWeight: number;
+        constructor(_enemy: Enemy, _sightRadius: number, _avoidRadius: number, _cohesionWeight: number, _allignWeight: number, _avoidWeight: number, _toTargetWeight: number, _notToTargetWeight: number);
+        update(): void;
+        private findNeighbours;
+        calculateCohesionMove(): Game.ƒ.Vector2;
+        calculateAllignmentMove(): Game.ƒ.Vector2;
+        calculateAvoidanceMove(): Game.ƒ.Vector2;
+        doStuff(): Game.ƒ.Vector2;
+    }
 }
 declare namespace Calculation {
     function getCloserAvatarPosition(_startPoint: ƒ.Vector3): ƒ.Vector3;

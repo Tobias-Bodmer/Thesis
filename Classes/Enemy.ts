@@ -16,6 +16,7 @@ namespace Enemy {
         currentBehaviour: Entity.BEHAVIOUR;
         target: ƒ.Vector2;
         moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
+        flocking: FlockingBehaviour;
 
 
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
@@ -25,12 +26,13 @@ namespace Enemy {
 
             // this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["idle"]);
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
-            this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), (this.mtxLocal.scaling.x * this.idleScale) / 2, this.netId)
+            this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), (this.mtxLocal.scaling.x * this.idleScale) / 2, this.netId);
         }
 
         public update() {
             if (Networking.client.id == Networking.client.idHost) {
                 super.update();
+                this.flocking.update();
                 this.moveBehaviour();
                 this.move(this.moveDirection);
                 Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId);
@@ -45,7 +47,7 @@ namespace Enemy {
             super.getKnockback(_knockbackForce, _position);
         }
         move(_direction: ƒ.Vector3) {
-            // this.moveDirection.add(_direction)
+            // this.moveDirection.add(_direction);
             this.collide(_direction);
             // this.moveDirection.subtract(_direction);
         }
@@ -73,7 +75,7 @@ namespace Enemy {
         collide(_direction: ƒ.Vector3) {
             let knockback = this.currentKnockback.clone;
             if (knockback.magnitude > 0) {
-                console.log("direction: " + _direction.magnitude);
+                // console.log("direction: " + knockback.magnitude);
             }
             if (_direction.magnitude > 0) {
                 _direction.normalize();
@@ -92,7 +94,7 @@ namespace Enemy {
                     avatarColliders.push((<Player.Player>elem).collider);
                 });
 
-                this.calculateCollider(avatarColliders, _direction)
+                this.calculateCollider(avatarColliders, _direction);
 
                 if (this.canMoveX && this.canMoveY) {
                     this.cmpTransform.mtxLocal.translate(_direction);
@@ -154,7 +156,7 @@ namespace Enemy {
     }
 
     export class EnemySmash extends Enemy {
-        coolDown = new Ability.Cooldown(5 * 60);
+        coolDown = new Ability.Cooldown(5);
         avatars: Player.Player[] = [];
         randomPlayer = Math.round(Math.random());
         currentBehaviour: Entity.BEHAVIOUR = Entity.BEHAVIOUR.IDLE;
@@ -166,19 +168,23 @@ namespace Enemy {
         behaviour() {
             this.avatars = [Game.avatar1, Game.avatar2];
             this.target = (<Player.Player>this.avatars[this.randomPlayer]).mtxLocal.translation.toVector2();
-            let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(3), this.cmpTransform.mtxLocal.translation).magnitude;
+            let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
 
             if (this.currentBehaviour == Entity.BEHAVIOUR.ATTACK && this.getCurrentFrame >= (<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["attack"]).frames.length - 1) {
                 this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
             }
-            else if (distance < 3 && !this.coolDown.hasCoolDown) {
+            if (distance < 4 && !this.coolDown.hasCoolDown) {
+                this.coolDown.startCoolDown();
                 this.currentBehaviour = Entity.BEHAVIOUR.ATTACK;
-                this.coolDown.startCoolDown()
             }
-            else if (this.currentBehaviour == Entity.BEHAVIOUR.IDLE) {
+            if (this.coolDown.hasCoolDown && this.currentBehaviour != Entity.BEHAVIOUR.IDLE) {
+                this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
+            }
+            if (this.currentBehaviour != Entity.BEHAVIOUR.FOLLOW) {
                 this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
             }
         }
+
 
 
         moveBehaviour(): void {
@@ -201,7 +207,7 @@ namespace Enemy {
     }
 
     export class EnemyDash extends Enemy {
-        protected dash = new Ability.Dash(this.netId, 300, 1, 250 * 60, 5);
+        protected dash = new Ability.Dash(this.netId, 100, 1, 5 * 60, 3);
         lastMoveDireciton: Game.ƒ.Vector3;
         dashCount: number = 1;
         avatars: Player.Player[] = [];
@@ -209,19 +215,29 @@ namespace Enemy {
 
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _attributes, _position, _netId);
+            this.flocking = new FlockingBehaviour(this, 3, 0.8, 1.5, 1, 1, 0.1, 0);
+
         }
 
         behaviour() {
             this.avatars = [Game.avatar1, Game.avatar2]
             this.target = (<Player.Player>this.avatars[this.randomPlayer]).mtxLocal.translation.toVector2();
-            let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
+            let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitudeSquared;
 
-
-            if (distance > 5) {
+            if (!this.dash.hasCooldown()) {
                 this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
             }
-            else if (distance < 3) {
+            if (Math.random() * 100 < 0.1) {
                 this.dash.doAbility();
+
+            }
+            
+
+            if (this.moveDirection.magnitudeSquared > 0) {
+                this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
+            }
+            else {
+                this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
             }
 
         }
@@ -230,14 +246,12 @@ namespace Enemy {
             this.behaviour();
             switch (this.currentBehaviour) {
                 case Entity.BEHAVIOUR.FOLLOW:
-                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
                     if (!this.dash.doesAbility) {
+                        this.moveDirection = this.flocking.doStuff().toVector3();
                         this.lastMoveDireciton = this.moveDirection;
-                        this.moveDirection = this.moveSimple(this.target).toVector3();
                     }
                     break;
                 case Entity.BEHAVIOUR.IDLE:
-                    this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
                     this.moveDirection = ƒ.Vector3.ZERO();
                     break;
                 case Entity.BEHAVIOUR.FLEE:

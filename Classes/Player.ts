@@ -70,7 +70,9 @@ namespace Player {
             enemies.forEach(element => {
                 enemiesCollider.push(element.collider);
             })
-            this.calculateCollider(enemiesCollider, _direction);
+
+            //TODO: uncomment
+            // this.calculateCollider(enemiesCollider, _direction);
 
             if (this.canMoveX && this.canMoveY) {
                 this.cmpTransform.mtxLocal.translate(_direction);

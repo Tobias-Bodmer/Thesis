@@ -108,7 +108,7 @@ namespace AnimationGeneration {
         batIdle = new MyAnimationClass(Entity.ID.BAT, "idle", txtBatIdle, 4, 12);
 
         redTickIdle = new MyAnimationClass(Entity.ID.REDTICK, "idle", txtRedTickIdle, 6, 12);
-        redTickWalk = new MyAnimationClass(Entity.ID.REDTICK, "walk", txtRedTickWalk, 4, 12);
+        redTickWalk = new MyAnimationClass(Entity.ID.REDTICK, "walk", txtRedTickWalk, 4, 16);
 
         smallTickIdle = new MyAnimationClass(Entity.ID.SMALLTICK, "idle", txtSmallTickIdle, 6, 12);
         smallTickWalk = new MyAnimationClass(Entity.ID.SMALLTICK, "walk", txtSmallTickWalk, 4, 12);

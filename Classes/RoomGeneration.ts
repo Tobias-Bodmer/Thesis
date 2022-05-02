@@ -282,7 +282,7 @@ namespace Generation {
                 addRoomToGraph(_currentRoom.neighbourW, exits);
             }
 
-            EnemySpawner.spawnEnemies();
+            EnemySpawner.spawnMultipleEnemiesAtRoom(_currentRoom.enemyCount, _currentRoom.mtxLocal.translation.toVector2());
         }
     }
 

@@ -36,6 +36,10 @@ namespace Ability {
             }
         }
 
+        public hasCooldown(): boolean {
+            return this.cooldown.hasCoolDown;
+        }
+
         protected activateAbility() {
 
         }
@@ -105,6 +109,7 @@ namespace Ability {
         constructor(_number: number) {
             this.coolDown = _number;
             this.currentCooldown = _number;
+            this.hasCoolDown = false;
         }
 
         public startCoolDown() {
