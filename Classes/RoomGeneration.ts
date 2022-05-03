@@ -22,7 +22,7 @@ namespace Generation {
             addRoom(rooms[rooms.length - 1], Generation.ROOMTYPE.NORMAL);
         }
         addRoom(rooms[rooms.length - 1], Generation.ROOMTYPE.BOSS);
-        addSpecialRooms();
+        //TODO: fix or do it not like that addSpecialRooms();
         addRoom(rooms[rooms.length - 3], Generation.ROOMTYPE.MERCHANT);
         rooms.forEach(room => {
             calcRoomDoors(room);
@@ -30,10 +30,6 @@ namespace Generation {
         })
 
         placeRoomToWorlCoords(rooms[0]);
-
-        // for (let i = 0; i < rooms.length; i++) {
-        //     rooms[i].setDoors();
-        // }
 
         addRoomToGraph(rooms[0]);
         sendRoom(<Interfaces.IRoom>{ coordinates: rooms[0].coordinates, direction: null, exits: rooms[0].exits, roomType: rooms[0].roomType, translation: rooms[0].mtxLocal.translation });
@@ -71,9 +67,9 @@ namespace Generation {
         let randomNumber: number = Math.round(Math.random() * (numberOfExits));
         let possibleExitIndex: number[] = getExitIndex(_currentRoom.exits);
         // console.log(_roomType + ": " + possibleExitIndex + "____ " + randomNumber);
-        let newRoomPosition: Game.ƒ.Vector2;
-        let newRoom: Room;
-        let newCoord: Game.ƒ.Vector2;
+        let newRoomPosition: Game.ƒ.Vector2 = null;
+        let newRoom: Room = null;
+        let newCoord: Game.ƒ.Vector2 = null;
         let defaultExits: Interfaces.IRoomExits = <Interfaces.IRoomExits>{ north: true, east: true, south: true, west: true };
 
         if (errorCount > 5) {
@@ -85,7 +81,7 @@ namespace Generation {
         console.log(possibleExitIndex[randomNumber]);
         switch (possibleExitIndex[randomNumber]) {
             case 0: // north
-                newRoomPosition = new Game.ƒ.Vector2(_currentRoom.coordinates.x, _currentRoom.coordinates.y + 1);
+                newRoomPosition = new Game.ƒ.Vector2(_currentRoom.coordinates.clone.x, _currentRoom.coordinates.clone.y + 1);
                 newCoord = usedPositions.find(room => room.equals(newRoomPosition));
                 if (newCoord == undefined) {
                     newRoom = new Room("roomNormal", (newRoomPosition), defaultExits, _roomType);
@@ -106,7 +102,7 @@ namespace Generation {
                 }
                 break;
             case 1: // east
-                newRoomPosition = new Game.ƒ.Vector2(_currentRoom.coordinates.x + 1, _currentRoom.coordinates.y);
+                newRoomPosition = new Game.ƒ.Vector2(_currentRoom.coordinates.clone.x + 1, _currentRoom.coordinates.clone.y);
                 newCoord = usedPositions.find(room => room.equals(newRoomPosition));
                 if (newCoord == undefined) {
                     newRoom = new Room("roomNormal", (newRoomPosition), defaultExits, _roomType);
@@ -128,7 +124,7 @@ namespace Generation {
 
                 break;
             case 2: // south
-                newRoomPosition = new Game.ƒ.Vector2(_currentRoom.coordinates.x, _currentRoom.coordinates.y - 1);
+                newRoomPosition = new Game.ƒ.Vector2(_currentRoom.coordinates.clone.x, _currentRoom.coordinates.clone.y - 1);
                 newCoord = usedPositions.find(room => room.equals(newRoomPosition));
                 if (newCoord == undefined) {
                     newRoom = new Room("roomNormal", (newRoomPosition), defaultExits, _roomType);
@@ -149,7 +145,7 @@ namespace Generation {
                 }
                 break;
             case 3: //west
-                newRoomPosition = new Game.ƒ.Vector2(_currentRoom.coordinates.x - 1, _currentRoom.coordinates.y);
+                newRoomPosition = new Game.ƒ.Vector2(_currentRoom.coordinates.clone.x - 1, _currentRoom.coordinates.clone.y);
                 newCoord = usedPositions.find(room => room.equals(newRoomPosition));
                 if (newCoord == undefined) {
                     newRoom = new Room("roomNormal", (newRoomPosition), defaultExits, _roomType);
@@ -178,14 +174,16 @@ namespace Generation {
 
     function addSpecialRooms(): void {
         rooms.forEach(room => {
-            // room.exits = calcPathExits(room.coordinates);
-            if (isSpawning(treasureRoomSpawnChance)) {
-                addRoom(room, Generation.ROOMTYPE.TREASURE);
-                return;
-            }
-            if (isSpawning(challengeRoomSpawnChance)) {
-                addRoom(room, Generation.ROOMTYPE.CHALLENGE)
-                return;
+            if (room.roomType == ROOMTYPE.NORMAL) {
+                // room.exits = calcPathExits(room.coordinates);
+                if (isSpawning(treasureRoomSpawnChance)) {
+                    addRoom(room, Generation.ROOMTYPE.TREASURE);
+                    return;
+                }
+                if (isSpawning(challengeRoomSpawnChance)) {
+                    addRoom(room, Generation.ROOMTYPE.CHALLENGE)
+                    return;
+                }
             }
         });
     }

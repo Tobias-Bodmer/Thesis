@@ -28,6 +28,8 @@ namespace Game {
     export let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
     export let graph: ƒ.Node = new ƒ.Node("Graph");
 
+    viewport.initialize("Viewport", graph, cmpCamera, canvas);
+
     export let avatar1: Player.Player;
     export let avatar2: Player.Player;
 
@@ -67,8 +69,6 @@ namespace Game {
         cmpCamera.mtxPivot.translation = ƒ.Vector3.ZERO();
         cmpCamera.mtxPivot.translateZ(25);
         cmpCamera.mtxPivot.rotateY(180);
-
-        viewport.initialize("Viewport", graph, cmpCamera, canvas);
 
         if (Networking.client.id == Networking.client.idHost) {
             Generation.generateRooms();

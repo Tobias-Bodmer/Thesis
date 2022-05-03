@@ -53,6 +53,7 @@ namespace Generation {
                     break;
                 case ROOMTYPE.NORMAL:
                     this.enemyCount = Math.round(Math.random() * 10) + 20;
+                    this.finished = true;
                     this.cmpMaterial = new ƒ.ComponentMaterial(this.normalRoomMat);
                     break;
                 case ROOMTYPE.MERCHANT:
@@ -68,10 +69,12 @@ namespace Generation {
                     break;
                 case ROOMTYPE.CHALLENGE:
                     this.enemyCount = Math.round(Math.random() * 20) + 30;
+                    this.finished = true;
                     this.cmpMaterial = new ƒ.ComponentMaterial(this.challengeRoomMat);
                     break;
                 case ROOMTYPE.BOSS:
                     this.enemyCount = 0;
+                    this.finished = true;
                     this.cmpMaterial = new ƒ.ComponentMaterial(this.bossRoomMat);
                     break;
             }
