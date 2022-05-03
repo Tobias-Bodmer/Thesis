@@ -28,37 +28,37 @@ namespace Generation {
             calcRoomDoors(room);
             console.log(room.coordinates + " " + room.exits.north + " " + room.exits.east + " " + room.exits.south + " " + room.exits.west + " " + room.roomType.toString());
         })
-      
-        placeRoomsLocal(rooms[0]);
 
-        for (let i = 0; i < rooms.length; i++) {
-            rooms[i].setDoors();
-        }
+        placeRoomToWorlCoords(rooms[0]);
+
+        // for (let i = 0; i < rooms.length; i++) {
+        //     rooms[i].setDoors();
+        // }
 
         addRoomToGraph(rooms[0]);
         sendRoom(<Interfaces.IRoom>{ coordinates: rooms[0].coordinates, direction: null, exits: rooms[0].exits, roomType: rooms[0].roomType, translation: rooms[0].mtxLocal.translation });
     }
 
-    function placeRoomsLocal(_firstRoom: Room) {
+    function placeRoomToWorlCoords(_firstRoom: Room) {
         if (_firstRoom.neighbourN != undefined && !_firstRoom.neighbourN.positionUpdated) {
             _firstRoom.neighbourN.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourN.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourN.roomSize / 2), _firstRoom.neighbourN.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourN.roomSize / 2), -0.01);
             _firstRoom.neighbourN.positionUpdated = true;
-            placeRoomsLocal(_firstRoom.neighbourN);
+            placeRoomToWorlCoords(_firstRoom.neighbourN);
         }
         if (_firstRoom.neighbourE != undefined && !_firstRoom.neighbourE.positionUpdated) {
             _firstRoom.neighbourE.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourE.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourE.roomSize / 2), _firstRoom.neighbourE.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourE.roomSize / 2), -0.01);
             _firstRoom.neighbourE.positionUpdated = true;
-            placeRoomsLocal(_firstRoom.neighbourE);
+            placeRoomToWorlCoords(_firstRoom.neighbourE);
         }
         if (_firstRoom.neighbourS != undefined && !_firstRoom.neighbourS.positionUpdated) {
             _firstRoom.neighbourS.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourS.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourS.roomSize / 2), _firstRoom.neighbourS.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourS.roomSize / 2), -0.01);
             _firstRoom.neighbourS.positionUpdated = true;
-            placeRoomsLocal(_firstRoom.neighbourS);
+            placeRoomToWorlCoords(_firstRoom.neighbourS);
         }
         if (_firstRoom.neighbourW != undefined && !_firstRoom.neighbourW.positionUpdated) {
             _firstRoom.neighbourW.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourW.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourW.roomSize / 2), _firstRoom.neighbourW.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourW.roomSize / 2), -0.01);
             _firstRoom.neighbourW.positionUpdated = true;
-            placeRoomsLocal(_firstRoom.neighbourW);
+            placeRoomToWorlCoords(_firstRoom.neighbourW);
         }
     }
 
@@ -337,14 +337,13 @@ namespace Generation {
             }
         }
 
-        if (Networking.client.id != Networking.client.idHost) {
-            _room.setDoors();
-        }
+        // if (Networking.client.id != Networking.client.idHost) {
+        //     _room.setDoors();
+        // }
 
-        for (let i = 0; i < _room.doors.length; i++) {
-            Game.graph.addChild(_room.doors[i]);
-        }
-
+        // for (let i = 0; i < _room.doors.length; i++) {
+        //     Game.graph.addChild(_room.doors[i]);
+        // }
         _room.obsticals.forEach(obstical => {
             Game.graph.addChild(obstical);
         })

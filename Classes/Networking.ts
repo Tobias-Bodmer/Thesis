@@ -404,7 +404,7 @@ namespace Networking {
 
                             let newRoom: Generation.Room = new Generation.Room("room", room.coordinates, room.exits, room.roomType);
                             newRoom.mtxLocal.translation = room.translation;
-                            newRoom.setDoors();
+                            // newRoom.setDoors();
 
                             if (room.direction != null) {
                                 Generation.addRoomToGraph(newRoom, room.direction);

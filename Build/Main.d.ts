@@ -816,11 +816,11 @@ declare namespace Generation {
         roomType: ROOMTYPE;
         coordinates: Game.ƒ.Vector2;
         walls: Wall[];
-        doors: Door[];
         obsticals: Obsitcal[];
         finished: boolean;
         enemyCount: number;
         positionUpdated: boolean;
+        private wallOffset;
         neighbourN: Room;
         neighbourE: Room;
         neighbourS: Room;
@@ -839,26 +839,22 @@ declare namespace Generation {
         constructor(_name: string, _coordiantes: Game.ƒ.Vector2, _exits: Interfaces.IRoomExits, _roomType: ROOMTYPE);
         protected eventUpdate: (_event: Event) => void;
         update(): void;
-        private addWalls;
-        setDoors(): void;
+        private addWallsAndRooms;
         getRoomSize(): number;
     }
     class Wall extends ƒ.Node {
         tag: Tag.TAG;
         collider: Game.ƒ.Rectangle;
-        wallThickness: number;
         door: Door;
-        constructor(_position: Game.ƒ.Vector2, _width: number, _direction: Interfaces.IRoomExits);
+        constructor(_pos: Game.ƒ.Vector2, _scaling: Game.ƒ.Vector2);
+        update(): void;
     }
     class Door extends ƒ.Node {
         tag: Tag.TAG;
         collider: Game.ƒ.Rectangle;
-        doorWidth: number;
-        doorThickness: number;
-        parentRoom: Room;
+        private offsetX;
         direction: Interfaces.IRoomExits;
-        constructor(_parent: Room, _position: Game.ƒ.Vector2, _direction: Interfaces.IRoomExits, _roomSize: number);
-        changeRoom(): void;
+        constructor(_position: Game.ƒ.Vector2);
     }
     class Obsitcal extends ƒ.Node {
         tag: Tag.TAG;
