@@ -34,12 +34,14 @@ namespace Player {
 
             this.moveDirection.subtract(_direction);
 
-            // let doors: Generation.Door[] = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.TAG.ROOM)).doors;
-            // doors.forEach((element) => {
-            //     if (this.collider.collidesRect(element.collider)) {
-            //         // (<Generation.Door>element).changeRoom();
-            //     }
-            // });
+            let walls: Generation.Wall[] = (<Generation.Wall[]>Game.currentRoom.getChildren());
+            walls.forEach((wall) => {
+                if (wall.door != undefined && wall.door.isActive) {
+                    if (this.collider.collidesRect(wall.door.collider)) {
+                        (<Generation.Door>wall.door).changeRoom();
+                    }
+                }
+            });
         }
 
         protected scaleMoveVector(_direction: Game.ƒ.Vector3) {

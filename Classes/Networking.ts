@@ -273,7 +273,7 @@ namespace Networking {
                                 new ƒ.Vector2(
                                     message.content.position.data[0],
                                     message.content.position.data[1]),
-                                 message.content.netId, message.content.target);
+                                message.content.netId, message.content.target);
                         }
 
                         //Sync enemy transform from host to client
@@ -414,10 +414,7 @@ namespace Networking {
                         }
                         //send request to switch rooms
                         if (message.content != undefined && message.content.text == FUNCTION.SWITCHROOMREQUEST.toString()) {
-                            let coordiantes: Game.ƒ.Vector2 = new Game.ƒ.Vector2(message.content.coordiantes.data[0], message.content.coordiantes.data[1]);
-                            let currentroom = Generation.rooms.find(elem => elem.coordinates.equals(coordiantes));
-
-                            Generation.switchRoom(currentroom, message.content.direction);
+                            Generation.switchRoom(message.content.direction);
                         }
                     }
                 }
@@ -606,9 +603,9 @@ namespace Networking {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SENDROOM, room: _room } })
         }
     }
-    export function switchRoomRequest(_coordiantes: Game.ƒ.Vector2, _direction: Interfaces.IRoomExits) {
+    export function switchRoomRequest(_direction: Interfaces.IRoomExits) {
         if (Game.connected && client.idHost != client.id) {
-            client.dispatch({ route: undefined, idTarget: client.idHost, content: { text: FUNCTION.SWITCHROOMREQUEST, coordiantes: _coordiantes, direction: _direction } })
+            client.dispatch({ route: undefined, idTarget: client.idHost, content: { text: FUNCTION.SWITCHROOMREQUEST, direction: _direction } })
         }
     }
     //#endregion

@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -762,7 +762,7 @@ declare namespace Networking {
     function updateBuffList(_buffList: Buff.Buff[], _netId: number): void;
     function updateUI(_position: Game.ƒ.Vector2, _value: number): void;
     function sendRoom(_room: Interfaces.IRoom): void;
-    function switchRoomRequest(_coordiantes: Game.ƒ.Vector2, _direction: Interfaces.IRoomExits): void;
+    function switchRoomRequest(_direction: Interfaces.IRoomExits): void;
     function idGenerator(): number;
     function popID(_id: number): void;
     function isNetworkObject(_object: any): _object is Interfaces.INetworkable;
@@ -820,7 +820,6 @@ declare namespace Generation {
         finished: boolean;
         enemyCount: number;
         positionUpdated: boolean;
-        private wallOffset;
         neighbourN: Room;
         neighbourE: Room;
         neighbourS: Room;
@@ -846,15 +845,17 @@ declare namespace Generation {
         tag: Tag.TAG;
         collider: Game.ƒ.Rectangle;
         door: Door;
-        constructor(_pos: Game.ƒ.Vector2, _scaling: Game.ƒ.Vector2);
-        update(): void;
+        constructor(_pos: Game.ƒ.Vector2, _scaling: Game.ƒ.Vector2, _room: Room);
+        setDoor(_pos: Game.ƒ.Vector2, _scaling: Game.ƒ.Vector2): void;
+        setCollider(): void;
     }
     class Door extends ƒ.Node {
         tag: Tag.TAG;
         collider: Game.ƒ.Rectangle;
-        private offsetX;
-        direction: Interfaces.IRoomExits;
-        constructor(_position: Game.ƒ.Vector2);
+        nextRoom: Interfaces.IRoomExits;
+        constructor();
+        setCollider(): void;
+        changeRoom(): void;
     }
     class Obsitcal extends ƒ.Node {
         tag: Tag.TAG;
@@ -868,7 +869,7 @@ declare namespace Generation {
     let usedPositions: Game.ƒ.Vector2[];
     let rooms: Room[];
     function generateRooms(): void;
-    function switchRoom(_currentRoom: Room, _direction: Interfaces.IRoomExits): void;
+    function switchRoom(_direction: Interfaces.IRoomExits): void;
     function addRoomToGraph(_room: Room, _direciton?: Interfaces.IRoomExits): void;
 }
 declare namespace Entity {

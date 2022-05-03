@@ -5,6 +5,7 @@ namespace EnemySpawner {
 
     export function spawnMultipleEnemiesAtRoom(_count: number, _roomPos: Game.ƒ.Vector2): void {
         if (Networking.client.idHost == Networking.client.id) {
+            //TODO: depending on currentroom.enemyCount and decrease it 
             maxEnemies = _count;
             let spawnedEnemies: number = 0;
             while (spawnedEnemies < maxEnemies) {
@@ -34,7 +35,7 @@ namespace EnemySpawner {
         }
     }
 
-    export function spawnByID(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2,  _target?: Player.Player, _netID?: number) {
+    export function spawnByID(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2, _target?: Player.Player, _netID?: number) {
         let enemy: Enemy.Enemy;
         switch (_enemyClass) {
             case Enemy.ENEMYCLASS.ENEMYDASH:
@@ -95,15 +96,15 @@ namespace EnemySpawner {
         }
     }
 
-    export function networkSpawnById(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2,  _netID: number, _target?: number) {
+    export function networkSpawnById(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2, _netID: number, _target?: number) {
         if (_target != null) {
             if (Game.avatar1.netId == _target) {
-                spawnByID(_enemyClass, _id, _position,  Game.avatar1, _netID);
+                spawnByID(_enemyClass, _id, _position, Game.avatar1, _netID);
             } else {
-                spawnByID(_enemyClass, _id, _position,  Game.avatar2, _netID);
+                spawnByID(_enemyClass, _id, _position, Game.avatar2, _netID);
             }
         } else {
-            spawnByID(_enemyClass, _id, _position,  null, _netID);
+            spawnByID(_enemyClass, _id, _position, null, _netID);
         }
     }
 

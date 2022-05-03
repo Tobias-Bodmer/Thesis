@@ -19,7 +19,6 @@ namespace Generation {
         public finished: boolean = false;
         public enemyCount: number;
         public positionUpdated: boolean = false;
-        private wallOffset: number = 0.5;
         neighbourN: Room;
         neighbourE: Room;
         neighbourS: Room;
@@ -47,11 +46,10 @@ namespace Generation {
 
             switch (_roomType) {
                 case ROOMTYPE.START:
-                    this.enemyCount = 2;
-                    this.roomSize = 10;
+                    this.enemyCount = 0;
+                    this.roomSize = 15;
                     this.finished = true;
                     this.cmpMaterial = new ƒ.ComponentMaterial(this.startRoomMat);
-                    // this.obsticals.push(new Generation.Obsitcal(this, new ƒ.Vector2(2, 2), 2));
                     break;
                 case ROOMTYPE.NORMAL:
                     this.enemyCount = Math.round(Math.random() * 10) + 20;
@@ -79,15 +77,13 @@ namespace Generation {
             }
 
             this.addComponent(new ƒ.ComponentTransform());
-            this.cmpTransform.mtxLocal.scale(new ƒ.Vector3(this.roomSize, this.roomSize, 0));
+            this.cmpTransform.mtxLocal.scale(new ƒ.Vector3(this.roomSize, this.roomSize, 1));
             this.addComponent(this.cmpMesh);
             this.addComponent(this.cmpMaterial);
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(this.coordinates.x * this.roomSize, this.coordinates.y * this.roomSize, -0.01);
 
             this.addWallsAndRooms();
-            this.walls.forEach(wall => {
-                this.addChild(wall);
-            })
+
             this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate)
         }
 
@@ -99,16 +95,17 @@ namespace Generation {
             if (this.enemyCount <= 0) {
                 this.finished = true;
             }
-            this.walls.forEach(wall => {
-                wall.update();
-            })
         }
 
         private addWallsAndRooms(): void {
-            this.walls.push(new Wall(new ƒ.Vector2(this.wallOffset, 0), new ƒ.Vector2(1 / this.roomSize, 1)));
-            this.walls.push(new Wall(new ƒ.Vector2(- this.wallOffset, 0), new ƒ.Vector2(1 / this.roomSize, 1)));
-            this.walls.push(new Wall(new ƒ.Vector2(0, + this.wallOffset), new ƒ.Vector2(1, 1 / this.roomSize)));
-            this.walls.push(new Wall(new ƒ.Vector2(0, - this.wallOffset), new ƒ.Vector2(1, 1 / this.roomSize)));
+            this.addChild((new Wall(new ƒ.Vector2(0.5, 0), new ƒ.Vector2(1 / this.roomSize, 1 + 1 / this.roomSize), this)));
+            this.addChild((new Wall(new ƒ.Vector2(0, 0.5), new ƒ.Vector2(1, 1 / this.roomSize), this)));
+            this.addChild((new Wall(new ƒ.Vector2(-0.5, 0), new ƒ.Vector2(1 / this.roomSize, 1 + 1 / this.roomSize), this)));
+            this.addChild((new Wall(new ƒ.Vector2(0, -0.5), new ƒ.Vector2(1, 1 / this.roomSize), this)));
+
+            this.getChildren().filter(elem => (<Wall>elem).tag == Tag.TAG.WALL).forEach(wall => {
+                this.walls.push((<Wall>wall));
+            })
         }
 
         public getRoomSize(): number {
@@ -120,59 +117,96 @@ namespace Generation {
         public tag: Tag.TAG = Tag.TAG.WALL;
         public collider: Game.ƒ.Rectangle;
         public door: Door;
-        constructor(_pos: Game.ƒ.Vector2, _scaling: Game.ƒ.Vector2) {
+
+        constructor(_pos: Game.ƒ.Vector2, _scaling: Game.ƒ.Vector2, _room: Room) {
             super("Wall");
 
             this.addComponent(new ƒ.ComponentTransform());
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshQuad));
             this.addComponent(new ƒ.ComponentMaterial(new ƒ.Material("red", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("red")))));
-            this.mtxLocal.translation = _pos.toVector3();
-            if (_pos.x > 0) {
-                this.mtxLocal.rotateZ(180);
+
+            let newPos = _pos.toVector3(0.01);
+            this.mtxLocal.translation = newPos;
+            this.mtxLocal.scaling = _scaling.toVector3(1);
+
+
+            if (_pos.x != 0) {
+                if (_pos.x > 0 && _room.exits.east) {
+                    this.setDoor(_pos, _scaling);
+                } else if (_pos.x < 0 && _room.exits.west) {
+                    this.setDoor(_pos, _scaling);
+                }
+            } else {
+                if (_pos.y > 0 && _room.exits.north) {
+                    this.setDoor(_pos, _scaling);
+                } else if (_pos.y < 0 && _room.exits.south) {
+                    this.setDoor(_pos, _scaling);
+                }
             }
-            this.mtxLocal.scaling = _scaling.toVector3();
-            this.door = new Door(this.mtxLocal.translation.toVector2())
-            this.addChild(this.door);
         }
 
-        update() {
-            this.collider = new ƒ.Rectangle(this.mtxWorld.translation.x, this.mtxWorld.translation.y, this.mtxWorld.scaling.x, this.mtxWorld.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
-            this.mtxLocal.translation = new ƒ.Vector3(0, 0, 1);
+        setDoor(_pos: Game.ƒ.Vector2, _scaling: Game.ƒ.Vector2) {
+            this.door = new Door();
+            this.addChild(this.door);
+
+            if (Math.abs(_pos.x) > 0) {
+                this.door.mtxLocal.scaling = new Game.ƒ.Vector3(1, _scaling.x / _scaling.y * 3, 1);
+                if (_pos.x > 0) {
+                    this.door.nextRoom = (<Interfaces.IRoomExits>{ north: false, east: true, south: false, west: false });
+                    this.door.mtxLocal.translateX(-0.5);
+                } else {
+                    this.door.nextRoom = (<Interfaces.IRoomExits>{ north: false, east: false, south: false, west: true });
+                    this.door.mtxLocal.translateX(0.5);
+                }
+            } else {
+                this.door.mtxLocal.scaling = new Game.ƒ.Vector3(_scaling.y / _scaling.x * 3, 1, 1);
+                if (_pos.y > 0) {
+                    this.door.nextRoom = (<Interfaces.IRoomExits>{ north: true, east: false, south: false, west: false });
+                    this.door.mtxLocal.translateY(-0.5);
+                } else {
+                    this.door.nextRoom = (<Interfaces.IRoomExits>{ north: false, east: false, south: true, west: false });
+                    this.door.mtxLocal.translateY(0.5);
+                }
+            }
+        }
+
+        setCollider() {
+            this.collider = new Game.ƒ.Rectangle(this.mtxWorld.translation.x, this.mtxWorld.translation.y, this.mtxWorld.scaling.x, this.mtxWorld.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
         }
     }
 
     export class Door extends ƒ.Node {
         public tag: Tag.TAG = Tag.TAG.DOOR;
         public collider: Game.ƒ.Rectangle;
-        private offsetX: number = 3;
 
-        direction: Interfaces.IRoomExits;
 
-        constructor(_position: Game.ƒ.Vector2) {
+        public nextRoom: Interfaces.IRoomExits;
+
+        constructor() {
             super("Door");
-
 
             this.addComponent(new ƒ.ComponentTransform());
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshQuad));
             this.addComponent(new ƒ.ComponentMaterial(new ƒ.Material("green", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("green")))));
 
-            this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
+            this.mtxLocal.translateZ(0.1);
+        }
 
-
-            // this.cmpTransform.mtxLocal.translation.x += this.offsetX;
-            // this.cmpTransform.mtxLocal.scaling = new Game.ƒ.Vector3(this.doorWidth, this.doorThickness, -0.1);
-            // this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
+        setCollider() {
+            if (this.isActive) {
+                this.collider = new Game.ƒ.Rectangle(this.mtxWorld.translation.x, this.mtxWorld.translation.y, this.mtxWorld.scaling.x, this.mtxWorld.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
+            }
         }
 
 
 
-        // public changeRoom() {
-        //     if (Networking.client.id == Networking.client.idHost) {
-        //         Generation.switchRoom(this.parentRoom, this.direction);
-        //     } else {
-        //         Networking.switchRoomRequest(this.parentRoom.coordinates, this.direction);
-        //     }
-        // }
+        public changeRoom() {
+            if (Networking.client.id == Networking.client.idHost) {
+                Generation.switchRoom(this.nextRoom);
+            } else {
+                Networking.switchRoomRequest(this.nextRoom);
+            }
+        }
     }
 
     export class Obsitcal extends ƒ.Node {
@@ -186,6 +220,7 @@ namespace Generation {
             super("Obstical");
 
             this.parentRoom = _parent;
+            this.parentRoom.obsticals.push(this);
 
             this.addComponent(new ƒ.ComponentTransform());
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshQuad));

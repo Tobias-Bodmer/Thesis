@@ -64,6 +64,11 @@ namespace Game {
 
     //#region "essential"
     async function init() {
+        cmpCamera.mtxPivot.translation = ƒ.Vector3.ZERO();
+        cmpCamera.mtxPivot.translateZ(25);
+        cmpCamera.mtxPivot.rotateY(180);
+
+        viewport.initialize("Viewport", graph, cmpCamera, canvas);
 
         if (Networking.client.id == Networking.client.idHost) {
             Generation.generateRooms();
@@ -73,12 +78,6 @@ namespace Game {
         graph.appendChild(avatar1);
 
         ƒAid.addStandardLightComponents(graph);
-
-        cmpCamera.mtxPivot.translation = ƒ.Vector3.ZERO();
-        cmpCamera.mtxPivot.translateZ(25);
-        cmpCamera.mtxPivot.rotateY(180);
-
-        viewport.initialize("Viewport", graph, cmpCamera, canvas);
     }
 
     function update(): void {
@@ -172,7 +171,7 @@ namespace Game {
 
                     if (Networking.client.id == Networking.client.idHost) {
                         // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.REDTICK, new ƒ.Vector2(3, 3), avatar1);
-                        EnemySpawner.spawnMultipleEnemiesAtRoom(5, Game.currentRoom.mtxLocal.translation.toVector2());
+                        // EnemySpawner.spawnMultipleEnemiesAtRoom(5, Game.currentRoom.mtxLocal.translation.toVector2());
                         // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.ENEMYSMASH, Entity.ID.OGER, new ƒ.Vector2(3, 3), null);
                         // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
                     }
@@ -180,13 +179,13 @@ namespace Game {
                     //#region init Items
                     if (Networking.client.id == Networking.client.idHost) {
                         // item1 = new Items.BuffItem(Items.ITEMID.TOXICRELATIONSHIP, new ƒ.Vector2(0, 2), null);
-                        let item2 = new Items.InternalItem(Items.ITEMID.SCALEDOWN, new ƒ.Vector2(0, -2), null);
-                        let item3 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(-2, 0), null);
+                        // let item2 = new Items.InternalItem(Items.ITEMID.SCALEDOWN, new ƒ.Vector2(0, -2), null);
+                        // let item3 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(-2, 0), null);
 
 
                         // graph.appendChild(item1);
-                        graph.appendChild(item2);
-                        graph.appendChild(item3);
+                        // graph.appendChild(item2);
+                        // graph.appendChild(item3);
 
                     }
 

@@ -243,6 +243,7 @@ namespace Generation {
             }
         } else {
             _room.exits.north = false;
+            _room.walls.find(elem => elem.mtxLocal.translation.y > 0).door.activate(false);
         }
         if (usedPositions.find(room => room.equals(new Game.ƒ.Vector2(_room.coordinates.x + 1, _room.coordinates.y))) != undefined) {
             _room.exits.east = true;
@@ -251,6 +252,7 @@ namespace Generation {
             }
         } else {
             _room.exits.east = false;
+            _room.walls.find(elem => elem.mtxLocal.translation.x > 0).door.activate(false);
         }
         if (usedPositions.find(room => room.equals(new Game.ƒ.Vector2(_room.coordinates.x, _room.coordinates.y - 1))) != undefined) {
             _room.exits.south = true;
@@ -259,6 +261,7 @@ namespace Generation {
             }
         } else {
             _room.exits.south = false;
+            _room.walls.find(elem => elem.mtxLocal.translation.y < 0).door.activate(false);
         }
         if (usedPositions.find(room => room.equals(new Game.ƒ.Vector2(_room.coordinates.x - 1, _room.coordinates.y))) != undefined) {
             _room.exits.west = true;
@@ -267,50 +270,55 @@ namespace Generation {
             }
         } else {
             _room.exits.west = false;
+            _room.walls.find(elem => elem.mtxLocal.translation.x < 0).door.activate(false);
         }
     }
 
-
-
-    export function switchRoom(_currentRoom: Room, _direction: Interfaces.IRoomExits) {
-        if (_currentRoom.finished) {
+    export function switchRoom(_direction: Interfaces.IRoomExits) {
+        if (Game.currentRoom.finished) {
             if (_direction.north) {
                 let exits: Interfaces.IRoomExits = { north: false, east: false, south: true, west: false };
-                sendRoom(<Interfaces.IRoom>{ coordinates: _currentRoom.neighbourN.coordinates, direction: exits, exits: _currentRoom.neighbourN.exits, roomType: _currentRoom.neighbourN.roomType, translation: _currentRoom.neighbourN.mtxLocal.translation });
-                addRoomToGraph(_currentRoom.neighbourN, exits);
+                sendRoom(<Interfaces.IRoom>{ coordinates: Game.currentRoom.neighbourN.coordinates, direction: exits, exits: Game.currentRoom.neighbourN.exits, roomType: Game.currentRoom.neighbourN.roomType, translation: Game.currentRoom.neighbourN.mtxLocal.translation });
+                addRoomToGraph(Game.currentRoom.neighbourN, exits);
             }
             if (_direction.east) {
                 let exits: Interfaces.IRoomExits = { north: false, east: false, south: false, west: true };
-                sendRoom(<Interfaces.IRoom>{ coordinates: _currentRoom.neighbourE.coordinates, direction: exits, exits: _currentRoom.neighbourE.exits, roomType: _currentRoom.neighbourE.roomType, translation: _currentRoom.neighbourE.mtxLocal.translation });
-                addRoomToGraph(_currentRoom.neighbourE, exits);
+                sendRoom(<Interfaces.IRoom>{ coordinates: Game.currentRoom.neighbourE.coordinates, direction: exits, exits: Game.currentRoom.neighbourE.exits, roomType: Game.currentRoom.neighbourE.roomType, translation: Game.currentRoom.neighbourE.mtxLocal.translation });
+                addRoomToGraph(Game.currentRoom.neighbourE, exits);
             }
             if (_direction.south) {
                 let exits: Interfaces.IRoomExits = { north: true, east: false, south: false, west: false };
-                sendRoom(<Interfaces.IRoom>{ coordinates: _currentRoom.neighbourS.coordinates, direction: exits, exits: _currentRoom.neighbourS.exits, roomType: _currentRoom.neighbourS.roomType, translation: _currentRoom.neighbourS.mtxLocal.translation });
-                addRoomToGraph(_currentRoom.neighbourS, exits);
+                sendRoom(<Interfaces.IRoom>{ coordinates: Game.currentRoom.neighbourS.coordinates, direction: exits, exits: Game.currentRoom.neighbourS.exits, roomType: Game.currentRoom.neighbourS.roomType, translation: Game.currentRoom.neighbourS.mtxLocal.translation });
+                addRoomToGraph(Game.currentRoom.neighbourS, exits);
             }
             if (_direction.west) {
                 let exits: Interfaces.IRoomExits = { north: false, east: true, south: false, west: false };
-                sendRoom(<Interfaces.IRoom>{ coordinates: _currentRoom.neighbourW.coordinates, direction: exits, exits: _currentRoom.neighbourW.exits, roomType: _currentRoom.neighbourW.roomType, translation: _currentRoom.neighbourW.mtxLocal.translation });
-                addRoomToGraph(_currentRoom.neighbourW, exits);
+                sendRoom(<Interfaces.IRoom>{ coordinates: Game.currentRoom.neighbourW.coordinates, direction: exits, exits: Game.currentRoom.neighbourW.exits, roomType: Game.currentRoom.neighbourW.roomType, translation: Game.currentRoom.neighbourW.mtxLocal.translation });
+                addRoomToGraph(Game.currentRoom.neighbourW, exits);
             }
 
-            EnemySpawner.spawnMultipleEnemiesAtRoom(_currentRoom.enemyCount, _currentRoom.mtxLocal.translation.toVector2());
+            EnemySpawner.spawnMultipleEnemiesAtRoom(Game.currentRoom.enemyCount, Game.currentRoom.mtxLocal.translation.toVector2());
         }
     }
 
     export function addRoomToGraph(_room: Room, _direciton?: Interfaces.IRoomExits) {
         let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => ((<any>elem).tag != Tag.TAG.PLAYER));
+        oldObjects = oldObjects.filter(elem => ((<any>elem).tag != Tag.TAG.UI));
 
         oldObjects.forEach((elem) => {
             Game.graph.removeChild(elem);
         });
 
         Game.graph.addChild(_room);
-        // Game.graph.addChild(_room.walls[0]);
-        // Game.graph.addChild(_room.walls[1]);
-        // Game.graph.addChild(_room.walls[2]);
-        // Game.graph.addChild(_room.walls[3]);
+
+        Game.viewport.calculateTransforms();
+
+        _room.walls.forEach(wall => {
+            wall.setCollider();
+            if (wall.door != undefined) {
+                wall.door.setCollider();
+            }
+        })
 
         if (_direciton != undefined) {
             let newPosition: Game.ƒ.Vector3 = _room.cmpTransform.mtxLocal.translation.clone;
@@ -336,17 +344,6 @@ namespace Generation {
                 Game.avatar2.cmpTransform.mtxLocal.translation = newPosition;
             }
         }
-
-        // if (Networking.client.id != Networking.client.idHost) {
-        //     _room.setDoors();
-        // }
-
-        // for (let i = 0; i < _room.doors.length; i++) {
-        //     Game.graph.addChild(_room.doors[i]);
-        // }
-        _room.obsticals.forEach(obstical => {
-            Game.graph.addChild(obstical);
-        })
 
         if (_room.roomType == ROOMTYPE.TREASURE && Networking.client.id == Networking.client.idHost) {
             //TODO: add ExternalItems random
