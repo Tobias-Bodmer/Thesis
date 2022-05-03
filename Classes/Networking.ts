@@ -267,14 +267,13 @@ namespace Networking {
                         //Spawn enemy at the client 
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNENEMY.toString()) {
                             //TODO: change attributes
-                            let attributes: Entity.Attributes = new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale, message.content.attributes.knockbackForce, message.content.attributes.armor, message.content.attributes.coolDownReduction);
                             EnemySpawner.networkSpawnById(
                                 message.content.enemyClass,
                                 message.content.id,
                                 new ƒ.Vector2(
                                     message.content.position.data[0],
                                     message.content.position.data[1]),
-                                attributes, message.content.netId, message.content.target);
+                                 message.content.netId, message.content.target);
                         }
 
                         //Sync enemy transform from host to client
@@ -405,7 +404,6 @@ namespace Networking {
 
                             let newRoom: Generation.Room = new Generation.Room("room", room.coordinates, room.exits, room.roomType);
                             newRoom.mtxLocal.translation = room.translation;
-                            newRoom.addWalls();
                             newRoom.setDoors();
 
                             if (room.direction != null) {

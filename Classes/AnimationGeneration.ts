@@ -165,5 +165,7 @@ namespace AnimationGeneration {
         _class.animationScale = getPixelRatio(width, height);
         _class.generatedSpriteAnimation = createdAnimation;
     }
+
+    
 }
 

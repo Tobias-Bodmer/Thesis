@@ -2,7 +2,7 @@ namespace Collider {
     export class Collider {
         public ownerNetId: number;
         radius: number;
-        position: ƒ.Vector2;
+        public position: ƒ.Vector2;
         get top(): number {
             return (this.position.y - this.radius);
         }
@@ -20,6 +20,10 @@ namespace Collider {
             this.position = _position;
             this.radius = _radius;
             this.ownerNetId = _netId;
+        }
+
+        public setPosition(_position: Game.ƒ.Vector2) {
+            this.position = _position;
         }
 
         public setScale(_scaleAmount: number) {

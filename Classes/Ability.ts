@@ -83,9 +83,9 @@ namespace Ability {
             if (Networking.client.id == Networking.client.idHost) {
                 let position: Game.ƒ.Vector2 = new ƒ.Vector2(this.owner.mtxLocal.translation.x + Math.random() * this.spawnRadius, this.owner.mtxLocal.translation.y + 2)
                 if (Math.round(Math.random()) > 0.5) {
-                    EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, position, null, Game.avatar1, null);
+                    EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, position, Game.avatar1, null);
                 } else {
-                    EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, position, null, Game.avatar2, null);
+                    EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, position, Game.avatar2, null);
                 }
             }
         }

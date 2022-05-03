@@ -28,14 +28,11 @@ namespace Generation {
             calcRoomDoors(room);
             console.log(room.coordinates + " " + room.exits.north + " " + room.exits.east + " " + room.exits.south + " " + room.exits.west + " " + room.roomType.toString());
         })
-        // usedPositions.forEach(element => {
-        //     console.log(element.x + "-" + element.y);
-        // });
+      
         placeRoomsLocal(rooms[0]);
 
         for (let i = 0; i < rooms.length; i++) {
             rooms[i].setDoors();
-            rooms[i].addWalls();
         }
 
         addRoomToGraph(rooms[0]);
@@ -306,15 +303,14 @@ namespace Generation {
         let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => ((<any>elem).tag != Tag.TAG.PLAYER));
 
         oldObjects.forEach((elem) => {
-            console.log(elem);
             Game.graph.removeChild(elem);
         });
 
         Game.graph.addChild(_room);
-        Game.graph.addChild(_room.walls[0]);
-        Game.graph.addChild(_room.walls[1]);
-        Game.graph.addChild(_room.walls[2]);
-        Game.graph.addChild(_room.walls[3]);
+        // Game.graph.addChild(_room.walls[0]);
+        // Game.graph.addChild(_room.walls[1]);
+        // Game.graph.addChild(_room.walls[2]);
+        // Game.graph.addChild(_room.walls[3]);
 
         if (_direciton != undefined) {
             let newPosition: Game.ƒ.Vector3 = _room.cmpTransform.mtxLocal.translation.clone;

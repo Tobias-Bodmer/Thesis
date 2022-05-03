@@ -149,7 +149,7 @@ namespace Game {
 
     function start() {
         loadTextures();
-        loadJSON();
+        // loadJSON();
 
         //TODO: add sprite to graphe for startscreen
         document.getElementById("Startscreen").style.visibility = "visible";
@@ -165,14 +165,14 @@ namespace Game {
                     if (Networking.client.id == Networking.client.idHost) {
                         document.getElementById("IMHOST").style.visibility = "visible";
                     }
-
+                    await loadJSON();
                     await init();
                     gamestate = GAMESTATES.PLAYING;
                     // EnemySpawner.spawnEnemies();
 
                     if (Networking.client.id == Networking.client.idHost) {
-                        EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.REDTICK, new ƒ.Vector2(3, 3), null, avatar1);
-                        // EnemySpawner.spawnMultipleEnemiesAtRoom(2, Game.currentRoom.mtxLocal.translation.toVector2());
+                        // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.REDTICK, new ƒ.Vector2(3, 3), avatar1);
+                        EnemySpawner.spawnMultipleEnemiesAtRoom(5, Game.currentRoom.mtxLocal.translation.toVector2());
                         // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.ENEMYSMASH, Entity.ID.OGER, new ƒ.Vector2(3, 3), null);
                         // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
                     }

@@ -8,7 +8,8 @@ namespace Player {
         currentabilityCount: number = this.abilityCount;
 
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _netId?: number) {
-            super(_id, _attributes, _netId);
+            super(_id, _netId);
+            this.attributes = _attributes;
             this.tag = Tag.TAG.PLAYER;
             this.client = new Networking.ClientPrediction(this.netId);
         }

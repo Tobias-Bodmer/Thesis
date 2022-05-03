@@ -83,7 +83,10 @@ namespace Generation {
             this.addComponent(this.cmpMaterial);
 
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(this.coordinates.x * this.roomSize, this.coordinates.y * this.roomSize, -0.01);
-
+            this.addWalls();
+            this.walls.forEach(wall => {
+                this.addChild(wall);
+            })
             this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate)
         }
 
@@ -97,7 +100,7 @@ namespace Generation {
             }
         }
 
-        public addWalls(): void {
+        private addWalls(): void {
             this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, <Interfaces.IRoomExits>{ north: true, east: false, south: false, west: false }));
             this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, <Interfaces.IRoomExits>{ north: false, east: true, south: false, west: false }));
             this.walls.push(new Wall(this.cmpTransform.mtxLocal.translation.toVector2(), this.roomSize, <Interfaces.IRoomExits>{ north: false, east: false, south: true, west: false }));
@@ -136,7 +139,7 @@ namespace Generation {
         public tag: Tag.TAG = Tag.TAG.WALL;
         public collider: Game.ƒ.Rectangle;
         public wallThickness: number = 3;
-
+        public door: Door;
         constructor(_position: Game.ƒ.Vector2, _width: number, _direction: Interfaces.IRoomExits) {
             super("Wall");
 
@@ -213,6 +216,8 @@ namespace Generation {
                 this.collider = new Game.ƒ.Rectangle(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y, this.cmpTransform.mtxLocal.scaling.x, this.cmpTransform.mtxLocal.scaling.y, Game.ƒ.ORIGIN2D.CENTER);
             }
         }
+
+        
 
         public changeRoom() {
             if (Networking.client.id == Networking.client.idHost) {

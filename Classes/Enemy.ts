@@ -19,14 +19,17 @@ namespace Enemy {
         flocking: FlockingBehaviour;
 
 
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
-            super(_id, _attributes, _netId);
-            this.attributes = _attributes;
+        constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
+            super(_id, _netId);
             this.tag = Tag.TAG.ENEMY;
+
+            let ref = Game.enemiesJSON.find(enemy => enemy.name == Entity.ID[_id].toLowerCase())
+            console.log(ref);
+            this.attributes = new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale, ref.attributes.knockbackForce, ref.attributes.armor, ref.attributes.coolDownReduction);
 
             // this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["idle"]);
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
-            this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), (this.mtxLocal.scaling.x * this.idleScale) / 2, this.netId);
+            this.collider = new Collider.Collider(new ƒ.Vector2(this.mtxLocal.translation.x + (this.offsetColliderX * this.mtxLocal.scaling.x), this.mtxLocal.translation.y + (this.offsetColliderY * this.mtxLocal.scaling.y)), (this.mtxLocal.scaling.x * this.idleScale) / 2, this.netId);
         }
 
         public update() {
@@ -118,10 +121,7 @@ namespace Enemy {
 
     export class EnemyDumb extends Enemy {
 
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
-            super(_id, _attributes, _position, _netId);
-        }
-
+       
         behaviour() {
             let target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
             let distance = ƒ.Vector3.DIFFERENCE(target, this.cmpTransform.mtxLocal.translation).magnitude;
@@ -160,11 +160,7 @@ namespace Enemy {
         randomPlayer = Math.round(Math.random());
         currentBehaviour: Entity.BEHAVIOUR = Entity.BEHAVIOUR.IDLE;
 
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
-            super(_id, _attributes, _position, _netId);
-        }
-
-
+   
         behaviour() {
             this.avatars = [Game.avatar1, Game.avatar2];
             this.target = (<Player.Player>this.avatars[this.randomPlayer]).mtxLocal.translation.toVector2();
@@ -213,8 +209,8 @@ namespace Enemy {
         avatars: Player.Player[] = [];
         randomPlayer = Math.round(Math.random());
 
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
-            super(_id, _attributes, _position, _netId);
+        constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
+            super(_id, _position, _netId);
             this.flocking = new FlockingBehaviour(this, 3, 0.8, 1.5, 1, 1, 0.1, 0);
 
         }
@@ -270,10 +266,6 @@ namespace Enemy {
         waitTime: number = 1000;
         currenPointIndex: number = 0;
 
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
-            super(_id, _attributes, _position, _netId);
-        }
-
         moveBehaviour(): void {
             this.patrol();
         }
@@ -299,8 +291,8 @@ namespace Enemy {
         viewRadius: number = 3;
         gotRecognized: boolean = false;
 
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
-            super(_id, _attributes, _position, _netId);
+        constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
+            super(_id,  _position, _netId);
 
             this.weapon = new Weapons.Weapon(60, 1, Bullets.BULLETTYPE.STANDARD, 2, this.netId, Weapons.AIM.NORMAL);
         }
@@ -352,8 +344,8 @@ namespace Enemy {
         avatar: Player.Player;
         randomPlayer = Math.round(Math.random());
 
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _target: Player.Player, _netId?: number) {
-            super(_id, _attributes, _position, _netId);
+        constructor(_id: Entity.ID, _position: ƒ.Vector2, _target: Player.Player, _netId?: number) {
+            super(_id, _position, _netId);
             this.avatar = _target;
             this.flocking = new FlockingBehaviour(this, 3, 0.8, 1.5, 1, 1, 0.1, 0);
 

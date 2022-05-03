@@ -21,8 +21,8 @@ namespace Enemy {
         private shoot360: Ability.circleShoot = new Ability.circleShoot(this.netId, 0, 1, 5 * 60);
         private dashWeapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.SUMMONER, 1, this.netId, Weapons.AIM.NORMAL);
 
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number) {
-            super(_id, _attributes, _position, _netId);
+        constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
+            super(_id,  _position, _netId);
             this.tag = Tag.TAG.ENEMY;
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), this.mtxLocal.scaling.x / 2, this.netId);
         }

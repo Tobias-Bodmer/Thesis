@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -88,6 +88,8 @@ declare namespace Entity {
         items: Array<Items.Item>;
         weapon: Weapons.Weapon;
         buffs: Buff.Buff[];
+        protected offsetColliderX: number;
+        protected offsetColliderY: number;
         protected canMoveX: boolean;
         protected canMoveY: boolean;
         protected moveDirection: Game.ƒ.Vector3;
@@ -95,7 +97,7 @@ declare namespace Entity {
         protected idleScale: number;
         protected currentKnockback: ƒ.Vector3;
         shadow: Shadow;
-        constructor(_id: Entity.ID, _attributes: Attributes, _netId: number);
+        constructor(_id: Entity.ID, _netId: number);
         eventUpdate: (_event: Event) => void;
         update(): void;
         updateScale(): void;
@@ -125,14 +127,14 @@ declare namespace Entity {
         ATTACK = 4
     }
     enum ID {
-        RANGED = "ranged",
-        MELEE = "melee",
-        BAT = "bat",
-        REDTICK = "redtick",
-        SMALLTICK = "smalltick",
-        SKELETON = "skeleton",
-        OGER = "oger",
-        SUMMONOR = "summonor"
+        RANGED = 0,
+        MELEE = 1,
+        BAT = 2,
+        REDTICK = 3,
+        SMALLTICK = 4,
+        SKELETON = 5,
+        OGER = 6,
+        SUMMONOR = 7
     }
     function getNameById(_id: Entity.ID): string;
 }
@@ -151,7 +153,7 @@ declare namespace Enemy {
         target: ƒ.Vector2;
         moveDirection: Game.ƒ.Vector3;
         flocking: FlockingBehaviour;
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
+        constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
         update(): void;
         doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
@@ -163,7 +165,6 @@ declare namespace Enemy {
         collide(_direction: ƒ.Vector3): void;
     }
     class EnemyDumb extends Enemy {
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
         behaviour(): void;
         moveBehaviour(): void;
     }
@@ -172,7 +173,6 @@ declare namespace Enemy {
         avatars: Player.Player[];
         randomPlayer: number;
         currentBehaviour: Entity.BEHAVIOUR;
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
         behaviour(): void;
         moveBehaviour(): void;
     }
@@ -182,7 +182,7 @@ declare namespace Enemy {
         dashCount: number;
         avatars: Player.Player[];
         randomPlayer: number;
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
+        constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
         behaviour(): void;
         moveBehaviour(): void;
     }
@@ -190,14 +190,13 @@ declare namespace Enemy {
         patrolPoints: ƒ.Vector2[];
         waitTime: number;
         currenPointIndex: number;
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
         moveBehaviour(): void;
         patrol(): void;
     }
     class EnemyShoot extends Enemy {
         viewRadius: number;
         gotRecognized: boolean;
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
+        constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
         moveBehaviour(): void;
         getDamage(_value: number): void;
         shoot(_netId?: number): void;
@@ -205,7 +204,7 @@ declare namespace Enemy {
     class SummonorAdds extends EnemyDash {
         avatar: Player.Player;
         randomPlayer: number;
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _target: Player.Player, _netId?: number);
+        constructor(_id: Entity.ID, _position: ƒ.Vector2, _target: Player.Player, _netId?: number);
         behaviour(): void;
         moveBehaviour(): void;
     }
@@ -510,7 +509,7 @@ declare namespace Enemy {
         private dash;
         private shoot360;
         private dashWeapon;
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _position: ƒ.Vector2, _netId?: number);
+        constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
         behaviour(): void;
         getDamage(_value: number): void;
         moveBehaviour(): void;
@@ -620,6 +619,7 @@ declare namespace Collider {
         get right(): number;
         get bottom(): number;
         constructor(_position: ƒ.Vector2, _radius: number, _netId: number);
+        setPosition(_position: Game.ƒ.Vector2): void;
         setScale(_scaleAmount: number): void;
         collides(_collider: Collider): boolean;
         collidesRect(_collider: Game.ƒ.Rectangle): boolean;
@@ -629,8 +629,8 @@ declare namespace Collider {
 }
 declare namespace EnemySpawner {
     function spawnMultipleEnemiesAtRoom(_count: number, _roomPos: Game.ƒ.Vector2): void;
-    function spawnByID(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2, _attributes?: Entity.Attributes, _target?: Player.Player, _netID?: number): void;
-    function networkSpawnById(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2, _attributes: Entity.Attributes, _netID: number, _target?: number): void;
+    function spawnByID(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2, _target?: Player.Player, _netID?: number): void;
+    function networkSpawnById(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2, _netID: number, _target?: number): void;
 }
 declare namespace Enemy {
     class FlockingBehaviour {
@@ -839,7 +839,7 @@ declare namespace Generation {
         constructor(_name: string, _coordiantes: Game.ƒ.Vector2, _exits: Interfaces.IRoomExits, _roomType: ROOMTYPE);
         protected eventUpdate: (_event: Event) => void;
         update(): void;
-        addWalls(): void;
+        private addWalls;
         setDoors(): void;
         getRoomSize(): number;
     }
@@ -847,6 +847,7 @@ declare namespace Generation {
         tag: Tag.TAG;
         collider: Game.ƒ.Rectangle;
         wallThickness: number;
+        door: Door;
         constructor(_position: Game.ƒ.Vector2, _width: number, _direction: Interfaces.IRoomExits);
     }
     class Door extends ƒ.Node {
