@@ -251,14 +251,14 @@ namespace Bullets {
             // }
             this.targetDirection = _direction;
             if (Networking.client.idHost == Networking.client.id) {
-                this.setTarget(Game.avatar1.netId);
+                this.setTarget(Game.avatar2.netId);
             }
         }
 
         public update(): void {
-
-            // this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.update);
+            super.update();
         }
+
         public move(_direction: Game.ƒ.Vector3) {
             super.move(_direction);
             if (Networking.client.id == Networking.client.idHost) {
@@ -268,7 +268,6 @@ namespace Bullets {
                     this.calculateHoming();
                 }
             }
-            super.update();
         }
 
         setTarget(_netID: number) {
