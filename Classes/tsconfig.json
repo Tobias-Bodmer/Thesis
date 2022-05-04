@@ -58,6 +58,7 @@
   "include": [
     "Main.ts",
     "UI.ts",
+    "Tag.ts",
     "Entity.ts",
     "Enemy.ts",
     "Interfaces.ts",

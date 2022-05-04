@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -73,6 +73,19 @@ declare namespace UI {
         width: number;
         height: number;
         constructor(_id: Buff.BUFFID, _texture: Game.ƒ.TextureImage, _frameCount: number, _frameRate: number);
+    }
+}
+declare namespace Tag {
+    enum TAG {
+        PLAYER = 0,
+        ENEMY = 1,
+        BULLET = 2,
+        ITEM = 3,
+        ROOM = 4,
+        WALL = 5,
+        DOOR = 6,
+        OBSTICAL = 7,
+        UI = 8
     }
 }
 declare namespace Entity {
@@ -811,7 +824,7 @@ declare namespace Generation {
         BOSS = 5
     }
     let txtStartRoom: Game.ƒ.TextureImage;
-    class Room extends ƒ.Node {
+    abstract class Room extends ƒ.Node {
         tag: Tag.TAG;
         roomType: ROOMTYPE;
         coordinates: Game.ƒ.Vector2;
@@ -820,33 +833,36 @@ declare namespace Generation {
         finished: boolean;
         enemyCount: number;
         positionUpdated: boolean;
-        neighbourN: Room;
-        neighbourE: Room;
-        neighbourS: Room;
-        neighbourW: Room;
         roomSize: number;
         exits: Interfaces.IRoomExits;
         mesh: ƒ.MeshQuad;
         cmpMesh: ƒ.ComponentMesh;
         startRoomMat: ƒ.Material;
-        normalRoomMat: ƒ.Material;
         merchantRoomMat: ƒ.Material;
         treasureRoomMat: ƒ.Material;
         challengeRoomMat: ƒ.Material;
-        bossRoomMat: ƒ.Material;
         cmpMaterial: ƒ.ComponentMaterial;
-        constructor(_name: string, _coordiantes: Game.ƒ.Vector2, _exits: Interfaces.IRoomExits, _roomType: ROOMTYPE);
+        constructor(_coordiantes: Game.ƒ.Vector2);
         protected eventUpdate: (_event: Event) => void;
         update(): void;
-        private addWallsAndRooms;
+        private addWalls;
         getRoomSize(): number;
+        setRoomExit(_neighbour: Room): void;
+    }
+    class NormalRoom extends Room {
+        normalRoomMat: ƒ.Material;
+        constructor(_coordinates: Game.ƒ.Vector2);
+    }
+    class BossRoom extends Room {
+        bossRoomMat: ƒ.Material;
+        constructor(_coordinates: Game.ƒ.Vector2);
     }
     class Wall extends ƒ.Node {
         tag: Tag.TAG;
         collider: Game.ƒ.Rectangle;
         door: Door;
         constructor(_pos: Game.ƒ.Vector2, _scaling: Game.ƒ.Vector2, _room: Room);
-        setDoor(_pos: Game.ƒ.Vector2, _scaling: Game.ƒ.Vector2): void;
+        addDoor(_pos: Game.ƒ.Vector2, _scaling: Game.ƒ.Vector2): void;
         setCollider(): void;
     }
     class Door extends ƒ.Node {
@@ -866,9 +882,13 @@ declare namespace Generation {
     }
 }
 declare namespace Generation {
-    let usedPositions: Game.ƒ.Vector2[];
     let rooms: Room[];
-    function generateRooms(): void;
+    const compareNorth: Game.ƒ.Vector2;
+    const compareEast: Game.ƒ.Vector2;
+    const compareSouth: Game.ƒ.Vector2;
+    const compareWest: Game.ƒ.Vector2;
+    function procedualRoomGeneration(): void;
+    function getCoordsFromRooms(): Game.ƒ.Vector2[];
     function switchRoom(_direction: Interfaces.IRoomExits): void;
     function addRoomToGraph(_room: Room, _direciton?: Interfaces.IRoomExits): void;
 }
@@ -880,19 +900,6 @@ declare namespace Entity {
         shadowParent: Game.ƒ.Node;
         constructor(_parent: Game.ƒ.Node);
         updateShadowPos(): void;
-    }
-}
-declare namespace Tag {
-    enum TAG {
-        PLAYER = 0,
-        ENEMY = 1,
-        BULLET = 2,
-        ITEM = 3,
-        ROOM = 4,
-        WALL = 5,
-        DOOR = 6,
-        OBSTICAL = 7,
-        UI = 8
     }
 }
 declare namespace Weapons {

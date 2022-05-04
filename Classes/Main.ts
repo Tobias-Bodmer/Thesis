@@ -71,7 +71,8 @@ namespace Game {
         cmpCamera.mtxPivot.rotateY(180);
 
         if (Networking.client.id == Networking.client.idHost) {
-            Generation.generateRooms();
+            // Generation.rooms = Generation.generateNormalRooms();
+            Generation.procedualRoomGeneration();
             serverPredictionAvatar = new Networking.ServerPrediction(null);
         }
 
@@ -194,8 +195,9 @@ namespace Game {
 
                     if (Networking.client.id == Networking.client.idHost) {
                         let roomInfos: Interfaces.IMinimapInfos[] = [];
-                        for (let i = 0; i < Generation.usedPositions.length; i++) {
-                            roomInfos.push(<Interfaces.IMinimapInfos>{ coords: Generation.usedPositions[i], roomType: Generation.rooms.find(room => room.coordinates == Generation.usedPositions[i]).roomType })
+                        let coords: Game.ƒ.Vector2[] = Generation.getCoordsFromRooms();
+                        for (let i = 0; i < coords.length; i++) {
+                            roomInfos.push(<Interfaces.IMinimapInfos>{ coords: coords[i], roomType: Generation.rooms.find(room => room.coordinates == coords[i]).roomType })
                         }
                         miniMap = new UI.Minimap(roomInfos);
                         graph.addChild(miniMap);
