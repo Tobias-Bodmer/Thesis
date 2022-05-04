@@ -362,6 +362,12 @@ namespace Game {
         await UI.slowParticle.load("./Resources/Image/Particles/slow.png");
         await Entity.txtShadow.load("./Resources/Image/Particles/shadow.png");
 
+        //Minimap
+        await UI.normalRoom.load("./Resources/Image/Minimap/normal.png");
+        await UI.challengeRoom.load("./Resources/Image/Minimap/challenge.png");
+        await UI.merchantRoom.load("./Resources/Image/Minimap/merchant.png");
+        await UI.treasureRoom.load("./Resources/Image/Minimap/treasure.png");
+        await UI.bossRoom.load("./Resources/Image/Minimap/boss.png");
 
 
         //ENEMY

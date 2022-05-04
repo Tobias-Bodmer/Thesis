@@ -2,7 +2,7 @@ namespace UI {
     export class Minimap extends Game.ƒ.Node {
         public tag: Tag.TAG = Tag.TAG.UI;
         private minmapInfo: Interfaces.IMinimapInfos[];
-        private roomMinimapsize: number = 0.5;
+        private roomMinimapsize: number = 0.6;
         private miniRooms: MiniRoom[] = [];
         public offsetX: number = 11;
         public offsetY: number = 6;
@@ -21,7 +21,6 @@ namespace UI {
             this.pointer.mtxLocal.scale(Game.ƒ.Vector3.ONE(this.roomMinimapsize / 2));
             this.pointer.mtxLocal.translateZ(10);
 
-            //TODO: update Pointer so he laies in 0,0
             this.addChild(this.pointer);
 
             this.addComponent(new Game.ƒ.ComponentTransform());
@@ -74,21 +73,22 @@ namespace UI {
         }
     }
 
+    export let normalRoom: ƒ.TextureImage = new ƒ.TextureImage();;
+    export let challengeRoom: ƒ.TextureImage = new ƒ.TextureImage();;
+    export let merchantRoom: ƒ.TextureImage = new ƒ.TextureImage();;
+    export let treasureRoom: ƒ.TextureImage = new ƒ.TextureImage();;
+    export let bossRoom: ƒ.TextureImage = new ƒ.TextureImage();;
+
     class MiniRoom extends Game.ƒ.Node {
         public discovered: boolean;
         public coordinates: Game.ƒ.Vector2;
         public roomType: Generation.ROOMTYPE;
-        public opacity: number = 0.8;
+        public opacity: number = 0.75;
 
+        private roomMat: ƒ.Material;
 
 
         private mesh: ƒ.MeshQuad = new ƒ.MeshQuad;
-        private startRoomMat: ƒ.Material = new ƒ.Material("startRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("red", this.opacity)));
-        private normalRoomMat: ƒ.Material = new ƒ.Material("normalRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white", this.opacity)));
-        private merchantRoomMat: ƒ.Material = new ƒ.Material("merchantRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("green", this.opacity)));
-        private treasureRoomMat: ƒ.Material = new ƒ.Material("treasureRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("yellow", this.opacity)));
-        private challengeRoomMat: ƒ.Material = new ƒ.Material("challengeRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("blue", this.opacity)));
-        private bossRoomMat: ƒ.Material = new ƒ.Material("bossRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("black", this.opacity)));
 
         constructor(_coordinates: Game.ƒ.Vector2, _roomType: Generation.ROOMTYPE) {
             super("MinimapRoom");
@@ -102,24 +102,25 @@ namespace UI {
 
             switch (this.roomType) {
                 case Generation.ROOMTYPE.START:
-                    cmpMaterial = new ƒ.ComponentMaterial(this.startRoomMat);
+                    this.roomMat = new ƒ.Material("roomMat", ƒ.ShaderFlatTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white", this.opacity), normalRoom));
                     break;
                 case Generation.ROOMTYPE.NORMAL:
-                    cmpMaterial = new ƒ.ComponentMaterial(this.normalRoomMat);
+                    this.roomMat = new ƒ.Material("roomMat", ƒ.ShaderFlatTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white", this.opacity), normalRoom));
                     break;
                 case Generation.ROOMTYPE.MERCHANT:
-                    cmpMaterial = new ƒ.ComponentMaterial(this.merchantRoomMat);
+                    this.roomMat = new ƒ.Material("roomMat", ƒ.ShaderFlatTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white", this.opacity), merchantRoom));
                     break;
                 case Generation.ROOMTYPE.TREASURE:
-                    cmpMaterial = new ƒ.ComponentMaterial(this.treasureRoomMat);
+                    this.roomMat = new ƒ.Material("roomMat", ƒ.ShaderFlatTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white", this.opacity), treasureRoom));
                     break;
                 case Generation.ROOMTYPE.CHALLENGE:
-                    cmpMaterial = new ƒ.ComponentMaterial(this.challengeRoomMat);
+                    this.roomMat = new ƒ.Material("roomMat", ƒ.ShaderFlatTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white", this.opacity), challengeRoom));
                     break;
                 case Generation.ROOMTYPE.BOSS:
-                    cmpMaterial = new ƒ.ComponentMaterial(this.bossRoomMat);
+                    this.roomMat = new ƒ.Material("roomMat", ƒ.ShaderFlatTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white", this.opacity), bossRoom));
                     break;
             }
+            cmpMaterial = new ƒ.ComponentMaterial(this.roomMat);
             this.addComponent(cmpMaterial);
             this.addComponent(new Game.ƒ.ComponentTransform());
             this.mtxLocal.translation = new ƒ.Vector3(this.coordinates.x, this.coordinates.y, 1);
