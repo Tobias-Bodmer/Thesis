@@ -12,7 +12,7 @@ namespace Entity {
 
             this.addComponent(cmpMaterial);
             this.addComponent(new Game.ƒ.ComponentTransform());
-            this.mtxWorld.translation = new Game.ƒ.Vector3(_parent.mtxLocal.translation.x, _parent.mtxLocal.translation.y, 0);
+            this.mtxWorld.translation = new Game.ƒ.Vector3(_parent.mtxLocal.translation.x, _parent.mtxLocal.translation.y, -0.01);
             this.mtxLocal.scaling = new Game.ƒ.Vector3(2, 2, 2);
         }
 

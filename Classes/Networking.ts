@@ -400,17 +400,22 @@ namespace Networking {
                         if (message.content != undefined && message.content.text == FUNCTION.SENDROOM.toString()) {
                             let coordiantes: Game.ƒ.Vector2 = new Game.ƒ.Vector2(message.content.room.coordinates.data[0], message.content.room.coordinates.data[1]);
                             let tanslation: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.room.translation.data[0], message.content.room.translation.data[1], message.content.room.translation.data[2]);
-                            let room: Interfaces.IRoom = { coordinates: coordiantes, direction: message.content.room.direction, exits: message.content.room.exits, roomType: message.content.room.roomType, translation: tanslation };
-
-                            let newRoom: Generation.Room = new Generation.Room("room", room.coordinates, room.exits, room.roomType);
-                            newRoom.mtxLocal.translation = room.translation;
-                            // newRoom.setDoors();
-
-                            if (room.direction != null) {
-                                Generation.addRoomToGraph(newRoom, room.direction);
-                            } else {
-                                Generation.addRoomToGraph(newRoom);
+                            let roomInfo: Interfaces.IRoom = { coordinates: coordiantes, exits: message.content.room.exits, roomType: message.content.room.roomType, translation: tanslation };
+                            let newRoom: Generation.Room;
+                            switch (roomInfo.roomType) {
+                                case Generation.ROOMTYPE.NORMAL:
+                                    newRoom = new Generation.NormalRoom(roomInfo.coordinates);
+                                    break;
+                                case Generation.ROOMTYPE.BOSS:
+                                    newRoom = new Generation.BossRoom(roomInfo.coordinates);
+                                    break;
                             }
+                            newRoom.exits = roomInfo.exits;
+                            newRoom.mtxLocal.translation = roomInfo.translation;
+                            newRoom.setSpawnPoints();
+                            newRoom.openDoors();
+                            Generation.addRoomToGraph(newRoom);
+
                         }
                         //send request to switch rooms
                         if (message.content != undefined && message.content.text == FUNCTION.SWITCHROOMREQUEST.toString()) {

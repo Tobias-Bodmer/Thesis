@@ -67,14 +67,16 @@ namespace AnimationGeneration {
         generatedSpriteAnimation: ƒAid.SpriteSheetAnimation;
         animationScale: number;
 
-        constructor(_id: Entity.ID, _animationName: string, _txtIdle: ƒ.TextureImage, _amountOfFrames: number, _frameRate: number,) {
+        constructor(_id: Entity.ID, _animationName: string, _texture: ƒ.TextureImage, _amountOfFrames: number, _frameRate: number,) {
             this.id = _id;
             this.animationName = _animationName;
-            this.spriteSheet = _txtIdle;
+            this.spriteSheet = _texture;
             this.frameRate = _frameRate;
             this.amountOfFrames = _amountOfFrames;
             generateAnimationFromGrid(this);
         }
+
+        //TODO: get animation scale
     }
 
     //#region spriteSheet

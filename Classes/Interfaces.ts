@@ -70,7 +70,6 @@ namespace Interfaces {
         coordinates: Game.ƒ.Vector2;
         exits: IRoomExits;
         roomType: Generation.ROOMTYPE;
-        direction: IRoomExits;
         translation: Game.ƒ.Vector3;
     }
 

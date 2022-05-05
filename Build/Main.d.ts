@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -271,7 +271,6 @@ declare namespace Interfaces {
         coordinates: Game.ƒ.Vector2;
         exits: IRoomExits;
         roomType: Generation.ROOMTYPE;
-        direction: IRoomExits;
         translation: Game.ƒ.Vector3;
     }
     interface IMinimapInfos {
@@ -362,7 +361,7 @@ declare namespace AnimationGeneration {
         frameRate: number;
         generatedSpriteAnimation: ƒAid.SpriteSheetAnimation;
         animationScale: number;
-        constructor(_id: Entity.ID, _animationName: string, _txtIdle: ƒ.TextureImage, _amountOfFrames: number, _frameRate: number);
+        constructor(_id: Entity.ID, _animationName: string, _texture: ƒ.TextureImage, _amountOfFrames: number, _frameRate: number);
     }
     export function generateAnimationObjects(): void;
     export function getAnimationById(_id: Entity.ID): AnimationContainer;
@@ -842,17 +841,27 @@ declare namespace Generation {
         exits: Interfaces.IRoomExits;
         mesh: ƒ.MeshQuad;
         cmpMesh: ƒ.ComponentMesh;
-        startRoomMat: ƒ.Material;
-        merchantRoomMat: ƒ.Material;
-        treasureRoomMat: ƒ.Material;
-        challengeRoomMat: ƒ.Material;
+        protected avatarSpawnPointN: Game.ƒ.Vector2;
+        get getSpawnPointN(): Game.ƒ.Vector2;
+        protected avatarSpawnPointE: Game.ƒ.Vector2;
+        get getSpawnPointE(): Game.ƒ.Vector2;
+        protected avatarSpawnPointS: Game.ƒ.Vector2;
+        get getSpawnPointS(): Game.ƒ.Vector2;
+        protected avatarSpawnPointW: Game.ƒ.Vector2;
+        get getSpawnPointW(): Game.ƒ.Vector2;
+        private startRoomMat;
+        private merchantRoomMat;
+        private treasureRoomMat;
+        private challengeRoomMat;
         cmpMaterial: ƒ.ComponentMaterial;
         constructor(_coordiantes: Game.ƒ.Vector2);
         protected eventUpdate: (_event: Event) => void;
         update(): void;
         private addWalls;
+        setSpawnPoints(): void;
         getRoomSize(): number;
         setRoomExit(_neighbour: Room): void;
+        openDoors(): void;
     }
     class NormalRoom extends Room {
         normalRoomMat: ƒ.Material;
@@ -873,10 +882,12 @@ declare namespace Generation {
     class Door extends ƒ.Node {
         tag: Tag.TAG;
         collider: Game.ƒ.Rectangle;
-        nextRoom: Interfaces.IRoomExits;
+        direction: Interfaces.IRoomExits;
         constructor();
         setCollider(): void;
         changeRoom(): void;
+        openDoor(): void;
+        closeDoor(): void;
     }
     class Obsitcal extends ƒ.Node {
         tag: Tag.TAG;
@@ -895,7 +906,7 @@ declare namespace Generation {
     function procedualRoomGeneration(): void;
     function getCoordsFromRooms(): Game.ƒ.Vector2[];
     function switchRoom(_direction: Interfaces.IRoomExits): void;
-    function addRoomToGraph(_room: Room, _direciton?: Interfaces.IRoomExits): void;
+    function addRoomToGraph(_room: Room): void;
 }
 declare namespace Entity {
     let txtShadow: Game.ƒ.TextureImage;
