@@ -27,14 +27,13 @@ namespace Entity {
         constructor(_id: Entity.ID, _netId: number) {
             super(getNameById(_id));
             this.id = _id;
-            this.attributes = new Attributes(10,1,1,1,1,1,1);
+            this.attributes = new Attributes(1,1,1,1,1,1,1);
             if (AnimationGeneration.getAnimationById(this.id) != null) {
                 let ani = AnimationGeneration.getAnimationById(this.id);
                 this.animationContainer = ani;
                 this.idleScale = ani.scale.find(animation => animation[0] == "idle")[1];
             }
             this.addComponent(new ƒ.ComponentTransform());
-            this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale);
             this.collider = new Collider.Collider(new ƒ.Vector2(this.mtxLocal.translation.x + (this.offsetColliderX * this.mtxLocal.scaling.x), this.mtxLocal.translation.y + (this.offsetColliderY * this.mtxLocal.scaling.y)), this.cmpTransform.mtxLocal.scaling.x / 2, this.netId);
             if (_netId != undefined) {
                 if (this.netId != undefined) {
@@ -53,7 +52,7 @@ namespace Entity {
                 this.idleScale = ani.scale.find(animation => animation[0] == "idle")[1];
             }
             this.shadow = new Shadow(this);
-            this.addChild(this.shadow);
+            // this.addChild(this.shadow);
             this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
         }
 

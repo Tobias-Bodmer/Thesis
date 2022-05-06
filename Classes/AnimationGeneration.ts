@@ -15,6 +15,10 @@ namespace AnimationGeneration {
     export let txtOgerAttack: ƒ.TextureImage = new ƒ.TextureImage();
 
 
+    export let txtSummonerIdle: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtSummonerSummon: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtSummonerTeleport: ƒ.TextureImage = new ƒ.TextureImage();
+
 
     export import ƒAid = FudgeAid;
 
@@ -49,10 +53,18 @@ namespace AnimationGeneration {
                 case Entity.ID.SKELETON:
                     this.addAnimation(skeletonIdle.generatedSpriteAnimation, skeletonIdle.animationScale, skeletonIdle.frameRate);
                     this.addAnimation(skeletonWalk.generatedSpriteAnimation, skeletonWalk.animationScale, skeletonWalk.frameRate);
+                    break;
                 case Entity.ID.OGER:
                     this.addAnimation(ogerIdle.generatedSpriteAnimation, ogerIdle.animationScale, ogerIdle.frameRate);
                     this.addAnimation(ogerWalk.generatedSpriteAnimation, ogerWalk.animationScale, ogerWalk.frameRate);
                     this.addAnimation(ogerAttack.generatedSpriteAnimation, ogerAttack.animationScale, ogerAttack.frameRate);
+                    break;
+                case Entity.ID.SUMMONOR:
+                    this.addAnimation(summonerIdle.generatedSpriteAnimation, summonerIdle.animationScale, summonerIdle.frameRate);
+                    this.addAnimation(summonerWalk.generatedSpriteAnimation, summonerWalk.animationScale, summonerWalk.frameRate);
+                    this.addAnimation(summonerSummon.generatedSpriteAnimation, summonerSummon.animationScale, summonerSummon.frameRate);
+                    this.addAnimation(summonerTeleport.generatedSpriteAnimation, summonerTeleport.animationScale, summonerTeleport.frameRate);
+                    break;
 
             }
         }
@@ -94,6 +106,11 @@ namespace AnimationGeneration {
     let ogerIdle: MyAnimationClass;
     let ogerWalk: MyAnimationClass;
     let ogerAttack: MyAnimationClass;
+
+    let summonerIdle: MyAnimationClass;
+    let summonerWalk: MyAnimationClass;
+    let summonerSummon: MyAnimationClass;
+    let summonerTeleport: MyAnimationClass;
     //#endregion
 
 
@@ -103,6 +120,7 @@ namespace AnimationGeneration {
     let smallTickAnimation: AnimationContainer;
     let skeletonAnimation: AnimationContainer;
     let ogerAnimation: AnimationContainer;
+    let summonerAnimation: AnimationContainer;
     //#endregion
 
     export function generateAnimationObjects() {
@@ -122,12 +140,19 @@ namespace AnimationGeneration {
         ogerWalk = new MyAnimationClass(Entity.ID.OGER, "walk", txtOgerWalk, 6, 6);
         ogerAttack = new MyAnimationClass(Entity.ID.OGER, "attack", txtOgerAttack, 10, 12);
 
+        summonerIdle = new MyAnimationClass(Entity.ID.SUMMONOR, "idle", txtSummonerIdle, 6, 12);
+        summonerWalk = new MyAnimationClass(Entity.ID.SUMMONOR, "walk", txtSummonerIdle, 6, 12);
+        summonerSummon = new MyAnimationClass(Entity.ID.SUMMONOR, "summon", txtSummonerSummon, 13, 12);
+        summonerTeleport = new MyAnimationClass(Entity.ID.SUMMONOR, "teleport", txtSummonerTeleport, 6, 12);
+
+
 
         batAnimation = new AnimationContainer(Entity.ID.BAT);
         redTickAnimation = new AnimationContainer(Entity.ID.REDTICK);
         smallTickAnimation = new AnimationContainer(Entity.ID.SMALLTICK);
         skeletonAnimation = new AnimationContainer(Entity.ID.SKELETON);
         ogerAnimation = new AnimationContainer(Entity.ID.OGER);
+        summonerAnimation = new AnimationContainer(Entity.ID.SUMMONOR);
     }
 
     export function getAnimationById(_id: Entity.ID): AnimationContainer {
@@ -142,6 +167,8 @@ namespace AnimationGeneration {
                 return skeletonAnimation;
             case Entity.ID.OGER:
                 return ogerAnimation;
+            case Entity.ID.SUMMONOR:
+                return summonerAnimation;
             default:
                 return null;
         }
@@ -168,6 +195,6 @@ namespace AnimationGeneration {
         _class.generatedSpriteAnimation = createdAnimation;
     }
 
-    
+
 }
 

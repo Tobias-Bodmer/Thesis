@@ -343,6 +343,9 @@ declare namespace AnimationGeneration {
     export let txtOgerIdle: ƒ.TextureImage;
     export let txtOgerWalk: ƒ.TextureImage;
     export let txtOgerAttack: ƒ.TextureImage;
+    export let txtSummonerIdle: ƒ.TextureImage;
+    export let txtSummonerSummon: ƒ.TextureImage;
+    export let txtSummonerTeleport: ƒ.TextureImage;
     export import ƒAid = FudgeAid;
     export class AnimationContainer {
         id: Entity.ID;

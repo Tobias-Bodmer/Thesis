@@ -16,13 +16,13 @@ namespace Enemy {
 
 
 
-        private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 0, 8, 300);
+        private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 0, 1, 20);
         private dash: Ability.Dash = new Ability.Dash(this.netId, 100000, 1, 13 * 60, 2);
         private shoot360: Ability.circleShoot = new Ability.circleShoot(this.netId, 0, 1, 5 * 60);
         private dashWeapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.SUMMONER, 1, this.netId, Weapons.AIM.NORMAL);
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
-            super(_id,  _position, _netId);
+            super(_id, _position, _netId);
             this.tag = Tag.TAG.ENEMY;
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), this.mtxLocal.scaling.x / 2, this.netId);
         }
@@ -55,15 +55,15 @@ namespace Enemy {
 
             switch (this.currentBehaviour) {
                 case Entity.BEHAVIOUR.IDLE:
-                    // this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
+                    this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
                     break;
                 case Entity.BEHAVIOUR.FLEE:
-                    // this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
+                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
                     this.attackingPhase();
 
                     break;
                 case Entity.BEHAVIOUR.SUMMON:
-                    // this.switchAnimation(Entity.ANIMATIONSTATES.SUMMON);
+                    this.switchAnimation(Entity.ANIMATIONSTATES.SUMMON);
                     this.defencePhase();
                     break;
                 default:
@@ -104,15 +104,17 @@ namespace Enemy {
             this.beginAttackingPhase = false;
             //TODO: make if dependent from teleport animation frame
             // if (!this.mtxLocal.translation.equals(new ƒ.Vector2(0, -13).toVector3(), 1)) {
-            this.mtxLocal.translation = (new ƒ.Vector2(0, -12)).toVector3();
+            let summonPosition: Game.ƒ.Vector2 = new ƒ.Vector2(0, -10);
+            this.mtxLocal.translation = summonPosition.toVector3();
             // } else {
             if (!this.beginDefencePhase) {
                 this.defencePhaseCurrentTime = Math.round(this.defencePhaseTime + Math.random() * 120);
                 this.beginDefencePhase = true;
             }
             if (this.defencePhaseCurrentTime > 0) {
-                if (this.mtxLocal.translation.equals(new ƒ.Vector2(0, -13).toVector3(), 1)) {
-                    this.mtxLocal.translation = new ƒ.Vector2(0, -13).toVector3();
+                if (this.mtxLocal.translation.equals(summonPosition.toVector3(), 1) && this.getCurrentFrame == 9) {
+                    console.log("spawning");
+                    this.mtxLocal.translation = summonPosition.toVector3();
                     this.summon.doAbility();
                 }
                 this.defencePhaseCurrentTime--;

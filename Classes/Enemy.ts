@@ -27,8 +27,9 @@ namespace Enemy {
             console.log(ref);
             this.attributes = new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale, ref.attributes.knockbackForce, ref.attributes.armor, ref.attributes.coolDownReduction);
 
-            // this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["idle"]);
+            this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["idle"]);
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
+            this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale);
             this.collider = new Collider.Collider(new ƒ.Vector2(this.mtxLocal.translation.x + (this.offsetColliderX * this.mtxLocal.scaling.x), this.mtxLocal.translation.y + (this.offsetColliderY * this.mtxLocal.scaling.y)), (this.mtxLocal.scaling.x * this.idleScale) / 2, this.netId);
         }
 
@@ -109,8 +110,8 @@ namespace Enemy {
                 }
                 _direction.subtract(knockback);
                 if (knockback.magnitude > 0) {
-                    console.log("knockback: " + knockback.magnitude);
-                    console.log("direction: " + _direction.magnitude);
+                    // console.log("knockback: " + knockback.magnitude);
+                    // console.log("direction: " + _direction.magnitude);
                 }
             }
 
