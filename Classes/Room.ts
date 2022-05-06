@@ -41,7 +41,7 @@ namespace Generation {
             super("room");
             this.tag = Tag.TAG.ROOM;
             this.coordinates = _coordiantes;
-            this.enemyCount = 25;
+            this.enemyCount = 0;
             this.roomSize = 30;
             this.exits = <Interfaces.IRoomExits>{ north: false, east: false, south: false, west: false }
             this.finished = true;
@@ -51,7 +51,7 @@ namespace Generation {
             this.cmpTransform.mtxLocal.scale(new ƒ.Vector3(this.roomSize, this.roomSize, 1));
             this.addComponent(this.cmpMesh);
             this.addComponent(this.cmpMaterial);
-            this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(this.coordinates.x * this.roomSize, this.coordinates.y * this.roomSize, -0.01);
+            this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(0, 0, -0.01);
 
             this.addWalls();
             this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate)
@@ -79,6 +79,8 @@ namespace Generation {
         }
 
         public setSpawnPoints() {
+
+            //TODO: talk with tobi about spawnPoints and local room
             this.avatarSpawnPointE = new ƒ.Vector2(this.mtxLocal.translation.x + ((this.roomSize / 2) - 2), this.mtxLocal.translation.y);
             this.avatarSpawnPointW = new ƒ.Vector2(this.mtxLocal.translation.x - ((this.roomSize / 2) - 2), this.mtxLocal.translation.y);
 
@@ -127,6 +129,7 @@ namespace Generation {
         normalRoomMat: ƒ.Material = new ƒ.Material("normalRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
         constructor(_coordinates: Game.ƒ.Vector2) {
             super(_coordinates);
+            this.roomSize = 10;
             this.roomType = ROOMTYPE.NORMAL;
             this.cmpMaterial = new ƒ.ComponentMaterial(this.normalRoomMat);
         }
@@ -136,6 +139,7 @@ namespace Generation {
         bossRoomMat: ƒ.Material = new ƒ.Material("bossRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("black")));
         constructor(_coordinates: Game.ƒ.Vector2) {
             super(_coordinates);
+            this.roomSize = 25;
             this.roomType = ROOMTYPE.BOSS;
             this.cmpMaterial = new ƒ.ComponentMaterial(this.bossRoomMat);
         }

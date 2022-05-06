@@ -128,28 +128,32 @@ namespace Generation {
         return false;
     }
 
-    function placeRoomToWorlCoords(_firstRoom: Room) {
-        if (_firstRoom.neighbourN != undefined && !_firstRoom.neighbourN.positionUpdated) {
-            _firstRoom.neighbourN.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourN.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourN.roomSize / 2), _firstRoom.neighbourN.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourN.roomSize / 2), -0.01);
-            _firstRoom.neighbourN.positionUpdated = true;
-            placeRoomToWorlCoords(_firstRoom.neighbourN);
-        }
-        if (_firstRoom.neighbourE != undefined && !_firstRoom.neighbourE.positionUpdated) {
-            _firstRoom.neighbourE.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourE.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourE.roomSize / 2), _firstRoom.neighbourE.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourE.roomSize / 2), -0.01);
-            _firstRoom.neighbourE.positionUpdated = true;
-            placeRoomToWorlCoords(_firstRoom.neighbourE);
-        }
-        if (_firstRoom.neighbourS != undefined && !_firstRoom.neighbourS.positionUpdated) {
-            _firstRoom.neighbourS.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourS.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourS.roomSize / 2), _firstRoom.neighbourS.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourS.roomSize / 2), -0.01);
-            _firstRoom.neighbourS.positionUpdated = true;
-            placeRoomToWorlCoords(_firstRoom.neighbourS);
-        }
-        if (_firstRoom.neighbourW != undefined && !_firstRoom.neighbourW.positionUpdated) {
-            _firstRoom.neighbourW.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourW.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourW.roomSize / 2), _firstRoom.neighbourW.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourW.roomSize / 2), -0.01);
-            _firstRoom.neighbourW.positionUpdated = true;
-            placeRoomToWorlCoords(_firstRoom.neighbourW);
-        }
+    function moveRoomToWorldCoords() {
+        
     }
+
+    // function placeRoomToWorlCoords(_firstRoom: Room) {
+    //     if (_firstRoom.neighbourN != undefined && !_firstRoom.neighbourN.positionUpdated) {
+    //         _firstRoom.neighbourN.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourN.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourN.roomSize / 2), _firstRoom.neighbourN.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourN.roomSize / 2), -0.01);
+    //         _firstRoom.neighbourN.positionUpdated = true;
+    //         placeRoomToWorlCoords(_firstRoom.neighbourN);
+    //     }
+    //     if (_firstRoom.neighbourE != undefined && !_firstRoom.neighbourE.positionUpdated) {
+    //         _firstRoom.neighbourE.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourE.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourE.roomSize / 2), _firstRoom.neighbourE.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourE.roomSize / 2), -0.01);
+    //         _firstRoom.neighbourE.positionUpdated = true;
+    //         placeRoomToWorlCoords(_firstRoom.neighbourE);
+    //     }
+    //     if (_firstRoom.neighbourS != undefined && !_firstRoom.neighbourS.positionUpdated) {
+    //         _firstRoom.neighbourS.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourS.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourS.roomSize / 2), _firstRoom.neighbourS.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourS.roomSize / 2), -0.01);
+    //         _firstRoom.neighbourS.positionUpdated = true;
+    //         placeRoomToWorlCoords(_firstRoom.neighbourS);
+    //     }
+    //     if (_firstRoom.neighbourW != undefined && !_firstRoom.neighbourW.positionUpdated) {
+    //         _firstRoom.neighbourW.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourW.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourW.roomSize / 2), _firstRoom.neighbourW.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourW.roomSize / 2), -0.01);
+    //         _firstRoom.neighbourW.positionUpdated = true;
+    //         placeRoomToWorlCoords(_firstRoom.neighbourW);
+    //     }
+    // }
     export function switchRoom(_direction: Interfaces.IRoomExits) {
         if (Game.currentRoom.finished) {
             let newRoom: Room;
