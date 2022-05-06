@@ -305,8 +305,11 @@ namespace Networking {
                             let newBuffs: Buff.Buff[] = [];
                             buffList.forEach(buff => {
                                 switch (buff.id) {
-                                    case Buff.BUFFID.POISON:
+                                    case  Buff.BUFFID.POISON | Buff.BUFFID.BLEEDING:
                                         newBuffs.push(new Buff.DamageBuff(buff.id, buff.duration, buff.tickRate, (<Buff.DamageBuff>buff).value));
+                                        break;
+                                    case Buff.BUFFID.IMMUNE:
+                                        newBuffs.push(new Buff.AttributesBuff(buff.id, buff.duration, buff.tickRate, (<Buff.AttributesBuff>buff).value));
                                         break;
                                 }
                             });
@@ -320,7 +323,6 @@ namespace Networking {
                                 })
                                 if (!flag) {
                                     entity.removeChild(entity.getChildren().find(child => (<UI.Particles>child).id == buff.id));
-
                                 }
                             });
                             entity.buffs = newBuffs;

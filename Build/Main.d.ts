@@ -238,7 +238,7 @@ declare namespace Interfaces {
         getDamage(): void;
     }
     interface IAttributeValuePayload {
-        value: number;
+        value: number | boolean;
         type: Entity.ATTRIBUTETYPE;
     }
     interface INetworkable {
@@ -538,7 +538,8 @@ declare namespace Buff {
         BLEEDING = 0,
         POISON = 1,
         HEAL = 2,
-        SLOW = 3
+        SLOW = 3,
+        IMMUNE = 4
     }
     abstract class Buff {
         duration: number;
@@ -546,19 +547,22 @@ declare namespace Buff {
         id: BUFFID;
         protected noDuration: number;
         constructor(_id: BUFFID, _duration: number, _tickRate: number);
-        getParticleById(_id: BUFFID): UI.Particles;
+        protected getParticleById(_id: BUFFID): UI.Particles;
         clone(): Buff;
-        applyBuff(_avatar: Entity.Entity): void;
+        protected applyBuff(_avatar: Entity.Entity): void;
+        protected removeBuff(_avatar: Entity.Entity): void;
         addToEntity(_avatar: Entity.Entity): void;
         doBuffStuff(_avatar: Entity.Entity): boolean;
+        protected getBuffById(_id: Buff.BUFFID, _avatar: Entity.Entity, _add: boolean): void;
+        protected addParticle(_avatar: Entity.Entity): void;
     }
     class DamageBuff extends Buff {
         value: number;
         constructor(_id: BUFFID, _duration: number, _tickRate: number, _value: number);
         clone(): DamageBuff;
         doBuffStuff(_avatar: Entity.Entity): boolean;
-        applyBuff(_avatar: Entity.Entity): void;
-        getBuffDamgeById(_id: BUFFID, _avatar: Entity.Entity): void;
+        protected applyBuff(_avatar: Entity.Entity): void;
+        protected getBuffById(_id: BUFFID, _avatar: Entity.Entity): void;
     }
     class AttributesBuff extends Buff {
         isBuffApplied: boolean;
@@ -567,9 +571,8 @@ declare namespace Buff {
         constructor(_id: BUFFID, _duration: number, _tickRate: number, _value: number);
         clone(): AttributesBuff;
         doBuffStuff(_avatar: Entity.Entity): boolean;
-        removeBuff(_avatar: Entity.Entity): void;
-        applyBuff(_avatar: Entity.Entity): void;
-        getBuffAttributeById(_id: BUFFID, _avatar: Entity.Entity, _add: boolean): void;
+        protected applyBuff(_avatar: Entity.Entity): void;
+        protected getBuffById(_id: BUFFID, _avatar: Entity.Entity, _add: boolean): void;
     }
 }
 declare namespace Bullets {

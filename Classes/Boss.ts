@@ -37,10 +37,9 @@ namespace Enemy {
             }
 
             if (this.damageTaken >= 25) {
-                this.attributes.hitable = false;
+                new Buff.AttributesBuff(Buff.BUFFID.IMMUNE, null, 1, 0).addToEntity(this);
                 this.currentBehaviour = Entity.BEHAVIOUR.SUMMON;
             } else {
-                this.attributes.hitable = true;
                 this.currentBehaviour = Entity.BEHAVIOUR.FLEE;
             }
         }
@@ -114,11 +113,12 @@ namespace Enemy {
             if (this.defencePhaseCurrentTime > 0) {
                 if (this.mtxLocal.translation.equals(summonPosition.toVector3(), 1) && this.getCurrentFrame == 9) {
                     console.log("spawning");
-                    this.mtxLocal.translation = summonPosition.toVector3();
-                    this.summon.doAbility();
+                    this.moveDirection = ƒ.Vector3.ZERO();
+                    // this.summon.doAbility();
                 }
                 this.defencePhaseCurrentTime--;
             } else {
+                (<Buff.AttributesBuff>this.buffs.find(buff => buff.id == Buff.BUFFID.IMMUNE)).duration = 0;
                 this.mtxLocal.translation = (new ƒ.Vector2(0, 0)).toVector3();
                 this.shooting360();
             }

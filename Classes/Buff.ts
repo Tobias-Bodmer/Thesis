@@ -4,7 +4,8 @@ namespace Buff {
         BLEEDING,
         POISON,
         HEAL,
-        SLOW
+        SLOW,
+        IMMUNE
     }
     export abstract class Buff {
         duration: number;
@@ -19,7 +20,7 @@ namespace Buff {
             this.noDuration = 0;
         }
 
-        getParticleById(_id: BUFFID): UI.Particles {
+        protected getParticleById(_id: BUFFID): UI.Particles {
             switch (_id) {
                 case BUFFID.POISON:
                     return new UI.Particles(BUFFID.POISON, UI.poisonParticle, 6, 12);
@@ -28,25 +29,46 @@ namespace Buff {
             }
         }
 
-        clone(): Buff {
+        public clone(): Buff {
             return this;
         }
 
-        applyBuff(_avatar: Entity.Entity) {
+        protected applyBuff(_avatar: Entity.Entity) {
+            Networking.updateBuffList(_avatar.buffs, _avatar.netId);
+        }
 
+        protected removeBuff(_avatar: Entity.Entity) {
+            if (Networking.client.idHost == Networking.client.id) {
+                this.getBuffById(this.id, _avatar, false);
+                _avatar.buffs.splice(_avatar.buffs.indexOf(this));
+                Networking.updateBuffList(_avatar.buffs, _avatar.netId);
+            }
         }
         addToEntity(_avatar: Entity.Entity) {
             if (_avatar.buffs.filter(buff => buff.id == this.id).length > 0) {
                 return;
             }
             else {
-
                 _avatar.buffs.push(this);
                 Networking.updateBuffList(_avatar.buffs, _avatar.netId);
             }
         }
-        doBuffStuff(_avatar: Entity.Entity): boolean {
+        public doBuffStuff(_avatar: Entity.Entity): boolean {
             return null;
+        }
+
+        protected getBuffById(_id: Buff.BUFFID, _avatar: Entity.Entity, _add: boolean) {
+
+        }
+
+        protected addParticle(_avatar: Entity.Entity) {
+            if (_avatar.getChildren().find(child => (<UI.Particles>child).id == this.id) == undefined) {
+                let particle = this.getParticleById(this.id);
+                if (particle != undefined) {
+                    _avatar.addChild(particle);
+                    particle.activate(true);
+                }
+            }
         }
     }
 
@@ -57,11 +79,11 @@ namespace Buff {
             this.value = _value;
         }
 
-        clone(): DamageBuff {
+        public clone(): DamageBuff {
             return new DamageBuff(this.id, this.duration, this.tickRate, this.value);
         }
 
-        doBuffStuff(_avatar: Entity.Entity): boolean {
+        public doBuffStuff(_avatar: Entity.Entity): boolean {
             if (this.duration != undefined) {
                 if (this.duration <= 0) {
                     _avatar.removeChild(_avatar.getChildren().find(child => (<UI.Particles>child).id == this.id));
@@ -83,28 +105,22 @@ namespace Buff {
             }
             else {
                 if (this.noDuration % this.tickRate == 0) {
-
                     this.applyBuff(_avatar);
                 }
-                if (_avatar.getChildren().find(child => (<UI.Particles>child).id == this.id) == undefined) {
-                    let particle = this.getParticleById(this.id);
-                    if (particle != undefined) {
-                        _avatar.addChild(particle);
-                        particle.activate(true);
-                    }
-                }
+                this.addParticle(_avatar);
                 this.noDuration++;
                 return true;
             }
         }
 
-        applyBuff(_avatar: Entity.Entity): void {
+        protected applyBuff(_avatar: Entity.Entity): void {
             if (Networking.client.id == Networking.client.idHost) {
-                this.getBuffDamgeById(this.id, _avatar);
+                this.getBuffById(this.id, _avatar);
+                super.applyBuff(_avatar);
             }
         }
-
-        getBuffDamgeById(_id: BUFFID, _avatar: Entity.Entity) {
+     
+        protected getBuffById(_id: BUFFID, _avatar: Entity.Entity) {
             switch (_id) {
                 case BUFFID.BLEEDING:
                     _avatar.getDamage(this.value);
@@ -133,10 +149,10 @@ namespace Buff {
             this.isBuffApplied = false;
             this.value = _value;
         }
-        clone(): AttributesBuff {
+        public clone(): AttributesBuff {
             return new AttributesBuff(this.id, this.duration, this.tickRate, this.value);
         }
-        doBuffStuff(_avatar: Entity.Entity): boolean {
+        public doBuffStuff(_avatar: Entity.Entity): boolean {
             if (this.duration != undefined) {
                 if (this.duration <= 0) {
                     this.removeBuff(_avatar);
@@ -173,19 +189,14 @@ namespace Buff {
             }
         }
 
-        removeBuff(_avatar: Entity.Entity): void {
+        protected applyBuff(_avatar: Entity.Entity): void {
             if (Networking.client.idHost == Networking.client.id) {
-                this.getBuffAttributeById(this.id, _avatar, false);
+                this.getBuffById(this.id, _avatar, true);
+                super.applyBuff(_avatar);
             }
         }
 
-        applyBuff(_avatar: Entity.Entity): void {
-            if (Networking.client.idHost == Networking.client.id) {
-                this.getBuffAttributeById(this.id, _avatar, true);
-            }
-        }
-
-        getBuffAttributeById(_id: BUFFID, _avatar: Entity.Entity, _add: boolean) {
+        protected getBuffById(_id: BUFFID, _avatar: Entity.Entity, _add: boolean) {
             switch (_id) {
                 case BUFFID.SLOW:
                     if (_add) {
@@ -194,7 +205,15 @@ namespace Buff {
                     } else {
                         _avatar.attributes.speed += this.removedValue;
                     }
-                    // Networking.updateEntityAttributes(_avatar.attributes, _avatar.netId);
+                    break;
+                case BUFFID.IMMUNE:
+                    if (_add) {
+                        _avatar.attributes.hitable = false;
+                    } else {
+                        _avatar.attributes.hitable = false;
+                    }
+                    let payload: Interfaces.IAttributeValuePayload = <Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.hitable, type: Entity.ATTRIBUTETYPE.HITABLE }
+                    Networking.updateEntityAttributes(payload, _avatar.netId);
                     break;
             }
         }
