@@ -475,6 +475,7 @@ declare namespace Ability {
         get getMaxCoolDown(): number;
         set setMaxCoolDown(_param: number);
         private currentCooldown;
+        get getCurrentCooldown(): number;
         constructor(_number: number);
         startCoolDown(): void;
         private endCoolDOwn;
@@ -546,13 +547,27 @@ declare namespace Buff {
         tickRate: number;
         id: BUFFID;
         protected noDuration: number;
+        protected coolDown: Ability.Cooldown;
         constructor(_id: BUFFID, _duration: number, _tickRate: number);
         protected getParticleById(_id: BUFFID): UI.Particles;
         clone(): Buff;
         protected applyBuff(_avatar: Entity.Entity): void;
-        protected removeBuff(_avatar: Entity.Entity): void;
+        /**
+         * removes the buff from the buff list, removes the particle and sends the new list to the client
+         * @param _avatar entity the buff should be removed
+         */
+        removeBuff(_avatar: Entity.Entity): void;
+        /**
+         * only use this function to add buffs to entities
+         * @param _avatar entity it should be add to
+         * @returns
+         */
         addToEntity(_avatar: Entity.Entity): void;
-        doBuffStuff(_avatar: Entity.Entity): boolean;
+        /**
+         * buff applies its buff stats to the entity and deletes itself when its duration is over
+         * @param _avatar entity it should be add to
+         */
+        doBuffStuff(_avatar: Entity.Entity): void;
         protected getBuffById(_id: Buff.BUFFID, _avatar: Entity.Entity, _add: boolean): void;
         protected addParticle(_avatar: Entity.Entity): void;
     }
@@ -560,9 +575,8 @@ declare namespace Buff {
         value: number;
         constructor(_id: BUFFID, _duration: number, _tickRate: number, _value: number);
         clone(): DamageBuff;
-        doBuffStuff(_avatar: Entity.Entity): boolean;
-        protected applyBuff(_avatar: Entity.Entity): void;
-        protected getBuffById(_id: BUFFID, _avatar: Entity.Entity): void;
+        doBuffStuff(_avatar: Entity.Entity): void;
+        protected getBuffById(_id: BUFFID, _avatar: Entity.Entity, _add: boolean): void;
     }
     class AttributesBuff extends Buff {
         isBuffApplied: boolean;
@@ -570,8 +584,7 @@ declare namespace Buff {
         removedValue: number;
         constructor(_id: BUFFID, _duration: number, _tickRate: number, _value: number);
         clone(): AttributesBuff;
-        doBuffStuff(_avatar: Entity.Entity): boolean;
-        protected applyBuff(_avatar: Entity.Entity): void;
+        doBuffStuff(_avatar: Entity.Entity): void;
         protected getBuffById(_id: BUFFID, _avatar: Entity.Entity, _add: boolean): void;
     }
 }

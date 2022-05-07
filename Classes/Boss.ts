@@ -37,8 +37,10 @@ namespace Enemy {
             }
 
             if (this.damageTaken >= 25) {
-                new Buff.AttributesBuff(Buff.BUFFID.IMMUNE, null, 1, 0).addToEntity(this);
+                // new Buff.AttributesBuff(Buff.BUFFID.IMMUNE, null, 1, 0).addToEntity(this);
+                new Buff.DamageBuff(Buff.BUFFID.POISON, 120, 30, 3).addToEntity(this);
                 this.currentBehaviour = Entity.BEHAVIOUR.SUMMON;
+                this.damageTaken = 0;
             } else {
                 this.currentBehaviour = Entity.BEHAVIOUR.FLEE;
             }
@@ -118,7 +120,7 @@ namespace Enemy {
                 }
                 this.defencePhaseCurrentTime--;
             } else {
-                (<Buff.AttributesBuff>this.buffs.find(buff => buff.id == Buff.BUFFID.IMMUNE)).duration = 0;
+                // (<Buff.AttributesBuff>this.buffs.find(buff => buff.id == Buff.BUFFID.IMMUNE)).duration = 0;
                 this.mtxLocal.translation = (new ƒ.Vector2(0, 0)).toVector3();
                 this.shooting360();
             }
@@ -139,7 +141,6 @@ namespace Enemy {
                 } else {
                     this.beginShooting = false;
                     if (this.currentBehaviour == Entity.BEHAVIOUR.SUMMON) {
-                        this.damageTaken = 0;
                         this.beginDefencePhase = false;
                     } else {
                         this.beginAttackingPhase = false;

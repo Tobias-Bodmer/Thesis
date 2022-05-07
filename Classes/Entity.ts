@@ -13,7 +13,7 @@ namespace Entity {
         public weapon: Weapons.Weapon;
         public buffs: Buff.Buff[] = [];
         protected offsetColliderX: number = 0;
-        protected offsetColliderY: number= 0;
+        protected offsetColliderY: number = 0;
         protected canMoveX: boolean = true;
         protected canMoveY: boolean = true;
         protected moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
@@ -27,7 +27,7 @@ namespace Entity {
         constructor(_id: Entity.ID, _netId: number) {
             super(getNameById(_id));
             this.id = _id;
-            this.attributes = new Attributes(1,1,1,1,1,1,1);
+            this.attributes = new Attributes(1, 1, 1, 1, 1, 1, 1);
             if (AnimationGeneration.getAnimationById(this.id) != null) {
                 let ani = AnimationGeneration.getAnimationById(this.id);
                 this.animationContainer = ani;
@@ -83,9 +83,7 @@ namespace Entity {
                 return;
             }
             for (let i = 0; i < this.buffs.length; i++) {
-                if (!this.buffs[i].doBuffStuff(this)) {
-                    // console.log(this.buffs.splice(i, 1));
-                }
+                this.buffs[i].doBuffStuff(this);
             }
         }
 
@@ -292,12 +290,12 @@ namespace Entity {
     }
 
     export enum ID {
-        RANGED ,
-        MELEE ,
-        BAT ,
-        REDTICK ,
+        RANGED,
+        MELEE,
+        BAT,
+        REDTICK,
         SMALLTICK,
-        SKELETON ,
+        SKELETON,
         OGER,
         SUMMONOR
     }

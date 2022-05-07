@@ -301,31 +301,37 @@ namespace Networking {
 
                         //update Entity buff List
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEBUFF.toString()) {
-                            const buffList: Buff.Buff[] = <Buff.Buff[]>message.content.buffList;
-                            let newBuffs: Buff.Buff[] = [];
-                            buffList.forEach(buff => {
-                                switch (buff.id) {
-                                    case  Buff.BUFFID.POISON | Buff.BUFFID.BLEEDING:
-                                        newBuffs.push(new Buff.DamageBuff(buff.id, buff.duration, buff.tickRate, (<Buff.DamageBuff>buff).value));
-                                        break;
-                                    case Buff.BUFFID.IMMUNE:
-                                        newBuffs.push(new Buff.AttributesBuff(buff.id, buff.duration, buff.tickRate, (<Buff.AttributesBuff>buff).value));
-                                        break;
-                                }
-                            });
+                            let buffList: Buff.Buff[] = <Buff.Buff[]>message.content.buffList;
                             let entity = Game.entities.find(ent => ent.netId == message.content.netId);
-                            entity.buffs.forEach(buff => {
-                                let flag: boolean = false;
-                                newBuffs.forEach(newBuff => {
-                                    if (buff.id == newBuff.id) {
-                                        flag = true;
-                                    }
-                                })
-                                if (!flag) {
-                                    entity.removeChild(entity.getChildren().find(child => (<UI.Particles>child).id == buff.id));
+                            // let newBuffs: Buff.Buff[] = [];
+                            entity.buffs.forEach(oldBuff => {
+                                let buffToCheck = buffList.find(buff => buff.id == oldBuff.id)
+                                if (buffToCheck == undefined) {
+                                    oldBuff.removeBuff(entity);
                                 }
+                            })
+                            buffList.forEach(buff => {
+                                    switch (buff.id) {
+                                        case Buff.BUFFID.POISON | Buff.BUFFID.BLEEDING:
+                                            new Buff.DamageBuff(buff.id, buff.duration, buff.tickRate, (<Buff.DamageBuff>buff).value).addToEntity(entity);
+                                            break;
+                                        case Buff.BUFFID.IMMUNE:
+                                            new Buff.AttributesBuff(buff.id, buff.duration, buff.tickRate, (<Buff.AttributesBuff>buff).value).addToEntity(entity);
+                                            break;
+                                    }
                             });
-                            entity.buffs = newBuffs;
+                            // entity.buffs.forEach(buff => {
+                            //     let flag: boolean = false;
+                            //     buffList.forEach(newBuff => {
+                            //         if (buff.id == newBuff.id) {
+                            //             flag = true;
+                            //         }
+                            //     })
+                            //     if (!flag) {
+                            //         entity.removeChild(entity.getChildren().find(child => (<UI.Particles>child).id == buff.id));
+                            //     }
+                            // });
+                            // entity.buffs = newBuffs;
                         }
 
 

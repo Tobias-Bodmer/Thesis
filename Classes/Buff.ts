@@ -12,12 +12,18 @@ namespace Buff {
         tickRate: number
         id: BUFFID;
         protected noDuration: number;
+        protected coolDown: Ability.Cooldown;
 
         constructor(_id: BUFFID, _duration: number, _tickRate: number) {
             this.id = _id;
             this.duration = _duration;
             this.tickRate = _tickRate;
             this.noDuration = 0;
+            if (_duration != undefined) {
+                this.coolDown = new Ability.Cooldown(_duration);
+            } else {
+                this.coolDown = undefined;
+            }
         }
 
         protected getParticleById(_id: BUFFID): UI.Particles {
@@ -34,27 +40,46 @@ namespace Buff {
         }
 
         protected applyBuff(_avatar: Entity.Entity) {
-            Networking.updateBuffList(_avatar.buffs, _avatar.netId);
-        }
-
-        protected removeBuff(_avatar: Entity.Entity) {
-            if (Networking.client.idHost == Networking.client.id) {
-                this.getBuffById(this.id, _avatar, false);
-                _avatar.buffs.splice(_avatar.buffs.indexOf(this));
+            if (Networking.client.id = Networking.client.idHost) {
+                this.getBuffById(this.id, _avatar, true);
                 Networking.updateBuffList(_avatar.buffs, _avatar.netId);
             }
         }
-        addToEntity(_avatar: Entity.Entity) {
+        /**
+         * removes the buff from the buff list, removes the particle and sends the new list to the client
+         * @param _avatar entity the buff should be removed
+         */
+        public removeBuff(_avatar: Entity.Entity) {
+            _avatar.removeChild(_avatar.getChildren().find(child => (<UI.Particles>child).id == this.id));
+            _avatar.buffs.splice(_avatar.buffs.indexOf(this));
+            if (Networking.client.idHost == Networking.client.id) {
+                this.getBuffById(this.id, _avatar, false);
+                Networking.updateBuffList(_avatar.buffs, _avatar.netId);
+            }
+        }
+        /**
+         * only use this function to add buffs to entities
+         * @param _avatar entity it should be add to
+         * @returns 
+         */
+        public addToEntity(_avatar: Entity.Entity) {
             if (_avatar.buffs.filter(buff => buff.id == this.id).length > 0) {
                 return;
             }
             else {
                 _avatar.buffs.push(this);
+                this.addParticle(_avatar);
+                this.coolDown.startCoolDown();
                 Networking.updateBuffList(_avatar.buffs, _avatar.netId);
             }
         }
-        public doBuffStuff(_avatar: Entity.Entity): boolean {
-            return null;
+
+        /**
+         * buff applies its buff stats to the entity and deletes itself when its duration is over
+         * @param _avatar entity it should be add to
+         */
+        public doBuffStuff(_avatar: Entity.Entity) {
+
         }
 
         protected getBuffById(_id: Buff.BUFFID, _avatar: Entity.Entity, _add: boolean) {
@@ -83,60 +108,44 @@ namespace Buff {
             return new DamageBuff(this.id, this.duration, this.tickRate, this.value);
         }
 
-        public doBuffStuff(_avatar: Entity.Entity): boolean {
-            if (this.duration != undefined) {
-                if (this.duration <= 0) {
-                    _avatar.removeChild(_avatar.getChildren().find(child => (<UI.Particles>child).id == this.id));
-                    return false;
+        public doBuffStuff(_avatar: Entity.Entity) {
+            if (this.coolDown != undefined) {
+                if (!this.coolDown.hasCoolDown) {
+                    this.removeBuff(_avatar);
+                    return;
                 }
-                else if (this.duration % this.tickRate == 0) {
-
+                else if (this.coolDown.getCurrentCooldown % this.tickRate == 0) {
                     this.applyBuff(_avatar);
                 }
-                if (_avatar.getChildren().find(child => (<UI.Particles>child).id == this.id) == undefined) {
-                    let particle = this.getParticleById(this.id);
-                    if (particle != undefined) {
-                        _avatar.addChild(particle);
-                        particle.activate(true);
-                    }
-                }
-                this.duration--;
-                return true;
             }
             else {
                 if (this.noDuration % this.tickRate == 0) {
                     this.applyBuff(_avatar);
                 }
-                this.addParticle(_avatar);
                 this.noDuration++;
-                return true;
             }
         }
 
-        protected applyBuff(_avatar: Entity.Entity): void {
-            if (Networking.client.id == Networking.client.idHost) {
-                this.getBuffById(this.id, _avatar);
-                super.applyBuff(_avatar);
-            }
-        }
-     
-        protected getBuffById(_id: BUFFID, _avatar: Entity.Entity) {
-            switch (_id) {
-                case BUFFID.BLEEDING:
-                    _avatar.getDamage(this.value);
-                    break;
-                case BUFFID.POISON:
-                    // only do damage to player until he has 20% health
-                    if (_avatar instanceof Player.Player) {
-                        if (_avatar.attributes.healthPoints > _avatar.attributes.maxHealthPoints * 0.2) {
+        protected getBuffById(_id: BUFFID, _avatar: Entity.Entity, _add: boolean) {
+            if (_add) {
+                switch (_id) {
+                    case BUFFID.BLEEDING:
+                        _avatar.getDamage(this.value);
+                        break;
+                    case BUFFID.POISON:
+                        // only do damage to player until he has 20% health
+                        if (_avatar instanceof Player.Player) {
+                            if (_avatar.attributes.healthPoints > _avatar.attributes.maxHealthPoints * 0.2) {
+                                _avatar.getDamage(this.value);
+                            }
+                        }
+                        else {
                             _avatar.getDamage(this.value);
                         }
-                    }
-                    else {
-                        _avatar.getDamage(this.value);
-                    }
-                    break;
+                        break;
+                }
             }
+            else { return; }
         }
     }
 
@@ -152,47 +161,23 @@ namespace Buff {
         public clone(): AttributesBuff {
             return new AttributesBuff(this.id, this.duration, this.tickRate, this.value);
         }
-        public doBuffStuff(_avatar: Entity.Entity): boolean {
+        public doBuffStuff(_avatar: Entity.Entity) {
             if (this.duration != undefined) {
                 if (this.duration <= 0) {
                     this.removeBuff(_avatar);
-                    return false;
                 }
                 else if (!this.isBuffApplied) {
                     this.applyBuff(_avatar);
                     this.isBuffApplied = true;
                 }
-                if (_avatar.getChildren().find(child => (<UI.Particles>child).id == this.id) == undefined) {
-                    let particle = this.getParticleById(this.id);
-                    if (particle != undefined) {
-                        _avatar.addChild(particle);
-                        particle.activate(true);
-                    }
-                }
                 this.duration--;
-                return true;
             }
             else {
                 if (!this.isBuffApplied) {
                     this.applyBuff(_avatar);
                     this.isBuffApplied = true;
                 }
-                if (_avatar.getChildren().find(child => (<UI.Particles>child).id == this.id) == undefined) {
-                    let particle = this.getParticleById(this.id);
-                    if (particle != undefined) {
-                        _avatar.addChild(particle);
-                        particle.activate(true);
-                    }
-                }
-                this.noDuration++;
-                return true;
-            }
-        }
-
-        protected applyBuff(_avatar: Entity.Entity): void {
-            if (Networking.client.idHost == Networking.client.id) {
-                this.getBuffById(this.id, _avatar, true);
-                super.applyBuff(_avatar);
+                this.addParticle(_avatar);
             }
         }
 
