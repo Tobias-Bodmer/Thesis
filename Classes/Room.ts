@@ -19,7 +19,7 @@ namespace Generation {
         public finished: boolean = false;
         public enemyCount: number;
         public positionUpdated: boolean = false;
-        roomSize: number;
+        roomSize: number = 30;
         exits: Interfaces.IRoomExits; // N E S W
         mesh: ƒ.MeshQuad = new ƒ.MeshQuad;
         cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(this.mesh);
@@ -35,20 +35,23 @@ namespace Generation {
 
         cmpMaterial: ƒ.ComponentMaterial;
 
-
-
-        constructor(_coordiantes: Game.ƒ.Vector2) {
+        constructor(_coordiantes: Game.ƒ.Vector2, _roomSize: number, _roomType: ROOMTYPE) {
             super("room");
             this.tag = Tag.TAG.ROOM;
             this.coordinates = _coordiantes;
             this.enemyCount = 0;
-            this.roomSize = 30;
+            if (_roomSize != undefined) {
+                this.roomSize = _roomSize;
+            }
+            if (_roomType != undefined) {
+                this.roomType = _roomType;
+            }
             this.exits = <Interfaces.IRoomExits>{ north: false, east: false, south: false, west: false }
             this.finished = true;
             this.cmpMaterial = new ƒ.ComponentMaterial(this.startRoomMat);
 
             this.addComponent(new ƒ.ComponentTransform());
-            this.cmpTransform.mtxLocal.scale(new ƒ.Vector3(this.roomSize, this.roomSize, 1));
+            this.cmpTransform.mtxLocal.scaling = new ƒ.Vector3(this.roomSize, this.roomSize, 1);
             this.addComponent(this.cmpMesh);
             this.addComponent(this.cmpMaterial);
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(0, 0, -0.01);
@@ -79,11 +82,8 @@ namespace Generation {
         }
 
         public setSpawnPoints() {
-
-            //TODO: talk with tobi about spawnPoints and local room
             this.avatarSpawnPointE = new ƒ.Vector2(this.mtxLocal.translation.x + ((this.roomSize / 2) - 2), this.mtxLocal.translation.y);
             this.avatarSpawnPointW = new ƒ.Vector2(this.mtxLocal.translation.x - ((this.roomSize / 2) - 2), this.mtxLocal.translation.y);
-
             this.avatarSpawnPointN = new ƒ.Vector2(this.mtxLocal.translation.x, this.mtxLocal.translation.y + ((this.roomSize / 2) - 2));
             this.avatarSpawnPointS = new ƒ.Vector2(this.mtxLocal.translation.x, this.mtxLocal.translation.y - ((this.roomSize / 2) - 2));
         }
@@ -128,20 +128,16 @@ namespace Generation {
     export class NormalRoom extends Room {
         normalRoomMat: ƒ.Material = new ƒ.Material("normalRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
         constructor(_coordinates: Game.ƒ.Vector2) {
-            super(_coordinates);
-            this.roomSize = 10;
-            this.roomType = ROOMTYPE.NORMAL;
-            this.cmpMaterial = new ƒ.ComponentMaterial(this.normalRoomMat);
+            super(_coordinates, 20, ROOMTYPE.NORMAL);
+            this.getComponent(Game.ƒ.ComponentMaterial).material = this.normalRoomMat;
         }
     }
 
     export class BossRoom extends Room {
         bossRoomMat: ƒ.Material = new ƒ.Material("bossRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("black")));
         constructor(_coordinates: Game.ƒ.Vector2) {
-            super(_coordinates);
-            this.roomSize = 25;
-            this.roomType = ROOMTYPE.BOSS;
-            this.cmpMaterial = new ƒ.ComponentMaterial(this.bossRoomMat);
+            super(_coordinates, 25, ROOMTYPE.BOSS);
+            this.getComponent(Game.ƒ.ComponentMaterial).material = this.bossRoomMat;
         }
     }
 

@@ -16,6 +16,10 @@ namespace Generation {
         rooms = generateNormalRooms();
         addBossRoom();
         setExits();
+        rooms.forEach(room => { console.log(room.mtxLocal.translation.clone.toString()) });
+        moveRoomToWorldCoords(rooms[0]);
+        rooms.forEach(room => { room.setSpawnPoints(); });
+        rooms.forEach(room => { console.log(room.mtxLocal.translation.clone.toString()) });
         addRoomToGraph(rooms[0]);
     }
 
@@ -114,7 +118,7 @@ namespace Generation {
             let neighbours = rooms.filter(element => element != room);
             neighbours.forEach(neighbour => {
                 room.setRoomExit(neighbour);
-                room.setSpawnPoints();
+                // room.setSpawnPoints();
                 room.openDoors();
             })
         })
@@ -128,51 +132,52 @@ namespace Generation {
         return false;
     }
 
-    function moveRoomToWorldCoords() {
-        
+    function moveRoomToWorldCoords(_firstRoom: Room) {
+        let neighbourN: Room = rooms.find(room => room.coordinates.equals(new Game.ƒ.Vector2(_firstRoom.coordinates.clone.x, (_firstRoom.coordinates.clone.y + 1))));
+        let neighbourE: Room = rooms.find(room => room.coordinates.equals(new Game.ƒ.Vector2((_firstRoom.coordinates.clone.x + 1), _firstRoom.coordinates.clone.y)));
+        let neighbourS: Room = rooms.find(room => room.coordinates.equals(new Game.ƒ.Vector2(_firstRoom.coordinates.clone.x, (_firstRoom.coordinates.clone.y - 1))));
+        let neighbourW: Room = rooms.find(room => room.coordinates.equals(new Game.ƒ.Vector2((_firstRoom.coordinates.clone.x - 1), _firstRoom.coordinates.clone.y)));
+        if (neighbourN != undefined && !neighbourN.positionUpdated) {
+            neighbourN.mtxLocal.translation = new ƒ.Vector3(neighbourN.coordinates.x * (_firstRoom.roomSize / 2 + neighbourN.roomSize / 2), neighbourN.coordinates.y * (_firstRoom.roomSize / 2 + neighbourN.roomSize / 2), -0.01);
+            neighbourN.positionUpdated = true;
+            moveRoomToWorldCoords(neighbourN);
+        }
+        if (neighbourE != undefined && !neighbourE.positionUpdated) {
+            neighbourE.mtxLocal.translation = new ƒ.Vector3(neighbourE.coordinates.x * (_firstRoom.roomSize / 2 + neighbourE.roomSize / 2), neighbourE.coordinates.y * (_firstRoom.roomSize / 2 + neighbourE.roomSize / 2), -0.01);
+            neighbourE.positionUpdated = true;
+            moveRoomToWorldCoords(neighbourE);
+        }
+        if (neighbourS != undefined && !neighbourS.positionUpdated) {
+            neighbourS.mtxLocal.translation = new ƒ.Vector3(neighbourS.coordinates.x * (_firstRoom.roomSize / 2 + neighbourS.roomSize / 2), neighbourS.coordinates.y * (_firstRoom.roomSize / 2 + neighbourS.roomSize / 2), -0.01);
+            neighbourS.positionUpdated = true;
+            moveRoomToWorldCoords(neighbourS);
+        }
+        if (neighbourW != undefined && !neighbourW.positionUpdated) {
+            neighbourW.mtxLocal.translation = new ƒ.Vector3(neighbourW.coordinates.x * (_firstRoom.roomSize / 2 + neighbourW.roomSize / 2), neighbourW.coordinates.y * (_firstRoom.roomSize / 2 + neighbourW.roomSize / 2), -0.01);
+            neighbourW.positionUpdated = true;
+            moveRoomToWorldCoords(neighbourW);
+        }
     }
 
-    // function placeRoomToWorlCoords(_firstRoom: Room) {
-    //     if (_firstRoom.neighbourN != undefined && !_firstRoom.neighbourN.positionUpdated) {
-    //         _firstRoom.neighbourN.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourN.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourN.roomSize / 2), _firstRoom.neighbourN.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourN.roomSize / 2), -0.01);
-    //         _firstRoom.neighbourN.positionUpdated = true;
-    //         placeRoomToWorlCoords(_firstRoom.neighbourN);
-    //     }
-    //     if (_firstRoom.neighbourE != undefined && !_firstRoom.neighbourE.positionUpdated) {
-    //         _firstRoom.neighbourE.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourE.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourE.roomSize / 2), _firstRoom.neighbourE.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourE.roomSize / 2), -0.01);
-    //         _firstRoom.neighbourE.positionUpdated = true;
-    //         placeRoomToWorlCoords(_firstRoom.neighbourE);
-    //     }
-    //     if (_firstRoom.neighbourS != undefined && !_firstRoom.neighbourS.positionUpdated) {
-    //         _firstRoom.neighbourS.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourS.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourS.roomSize / 2), _firstRoom.neighbourS.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourS.roomSize / 2), -0.01);
-    //         _firstRoom.neighbourS.positionUpdated = true;
-    //         placeRoomToWorlCoords(_firstRoom.neighbourS);
-    //     }
-    //     if (_firstRoom.neighbourW != undefined && !_firstRoom.neighbourW.positionUpdated) {
-    //         _firstRoom.neighbourW.mtxLocal.translation = new ƒ.Vector3(_firstRoom.neighbourW.coordinates.x * (_firstRoom.roomSize / 2 + _firstRoom.neighbourW.roomSize / 2), _firstRoom.neighbourW.coordinates.y * (_firstRoom.roomSize / 2 + _firstRoom.neighbourW.roomSize / 2), -0.01);
-    //         _firstRoom.neighbourW.positionUpdated = true;
-    //         placeRoomToWorlCoords(_firstRoom.neighbourW);
-    //     }
-    // }
     export function switchRoom(_direction: Interfaces.IRoomExits) {
         if (Game.currentRoom.finished) {
             let newRoom: Room;
             let newPosition: Game.ƒ.Vector2
             if (_direction.north) {
-                newRoom = rooms.find(room => room.coordinates.equals(ƒ.Vector2.SUM(compareNorth, Game.currentRoom.coordinates)));
+                newRoom = rooms.find(room => room.coordinates.equals(new ƒ.Vector2(Game.currentRoom.coordinates.x, Game.currentRoom.coordinates.y + 1)));
                 newPosition = newRoom.getSpawnPointS;
             }
             if (_direction.east) {
-                newRoom = rooms.find(room => room.coordinates.equals(ƒ.Vector2.SUM(compareEast, Game.currentRoom.coordinates)));
+                newRoom = rooms.find(room => room.coordinates.equals(new ƒ.Vector2(Game.currentRoom.coordinates.x + 1, Game.currentRoom.coordinates.y)));
                 newPosition = newRoom.getSpawnPointW;
 
             }
             if (_direction.south) {
-                newRoom = rooms.find(room => room.coordinates.equals(ƒ.Vector2.SUM(compareSouth, Game.currentRoom.coordinates)));
+                newRoom = rooms.find(room => room.coordinates.equals(new ƒ.Vector2(Game.currentRoom.coordinates.x, Game.currentRoom.coordinates.y - 1)));
                 newPosition = newRoom.getSpawnPointN;
             }
             if (_direction.west) {
-                newRoom = rooms.find(room => room.coordinates.equals(ƒ.Vector2.SUM(compareWest, Game.currentRoom.coordinates)));
+                newRoom = rooms.find(room => room.coordinates.equals(new ƒ.Vector2(Game.currentRoom.coordinates.x - 1, Game.currentRoom.coordinates.y)));
                 newPosition = newRoom.getSpawnPointE;
             }
             if (newRoom == undefined) {

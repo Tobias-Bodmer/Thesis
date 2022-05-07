@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -873,7 +873,7 @@ declare namespace Generation {
         private treasureRoomMat;
         private challengeRoomMat;
         cmpMaterial: ƒ.ComponentMaterial;
-        constructor(_coordiantes: Game.ƒ.Vector2);
+        constructor(_coordiantes: Game.ƒ.Vector2, _roomSize: number, _roomType: ROOMTYPE);
         protected eventUpdate: (_event: Event) => void;
         update(): void;
         private addWalls;
