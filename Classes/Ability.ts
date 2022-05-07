@@ -4,18 +4,26 @@ namespace Ability {
         protected cooldown: Cooldown;
         protected abilityCount: number;
         protected currentabilityCount: number;
-        protected duration: number;
+        protected duration: Cooldown;
         public doesAbility: boolean = false;
 
         constructor(_ownerNetId: number, _duration: number, _abilityCount: number, _cooldownTime: number) {
             this.ownerNetId = _ownerNetId;
-            this.duration = _duration;
             this.abilityCount = _abilityCount;
             this.currentabilityCount = this.abilityCount;
-
+            this.duration = new Cooldown(_duration);
             this.cooldown = new Cooldown(_cooldownTime);
         }
 
+        public eventUpdate = (_event: Event): void => {
+            this.updateAbility();
+        }
+        protected updateAbility() {
+            if (this.doesAbility && !this.duration.hasCoolDown) {
+                this.deactivateAbility();
+                this.doesAbility = false;
+            }
+        }
         public doAbility(): void {
             //do stuff
             if (!this.cooldown.hasCoolDown && this.currentabilityCount <= 0) {
@@ -24,11 +32,7 @@ namespace Ability {
             if (!this.cooldown.hasCoolDown && this.currentabilityCount > 0) {
                 this.doesAbility = true;
                 this.activateAbility()
-                setTimeout(() => {
-                    this.deactivateAbility();
-                    this.doesAbility = false;
-                }, this.duration * Game.deltaTime);
-
+                this.duration.startCoolDown();
                 this.currentabilityCount--;
                 if (this.currentabilityCount <= 0) {
                     this.cooldown.startCoolDown();
@@ -36,15 +40,18 @@ namespace Ability {
             }
         }
 
+      
+
         public hasCooldown(): boolean {
             return this.cooldown.hasCoolDown;
         }
 
         protected activateAbility() {
+            Game.ƒ.Loop.addEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
 
         }
         protected deactivateAbility() {
-
+            Game.ƒ.Loop.removeEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
         }
 
 
@@ -53,10 +60,12 @@ namespace Ability {
     export class Block extends Ability {
 
         protected activateAbility(): void {
+            super.activateAbility();
             this.owner.attributes.hitable = false;
         }
 
         protected deactivateAbility(): void {
+            super.deactivateAbility();
             this.owner.attributes.hitable = true;
         }
     }
@@ -68,29 +77,31 @@ namespace Ability {
             this.speed = _speed;
         }
         protected activateAbility(): void {
+            super.activateAbility();
+            console.log("activate");
             this.owner.attributes.hitable = false;
-            this.owner.attributes.speed *= 5;
+            this.owner.attributes.speed *= this.speed;
         }
         protected deactivateAbility(): void {
+            super.deactivateAbility();
+            console.log("deactivate");
             this.owner.attributes.hitable = true;
-            this.owner.attributes.speed /= 5;
+            this.owner.attributes.speed /= this.speed;
         }
     }
 
     export class SpawnSummoners extends Ability {
         private spawnRadius: number = 1;
         protected activateAbility(): void {
+            super.activateAbility();
             if (Networking.client.id == Networking.client.idHost) {
                 let position: Game.ƒ.Vector2 = new ƒ.Vector2(this.owner.mtxLocal.translation.x + Math.random() * this.spawnRadius, this.owner.mtxLocal.translation.y + 2)
                 if (Math.round(Math.random()) > 0.5) {
-                    EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, position, Game.avatar1, null);
+                    EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.BAT, position, Game.avatar1, null);
                 } else {
-                    EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.SMALLTICK, position, Game.avatar2, null);
+                    EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.BAT, position, Game.avatar2, null);
                 }
             }
-        }
-        protected deactivateAbility(): void {
-
         }
     }
 
@@ -99,6 +110,7 @@ namespace Ability {
         private bullets: Bullets.Bullet[] = [];
 
         protected activateAbility(): void {
+            super.activateAbility();
             this.bullets = [];
             for (let i = 0; i < this.bulletAmount; i++) {
                 this.bullets.push(new Bullets.Bullet(Bullets.BULLETTYPE.STANDARD, this.owner.mtxLocal.translation.toVector2(), Game.ƒ.Vector3.ZERO(), this.ownerNetId));

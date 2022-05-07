@@ -65,6 +65,7 @@ declare namespace UI {
     let burnParticle: ƒ.TextureImage;
     let bleedingParticle: ƒ.TextureImage;
     let slowParticle: ƒ.TextureImage;
+    let immuneParticle: ƒ.TextureImage;
     class Particles extends Game.ƒAid.NodeSprite {
         id: Buff.BUFFID;
         animationParticles: Game.ƒAid.SpriteSheetAnimation;
@@ -101,8 +102,9 @@ declare namespace Entity {
         items: Array<Items.Item>;
         weapon: Weapons.Weapon;
         buffs: Buff.Buff[];
-        protected offsetColliderX: number;
-        protected offsetColliderY: number;
+        offsetColliderX: number;
+        offsetColliderY: number;
+        colliderScaleFaktor: number;
         protected canMoveX: boolean;
         protected canMoveY: boolean;
         protected moveDirection: Game.ƒ.Vector3;
@@ -115,15 +117,15 @@ declare namespace Entity {
         update(): void;
         updateScale(): void;
         setCollider(): void;
-        updateBuffs(): void;
-        collide(_direction: ƒ.Vector3): void;
-        calculateCollider(_collider: Collider.Collider[] | Game.ƒ.Rectangle[], _direction: ƒ.Vector3): void;
+        protected updateBuffs(): void;
+        protected collide(_direction: ƒ.Vector3): void;
+        protected calculateCollision(_collider: Collider.Collider[] | Game.ƒ.Rectangle[], _direction: ƒ.Vector3): void;
         getDamage(_value: number): void;
-        die(): void;
+        protected die(): void;
         private getDamageReduction;
         doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
-        reduceKnockback(): void;
+        protected reduceKnockback(): void;
         switchAnimation(_name: ANIMATIONSTATES): void;
     }
     enum ANIMATIONSTATES {
@@ -441,9 +443,11 @@ declare namespace Ability {
         protected cooldown: Cooldown;
         protected abilityCount: number;
         protected currentabilityCount: number;
-        protected duration: number;
+        protected duration: Cooldown;
         doesAbility: boolean;
         constructor(_ownerNetId: number, _duration: number, _abilityCount: number, _cooldownTime: number);
+        eventUpdate: (_event: Event) => void;
+        protected updateAbility(): void;
         doAbility(): void;
         hasCooldown(): boolean;
         protected activateAbility(): void;
@@ -462,7 +466,6 @@ declare namespace Ability {
     class SpawnSummoners extends Ability {
         private spawnRadius;
         protected activateAbility(): void;
-        protected deactivateAbility(): void;
     }
     class circleShoot extends Ability {
         bulletAmount: number;
@@ -512,12 +515,8 @@ declare namespace Entity {
 declare namespace Enemy {
     class Summonor extends EnemyShoot {
         damageTaken: number;
-        beginAttackingPhase: boolean;
-        attackingPhaseTime: number;
-        attackingPhaseCurrentTime: number;
-        beginDefencePhase: boolean;
-        defencePhaseTime: number;
-        defencePhaseCurrentTime: number;
+        attackPhaseCd: Ability.Cooldown;
+        defencePhaseCd: Ability.Cooldown;
         beginShooting: boolean;
         shootingCount: number;
         currentShootingCount: number;
@@ -525,6 +524,7 @@ declare namespace Enemy {
         private dash;
         private shoot360;
         private dashWeapon;
+        private flock;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
         behaviour(): void;
         getDamage(_value: number): void;
@@ -685,7 +685,7 @@ declare namespace Enemy {
         calculateAllignmentMove(): Game.ƒ.Vector2;
         calculateAvoidanceMove(): Game.ƒ.Vector2;
         calculateObsticalAvoidanceMove(): Game.ƒ.Vector2;
-        doStuff(): Game.ƒ.Vector2;
+        getMoveVector(): Game.ƒ.Vector2;
     }
 }
 declare namespace Calculation {

@@ -182,6 +182,7 @@ namespace UI {
     export let burnParticle: ƒ.TextureImage = new ƒ.TextureImage();
     export let bleedingParticle: ƒ.TextureImage = new ƒ.TextureImage();
     export let slowParticle: ƒ.TextureImage = new ƒ.TextureImage();
+    export let immuneParticle: ƒ.TextureImage = new ƒ.TextureImage();
 
 
 
@@ -193,33 +194,20 @@ namespace UI {
         width: number;
         height: number;
         constructor(_id: Buff.BUFFID, _texture: Game.ƒ.TextureImage, _frameCount: number, _frameRate: number) {
-            super(getNameById(_id));
+            super(Buff.BUFFID[_id].toLowerCase());
             this.id = _id;
             this.particleframeNumber = _frameCount;
             this.particleframeRate = _frameRate;
-            this.animationParticles = new Game.ƒAid.SpriteSheetAnimation(getNameById(this.id), new ƒ.CoatTextured(ƒ.Color.CSS("white"), _texture))
+            this.animationParticles = new Game.ƒAid.SpriteSheetAnimation(Buff.BUFFID[_id].toLowerCase(), new ƒ.CoatTextured(ƒ.Color.CSS("white"), _texture))
             this.height = _texture.image.height;
             this.width = _texture.image.width / this.particleframeNumber;
 
             this.animationParticles.generateByGrid(ƒ.Rectangle.GET(0, 0, this.width, this.height), this.particleframeNumber, 32, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(this.width));
             this.setAnimation(this.animationParticles);
+            this.framerate = _frameRate;
             this.addComponent(new Game.ƒ.ComponentTransform());
             this.mtxLocal.translateZ(0.001);
         }
 
-    }
-    function getNameById(_id: Buff.BUFFID): string {
-        switch (_id) {
-            case Buff.BUFFID.BLEEDING:
-                return "bleeding";
-            case Buff.BUFFID.POISON:
-                return "poison";
-            case Buff.BUFFID.HEAL:
-                return "heal";
-            case Buff.BUFFID.SLOW:
-                return "slow";
-            default:
-                return null;
-        }
     }
 }

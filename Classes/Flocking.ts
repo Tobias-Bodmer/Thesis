@@ -165,7 +165,7 @@ namespace Enemy {
             return returnVector;
         }
 
-        public doStuff(): Game.ƒ.Vector2 {
+        public getMoveVector(): Game.ƒ.Vector2 {
             let cohesion: Game.ƒ.Vector2 = Game.ƒ.Vector2.ZERO();
             let avoid: Game.ƒ.Vector2 = Game.ƒ.Vector2.ZERO();
             let allign: Game.ƒ.Vector2 = Game.ƒ.Vector2.ZERO();

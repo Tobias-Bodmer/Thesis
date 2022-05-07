@@ -30,7 +30,10 @@ namespace Enemy {
             this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["idle"]);
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
             this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale);
-            this.collider = new Collider.Collider(new ƒ.Vector2(this.mtxLocal.translation.x + (this.offsetColliderX * this.mtxLocal.scaling.x), this.mtxLocal.translation.y + (this.offsetColliderY * this.mtxLocal.scaling.y)), (this.mtxLocal.scaling.x * this.idleScale) / 2, this.netId);
+            this.offsetColliderX = ref.offsetColliderX;
+            this.offsetColliderY = ref.offsetColliderY;
+            this.colliderScaleFaktor = ref.colliderScaleFaktor;
+            this.collider = new Collider.Collider(new ƒ.Vector2(this.mtxLocal.translation.x + (ref.offsetColliderX * this.mtxLocal.scaling.x), this.mtxLocal.translation.y + (ref.offsetColliderY * this.mtxLocal.scaling.y)), ((this.mtxLocal.scaling.x * this.idleScale) / 2) * this.colliderScaleFaktor, this.netId);
         }
 
         public update() {
@@ -97,7 +100,7 @@ namespace Enemy {
                     avatarColliders.push((<Player.Player>elem).collider);
                 });
 
-                this.calculateCollider(avatarColliders, _direction);
+                this.calculateCollision(avatarColliders, _direction);
 
                 if (this.canMoveX && this.canMoveY) {
                     this.cmpTransform.mtxLocal.translate(_direction);
@@ -122,7 +125,7 @@ namespace Enemy {
 
     export class EnemyDumb extends Enemy {
 
-       
+
         behaviour() {
             let target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
             let distance = ƒ.Vector3.DIFFERENCE(target, this.cmpTransform.mtxLocal.translation).magnitude;
@@ -161,7 +164,7 @@ namespace Enemy {
         randomPlayer = Math.round(Math.random());
         currentBehaviour: Entity.BEHAVIOUR = Entity.BEHAVIOUR.IDLE;
 
-   
+
         behaviour() {
             this.avatars = [Game.avatar1, Game.avatar2];
             this.target = (<Player.Player>this.avatars[this.randomPlayer]).mtxLocal.translation.toVector2();
@@ -204,7 +207,7 @@ namespace Enemy {
     }
 
     export class EnemyDash extends Enemy {
-        protected dash = new Ability.Dash(this.netId, 5000, 1, 5 * 60, 3);
+        protected dash = new Ability.Dash(this.netId, 12, 1, 5 * 60, 3);
         lastMoveDireciton: Game.ƒ.Vector3;
         dashCount: number = 1;
         avatars: Player.Player[] = [];
@@ -247,7 +250,7 @@ namespace Enemy {
             switch (this.currentBehaviour) {
                 case Entity.BEHAVIOUR.FOLLOW:
                     if (!this.dash.doesAbility) {
-                        this.moveDirection = this.flocking.doStuff().toVector3();
+                        this.moveDirection = this.flocking.getMoveVector().toVector3();
                         this.lastMoveDireciton = this.moveDirection;
                     }
                     break;
@@ -293,7 +296,7 @@ namespace Enemy {
         gotRecognized: boolean = false;
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
-            super(_id,  _position, _netId);
+            super(_id, _position, _netId);
 
             this.weapon = new Weapons.Weapon(60, 1, Bullets.BULLETTYPE.STANDARD, 2, this.netId, Weapons.AIM.NORMAL);
         }
@@ -374,7 +377,7 @@ namespace Enemy {
                     this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
                     if (!this.dash.doesAbility) {
                         this.lastMoveDireciton = this.moveDirection;
-                        this.moveDirection = this.flocking.doStuff().toVector3();
+                        this.moveDirection = this.flocking.getMoveVector().toVector3();
                     }
                     break;
                 case Entity.BEHAVIOUR.IDLE:

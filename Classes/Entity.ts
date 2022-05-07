@@ -12,8 +12,9 @@ namespace Entity {
         public items: Array<Items.Item> = [];
         public weapon: Weapons.Weapon;
         public buffs: Buff.Buff[] = [];
-        protected offsetColliderX: number = 0;
-        protected offsetColliderY: number = 0;
+        public offsetColliderX: number;
+        public offsetColliderY: number;
+        public colliderScaleFaktor: number;
         protected canMoveX: boolean = true;
         protected canMoveY: boolean = true;
         protected moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
@@ -34,7 +35,13 @@ namespace Entity {
                 this.idleScale = ani.scale.find(animation => animation[0] == "idle")[1];
             }
             this.addComponent(new ƒ.ComponentTransform());
-            this.collider = new Collider.Collider(new ƒ.Vector2(this.mtxLocal.translation.x + (this.offsetColliderX * this.mtxLocal.scaling.x), this.mtxLocal.translation.y + (this.offsetColliderY * this.mtxLocal.scaling.y)), this.cmpTransform.mtxLocal.scaling.x / 2, this.netId);
+
+            this.offsetColliderX = 0;
+            this.offsetColliderY = 0;
+            this.colliderScaleFaktor = 1;
+            this.collider = new Collider.Collider(new ƒ.Vector2(this.mtxLocal.translation.x + (this.offsetColliderX * this.mtxLocal.scaling.x), this.mtxLocal.translation.y + (this.offsetColliderY * this.mtxLocal.scaling.y)), (this.cmpTransform.mtxLocal.scaling.x / 2) * this.colliderScaleFaktor, this.netId);
+
+
             if (_netId != undefined) {
                 if (this.netId != undefined) {
                     Networking.popID(this.netId);
@@ -71,14 +78,14 @@ namespace Entity {
         public updateScale() {
             this.attributes.updateScaleDependencies();
             this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale);
-            this.collider.setScale(this.cmpTransform.mtxLocal.scaling.x / 2);
+            this.collider.setScale((this.cmpTransform.mtxLocal.scaling.x / 2) * this.colliderScaleFaktor);
         }
 
         public setCollider() {
             this.collider.setPosition(new ƒ.Vector2(this.mtxLocal.translation.x + (this.offsetColliderX * this.mtxLocal.scaling.x), this.mtxLocal.translation.y + (this.offsetColliderY * this.mtxLocal.scaling.y)));
         }
 
-        updateBuffs() {
+        protected updateBuffs() {
             if (this.buffs.length == 0) {
                 return;
             }
@@ -87,7 +94,7 @@ namespace Entity {
             }
         }
 
-        collide(_direction: ƒ.Vector3) {
+        protected collide(_direction: ƒ.Vector3) {
             this.canMoveX = true;
             this.canMoveY = true;
             let walls: Generation.Wall[] = Game.currentRoom.walls;
@@ -100,10 +107,10 @@ namespace Entity {
                 mewDirection.normalize();
                 mewDirection.scale((Game.deltaTime * this.attributes.speed));
             }
-            this.calculateCollider(wallColliders, mewDirection);
+            this.calculateCollision(wallColliders, mewDirection);
         }
 
-        public calculateCollider(_collider: Collider.Collider[] | Game.ƒ.Rectangle[], _direction: ƒ.Vector3) {
+        protected calculateCollision(_collider: Collider.Collider[] | Game.ƒ.Rectangle[], _direction: ƒ.Vector3) {
             _collider.forEach((element) => {
                 if (element instanceof Collider.Collider) {
                     if (this.collider.collides(element)) {
@@ -209,7 +216,7 @@ namespace Entity {
             }
         }
 
-        die() {
+        protected die() {
             Game.graph.removeChild(this);
         }
 
@@ -235,7 +242,7 @@ namespace Entity {
             }
         }
 
-        public reduceKnockback() {
+        protected reduceKnockback() {
             this.currentKnockback.scale(0.5);
             // console.log(this.currentKnockback.magnitude);
             if (this.currentKnockback.magnitude < 0.0001) {
@@ -245,8 +252,7 @@ namespace Entity {
         }
         //#endregion
 
-        switchAnimation(_name: ANIMATIONSTATES) {
-            //TODO: if animation doesnt exist dont switch
+        public switchAnimation(_name: ANIMATIONSTATES) {
             let name: string = ANIMATIONSTATES[_name].toLowerCase();
             if (this.animationContainer != null && <ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name] != null) {
                 if (this.currentAnimationState != _name) {

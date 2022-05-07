@@ -3,6 +3,7 @@ namespace Collider {
         public ownerNetId: number;
         radius: number;
         public position: ƒ.Vector2;
+
         get top(): number {
             return (this.position.y - this.radius);
         }

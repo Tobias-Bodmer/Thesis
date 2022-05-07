@@ -360,6 +360,8 @@ namespace Game {
         await UI.burnParticle.load("./Resources/Image/Particles/poison.png");
         await UI.bleedingParticle.load("./Resources/Image/Particles/bleeding.png");
         await UI.slowParticle.load("./Resources/Image/Particles/slow.png");
+        await UI.immuneParticle.load("./Resources/Image/Particles/immune.png");
+
         await Entity.txtShadow.load("./Resources/Image/Particles/shadow.png");
 
         //Minimap

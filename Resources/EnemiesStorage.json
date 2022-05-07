@@ -9,7 +9,10 @@
                 "scale": 1,
                 "knockbackForce": 0.1,
                 "armor": 0
-            }
+            },
+            "offsetColliderX": 0,
+            "offsetColliderY": 0,
+            "colliderScaleFaktor": 1
         },
         {
             "name": "smalltick",
@@ -20,7 +23,10 @@
                 "scale": 1,
                 "knockbackForce": 0.1,
                 "armor": 0
-            }
+            },
+            "offsetColliderX": 0,
+            "offsetColliderY": 0,
+            "colliderScaleFaktor": 1
         },
         {
             "name": "redtick",
@@ -31,7 +37,10 @@
                 "scale": 2,
                 "knockbackForce": 0.1,
                 "armor": 0
-            }
+            },
+            "offsetColliderX": 0,
+            "offsetColliderY": 0,
+            "colliderScaleFaktor": 1
         },
         {
             "name": "skeleton",
@@ -42,7 +51,10 @@
                 "scale": 2,
                 "knockbackForce": 0.1,
                 "armor": 5
-            }
+            },
+            "offsetColliderX": 0,
+            "offsetColliderY": 0,
+            "colliderScaleFaktor": 1
         },
         {
             "name": "oger",
@@ -53,7 +65,10 @@
                 "scale": 2,
                 "knockbackForce": 0.1,
                 "armor": 25
-            }
+            },
+            "offsetColliderX": 0,
+            "offsetColliderY": 0,
+            "colliderScaleFaktor": 1
         },
         {
             "name": "summonor",
@@ -64,7 +79,10 @@
                 "scale": 2,
                 "knockbackForce": 0.1,
                 "armor": 5
-            }
+            },
+            "offsetColliderX": 0,
+            "offsetColliderY": -0.4,
+            "colliderScaleFaktor": 0.4
         }
     ]
 }

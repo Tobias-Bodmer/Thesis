@@ -142,7 +142,7 @@ namespace Player {
     }
     export class Ranged extends Player {
 
-        public dash: Ability.Dash = new Ability.Dash(this.netId, 5000, 1, 5 * 60, 2);
+        public dash: Ability.Dash = new Ability.Dash(this.netId, 8, 1, 60, 5);
         performAbility: boolean = false;
         lastMoveDirection: Game.ƒ.Vector3;
 

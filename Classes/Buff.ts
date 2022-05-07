@@ -30,6 +30,8 @@ namespace Buff {
             switch (_id) {
                 case BUFFID.POISON:
                     return new UI.Particles(BUFFID.POISON, UI.poisonParticle, 6, 12);
+                case BUFFID.IMMUNE:
+                    return new UI.Particles(BUFFID.IMMUNE, UI.immuneParticle, 1, 6);
                 default:
                     return null;
             }
@@ -69,7 +71,9 @@ namespace Buff {
             else {
                 _avatar.buffs.push(this);
                 this.addParticle(_avatar);
-                this.coolDown.startCoolDown();
+                if (this.coolDown != undefined) {
+                    this.coolDown.startCoolDown();
+                }
                 Networking.updateBuffList(_avatar.buffs, _avatar.netId);
             }
         }
@@ -91,6 +95,8 @@ namespace Buff {
                 let particle = this.getParticleById(this.id);
                 if (particle != undefined) {
                     _avatar.addChild(particle);
+                    particle.mtxLocal.scale(new ƒ.Vector3(_avatar.mtxLocal.scaling.x, _avatar.mtxLocal.scaling.y, 1));
+                    particle.mtxLocal.translation = new ƒ.Vector2(_avatar.offsetColliderX, _avatar.offsetColliderY).toVector3(0.1);
                     particle.activate(true);
                 }
             }
