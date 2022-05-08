@@ -165,7 +165,7 @@ namespace Generation {
 
     export class TreasureRoom extends Room {
         private treasureRoomMat: ƒ.Material = new ƒ.Material("treasureRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("yellow")));
-        private spawnChance: number = 100; get getSpawnChance(): number { return this.spawnChance };
+        private spawnChance: number = 25; get getSpawnChance(): number { return this.spawnChance };
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
             super(_coordinates, _roomSize, ROOMTYPE.TREASURE);
             this.getComponent(Game.ƒ.ComponentMaterial).material = this.treasureRoomMat;

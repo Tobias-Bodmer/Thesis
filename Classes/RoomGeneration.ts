@@ -110,7 +110,6 @@ namespace Generation {
         let roomCoord: Game.ƒ.Vector2[] = getCoordsFromRooms();
         let nextCoord = getNextPossibleCoordFromSpecificCoord(roomCoord, roomCoord[roomCoord.length - 1]);
         if (nextCoord == undefined) {
-            //TODO: restart whole process
             // nextCoord = getNextPossibleCoordFromSpecificCoord(roomCoord, roomCoord[roomCoord.length - 2]);
             generationFailed = true;
         }
@@ -170,7 +169,7 @@ namespace Generation {
     }
 
     function isSpawning(_spawnChance: number): boolean {
-        let x = Math.random() * 100;
+        let x = Math.round(Math.random() * 100);
         if (x < _spawnChance) {
             return true;
         }
