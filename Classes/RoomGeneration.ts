@@ -1,6 +1,7 @@
 namespace Generation {
 
     let numberOfRooms: number = 5;
+    export let generationFailed = false;
     export let rooms: Room[] = [];
 
     export const compareNorth: Game.ƒ.Vector2 = new ƒ.Vector2(0, 1);
@@ -10,11 +11,14 @@ namespace Generation {
 
     //spawn chances
     let challengeRoomSpawnChance: number = 30;
-    let treasureRoomSpawnChance: number = 100;
 
     export function procedualRoomGeneration() {
-        rooms = generateNormalRooms();
+        generationFailed = false;
+        rooms.push(generateStartRoom());
+        rooms.push.apply(rooms, generateNormalRooms());
+        rooms.push.apply(rooms, generateTreasureRoom());
         addBossRoom();
+        rooms.push(generateMerchantRoom());
         setExits();
         rooms.forEach(room => { console.log(room.mtxLocal.translation.clone.toString()) });
         moveRoomToWorldCoords(rooms[0]);
@@ -22,10 +26,14 @@ namespace Generation {
         rooms.forEach(room => { console.log(room.mtxLocal.translation.clone.toString()) });
         addRoomToGraph(rooms[0]);
     }
-
-    function generateSnakeGrid(): Game.ƒ.Vector2[] {
+    /**
+     * generates a grid thats connected toggether from a given starting point
+     * @param _startCoord the starting point
+     * @returns vector2 array of a connecting grid without overlaps
+     */
+    function generateSnakeGrid(_startCoord: Game.ƒ.Vector2): Game.ƒ.Vector2[] {
         let grid: Game.ƒ.Vector2[] = [];
-        grid.push(new ƒ.Vector2(0, 0));
+        grid.push(_startCoord);
         for (let i = 0; i < numberOfRooms; i++) {
             let nextCoord = getNextPossibleCoordFromSpecificCoord(grid, grid[grid.length - 1]);
             if (nextCoord == undefined) {
@@ -34,11 +42,15 @@ namespace Generation {
                 grid.push(nextCoord);
             }
         }
-        // console.log("room grid: " + grid + " " + (grid.length - 1));
         return grid;
     }
-
-    function getNextPossibleCoordFromSpecificCoord(_grid: Game.ƒ.Vector2[], _specificCoord: Game.ƒ.Vector2) {
+    /**
+     * function to get a random neigihbour taking care of an acutal grid
+     * @param _grid existing grid the function should care about
+     * @param _specificCoord the coord you want the next possible coord 
+     * @returns a vector2 coord thats not inside of _grid and around  _specificCoord
+     */
+    function getNextPossibleCoordFromSpecificCoord(_grid: Game.ƒ.Vector2[], _specificCoord: Game.ƒ.Vector2): Game.ƒ.Vector2 {
         let coordNeighbours: Game.ƒ.Vector2[] = getNeighbourCoordinate(_specificCoord);
         for (let i = 0; i < coordNeighbours.length; i++) {
             let randomIndex = Math.round(Math.random() * (coordNeighbours.length - 1));
@@ -53,7 +65,11 @@ namespace Generation {
         }
         return null;
     }
-
+    /**
+     * function to get all neighbours ignoring the current grid
+     * @param _coord coordiante you want the neighbour from
+     * @returns 4 neighbours in direction N E S and W
+     */
     function getNeighbourCoordinate(_coord: Game.ƒ.Vector2): Game.ƒ.Vector2[] {
         let neighbours: Game.ƒ.Vector2[] = [];
         neighbours.push(new ƒ.Vector2(_coord.x + 1, _coord.y));
@@ -64,19 +80,24 @@ namespace Generation {
         return neighbours;
     }
 
+    function generateStartRoom(): StartRoom {
+        let startRoom: StartRoom = new StartRoom(new ƒ.Vector2(0, 0), 10);
+        return startRoom;
+    }
+
     function generateNormalRooms(): NormalRoom[] {
         let gridCoords: Game.ƒ.Vector2[];
-        let rooms: NormalRoom[] = [];
+        let normalRooms: NormalRoom[] = [];
         while (true) {
-            gridCoords = generateSnakeGrid();
+            gridCoords = generateSnakeGrid(rooms[0].coordinates);
             if ((gridCoords.length - 1) == numberOfRooms) {
                 break;
             }
         }
         gridCoords.forEach(coord => {
-            rooms.push(new NormalRoom(coord));
+            normalRooms.push(new NormalRoom(coord, 20));
         })
-        return rooms;
+        return normalRooms;
     }
 
     function addBossRoom() {
@@ -90,21 +111,45 @@ namespace Generation {
         let nextCoord = getNextPossibleCoordFromSpecificCoord(roomCoord, roomCoord[roomCoord.length - 1]);
         if (nextCoord == undefined) {
             //TODO: restart whole process
-            nextCoord = getNextPossibleCoordFromSpecificCoord(roomCoord, roomCoord[roomCoord.length - 2]);
+            // nextCoord = getNextPossibleCoordFromSpecificCoord(roomCoord, roomCoord[roomCoord.length - 2]);
+            generationFailed = true;
         }
         else {
-            rooms.push(new BossRoom(nextCoord));
+            rooms.push(new BossRoom(nextCoord, 10));
         }
     }
 
-    function addTreasureRoom(_rooms: Room[]) {
-        let roomCoords: Game.ƒ.Vector2[] = [];
-
-        _rooms.forEach(room => {
+    function generateTreasureRoom(): TreasureRoom[] {
+        let roomCoords: Game.ƒ.Vector2[] = getCoordsFromRooms();
+        let newTreasureRooms: TreasureRoom[] = []
+        rooms.forEach(room => {
             let nextCoord = getNextPossibleCoordFromSpecificCoord(roomCoords, room.coordinates)
+            if (nextCoord != undefined) {
+                let trRoom = new TreasureRoom(nextCoord, 10);
+                if (isSpawning(trRoom.getSpawnChance)) {
+                    newTreasureRooms.push(trRoom);
+                }
+            }
         })
+        return newTreasureRooms;
     }
 
+    function generateMerchantRoom(): MerchantRoom {
+        for (let i = 0; i < rooms.length; i++) {
+            if (i > 0) {
+                let nextCoord = getNextPossibleCoordFromSpecificCoord(getCoordsFromRooms(), rooms[i].coordinates)
+                if (nextCoord != undefined) {
+                    return new MerchantRoom(nextCoord, 20);
+                }
+            }
+        }
+        generationFailed = true;
+        return null;
+    }
+    /**
+     * function to get coordiantes from all existing rooms
+     * @returns Vector2 array with coordinates of all current existing rooms in RoomGeneration.rooms
+     */
     export function getCoordsFromRooms(): Game.ƒ.Vector2[] {
         let coords: Game.ƒ.Vector2[] = [];
         rooms.forEach(room => {
@@ -160,7 +205,7 @@ namespace Generation {
     }
 
     export function switchRoom(_direction: Interfaces.IRoomExits) {
-        if (Game.currentRoom.finished) {
+        if (Game.currentRoom.enemyCountManager.finished) {
             let newRoom: Room;
             let newPosition: Game.ƒ.Vector2
             if (_direction.north) {
@@ -191,10 +236,12 @@ namespace Generation {
             }
 
             addRoomToGraph(newRoom);
-            EnemySpawner.spawnMultipleEnemiesAtRoom(Game.currentRoom.enemyCount, Game.currentRoom.mtxLocal.translation.toVector2());
         }
     }
-
+    /**
+     * removes erything unreliable from the grpah and adds the new room to the graph , sending it to the client & spawns enemies if existing in room
+     * @param _room the room it should spawn
+     */
     export function addRoomToGraph(_room: Room) {
         let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => ((<any>elem).tag != Tag.TAG.PLAYER));
         oldObjects = oldObjects.filter(elem => ((<any>elem).tag != Tag.TAG.UI));
@@ -214,8 +261,8 @@ namespace Generation {
             }
         })
 
-        Networking.sendRoom(<Interfaces.IRoom>{ coordinates: _room.coordinates, exits: _room.exits, roomType: _room.roomType, translation: _room.mtxLocal.translation });
-
+        Networking.sendRoom(<Interfaces.IRoom>{ coordinates: _room.coordinates, roomSize: _room.roomSize, exits: _room.exits, roomType: _room.roomType, translation: _room.mtxLocal.translation });
         Game.currentRoom = _room;
+        EnemySpawner.spawnMultipleEnemiesAtRoom(Game.currentRoom.enemyCountManager.getMaxEnemyCount, Game.currentRoom.mtxLocal.translation.toVector2());
     }
 }

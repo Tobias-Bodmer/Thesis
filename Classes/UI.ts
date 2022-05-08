@@ -100,7 +100,7 @@ namespace UI {
             let cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
             this.addComponent(cmpMesh);
 
-            let mtrSolidWhite: ƒ.Material = new ƒ.Material("SolidWhite", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
+            let mtrSolidWhite: ƒ.Material = new ƒ.Material("SolidWhite", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
 
             let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(mtrSolidWhite);
             this.addComponent(cmpMaterial);

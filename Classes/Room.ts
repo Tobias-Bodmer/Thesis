@@ -8,6 +8,26 @@ namespace Generation {
         BOSS
     }
 
+    export class EnemyCountManager {
+        private maxEnemyCount: number; get getMaxEnemyCount(): number { return this.maxEnemyCount };
+        private currentEnemyCoount: number;
+        public finished: boolean;
+        constructor(_enemyCount: number) {
+            this.maxEnemyCount = _enemyCount;
+            this.currentEnemyCoount = _enemyCount;
+            this.finished = false;
+            if (_enemyCount <= 0) {
+                this.finished = true;
+            }
+        }
+
+        public onEnemyDeath() {
+            this.currentEnemyCoount--;
+            if (this.currentEnemyCoount <= 0) {
+                this.finished = true;
+            }
+        }
+    }
     export let txtStartRoom: Game.ƒ.TextureImage = new Game.ƒ.TextureImage();
 
     export abstract class Room extends ƒ.Node {
@@ -16,8 +36,7 @@ namespace Generation {
         public coordinates: Game.ƒ.Vector2;
         public walls: Wall[] = [];
         public obsticals: Obsitcal[] = [];
-        public finished: boolean = false;
-        public enemyCount: number;
+        public enemyCountManager: EnemyCountManager;
         public positionUpdated: boolean = false;
         roomSize: number = 30;
         exits: Interfaces.IRoomExits; // N E S W
@@ -28,18 +47,15 @@ namespace Generation {
         protected avatarSpawnPointS: Game.ƒ.Vector2; get getSpawnPointS(): Game.ƒ.Vector2 { return this.avatarSpawnPointS };
         protected avatarSpawnPointW: Game.ƒ.Vector2; get getSpawnPointW(): Game.ƒ.Vector2 { return this.avatarSpawnPointW };
 
-        private startRoomMat: ƒ.Material = new ƒ.Material("startRoomMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtStartRoom));
-        private merchantRoomMat: ƒ.Material = new ƒ.Material("merchantRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("green")));
-        private treasureRoomMat: ƒ.Material = new ƒ.Material("treasureRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("yellow")));
         private challengeRoomMat: ƒ.Material = new ƒ.Material("challengeRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("blue")));
 
-        cmpMaterial: ƒ.ComponentMaterial;
+        cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial();
 
         constructor(_coordiantes: Game.ƒ.Vector2, _roomSize: number, _roomType: ROOMTYPE) {
             super("room");
             this.tag = Tag.TAG.ROOM;
             this.coordinates = _coordiantes;
-            this.enemyCount = 0;
+            this.enemyCountManager = new EnemyCountManager(0);
             if (_roomSize != undefined) {
                 this.roomSize = _roomSize;
             }
@@ -47,9 +63,6 @@ namespace Generation {
                 this.roomType = _roomType;
             }
             this.exits = <Interfaces.IRoomExits>{ north: false, east: false, south: false, west: false }
-            this.finished = true;
-            this.cmpMaterial = new ƒ.ComponentMaterial(this.startRoomMat);
-
             this.addComponent(new ƒ.ComponentTransform());
             this.cmpTransform.mtxLocal.scaling = new ƒ.Vector3(this.roomSize, this.roomSize, 1);
             this.addComponent(this.cmpMesh);
@@ -65,9 +78,7 @@ namespace Generation {
         }
 
         public update(): void {
-            if (this.enemyCount <= 0) {
-                this.finished = true;
-            }
+
         }
 
         private addWalls(): void {
@@ -125,19 +136,47 @@ namespace Generation {
 
     }
 
+    export class StartRoom extends Room {
+        private startRoomMat: ƒ.Material = new ƒ.Material("startRoomMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtStartRoom));
+        constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
+            super(_coordinates, _roomSize, ROOMTYPE.START);
+
+            this.getComponent(Game.ƒ.ComponentMaterial).material = this.startRoomMat;
+        }
+    }
+
     export class NormalRoom extends Room {
         normalRoomMat: ƒ.Material = new ƒ.Material("normalRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
-        constructor(_coordinates: Game.ƒ.Vector2) {
-            super(_coordinates, 20, ROOMTYPE.NORMAL);
+        constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
+            super(_coordinates, _roomSize, ROOMTYPE.NORMAL);
+            this.enemyCountManager = new EnemyCountManager(0);
+
             this.getComponent(Game.ƒ.ComponentMaterial).material = this.normalRoomMat;
         }
     }
 
     export class BossRoom extends Room {
         bossRoomMat: ƒ.Material = new ƒ.Material("bossRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("black")));
-        constructor(_coordinates: Game.ƒ.Vector2) {
-            super(_coordinates, 25, ROOMTYPE.BOSS);
+        constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
+            super(_coordinates, _roomSize, ROOMTYPE.BOSS);
             this.getComponent(Game.ƒ.ComponentMaterial).material = this.bossRoomMat;
+        }
+    }
+
+    export class TreasureRoom extends Room {
+        private treasureRoomMat: ƒ.Material = new ƒ.Material("treasureRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("yellow")));
+        private spawnChance: number = 100; get getSpawnChance(): number { return this.spawnChance };
+        constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
+            super(_coordinates, _roomSize, ROOMTYPE.TREASURE);
+            this.getComponent(Game.ƒ.ComponentMaterial).material = this.treasureRoomMat;
+        }
+    }
+
+    export class MerchantRoom extends Room {
+        private merchantRoomMat: ƒ.Material = new ƒ.Material("merchantRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("green")));
+        constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
+            super(_coordinates, _roomSize, ROOMTYPE.MERCHANT);
+            this.getComponent(Game.ƒ.ComponentMaterial).material = this.merchantRoomMat;
         }
     }
 

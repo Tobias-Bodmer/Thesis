@@ -68,6 +68,7 @@ namespace Interfaces {
 
     export interface IRoom {
         coordinates: Game.ƒ.Vector2;
+        roomSize: number;
         exits: IRoomExits;
         roomType: Generation.ROOMTYPE;
         translation: Game.ƒ.Vector3;

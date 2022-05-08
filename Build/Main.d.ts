@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -271,6 +271,7 @@ declare namespace Interfaces {
     }
     interface IRoom {
         coordinates: Game.ƒ.Vector2;
+        roomSize: number;
         exits: IRoomExits;
         roomType: Generation.ROOMTYPE;
         translation: Game.ƒ.Vector3;
@@ -659,7 +660,7 @@ declare namespace Collider {
     }
 }
 declare namespace EnemySpawner {
-    function spawnMultipleEnemiesAtRoom(_count: number, _roomPos: Game.ƒ.Vector2): void;
+    function spawnMultipleEnemiesAtRoom(_maxEnemies: number, _roomPos: Game.ƒ.Vector2): void;
     function spawnByID(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2, _target?: Player.Player, _netID?: number): void;
     function networkSpawnById(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2, _netID: number, _target?: number): void;
 }
@@ -846,6 +847,14 @@ declare namespace Generation {
         CHALLENGE = 4,
         BOSS = 5
     }
+    class EnemyCountManager {
+        private maxEnemyCount;
+        get getMaxEnemyCount(): number;
+        private currentEnemyCoount;
+        finished: boolean;
+        constructor(_enemyCount: number);
+        onEnemyDeath(): void;
+    }
     let txtStartRoom: Game.ƒ.TextureImage;
     abstract class Room extends ƒ.Node {
         tag: Tag.TAG;
@@ -853,8 +862,7 @@ declare namespace Generation {
         coordinates: Game.ƒ.Vector2;
         walls: Wall[];
         obsticals: Obsitcal[];
-        finished: boolean;
-        enemyCount: number;
+        enemyCountManager: EnemyCountManager;
         positionUpdated: boolean;
         roomSize: number;
         exits: Interfaces.IRoomExits;
@@ -868,9 +876,6 @@ declare namespace Generation {
         get getSpawnPointS(): Game.ƒ.Vector2;
         protected avatarSpawnPointW: Game.ƒ.Vector2;
         get getSpawnPointW(): Game.ƒ.Vector2;
-        private startRoomMat;
-        private merchantRoomMat;
-        private treasureRoomMat;
         private challengeRoomMat;
         cmpMaterial: ƒ.ComponentMaterial;
         constructor(_coordiantes: Game.ƒ.Vector2, _roomSize: number, _roomType: ROOMTYPE);
@@ -882,13 +887,27 @@ declare namespace Generation {
         setRoomExit(_neighbour: Room): void;
         openDoors(): void;
     }
+    class StartRoom extends Room {
+        private startRoomMat;
+        constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
+    }
     class NormalRoom extends Room {
         normalRoomMat: ƒ.Material;
-        constructor(_coordinates: Game.ƒ.Vector2);
+        constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
     }
     class BossRoom extends Room {
         bossRoomMat: ƒ.Material;
-        constructor(_coordinates: Game.ƒ.Vector2);
+        constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
+    }
+    class TreasureRoom extends Room {
+        private treasureRoomMat;
+        private spawnChance;
+        get getSpawnChance(): number;
+        constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
+    }
+    class MerchantRoom extends Room {
+        private merchantRoomMat;
+        constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
     }
     class Wall extends ƒ.Node {
         tag: Tag.TAG;
@@ -917,14 +936,23 @@ declare namespace Generation {
     }
 }
 declare namespace Generation {
+    let generationFailed: boolean;
     let rooms: Room[];
     const compareNorth: Game.ƒ.Vector2;
     const compareEast: Game.ƒ.Vector2;
     const compareSouth: Game.ƒ.Vector2;
     const compareWest: Game.ƒ.Vector2;
     function procedualRoomGeneration(): void;
+    /**
+     * function to get coordiantes from all existing rooms
+     * @returns Vector2 array with coordinates of all current existing rooms in RoomGeneration.rooms
+     */
     function getCoordsFromRooms(): Game.ƒ.Vector2[];
     function switchRoom(_direction: Interfaces.IRoomExits): void;
+    /**
+     * removes erything unreliable from the grpah and adds the new room to the graph , sending it to the client & spawns enemies if existing in room
+     * @param _room the room it should spawn
+     */
     function addRoomToGraph(_room: Room): void;
 }
 declare namespace Entity {

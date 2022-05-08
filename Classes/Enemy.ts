@@ -75,6 +75,7 @@ namespace Enemy {
         }
 
         die() {
+            Game.currentRoom.enemyCountManager.onEnemyDeath();
             Game.graph.removeChild(this);
         }
 

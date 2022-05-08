@@ -72,7 +72,13 @@ namespace Game {
 
         if (Networking.client.id == Networking.client.idHost) {
             // Generation.rooms = Generation.generateNormalRooms();
-            Generation.procedualRoomGeneration();
+            while (true) {
+                Generation.procedualRoomGeneration();
+                if (!Generation.generationFailed) {
+                    break;
+                }
+                console.warn("GENERATION FAILED -> RESTART GENERATION")
+            }
             serverPredictionAvatar = new Networking.ServerPrediction(null);
         }
 

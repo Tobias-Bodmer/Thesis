@@ -1,16 +1,14 @@
 namespace EnemySpawner {
     let spawnTime: number = 0 * 60;
     let currentTime: number = spawnTime;
-    let maxEnemies: number = 0;
 
-    export function spawnMultipleEnemiesAtRoom(_count: number, _roomPos: Game.ƒ.Vector2): void {
+    export function spawnMultipleEnemiesAtRoom(_maxEnemies: number, _roomPos: Game.ƒ.Vector2): void {
         if (Networking.client.idHost == Networking.client.id) {
             //TODO: depending on currentroom.enemyCount and decrease it 
-            maxEnemies = _count;
             let spawnedEnemies: number = 0;
-            while (spawnedEnemies < maxEnemies) {
+            while (spawnedEnemies < _maxEnemies) {
                 if (currentTime == spawnTime) {
-                    let position = new ƒ.Vector2((Math.random() * 7 - (Math.random() * 7)) * 2, (Math.random() * 7 - (Math.random() * 7) * 2));
+                    let position = new ƒ.Vector2(((Math.random() * Game.currentRoom.roomSize / 2) - ((Math.random() * Game.currentRoom.roomSize / 2))), ((Math.random() * Game.currentRoom.roomSize / 2) - ((Math.random() * Game.currentRoom.roomSize / 2))));
                     position.add(_roomPos);
                     //TODO: use ID to get random enemies
                     spawnByID(Enemy.ENEMYCLASS.ENEMYDASH, Entity.ID.REDTICK, position);
