@@ -15,11 +15,8 @@ namespace Generation {
     export function procedualRoomGeneration() {
         rooms = generateNormalRooms();
         addBossRoom();
-        setExits();
-        rooms.forEach(room => { console.log(room.mtxLocal.translation.clone.toString()) });
         moveRoomToWorldCoords(rooms[0]);
-        rooms.forEach(room => { room.setSpawnPoints(); });
-        rooms.forEach(room => { console.log(room.mtxLocal.translation.clone.toString()) });
+        setExits();
         addRoomToGraph(rooms[0]);
     }
 
@@ -118,7 +115,7 @@ namespace Generation {
             let neighbours = rooms.filter(element => element != room);
             neighbours.forEach(neighbour => {
                 room.setRoomExit(neighbour);
-                // room.setSpawnPoints();
+                room.setSpawnPoints();
                 room.openDoors();
             })
         })
@@ -186,6 +183,8 @@ namespace Generation {
             }
 
             if (Networking.client.id == Networking.client.idHost) {
+                // Game.cmpCamera.mtxPivot.translation = newPosition.toVector3(Game.cmpCamera.mtxPivot.translation.z);
+
                 Game.avatar1.cmpTransform.mtxLocal.translation = newPosition.toVector3();
                 Game.avatar2.cmpTransform.mtxLocal.translation = newPosition.toVector3();
             }
