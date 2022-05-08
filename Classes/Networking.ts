@@ -570,9 +570,9 @@ namespace Networking {
 
 
     //#region items
-    export function spawnItem(_item: Items.Item, _id: number, _position: ƒ.Vector2, _netId: number) {
+    export function spawnItem(_id: number, _position: ƒ.Vector2, _netId: number) {
         if (Game.connected && client.idHost == client.id) {
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNINTERNALITEM, item: _item, id: _id, position: _position, netId: _netId } });
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNINTERNALITEM, id: _id, position: _position, netId: _netId } });
         }
     }
     export function updateEntityAttributes(_attributePayload: Interfaces.IAttributeValuePayload, _netId: number) {

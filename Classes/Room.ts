@@ -49,7 +49,7 @@ namespace Generation {
 
         private challengeRoomMat: ƒ.Material = new ƒ.Material("challengeRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("blue")));
 
-        cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial();
+        protected cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial();
 
         constructor(_coordiantes: Game.ƒ.Vector2, _roomSize: number, _roomType: ROOMTYPE) {
             super("room");
@@ -76,7 +76,9 @@ namespace Generation {
         protected eventUpdate = (_event: Event): void => {
             this.update();
         }
+        public onAddToGraph() {
 
+        }
         public update(): void {
 
         }
@@ -166,10 +168,32 @@ namespace Generation {
     export class TreasureRoom extends Room {
         private treasureRoomMat: ƒ.Material = new ƒ.Material("treasureRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("yellow")));
         private spawnChance: number = 25; get getSpawnChance(): number { return this.spawnChance };
+        private treasureCount: number = 2;
+        private treasures: Items.Item[] = [];
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
             super(_coordinates, _roomSize, ROOMTYPE.TREASURE);
             this.getComponent(Game.ƒ.ComponentMaterial).material = this.treasureRoomMat;
+            // this.createTreasures();
         }
+
+        private createTreasures() {
+            let treasures: Items.Item[] = [];
+            let randomID = Math.round((Object.keys(Items.ITEMID).length * 2) * Math.random())
+            for (let i = 0; i < this.treasureCount; i++) {
+                switch (randomID) {
+                    case Items.ITEMID.TOXICRELATIONSHIP:
+                        treasures.push(new Items.BuffItem(randomID, new ƒ.Vector2(this.mtxLocal.translation.x + i, this.mtxLocal.translation.y)))
+                }
+            }
+            this.treasures = treasures;
+        }
+
+        public onAddToGraph(): void {
+            this.treasures.forEach(item => {
+                item.spawn();
+            })
+        }
+
     }
 
     export class MerchantRoom extends Room {

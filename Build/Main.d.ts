@@ -312,9 +312,10 @@ declare namespace Items {
         buff: Buff.Buff[];
         constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
         getBuffById(): Buff.Buff;
-        loadTexture(_texture: ƒ.TextureImage): Promise<void>;
-        setTextureById(): void;
+        protected loadTexture(_texture: ƒ.TextureImage): void;
+        protected setTextureById(): void;
         setPosition(_position: ƒ.Vector2): void;
+        spawn(): void;
         despawn(): void;
         doYourThing(_avatar: Player.Player): void;
     }
@@ -792,7 +793,7 @@ declare namespace Networking {
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number): void;
     function updateEntityAnimationState(_state: Entity.ANIMATIONSTATES, _netId: number): void;
     function removeEnemy(_netId: number): void;
-    function spawnItem(_item: Items.Item, _id: number, _position: ƒ.Vector2, _netId: number): void;
+    function spawnItem(_id: number, _position: ƒ.Vector2, _netId: number): void;
     function updateEntityAttributes(_attributePayload: Interfaces.IAttributeValuePayload, _netId: number): void;
     function updateAvatarWeapon(_weapon: Weapons.Weapon, _targetNetId: number): void;
     function removeItem(_netId: number): void;
@@ -877,9 +878,10 @@ declare namespace Generation {
         protected avatarSpawnPointW: Game.ƒ.Vector2;
         get getSpawnPointW(): Game.ƒ.Vector2;
         private challengeRoomMat;
-        cmpMaterial: ƒ.ComponentMaterial;
+        protected cmpMaterial: ƒ.ComponentMaterial;
         constructor(_coordiantes: Game.ƒ.Vector2, _roomSize: number, _roomType: ROOMTYPE);
         protected eventUpdate: (_event: Event) => void;
+        onAddToGraph(): void;
         update(): void;
         private addWalls;
         setSpawnPoints(): void;
@@ -903,7 +905,11 @@ declare namespace Generation {
         private treasureRoomMat;
         private spawnChance;
         get getSpawnChance(): number;
+        private treasureCount;
+        private treasures;
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
+        private createTreasures;
+        onAddToGraph(): void;
     }
     class MerchantRoom extends Room {
         private merchantRoomMat;

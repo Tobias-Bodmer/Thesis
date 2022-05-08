@@ -12,7 +12,6 @@ namespace Items {
         TOXICRELATIONSHIP,
         VAMPY,
         SLOWYSLOW
-
     }
 
     export let txtIceBucket: ƒ.TextureImage = new ƒ.TextureImage();
@@ -33,7 +32,7 @@ namespace Items {
         buff: Buff.Buff[] = [];
 
         constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number) {
-            super("item");
+            super(ITEMID[_id]);
             this.id = _id;
             this.position = _position;
             this.transform.mtxLocal.translation = _position.toVector3();
@@ -69,7 +68,7 @@ namespace Items {
             }
         }
 
-        async loadTexture(_texture: ƒ.TextureImage): Promise<void> {
+        protected loadTexture(_texture: ƒ.TextureImage): void {
             let newTxt: ƒ.TextureImage = new ƒ.TextureImage();
             newTxt = _texture;
             let newCoat: ƒ.CoatRemissiveTextured = new ƒ.CoatRemissiveTextured();
@@ -78,7 +77,7 @@ namespace Items {
 
             this.getComponent(Game.ƒ.ComponentMaterial).material = newMtr;
         }
-        setTextureById() {
+        protected setTextureById() {
             switch (this.id) {
                 case ITEMID.ICEBUCKETCHALLENGE:
                     this.loadTexture(txtIceBucket);
@@ -121,10 +120,13 @@ namespace Items {
             }
         }
 
-        setPosition(_position: ƒ.Vector2) {
+        public setPosition(_position: ƒ.Vector2) {
             this.mtxLocal.translation = _position.toVector3();
         }
-
+        public spawn(): void {
+            Game.graph.addChild(this);
+            Networking.spawnItem(this.id, this.position, this.netId);
+        }
         public despawn(): void {
             Networking.popID(this.netId);
             Networking.removeItem(this.netId);
@@ -148,7 +150,6 @@ namespace Items {
                 this.description = item.description;
                 this.imgSrc = item.imgSrc;
             }
-            Networking.spawnItem(this, this.id, _position, this.netId);
         }
 
         doYourThing(_avatar: Player.Player) {
@@ -221,7 +222,6 @@ namespace Items {
             this.tickRate = temp.tickRate;
             this.duration = temp.duration;
             this.imgSrc = temp.imgSrc;
-            Networking.spawnItem(this, this.id, this.mtxLocal.translation.toVector2(), this.netId);
         }
 
         doYourThing(_avatar: Player.Player): void {
@@ -235,8 +235,7 @@ namespace Items {
                     let newBuff = this.buff.find(buff => buff.id == Buff.BUFFID.POISON).clone();
                     newBuff.duration = undefined;
                     (<Buff.DamageBuff>newBuff).value = 0.5;
-                    _avatar.buffs.push(newBuff);
-                    Networking.updateBuffList(_avatar.buffs, _avatar.netId);
+                    newBuff.addToEntity(_avatar);
                     break;
             }
         }
