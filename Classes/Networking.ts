@@ -311,14 +311,14 @@ namespace Networking {
                                 }
                             })
                             buffList.forEach(buff => {
-                                    switch (buff.id) {
-                                        case Buff.BUFFID.POISON | Buff.BUFFID.BLEEDING:
-                                            new Buff.DamageBuff(buff.id, buff.duration, buff.tickRate, (<Buff.DamageBuff>buff).value).addToEntity(entity);
-                                            break;
-                                        case Buff.BUFFID.IMMUNE:
-                                            new Buff.AttributesBuff(buff.id, buff.duration, buff.tickRate, (<Buff.AttributesBuff>buff).value).addToEntity(entity);
-                                            break;
-                                    }
+                                switch (buff.id) {
+                                    case Buff.BUFFID.POISON | Buff.BUFFID.BLEEDING:
+                                        new Buff.DamageBuff(buff.id, buff.duration, buff.tickRate, (<Buff.DamageBuff>buff).value).addToEntity(entity);
+                                        break;
+                                    case Buff.BUFFID.IMMUNE:
+                                        new Buff.AttributesBuff(buff.id, buff.duration, buff.tickRate, (<Buff.AttributesBuff>buff).value).addToEntity(entity);
+                                        break;
+                                }
                             });
                             // entity.buffs.forEach(buff => {
                             //     let flag: boolean = false;
@@ -408,14 +408,23 @@ namespace Networking {
                         if (message.content != undefined && message.content.text == FUNCTION.SENDROOM.toString()) {
                             let coordiantes: Game.ƒ.Vector2 = new Game.ƒ.Vector2(message.content.room.coordinates.data[0], message.content.room.coordinates.data[1]);
                             let tanslation: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.room.translation.data[0], message.content.room.translation.data[1], message.content.room.translation.data[2]);
-                            let roomInfo: Interfaces.IRoom = { coordinates: coordiantes, exits: message.content.room.exits, roomType: message.content.room.roomType, translation: tanslation };
+                            let roomInfo: Interfaces.IRoom = { coordinates: coordiantes, roomSize: message.content.room.roomSize, exits: message.content.room.exits, roomType: message.content.room.roomType, translation: tanslation };
                             let newRoom: Generation.Room;
                             switch (roomInfo.roomType) {
+                                case Generation.ROOMTYPE.START:
+                                    newRoom = new Generation.StartRoom(roomInfo.coordinates, roomInfo.roomSize);
+                                    break;
                                 case Generation.ROOMTYPE.NORMAL:
-                                    newRoom = new Generation.NormalRoom(roomInfo.coordinates);
+                                    newRoom = new Generation.NormalRoom(roomInfo.coordinates, roomInfo.roomSize);
                                     break;
                                 case Generation.ROOMTYPE.BOSS:
-                                    newRoom = new Generation.BossRoom(roomInfo.coordinates);
+                                    newRoom = new Generation.BossRoom(roomInfo.coordinates, roomInfo.roomSize);
+                                    break;
+                                case Generation.ROOMTYPE.TREASURE:
+                                    newRoom = new Generation.TreasureRoom(roomInfo.coordinates, roomInfo.roomSize);
+                                    break;
+                                case Generation.ROOMTYPE.MERCHANT:
+                                    newRoom = new Generation.MerchantRoom(roomInfo.coordinates, roomInfo.roomSize);
                                     break;
                             }
                             newRoom.exits = roomInfo.exits;
