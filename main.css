@@ -7,13 +7,25 @@ canvas {
 #Hostscreen{
     position: absolute;
     visibility: hidden;
-    top: 520px;
-    left: 10px;
+    top: 150px;
+    left: 20px;
     width: 1000px;
 }
 
-#Hostscreen > button {
+#Hostscreen > p {
     margin-left: 50%;
+    transform:translateX(-50%);
+    text-align: center;
+    width: 400px;
+    font-family: 'MinecraftiaRegular';
+    font-weight: normal;
+    font-style: normal; 
+    font-weight: bold;
+    font-size: x-large;
+}
+
+#Hostscreen > button {
+    margin-left: 10%;
     transform:translateX(-50%);
     width: 150px;
     height: 40px;

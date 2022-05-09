@@ -5,7 +5,6 @@ namespace Networking {
         CONNECTED,
         SETGAMESTATE,
         LOADED,
-        HOST,
         SETREADY,
         SPAWN,
         TRANSFORM,
@@ -36,6 +35,7 @@ namespace Networking {
     import ƒClient = FudgeNet.FudgeClient;
 
     export let client: ƒClient;
+    export let createdRoom: boolean = false;
     export let clients: Array<{ id: string, ready: boolean }> = [];
     export let posUpdate: ƒ.Vector3;
     export let someoneIsHost: boolean = false;
@@ -75,6 +75,23 @@ namespace Networking {
             }
 
             if (message.idSource != client.id) {
+
+                if (message.command == FudgeNet.COMMAND.ROOM_CREATE) {
+                    console.log(message.content.room);
+                    let html: HTMLElement = document.getElementById("RoomId");
+                    html.parentElement.style.visibility = "visible";
+                    html.textContent = message.content.room;
+                    createdRoom = true;
+                    joinRoom(message.content.room);
+                }
+
+                if (message.command == FudgeNet.COMMAND.ROOM_ENTER) {
+                    console.log("yey" + message);
+                    if (createdRoom) {
+                        client.becomeHost();
+                    }
+                }
+
                 if (message.command != FudgeNet.COMMAND.SERVER_HEARTBEAT && message.command != FudgeNet.COMMAND.CLIENT_HEARTBEAT) {
                     //Add new client to array clients
                     if (message.content != undefined && message.content.text == FUNCTION.CONNECTED.toString()) {
@@ -400,10 +417,6 @@ namespace Networking {
                             Game.graph.removeChild(item);
                             popID(message.content.netId);
                         }
-                        // send is hostMessage
-                        if (message.content != undefined && message.content.text == FUNCTION.HOST.toString()) {
-                            someoneIsHost = true;
-                        }
                         //send room 
                         if (message.content != undefined && message.content.text == FUNCTION.SENDROOM.toString()) {
                             let coordiantes: Game.ƒ.Vector2 = new Game.ƒ.Vector2(message.content.room.coordinates.data[0], message.content.room.coordinates.data[1]);
@@ -454,20 +467,15 @@ namespace Networking {
         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.SETGAMESTATE, playing: _playing } });
     }
 
-
-    //#region player
-    export function setHost() {
-        if (client.idHost == undefined) {
-            client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.HOST, id: client.id } });
-            if (!someoneIsHost) {
-                client.becomeHost();
-                someoneIsHost = true;
-            }
-        } else {
-            someoneIsHost = true;
-        }
+    export function createRoom() {
+        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, command: FudgeNet.COMMAND.ROOM_CREATE });
     }
 
+    export function joinRoom(_roomId: string) {
+        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, command: FudgeNet.COMMAND.ROOM_ENTER, content: { room: _roomId } });
+    }
+
+    //#region player
     export function loaded() {
         client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, content: { text: FUNCTION.LOADED } });
     }

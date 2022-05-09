@@ -124,7 +124,7 @@ namespace Game {
 
 
     function setClient() {
-        if (Networking.client.socket.readyState == Networking.client.socket.OPEN) {
+        if (Networking.client.socket.readyState == Networking.client.socket.OPEN && Networking.client.idRoom.toLowerCase() != "lobby") {
             Networking.setClient();
             return;
         } else {
@@ -217,27 +217,20 @@ namespace Game {
 
             }
 
+            document.getElementById("Hostscreen").style.visibility = "visible";
 
-            document.getElementById("Host").addEventListener("click", Networking.setHost);
-
-            waitForHost();
-            function waitForHost() {
-                if (Networking.clients.length >= 2) {
-                    document.getElementById("Hostscreen").style.visibility = "visible";
-                    return;
-                } else {
-                    setTimeout(() => {
-                        waitForHost();
-                    }, 200);
-                }
-            }
+            document.getElementById("Host").addEventListener("click", Networking.createRoom);
+            document.getElementById("Join").addEventListener("click", () => {
+                let roomId: string = (<HTMLInputElement>document.getElementById("Room")).value;
+                Networking.joinRoom(roomId);
+            });
 
             waitForLobby();
             function waitForLobby() {
-                if (Networking.clients.length > 1 && Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id] != undefined &&
-                    (Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id].dataChannel != undefined &&
-                        (Networking.client.peers[Networking.clients.find(elem => elem.id != Networking.client.id).id].dataChannel.readyState == "open"))) {
+                if (Networking.clients.length > 1 && Networking.client.idRoom.toLocaleLowerCase() != "lobby") {
                     document.getElementById("Hostscreen").style.visibility = "hidden";
+                    document.getElementById("RoomId").parentElement.style.visibility = "hidden";
+
                     document.getElementById("Lobbyscreen").style.visibility = "visible";
                     connected = true;
                 } else {
