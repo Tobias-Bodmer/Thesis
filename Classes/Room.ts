@@ -173,25 +173,36 @@ namespace Generation {
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
             super(_coordinates, _roomSize, ROOMTYPE.TREASURE);
             this.getComponent(Game.ƒ.ComponentMaterial).material = this.treasureRoomMat;
-            // this.createTreasures();
+            this.createTreasures();
         }
 
         private createTreasures() {
             let treasures: Items.Item[] = [];
-            let randomID = Math.round((Object.keys(Items.ITEMID).length * 2) * Math.random())
             for (let i = 0; i < this.treasureCount; i++) {
+                let randomID = Math.round((Object.keys(Items.ITEMID).length / 2) * Math.random())
                 switch (randomID) {
                     case Items.ITEMID.TOXICRELATIONSHIP:
                         treasures.push(new Items.BuffItem(randomID, new ƒ.Vector2(this.mtxLocal.translation.x + i, this.mtxLocal.translation.y)))
+                        break;
+                    default:
+                        treasures.push(new Items.InternalItem(randomID, new ƒ.Vector2(this.mtxLocal.translation.x + i, this.mtxLocal.translation.y)))
+                        break;
                 }
             }
             this.treasures = treasures;
         }
 
         public onAddToGraph(): void {
+            let i: number = 0;
             this.treasures.forEach(item => {
+                item.setPosition(new ƒ.Vector2(this.mtxLocal.translation.x + i, this.mtxLocal.translation.y))
                 item.spawn();
+                i++;
             })
+        }
+
+        public onItemCollect(_item: Items.Item) {
+            this.treasures.splice(this.treasures.indexOf(_item), 1);
         }
 
     }

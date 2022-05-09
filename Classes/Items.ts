@@ -122,6 +122,7 @@ namespace Items {
 
         public setPosition(_position: ƒ.Vector2) {
             this.mtxLocal.translation = _position.toVector3();
+            this.collider.setPosition(_position);
         }
         public spawn(): void {
             Game.graph.addChild(this);

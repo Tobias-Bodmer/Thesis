@@ -910,6 +910,7 @@ declare namespace Generation {
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
         private createTreasures;
         onAddToGraph(): void;
+        onItemCollect(_item: Items.Item): void;
     }
     class MerchantRoom extends Room {
         private merchantRoomMat;
