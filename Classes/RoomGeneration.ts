@@ -22,7 +22,7 @@ namespace Generation {
         setExits();
         rooms.forEach(room => { console.log(room.mtxLocal.translation.clone.toString()) });
         moveRoomToWorldCoords(rooms[0]);
-        
+
         setExits();
         addRoomToGraph(rooms[0]);
     }
@@ -252,8 +252,8 @@ namespace Generation {
         });
 
         Game.graph.addChild(_room);
-        _room.onAddToGraph();
         Game.viewport.calculateTransforms();
+        _room.onAddToGraph();
 
         _room.walls.forEach(wall => {
             wall.setCollider();

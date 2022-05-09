@@ -22,9 +22,10 @@ namespace Entity {
         attackPoints: number;
         coolDownReduction: number = 1;
         scale: number;
+        accuracy: number = 0;
 
 
-        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _armor: number, _cooldownReduction?: number) {
+        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _armor: number, _cooldownReduction?: number, _accuracy?: number) {
             this.scale = _scale;
             this.armor = _armor;
             this.healthPoints = _healthPoints;
@@ -34,6 +35,9 @@ namespace Entity {
             this.knockbackForce = _knockbackForce
             if (_cooldownReduction != undefined) {
                 this.coolDownReduction = _cooldownReduction;
+            }
+            if (_accuracy != undefined) {
+                this.accuracy = _accuracy;
             }
         }
 

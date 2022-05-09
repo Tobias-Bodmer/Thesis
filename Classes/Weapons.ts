@@ -25,7 +25,13 @@ namespace Weapons {
                     this.currentAttackCount = this.attackCount;
                 }
                 if (this.currentAttackCount > 0 && !this.cooldown.hasCoolDown) {
+
+                    if (this.owner.attributes.accuracy > 0) {
+                        this.inaccuracy(_direciton);
+                    }
+
                     _direciton.normalize();
+
                     let magazine: Bullets.Bullet[] = this.loadMagazine(_position, _direciton, this.bulletType, _bulletNetId);
                     this.setBulletDirection(magazine);
                     this.fire(magazine, _sync);
@@ -42,6 +48,11 @@ namespace Weapons {
                 this.setBulletDirection(magazine);
                 this.fire(magazine, _sync);
             }
+        }
+
+        inaccuracy(_direciton: ƒ.Vector3) {
+            _direciton.x = _direciton.x + Math.random() * this.owner.attributes.accuracy - (this.owner.attributes.accuracy / 2);
+            _direciton.y = _direciton.y + Math.random() * this.owner.attributes.accuracy - (this.owner.attributes.accuracy / 2);
         }
 
         fire(_magazine: Bullets.Bullet[], _sync?: boolean) {

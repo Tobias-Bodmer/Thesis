@@ -144,12 +144,13 @@ declare namespace Entity {
     enum ID {
         RANGED = 0,
         MELEE = 1,
-        BAT = 2,
-        REDTICK = 3,
-        SMALLTICK = 4,
-        SKELETON = 5,
-        OGER = 6,
-        SUMMONOR = 7
+        MERCHANT = 2,
+        BAT = 3,
+        REDTICK = 4,
+        SMALLTICK = 5,
+        SKELETON = 6,
+        OGER = 7,
+        SUMMONOR = 8
     }
     function getNameById(_id: Entity.ID): string;
 }
@@ -510,7 +511,8 @@ declare namespace Entity {
         attackPoints: number;
         coolDownReduction: number;
         scale: number;
-        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _armor: number, _cooldownReduction?: number);
+        accuracy: number;
+        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _armor: number, _cooldownReduction?: number, _accuracy?: number);
         updateScaleDependencies(): void;
     }
 }
@@ -688,6 +690,11 @@ declare namespace Enemy {
         calculateAvoidanceMove(): Game.ƒ.Vector2;
         calculateObsticalAvoidanceMove(): Game.ƒ.Vector2;
         getMoveVector(): Game.ƒ.Vector2;
+    }
+}
+declare namespace Entity {
+    class Merchant extends Entity {
+        constructor(_id: number, _netId?: number);
     }
 }
 declare namespace Calculation {
@@ -915,7 +922,15 @@ declare namespace Generation {
     }
     class MerchantRoom extends Room {
         private merchantRoomMat;
+        private merchant;
+        private items;
+        private itemsSpawnPoints;
+        private itemCount;
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
+        private createShop;
+        onAddToGraph(): void;
+        private createSpawnPoints;
+        onItemCollect(_item: Items.Item): void;
     }
     class Wall extends ƒ.Node {
         tag: Tag.TAG;
@@ -986,6 +1001,7 @@ declare namespace Weapons {
         projectileAmount: number;
         constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _ownerNetId: number, _aimType: AIM);
         shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _bulletNetId?: number, _sync?: boolean): void;
+        inaccuracy(_direciton: ƒ.Vector3): void;
         fire(_magazine: Bullets.Bullet[], _sync?: boolean): void;
         setBulletDirection(_magazine: Bullets.Bullet[]): Bullets.Bullet[];
         loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.BULLETTYPE, _netId?: number): Bullets.Bullet[];

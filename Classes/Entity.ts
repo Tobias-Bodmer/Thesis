@@ -298,6 +298,7 @@ namespace Entity {
     export enum ID {
         RANGED,
         MELEE,
+        MERCHANT,
         BAT,
         REDTICK,
         SMALLTICK,

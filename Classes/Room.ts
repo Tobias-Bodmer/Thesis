@@ -202,16 +202,76 @@ namespace Generation {
         }
 
         public onItemCollect(_item: Items.Item) {
-            this.treasures.splice(this.treasures.indexOf(_item), 1);
+            if (this.treasures.find(item => item == _item) != undefined) {
+                this.treasures.splice(this.treasures.indexOf(_item), 1);
+            }
         }
 
     }
 
     export class MerchantRoom extends Room {
         private merchantRoomMat: ƒ.Material = new ƒ.Material("merchantRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("green")));
+        private merchant: Entity.Merchant = new Entity.Merchant(Entity.ID.MERCHANT);
+        private items: Items.Item[] = [];
+        private itemsSpawnPoints: ƒ.Vector2[] = [];
+        private itemCount: number = 5;
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
             super(_coordinates, _roomSize, ROOMTYPE.MERCHANT);
             this.getComponent(Game.ƒ.ComponentMaterial).material = this.merchantRoomMat;
+
+            this.merchant.mtxLocal.translateZ(0.01);
+            this.merchant.mtxLocal.translateY(5 / this.roomSize);
+            this.merchant.mtxLocal.scale(Game.ƒ.Vector3.ONE(1 / this.roomSize));
+            this.addChild(this.merchant);
+
+            this.createShop();
+        }
+
+        private createShop() {
+            let items: Items.Item[] = [];
+            for (let i = 0; i < this.itemCount; i++) {
+                let randomID = Math.round((Object.keys(Items.ITEMID).length / 2) * Math.random())
+                switch (randomID) {
+                    case Items.ITEMID.TOXICRELATIONSHIP:
+                        items.push(new Items.BuffItem(randomID, ƒ.Vector2.ZERO()))
+                        break;
+                    default:
+                        items.push(new Items.InternalItem(randomID, ƒ.Vector2.ZERO()))
+                        break;
+                }
+            }
+            this.items = items;
+        }
+
+        public onAddToGraph(): void {
+            this.createSpawnPoints();
+
+            let i = 0;
+            this.items.forEach(item => {
+                if (this.itemsSpawnPoints.find(pos => pos.equals(item.position)) == undefined) {
+                    item.setPosition(this.itemsSpawnPoints[i]);
+                }
+                item.spawn();
+                i++;
+            })
+        }
+
+        private createSpawnPoints() {
+            this.itemsSpawnPoints = [];
+
+            let middle = this.mtxWorld.clone.translation;
+
+            this.itemsSpawnPoints.push(new ƒ.Vector2(middle.x, middle.y + 3));
+            this.itemsSpawnPoints.push(new ƒ.Vector2(middle.x + 3, middle.y + 3));
+            this.itemsSpawnPoints.push(new ƒ.Vector2(middle.x - 3, middle.y + 3));
+            this.itemsSpawnPoints.push(new ƒ.Vector2(middle.x + 2, middle.y + 1));
+            this.itemsSpawnPoints.push(new ƒ.Vector2(middle.x - 2, middle.y + 1));
+        }
+
+        public onItemCollect(_item: Items.Item) {
+            if (this.items.find(item => item == _item) != undefined) {
+                this.items.splice(this.items.indexOf(_item), 1);
+            }
         }
     }
 
