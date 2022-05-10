@@ -7,7 +7,7 @@ canvas {
 #Hostscreen{
     position: absolute;
     visibility: hidden;
-    top: 150px;
+    top: 30px;
     left: 20px;
     width: 1000px;
 }
@@ -34,8 +34,8 @@ canvas {
 #Lobbyscreen {
     position: absolute;
     visibility: hidden;
-    top: 520px;
     left: 10px;
+    top: 500px;
 }
 
 #Lobbyscreen > button {
@@ -59,6 +59,17 @@ canvas {
     height: 60px;
 }
 
+
+#UI {
+    visibility: hidden;
+    position: absolute;
+    margin-left: -20px;
+    transform: scale(70%);
+    font-family: 'MinecraftiaRegular';
+    font-weight: normal;
+    font-style: normal; 
+}
+
 #Inventory {
     width: 100%;
     height: 20px;
@@ -69,28 +80,23 @@ canvas {
     height: 20px;
 }
 
-#UI {
-    font-family: 'MinecraftiaRegular';
-    font-weight: normal;
-    font-style: normal; 
-}
-
 #HP-Bar {
-    border: 1px solid black;
+    border: 2px solid black;
     width: 300px;
+    height: 10px;
     background-color: grey;
 }
 
 #HP {
     width: 100%;
-    height: 10px;
+    height: 100%;
     background-color: green;
 }
 
 #Optionscreen {
     position: absolute;
     visibility: hidden;
-    top: 121px;
+    top: 9px;
     left: 9px;
     height: 600px;
     width: 1000px;
@@ -103,8 +109,8 @@ canvas {
 #Creditscreen {
     position: absolute;
     visibility: hidden;
-    top: 100px;
-    left: 10px;
+    top: 9px;
+    left: 9px;
     height: 600px;
     width: 1000px;
     font-family: 'MinecraftiaRegular';

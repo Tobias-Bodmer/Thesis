@@ -147,6 +147,7 @@ namespace Game {
         }
         if (Game.loaded) {
             ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, deltaTime);
+            document.getElementById("UI").style.visibility = "visible";
         } else {
             setTimeout(() => {
                 startLoop();
@@ -194,7 +195,6 @@ namespace Game {
                         // graph.appendChild(item1);
                         // graph.appendChild(item2);
                         // graph.appendChild(item3);
-
                     }
 
                     Networking.spawnPlayer();
