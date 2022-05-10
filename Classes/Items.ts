@@ -23,6 +23,7 @@ namespace Items {
     export abstract class Item extends Game.ƒ.Node {
         public tag: Tag.TAG = Tag.TAG.ITEM;
         id: ITEMID;
+        public rarity: RARITY;
         public netId: number = Networking.idGenerator();
         public description: string;
         public imgSrc: string;
@@ -248,5 +249,62 @@ namespace Items {
 
     export function getBuffItemById(_id: ITEMID): Items.BuffItem {
         return Game.buffItemJSON.find(item => item.id == _id);
+    }
+
+    export class ItemGenerator {
+        private itemPool: Items.Item[];
+        constructor() {
+            this.itemPool = [];
+        }
+
+        public fillPool() {
+            //TODO: fill pool with items 
+        }
+
+        public getItem(): Items.Item {
+            let possibleItems: Items.Item[] = [];
+            possibleItems = this.getPossibleItems();
+            let randomIndex = Math.round(Math.random() * possibleItems.length - 1);
+            let returnItem = possibleItems[randomIndex];
+            this.itemPool.splice(this.itemPool.indexOf(returnItem));
+            return returnItem;
+        }
+
+        private getPossibleItems(): Items.Item[] {
+            let chosenRarity: RARITY = this.generateRarity();
+            switch (chosenRarity) {
+                case RARITY.COMMON:
+                    return this.itemPool.filter(item => item.rarity == RARITY.COMMON);
+                case RARITY.RARE:
+                    return this.itemPool.filter(item => item.rarity == RARITY.RARE)
+                default:
+                    return this.itemPool.filter(item => item.rarity = RARITY.COMMON);
+            }
+        }
+
+        private generateRarity(): RARITY {
+            let rarityNumber = Math.round(Math.random() * 100);
+            if (rarityNumber >= 50) {
+                return RARITY.COMMON;
+            }
+            if (rarityNumber >= 20 && rarityNumber < 50) {
+                return RARITY.RARE;
+            }
+            if (rarityNumber >= 5 && rarityNumber < 20) {
+                return RARITY.EPIC;
+            }
+            if (rarityNumber < 5) {
+                return RARITY.LEGENDARY;
+            }
+            return RARITY.COMMON;
+        }
+    }
+
+    enum RARITY {
+        COMMON,
+        RARE,
+        EPIC,
+        LEGENDARY
+
     }
 }
