@@ -96,9 +96,11 @@ namespace Player {
                         (<Generation.TreasureRoom>Game.currentRoom).onItemCollect(item);
                     }
                     if (Game.currentRoom.roomType == Generation.ROOMTYPE.MERCHANT) {
-                        (<Generation.MerchantRoom>Game.currentRoom).onItemCollect(item, this);
+                        if (!(<Generation.MerchantRoom>Game.currentRoom).onItemCollect(item, this)) {
+                            return;
+                        }
                     }
-                   
+
                     Networking.updateInventory(item.id, item.netId, this.netId);
                     item.doYourThing(this);
                     this.items.push(item);

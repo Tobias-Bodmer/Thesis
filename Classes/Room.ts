@@ -260,12 +260,46 @@ namespace Generation {
             this.itemsSpawnPoints.push(new ƒ.Vector2(middle.x - 2, middle.y + 1));
         }
 
-        public onItemCollect(_item: Items.Item, _avatar: Player.Player) {
+        public onItemCollect(_item: Items.Item, _avatar: Player.Player): boolean {
             if (this.items.find(item => item == _item) != undefined) {
-                // let lowerRarity: Items.Item[] = _avatar.items.filter(items );
-                
-                this.items.splice(this.items.indexOf(_item), 1);
+                return this.shoping(_item, _avatar);
             }
+            return false;
+        }
+
+        private shoping(_item: Items.Item, _avatar: Player.Player): boolean {
+            let sameRarity: Items.Item[] = _avatar.items.filter(item => item.rarity == _item.rarity);
+            let lowerRarity: Items.Item[] = [];
+
+            if (_item.rarity != Items.RARITY.COMMON) {
+                lowerRarity = _avatar.items.filter(item => item.rarity == (_item.rarity - 1));
+            }
+
+            if (sameRarity.length > 0) {
+                let index: number = Math.round(Math.random() * sameRarity.length);
+                _avatar.items = _avatar.items.filter(item => item != sameRarity[index]);
+                this.items.splice(this.items.indexOf(sameRarity[index]), 1);
+            } else {
+                if (lowerRarity.length >= 3) {
+                    let index1: number = Math.round(Math.random() * lowerRarity.length);
+                    _avatar.items = _avatar.items.filter(item => item != lowerRarity[index1]);
+                    this.items.splice(this.items.indexOf(lowerRarity[index1]), 1);
+                    lowerRarity.slice(index1, 1);
+
+                    let index2: number = Math.round(Math.random() * lowerRarity.length);
+                    _avatar.items = _avatar.items.filter(item => item != lowerRarity[index2]);
+                    this.items.splice(this.items.indexOf(lowerRarity[index2]), 1);
+                    lowerRarity.slice(index2, 1);
+
+                    let index3: number = Math.round(Math.random() * lowerRarity.length);
+                    _avatar.items = _avatar.items.filter(item => item != lowerRarity[index3]);
+                    this.items.splice(this.items.indexOf(lowerRarity[index3]), 1);
+                    lowerRarity.slice(index3, 1);
+                } else {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 

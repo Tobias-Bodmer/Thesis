@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -961,7 +961,8 @@ declare namespace Generation {
         private createShop;
         onAddToGraph(): void;
         private createSpawnPoints;
-        onItemCollect(_item: Items.Item, _avatar: Player.Player): void;
+        onItemCollect(_item: Items.Item, _avatar: Player.Player): boolean;
+        private shoping;
     }
     class Wall extends ƒ.Node {
         tag: Tag.TAG;
