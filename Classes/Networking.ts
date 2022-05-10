@@ -171,7 +171,7 @@ namespace Networking {
                     //Spawn avatar2 as ranged or melee 
                     if (message.content != undefined && message.content.text == FUNCTION.SPAWN.toString()) {
                         let netId: number = message.content.netId
-                        let attributes: Entity.Attributes = new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale, message.content.attributes.knockbackForce, message.content.attributes.armor, message.content.attributes.coolDownReduction);
+                        let attributes: Entity.Attributes = new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale, message.content.attributes.knockbackForce, message.content.attributes.armor, message.content.attributes.coolDownReduction, message.content.attributes.accuracy);
                         if (message.content.type == Entity.ID.MELEE) {
                             Game.avatar2 = new Player.Melee(Entity.ID.MELEE, attributes, netId);
                             Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], 0);
@@ -667,6 +667,7 @@ namespace Networking {
         if (isNetworkObject(_object)) {
             return _object.netId;
         }
+        return null;
     }
 
     window.addEventListener("beforeunload", onUnload, false);
