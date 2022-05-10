@@ -22,10 +22,10 @@ namespace Entity {
         attackPoints: number;
         coolDownReduction: number = 1;
         scale: number;
-        accuracy: number = 0;
+        accuracy: number = 80;
 
 
-        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _armor: number, _cooldownReduction?: number, _accuracy?: number) {
+        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _armor: number, _cooldownReduction: number, _accuracy: number) {
             this.scale = _scale;
             this.armor = _armor;
             this.healthPoints = _healthPoints;
@@ -33,12 +33,8 @@ namespace Entity {
             this.attackPoints = _attackPoints;
             this.speed = _speed;
             this.knockbackForce = _knockbackForce
-            if (_cooldownReduction != undefined) {
-                this.coolDownReduction = _cooldownReduction;
-            }
-            if (_accuracy != undefined) {
-                this.accuracy = _accuracy;
-            }
+            this.coolDownReduction = _cooldownReduction;
+            this.accuracy = _accuracy;
         }
 
         public updateScaleDependencies() {

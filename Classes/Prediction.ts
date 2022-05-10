@@ -18,7 +18,7 @@ namespace Networking {
         protected handleTick() {
         }
 
-        protected processMovement(input: Interfaces.IInputAvatarPayload): Interfaces.IStatePayload {
+        protected processMovement(_input: Interfaces.IInputAvatarPayload): Interfaces.IStatePayload {
             return null;
         }
 

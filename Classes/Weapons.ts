@@ -26,7 +26,7 @@ namespace Weapons {
                 }
                 if (this.currentAttackCount > 0 && !this.cooldown.hasCoolDown) {
 
-                    if (this.owner.attributes.accuracy > 0) {
+                    if (this.owner.attributes.accuracy < 100) {
                         this.inaccuracy(_direciton);
                     }
 
@@ -51,8 +51,8 @@ namespace Weapons {
         }
 
         inaccuracy(_direciton: ƒ.Vector3) {
-            _direciton.x = _direciton.x + Math.random() * this.owner.attributes.accuracy - (this.owner.attributes.accuracy / 2);
-            _direciton.y = _direciton.y + Math.random() * this.owner.attributes.accuracy - (this.owner.attributes.accuracy / 2);
+            _direciton.x = _direciton.x + Math.random() * 10 / this.owner.attributes.accuracy - Math.random() * 10 / this.owner.attributes.accuracy;
+            _direciton.y = _direciton.y + Math.random() * 10 / this.owner.attributes.accuracy - Math.random() * 10 / this.owner.attributes.accuracy;
         }
 
         fire(_magazine: Bullets.Bullet[], _sync?: boolean) {

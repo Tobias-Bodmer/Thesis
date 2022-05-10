@@ -283,7 +283,7 @@ declare namespace Interfaces {
     }
 }
 declare namespace Items {
-    enum ITEMID {
+    export enum ITEMID {
         ICEBUCKETCHALLENGE = 0,
         DMGUP = 1,
         SPEEDUP = 2,
@@ -297,13 +297,14 @@ declare namespace Items {
         VAMPY = 10,
         SLOWYSLOW = 11
     }
-    let txtIceBucket: ƒ.TextureImage;
-    let txtDmgUp: ƒ.TextureImage;
-    let txtHealthUp: ƒ.TextureImage;
-    let txtToxicRelationship: ƒ.TextureImage;
-    abstract class Item extends Game.ƒ.Node {
+    export let txtIceBucket: ƒ.TextureImage;
+    export let txtDmgUp: ƒ.TextureImage;
+    export let txtHealthUp: ƒ.TextureImage;
+    export let txtToxicRelationship: ƒ.TextureImage;
+    export abstract class Item extends Game.ƒ.Node {
         tag: Tag.TAG;
         id: ITEMID;
+        rarity: RARITY;
         netId: number;
         description: string;
         imgSrc: string;
@@ -320,13 +321,13 @@ declare namespace Items {
         despawn(): void;
         doYourThing(_avatar: Player.Player): void;
     }
-    class InternalItem extends Item {
+    export class InternalItem extends Item {
         value: number;
         constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
         doYourThing(_avatar: Player.Player): void;
         setAttributesById(_avatar: Player.Player): void;
     }
-    class BuffItem extends Item {
+    export class BuffItem extends Item {
         value: number;
         tickRate: number;
         duration: number;
@@ -334,8 +335,23 @@ declare namespace Items {
         doYourThing(_avatar: Player.Player): void;
         setBuffById(_avatar: Entity.Entity): void;
     }
-    function getInternalItemById(_id: ITEMID): Items.InternalItem;
-    function getBuffItemById(_id: ITEMID): Items.BuffItem;
+    export function getInternalItemById(_id: ITEMID): Items.InternalItem;
+    export function getBuffItemById(_id: ITEMID): Items.BuffItem;
+    export class ItemGenerator {
+        private itemPool;
+        constructor();
+        fillPool(): void;
+        getItem(): Items.Item;
+        private getPossibleItems;
+        private generateRarity;
+    }
+    enum RARITY {
+        COMMON = 0,
+        RARE = 1,
+        EPIC = 2,
+        LEGENDARY = 3
+    }
+    export {};
 }
 declare namespace AnimationGeneration {
     export let txtRedTickIdle: ƒ.TextureImage;
@@ -388,7 +404,7 @@ declare namespace Networking {
         protected stateBuffer: Interfaces.IStatePayload[];
         constructor(_ownerNetId: number);
         protected handleTick(): void;
-        protected processMovement(input: Interfaces.IInputAvatarPayload): Interfaces.IStatePayload;
+        protected processMovement(_input: Interfaces.IInputAvatarPayload): Interfaces.IStatePayload;
     }
     abstract class BulletPrediction extends Prediction {
         protected processMovement(input: Interfaces.IInputBulletPayload): Interfaces.IStatePayload;
@@ -512,7 +528,7 @@ declare namespace Entity {
         coolDownReduction: number;
         scale: number;
         accuracy: number;
-        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _armor: number, _cooldownReduction?: number, _accuracy?: number);
+        constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _armor: number, _cooldownReduction: number, _accuracy: number);
         updateScaleDependencies(): void;
     }
 }

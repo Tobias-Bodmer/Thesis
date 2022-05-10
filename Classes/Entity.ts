@@ -28,7 +28,7 @@ namespace Entity {
         constructor(_id: Entity.ID, _netId: number) {
             super(getNameById(_id));
             this.id = _id;
-            this.attributes = new Attributes(1, 1, 1, 1, 1, 1, 1);
+            this.attributes = new Attributes(1, 1, 1, 1, 1, 1, 1, 1);
             if (AnimationGeneration.getAnimationById(this.id) != null) {
                 let ani = AnimationGeneration.getAnimationById(this.id);
                 this.animationContainer = ani;
