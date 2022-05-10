@@ -8,7 +8,9 @@
                 "speed": 2,
                 "scale": 1,
                 "knockbackForce": 0.1,
-                "armor": 0
+                "armor": 0,
+                "coolDownReduction": 1,
+                "accuracy": 80
             },
             "offsetColliderX": 0,
             "offsetColliderY": 0,
@@ -22,7 +24,9 @@
                 "speed": 2,
                 "scale": 1,
                 "knockbackForce": 0.1,
-                "armor": 0
+                "armor": 0,
+                "coolDownReduction": 1,
+                "accuracy": 80
             },
             "offsetColliderX": 0,
             "offsetColliderY": 0,
@@ -36,7 +40,9 @@
                 "speed": 1.5,
                 "scale": 2,
                 "knockbackForce": 0.1,
-                "armor": 0
+                "armor": 0,
+                "coolDownReduction": 1,
+                "accuracy": 80
             },
             "offsetColliderX": 0,
             "offsetColliderY": 0,
@@ -50,7 +56,9 @@
                 "speed": 2,
                 "scale": 2,
                 "knockbackForce": 0.1,
-                "armor": 5
+                "armor": 5,
+                "coolDownReduction": 1,
+                "accuracy": 80
             },
             "offsetColliderX": 0,
             "offsetColliderY": 0,
@@ -64,7 +72,9 @@
                 "speed": 1,
                 "scale": 2,
                 "knockbackForce": 0.1,
-                "armor": 25
+                "armor": 25,
+                "coolDownReduction": 1,
+                "accuracy": 80
             },
             "offsetColliderX": 0,
             "offsetColliderY": 0,
@@ -78,7 +88,9 @@
                 "speed": 1.5,
                 "scale": 2,
                 "knockbackForce": 0.1,
-                "armor": 5
+                "armor": 5,
+                "coolDownReduction": 1,
+                "accuracy": 80
             },
             "offsetColliderX": 0,
             "offsetColliderY": -0.4,
