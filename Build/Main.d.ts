@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -305,6 +305,7 @@ declare namespace Items {
     let txtDmgUp: ƒ.TextureImage;
     let txtHealthUp: ƒ.TextureImage;
     let txtToxicRelationship: ƒ.TextureImage;
+    let txtSpeedUp: ƒ.TextureImage;
     abstract class Item extends Game.ƒ.Node {
         tag: Tag.TAG;
         id: ITEMID;
@@ -349,7 +350,8 @@ declare namespace Items {
     abstract class ItemGenerator {
         private static itemPool;
         static fillPool(): void;
-        static getItem(): Items.Item;
+        static getRandomItem(): Items.Item;
+        static getRandomItemByRarity(_rarity: RARITY): Items.Item;
         private static getPossibleItems;
         private static getRarity;
     }

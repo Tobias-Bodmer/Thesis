@@ -18,6 +18,7 @@ namespace Items {
     export let txtDmgUp: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtHealthUp: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtToxicRelationship: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtSpeedUp: ƒ.TextureImage = new ƒ.TextureImage();
 
 
     export abstract class Item extends Game.ƒ.Node {
@@ -89,10 +90,11 @@ namespace Items {
                     this.loadTexture(txtIceBucket);
                     break;
                 case ITEMID.DMGUP:
-                    this.loadTexture(txtIceBucket); //TODO: add correct texture and change in JSON
+                    this.loadTexture(txtDmgUp); //TODO: add correct texture and change in JSON
 
                     break;
                 case ITEMID.SPEEDUP:
+                    this.loadTexture(txtSpeedUp);
                     //TODO: add correct texture and change in JSON
 
                     break;
@@ -191,7 +193,10 @@ namespace Items {
                     Networking.updateAvatarWeapon(_avatar.weapon, _avatar.netId);
                     break;
                 case ITEMID.HEALTHUP:
+                    let currentMaxPoints = _avatar.attributes.maxHealthPoints;
                     _avatar.attributes.maxHealthPoints = Calculation.addPercentageAmountToValue(_avatar.attributes.maxHealthPoints, this.value);
+                    let amount = _avatar.attributes.maxHealthPoints - currentMaxPoints;
+                    _avatar.attributes.healthPoints += amount;
                     Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.maxHealthPoints, type: Entity.ATTRIBUTETYPE.MAXHEALTHPOINTS }, _avatar.netId);
                     break;
                 case ITEMID.SCALEUP:
@@ -279,12 +284,19 @@ namespace Items {
             });
         }
 
-        public static getItem(): Items.Item {
+        public static getRandomItem(): Items.Item {
             let possibleItems: Items.Item[] = [];
             possibleItems = this.getPossibleItems();
             let randomIndex = Math.round(Math.random() * (possibleItems.length - 1));
             let returnItem = possibleItems[randomIndex];
             // this.itemPool.splice(this.itemPool.indexOf(returnItem));
+            return returnItem.clone();
+        }
+
+        public static getRandomItemByRarity(_rarity: RARITY): Items.Item {
+            let possibleItems = this.itemPool.filter(item => item.rarity == _rarity);
+            let randomIndex = Math.round(Math.random() * (possibleItems.length - 1));
+            let returnItem = possibleItems[randomIndex];
             return returnItem.clone();
         }
 
