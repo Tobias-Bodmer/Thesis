@@ -92,8 +92,11 @@ namespace Player {
             let itemCollider: Items.Item[] = Game.items;
             itemCollider.forEach(item => {
                 if (this.collider.collides(item.collider)) {
-                    if (Game.currentRoom.roomType == Generation.ROOMTYPE.TREASURE || Game.currentRoom.roomType == Generation.ROOMTYPE.MERCHANT) {
+                    if (Game.currentRoom.roomType == Generation.ROOMTYPE.TREASURE) {
                         (<Generation.TreasureRoom>Game.currentRoom).onItemCollect(item);
+                    }
+                    if (Game.currentRoom.roomType == Generation.ROOMTYPE.MERCHANT) {
+                        (<Generation.MerchantRoom>Game.currentRoom).onItemCollect(item, this);
                     }
                    
                     Networking.updateInventory(item.id, item.netId, this.netId);

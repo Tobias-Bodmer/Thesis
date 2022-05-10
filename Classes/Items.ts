@@ -41,7 +41,6 @@ namespace Items {
                 this.netId = _netId;
             }
 
-
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshQuad()));
             let material: ƒ.Material = new ƒ.Material("white", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
             this.addComponent(new ƒ.ComponentMaterial(material));
@@ -54,6 +53,11 @@ namespace Items {
 
         public clone(): Item {
             return null
+        }
+
+        protected addRarityBuff() {
+            let buff = new Buff.RarityBuff(this.rarity);
+            buff.addToItem(this);
         }
 
         public getBuffById(): Buff.Buff {
@@ -155,6 +159,8 @@ namespace Items {
                 this.imgSrc = item.imgSrc;
                 this.rarity = item.rarity;
             }
+
+            this.addRarityBuff();
         }
 
         doYourThing(_avatar: Player.Player) {
@@ -177,7 +183,7 @@ namespace Items {
                     Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.attackPoints, type: Entity.ATTRIBUTETYPE.ATTACKPOINTS }, _avatar.netId);
                     break;
                 case ITEMID.SPEEDUP:
-                    _avatar.attributes.speed = Calculation.subPercentageAmountToValue(_avatar.attributes.speed, this.value);
+                    _avatar.attributes.speed = Calculation.addPercentageAmountToValue(_avatar.attributes.speed, this.value);
                     Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.speed, type: Entity.ATTRIBUTETYPE.SPEED }, _avatar.netId);
                     break;
                 case ITEMID.PROJECTILESUP:
@@ -227,6 +233,8 @@ namespace Items {
             this.duration = temp.duration;
             this.imgSrc = temp.imgSrc;
             this.rarity = temp.rarity;
+
+            this.addRarityBuff();
         }
 
         doYourThing(_avatar: Player.Player): void {
@@ -314,7 +322,7 @@ namespace Items {
         }
     }
 
-    enum RARITY {
+    export enum RARITY {
         COMMON,
         RARE,
         EPIC,

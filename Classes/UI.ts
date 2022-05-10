@@ -188,16 +188,19 @@ namespace UI {
     export let slowParticle: ƒ.TextureImage = new ƒ.TextureImage();
     export let immuneParticle: ƒ.TextureImage = new ƒ.TextureImage();
 
-
+    export let commonParticle: ƒ.TextureImage = new ƒ.TextureImage();
+    export let rareParticle: ƒ.TextureImage = new ƒ.TextureImage();
+    export let epicParticle: ƒ.TextureImage = new ƒ.TextureImage();
+    export let legendaryParticle: ƒ.TextureImage = new ƒ.TextureImage();
 
     export class Particles extends Game.ƒAid.NodeSprite {
-        id: Buff.BUFFID;
+        id: Buff.BUFFID | Items.RARITY;
         animationParticles: Game.ƒAid.SpriteSheetAnimation;
         particleframeNumber: number;
         particleframeRate: number;
         width: number;
         height: number;
-        constructor(_id: Buff.BUFFID, _texture: Game.ƒ.TextureImage, _frameCount: number, _frameRate: number) {
+        constructor(_id: Buff.BUFFID | Items.RARITY, _texture: Game.ƒ.TextureImage, _frameCount: number, _frameRate: number) {
             super(Buff.BUFFID[_id].toLowerCase());
             this.id = _id;
             this.particleframeNumber = _frameCount;

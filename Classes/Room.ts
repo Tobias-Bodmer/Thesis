@@ -260,8 +260,10 @@ namespace Generation {
             this.itemsSpawnPoints.push(new ƒ.Vector2(middle.x - 2, middle.y + 1));
         }
 
-        public onItemCollect(_item: Items.Item) {
+        public onItemCollect(_item: Items.Item, _avatar: Player.Player) {
             if (this.items.find(item => item == _item) != undefined) {
+                // let lowerRarity: Items.Item[] = _avatar.items.filter(items );
+                
                 this.items.splice(this.items.indexOf(_item), 1);
             }
         }

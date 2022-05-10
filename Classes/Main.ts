@@ -362,6 +362,12 @@ namespace Game {
         await UI.slowParticle.load("./Resources/Image/Particles/slow.png");
         await UI.immuneParticle.load("./Resources/Image/Particles/immune.png");
 
+        await UI.commonParticle.load("./Resources/Image/Particles/Rarity/common.png");
+        await UI.rareParticle.load("./Resources/Image/Particles/Rarity/rare.png");
+        await UI.epicParticle.load("./Resources/Image/Particles/Rarity/epic.png");
+        await UI.legendaryParticle.load("./Resources/Image/Particles/Rarity/legendary.png");
+
+
         await Entity.txtShadow.load("./Resources/Image/Particles/shadow.png");
 
         //Minimap

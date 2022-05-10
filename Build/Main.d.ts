@@ -66,14 +66,18 @@ declare namespace UI {
     let bleedingParticle: ƒ.TextureImage;
     let slowParticle: ƒ.TextureImage;
     let immuneParticle: ƒ.TextureImage;
+    let commonParticle: ƒ.TextureImage;
+    let rareParticle: ƒ.TextureImage;
+    let epicParticle: ƒ.TextureImage;
+    let legendaryParticle: ƒ.TextureImage;
     class Particles extends Game.ƒAid.NodeSprite {
-        id: Buff.BUFFID;
+        id: Buff.BUFFID | Items.RARITY;
         animationParticles: Game.ƒAid.SpriteSheetAnimation;
         particleframeNumber: number;
         particleframeRate: number;
         width: number;
         height: number;
-        constructor(_id: Buff.BUFFID, _texture: Game.ƒ.TextureImage, _frameCount: number, _frameRate: number);
+        constructor(_id: Buff.BUFFID | Items.RARITY, _texture: Game.ƒ.TextureImage, _frameCount: number, _frameRate: number);
     }
 }
 declare namespace Tag {
@@ -283,7 +287,7 @@ declare namespace Interfaces {
     }
 }
 declare namespace Items {
-    export enum ITEMID {
+    enum ITEMID {
         ICEBUCKETCHALLENGE = 0,
         DMGUP = 1,
         SPEEDUP = 2,
@@ -297,11 +301,11 @@ declare namespace Items {
         VAMPY = 10,
         SLOWYSLOW = 11
     }
-    export let txtIceBucket: ƒ.TextureImage;
-    export let txtDmgUp: ƒ.TextureImage;
-    export let txtHealthUp: ƒ.TextureImage;
-    export let txtToxicRelationship: ƒ.TextureImage;
-    export abstract class Item extends Game.ƒ.Node {
+    let txtIceBucket: ƒ.TextureImage;
+    let txtDmgUp: ƒ.TextureImage;
+    let txtHealthUp: ƒ.TextureImage;
+    let txtToxicRelationship: ƒ.TextureImage;
+    abstract class Item extends Game.ƒ.Node {
         tag: Tag.TAG;
         id: ITEMID;
         rarity: RARITY;
@@ -315,6 +319,7 @@ declare namespace Items {
         buff: Buff.Buff[];
         constructor(_id: ITEMID, _netId?: number);
         clone(): Item;
+        protected addRarityBuff(): void;
         getBuffById(): Buff.Buff;
         protected loadTexture(_texture: ƒ.TextureImage): void;
         protected setTextureById(): void;
@@ -323,14 +328,14 @@ declare namespace Items {
         despawn(): void;
         doYourThing(_avatar: Player.Player): void;
     }
-    export class InternalItem extends Item {
+    class InternalItem extends Item {
         value: number;
         constructor(_id: ITEMID, _netId?: number);
         doYourThing(_avatar: Player.Player): void;
         clone(): Item;
         setAttributesById(_avatar: Player.Player): void;
     }
-    export class BuffItem extends Item {
+    class BuffItem extends Item {
         value: number;
         tickRate: number;
         duration: number;
@@ -339,9 +344,9 @@ declare namespace Items {
         clone(): BuffItem;
         setBuffById(_avatar: Entity.Entity): void;
     }
-    export function getInternalItemById(_id: ITEMID): Items.InternalItem;
-    export function getBuffItemById(_id: ITEMID): Items.BuffItem;
-    export abstract class ItemGenerator {
+    function getInternalItemById(_id: ITEMID): Items.InternalItem;
+    function getBuffItemById(_id: ITEMID): Items.BuffItem;
+    abstract class ItemGenerator {
         private static itemPool;
         static fillPool(): void;
         static getItem(): Items.Item;
@@ -354,7 +359,6 @@ declare namespace Items {
         EPIC = 2,
         LEGENDARY = 3
     }
-    export {};
 }
 declare namespace AnimationGeneration {
     export let txtRedTickIdle: ƒ.TextureImage;
@@ -593,6 +597,13 @@ declare namespace Buff {
         doBuffStuff(_avatar: Entity.Entity): void;
         protected getBuffById(_id: Buff.BUFFID, _avatar: Entity.Entity, _add: boolean): void;
         protected addParticle(_avatar: Entity.Entity): void;
+    }
+    class RarityBuff {
+        id: Items.RARITY;
+        constructor(_id: Items.RARITY);
+        addToItem(_item: Items.Item): void;
+        private getParticleById;
+        private addParticleToItem;
     }
     class DamageBuff extends Buff {
         value: number;
@@ -950,7 +961,7 @@ declare namespace Generation {
         private createShop;
         onAddToGraph(): void;
         private createSpawnPoints;
-        onItemCollect(_item: Items.Item): void;
+        onItemCollect(_item: Items.Item, _avatar: Player.Player): void;
     }
     class Wall extends ƒ.Node {
         tag: Tag.TAG;

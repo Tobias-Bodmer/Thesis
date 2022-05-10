@@ -103,6 +103,44 @@ namespace Buff {
         }
     }
 
+    export class RarityBuff {
+        id: Items.RARITY;
+        constructor(_id: Items.RARITY) {
+            this.id = _id;
+        }
+
+        public addToItem(_item: Items.Item) {
+            this.addParticleToItem(_item);
+        }
+
+        private getParticleById(_id: Items.RARITY): UI.Particles {
+            switch (_id) {
+                case Items.RARITY.COMMON:
+                    return new UI.Particles(_id, UI.commonParticle, 1, 12);
+                case Items.RARITY.RARE:
+                    return new UI.Particles(_id, UI.rareParticle, 1, 12);
+                case Items.RARITY.EPIC:
+                    return new UI.Particles(_id, UI.epicParticle, 1, 12);
+                case Items.RARITY.LEGENDARY:
+                    return new UI.Particles(_id, UI.legendaryParticle, 1, 12);
+                default:
+                    return new UI.Particles(_id, UI.commonParticle, 1, 12);
+            }
+        }
+
+        private addParticleToItem(_item: Items.Item) {
+            if (_item.getChildren().find(child => (<UI.Particles>child).id == this.id) == undefined) {
+                let particle = this.getParticleById(this.id)
+                if (particle != undefined) {
+                    _item.addChild(particle);
+                    particle.mtxLocal.scale(new ƒ.Vector3(_item.mtxLocal.scaling.x, _item.mtxLocal.scaling.y, 1));
+                    particle.mtxLocal.translateZ(0.1);
+                    particle.activate(true);
+                }
+            }
+        }
+    }
+
     export class DamageBuff extends Buff {
         value: number;
         constructor(_id: BUFFID, _duration: number, _tickRate: number, _value: number) {
