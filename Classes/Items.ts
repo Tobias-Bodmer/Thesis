@@ -29,14 +29,12 @@ namespace Items {
         public imgSrc: string;
         public collider: Collider.Collider;
         transform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
-        position: ƒ.Vector2
+        private position: ƒ.Vector2; get getPosition(): ƒ.Vector2 { return this.position }
         buff: Buff.Buff[] = [];
 
-        constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number) {
+        constructor(_id: ITEMID, _netId?: number) {
             super(ITEMID[_id]);
             this.id = _id;
-            this.position = _position;
-            this.transform.mtxLocal.translation = _position.toVector3();
             if (_netId != undefined) {
                 Networking.popID(this.netId);
                 Networking.currentIDs.push(_netId);
@@ -49,13 +47,16 @@ namespace Items {
             this.addComponent(new ƒ.ComponentMaterial(material));
 
             this.addComponent(new ƒ.ComponentTransform());
-            this.mtxLocal.translation = _position.toVector3();
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), this.cmpTransform.mtxLocal.scaling.x / 2, this.netId);
             this.buff.push(this.getBuffById());
             this.setTextureById();
         }
 
-        getBuffById(): Buff.Buff {
+        public clone(): Item {
+            return null
+        }
+
+        public getBuffById(): Buff.Buff {
             let temp: Items.BuffItem = getBuffItemById(this.id);
             switch (this.id) {
                 case ITEMID.TOXICRELATIONSHIP:
@@ -123,7 +124,7 @@ namespace Items {
 
         public setPosition(_position: ƒ.Vector2) {
             this.position = _position;
-            this.mtxLocal.translation = _position.toVector3();
+            this.mtxLocal.translation = _position.toVector3(0.01);
             this.collider.setPosition(_position);
         }
         public spawn(): void {
@@ -144,20 +145,25 @@ namespace Items {
 
     export class InternalItem extends Item {
         value: number;
-        constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number) {
-            super(_id, _position, _netId);
+        constructor(_id: ITEMID, _netId?: number) {
+            super(_id, _netId);
             const item = getInternalItemById(this.id);
             if (item != undefined) {
                 this.name = item.name;
                 this.value = item.value;
                 this.description = item.description;
                 this.imgSrc = item.imgSrc;
+                this.rarity = item.rarity;
             }
         }
 
         doYourThing(_avatar: Player.Player) {
             this.setAttributesById(_avatar);
             this.despawn();
+        }
+
+        public clone(): Item {
+            return new InternalItem(this.id);
         }
 
         setAttributesById(_avatar: Player.Player) {
@@ -169,12 +175,10 @@ namespace Items {
                 case ITEMID.DMGUP:
                     _avatar.attributes.attackPoints += this.value;
                     Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.attackPoints, type: Entity.ATTRIBUTETYPE.ATTACKPOINTS }, _avatar.netId);
-
                     break;
                 case ITEMID.SPEEDUP:
                     _avatar.attributes.speed = Calculation.subPercentageAmountToValue(_avatar.attributes.speed, this.value);
                     Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.speed, type: Entity.ATTRIBUTETYPE.SPEED }, _avatar.netId);
-
                     break;
                 case ITEMID.PROJECTILESUP:
                     _avatar.weapon.projectileAmount += this.value;
@@ -183,19 +187,16 @@ namespace Items {
                 case ITEMID.HEALTHUP:
                     _avatar.attributes.maxHealthPoints = Calculation.addPercentageAmountToValue(_avatar.attributes.maxHealthPoints, this.value);
                     Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.maxHealthPoints, type: Entity.ATTRIBUTETYPE.MAXHEALTHPOINTS }, _avatar.netId);
-
                     break;
                 case ITEMID.SCALEUP:
                     _avatar.attributes.scale = Calculation.addPercentageAmountToValue(_avatar.attributes.scale, this.value);
                     _avatar.updateScale();
                     Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.scale, type: Entity.ATTRIBUTETYPE.SCALE }, _avatar.netId);
-                    //TODO: set new collider and sync over network
                     break;
                 case ITEMID.SCALEDOWN:
                     _avatar.attributes.scale = Calculation.subPercentageAmountToValue(_avatar.attributes.scale, this.value);
                     _avatar.updateScale();
                     Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.scale, type: Entity.ATTRIBUTETYPE.SCALE }, _avatar.netId);
-                    //TODO: set new collider and sync over network
                     break;
                 case ITEMID.ARMORUP:
                     _avatar.attributes.armor += this.value;
@@ -217,19 +218,24 @@ namespace Items {
         tickRate: number;
         duration: number;
 
-        constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number) {
-            super(_id, _position, _netId);
+        constructor(_id: ITEMID, _netId?: number) {
+            super(_id, _netId);
             let temp = getBuffItemById(this.id);
             this.name = temp.name;
             this.value = temp.value;
             this.tickRate = temp.tickRate;
             this.duration = temp.duration;
             this.imgSrc = temp.imgSrc;
+            this.rarity = temp.rarity;
         }
 
         doYourThing(_avatar: Player.Player): void {
             this.setBuffById(_avatar);
             this.despawn();
+        }
+
+        public clone(): BuffItem {
+            return new BuffItem(this.id);
         }
 
         setBuffById(_avatar: Entity.Entity) {
@@ -251,38 +257,46 @@ namespace Items {
         return Game.buffItemJSON.find(item => item.id == _id);
     }
 
-    export class ItemGenerator {
-        private itemPool: Items.Item[];
-        constructor() {
-            this.itemPool = [];
+
+    export abstract class ItemGenerator {
+        private static itemPool: Items.Item[] = [];
+
+
+        public static fillPool() {
+            Game.internalItemJSON.forEach(item => {
+                this.itemPool.push(new Items.InternalItem(item.id))
+            });
+            Game.buffItemJSON.forEach(item => {
+                this.itemPool.push(new BuffItem(item.id));
+            });
         }
 
-        public fillPool() {
-            //TODO: fill pool with items 
-        }
-
-        public getItem(): Items.Item {
+        public static getItem(): Items.Item {
             let possibleItems: Items.Item[] = [];
             possibleItems = this.getPossibleItems();
-            let randomIndex = Math.round(Math.random() * possibleItems.length - 1);
+            let randomIndex = Math.round(Math.random() * (possibleItems.length - 1));
             let returnItem = possibleItems[randomIndex];
-            this.itemPool.splice(this.itemPool.indexOf(returnItem));
-            return returnItem;
+            // this.itemPool.splice(this.itemPool.indexOf(returnItem));
+            return returnItem.clone();
         }
 
-        private getPossibleItems(): Items.Item[] {
-            let chosenRarity: RARITY = this.generateRarity();
+        private static getPossibleItems(): Items.Item[] {
+            let chosenRarity: RARITY = this.getRarity();
             switch (chosenRarity) {
                 case RARITY.COMMON:
                     return this.itemPool.filter(item => item.rarity == RARITY.COMMON);
                 case RARITY.RARE:
                     return this.itemPool.filter(item => item.rarity == RARITY.RARE)
+                case RARITY.EPIC:
+                    return this.itemPool.filter(item => item.rarity == RARITY.EPIC)
+                case RARITY.LEGENDARY:
+                    return this.itemPool.filter(item => item.rarity == RARITY.LEGENDARY)
                 default:
                     return this.itemPool.filter(item => item.rarity = RARITY.COMMON);
             }
         }
 
-        private generateRarity(): RARITY {
+        private static getRarity(): RARITY {
             let rarityNumber = Math.round(Math.random() * 100);
             if (rarityNumber >= 50) {
                 return RARITY.COMMON;
@@ -305,6 +319,5 @@ namespace Items {
         RARE,
         EPIC,
         LEGENDARY
-
     }
 }

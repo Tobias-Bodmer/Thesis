@@ -173,21 +173,15 @@ namespace Generation {
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
             super(_coordinates, _roomSize, ROOMTYPE.TREASURE);
             this.getComponent(Game.ƒ.ComponentMaterial).material = this.treasureRoomMat;
-            this.createTreasures();
+            if (Networking.client.id == Networking.client.idHost) {
+                this.createTreasures();
+            }
         }
 
         private createTreasures() {
             let treasures: Items.Item[] = [];
             for (let i = 0; i < this.treasureCount; i++) {
-                let randomID = Math.round((Object.keys(Items.ITEMID).length / 2) * Math.random())
-                switch (randomID) {
-                    case Items.ITEMID.TOXICRELATIONSHIP:
-                        treasures.push(new Items.BuffItem(randomID, new ƒ.Vector2(this.mtxLocal.translation.x + i, this.mtxLocal.translation.y)))
-                        break;
-                    default:
-                        treasures.push(new Items.InternalItem(randomID, new ƒ.Vector2(this.mtxLocal.translation.x + i, this.mtxLocal.translation.y)))
-                        break;
-                }
+                treasures.push(Items.ItemGenerator.getItem());
             }
             this.treasures = treasures;
         }
@@ -224,21 +218,15 @@ namespace Generation {
             this.merchant.mtxLocal.scale(Game.ƒ.Vector3.ONE(1 / this.roomSize));
             this.addChild(this.merchant);
 
-            this.createShop();
+            if (Networking.client.id == Networking.client.idHost) {
+                this.createShop();
+            }
         }
 
         private createShop() {
             let items: Items.Item[] = [];
             for (let i = 0; i < this.itemCount; i++) {
-                let randomID = Math.round((Object.keys(Items.ITEMID).length / 2) * Math.random())
-                switch (randomID) {
-                    case Items.ITEMID.TOXICRELATIONSHIP:
-                        items.push(new Items.BuffItem(randomID, ƒ.Vector2.ZERO()))
-                        break;
-                    default:
-                        items.push(new Items.InternalItem(randomID, ƒ.Vector2.ZERO()))
-                        break;
-                }
+                items.push(Items.ItemGenerator.getItem());
             }
             this.items = items;
         }
@@ -248,7 +236,11 @@ namespace Generation {
 
             let i = 0;
             this.items.forEach(item => {
-                if (this.itemsSpawnPoints.find(pos => pos.equals(item.position)) == undefined) {
+                if (item.getPosition != undefined) {
+                    if (this.itemsSpawnPoints.find(pos => pos.equals(item.getPosition)) == undefined) {
+                        item.setPosition(this.itemsSpawnPoints[i]);
+                    }
+                } else {
                     item.setPosition(this.itemsSpawnPoints[i]);
                 }
                 item.spawn();

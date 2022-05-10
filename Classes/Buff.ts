@@ -42,7 +42,7 @@ namespace Buff {
         }
 
         protected applyBuff(_avatar: Entity.Entity) {
-            if (Networking.client.id = Networking.client.idHost) {
+            if (Networking.client.id == Networking.client.idHost) {
                 this.getBuffById(this.id, _avatar, true);
                 Networking.updateBuffList(_avatar.buffs, _avatar.netId);
             }

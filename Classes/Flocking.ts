@@ -30,7 +30,7 @@ namespace Enemy {
                 this.obsticalAvoidWeight = _obsticalAvoidWeight;
             }
 
-            this.obsticalCollider = new Collider.Collider(this.pos, this.myEnemy.collider.radius * 1.75, this.myEnemy.netId);
+            this.obsticalCollider = new Collider.Collider(this.pos, this.myEnemy.collider.getRadius * 1.75, this.myEnemy.netId);
         }
 
         update() {

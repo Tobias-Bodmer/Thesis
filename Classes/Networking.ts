@@ -86,7 +86,6 @@ namespace Networking {
                 }
 
                 if (message.command == FudgeNet.COMMAND.ROOM_ENTER) {
-                    console.log("yey" + message);
                     if (createdRoom) {
                         client.becomeHost();
                     }
@@ -204,14 +203,13 @@ namespace Networking {
                             }
                         }
 
-
                         //Update inventory
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEINVENTORY.toString()) {
                             let newItem: Items.Item;
                             if (Items.getBuffItemById(message.content.itemId) != null) {
-                                newItem = new Items.BuffItem(message.content.itemId, ƒ.Vector2.ZERO(), message.content.itemNetId);
+                                newItem = new Items.BuffItem(message.content.itemId, message.content.itemNetId);
                             } else if (Items.getInternalItemById(message.content.itemId) != null) {
-                                newItem = new Items.InternalItem(message.content.itemId, ƒ.Vector2.ZERO(), message.content.itemNetId);
+                                newItem = new Items.InternalItem(message.content.itemId, message.content.itemNetId);
                             }
                             Game.entities.find(elem => (<Player.Player>elem).netId == message.content.netId).items.push(newItem);
                         }
@@ -363,9 +361,13 @@ namespace Networking {
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNINTERNALITEM.toString()) {
                             if (client.id != client.idHost) {
                                 if (Items.getBuffItemById(message.content.id) != null) {
-                                    Game.graph.addChild(new Items.BuffItem(message.content.id, new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]), message.content.netId));
+                                    let newItem = new Items.BuffItem(message.content.id, message.content.netId);
+                                    newItem.setPosition(new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]))
+                                    Game.graph.addChild(newItem);
                                 } else if (Items.getInternalItemById(message.content.id) != null) {
-                                    Game.graph.addChild(new Items.InternalItem(message.content.id, new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]), message.content.netId));
+                                    let newItem = new Items.InternalItem(message.content.id, message.content.netId);
+                                    newItem.setPosition(new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]));
+                                    Game.graph.addChild(newItem);
                                 }
                             }
                         }

@@ -1,7 +1,7 @@
 namespace Collider {
     export class Collider {
         public ownerNetId: number;
-        radius: number;
+        private radius: number; get getRadius(): number { return this.radius };
         public position: ƒ.Vector2;
 
         get top(): number {
@@ -28,8 +28,7 @@ namespace Collider {
         }
 
         public setScale(_scaleAmount: number) {
-            this.radius = 1;
-            this.radius * _scaleAmount;
+            this.radius = _scaleAmount;
         }
 
         collides(_collider: Collider): boolean {

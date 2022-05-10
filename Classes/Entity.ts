@@ -117,7 +117,7 @@ namespace Entity {
                         let intersection = this.collider.getIntersection(element);
                         let areaBeforeMove = intersection;
 
-                        if (areaBeforeMove < this.collider.radius + element.radius) {
+                        if (areaBeforeMove < this.collider.getRadius + element.getRadius) {
                             let oldPosition = new Game.ƒ.Vector2(this.collider.position.x, this.collider.position.y);
                             let newDirection = new Game.ƒ.Vector2(_direction.x, 0)
                             this.collider.position.transform(ƒ.Matrix3x3.TRANSLATION(newDirection));

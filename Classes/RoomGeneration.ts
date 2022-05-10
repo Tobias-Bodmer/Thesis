@@ -13,15 +13,17 @@ namespace Generation {
     let challengeRoomSpawnChance: number = 30;
 
     export function procedualRoomGeneration() {
+        rooms = [];
         generationFailed = false;
         rooms.push(generateStartRoom());
         rooms.push.apply(rooms, generateNormalRooms());
-        rooms.push.apply(rooms, generateTreasureRoom());
         addBossRoom();
+        rooms.push.apply(rooms, generateTreasureRoom());
         rooms.push(generateMerchantRoom());
         setExits();
         rooms.forEach(room => { console.log(room.mtxLocal.translation.clone.toString()) });
         moveRoomToWorldCoords(rooms[0]);
+
 
         setExits();
         addRoomToGraph(rooms[0]);
@@ -114,7 +116,7 @@ namespace Generation {
             generationFailed = true;
         }
         else {
-            rooms.push(new BossRoom(nextCoord, 10));
+            rooms.push(new BossRoom(nextCoord, 30));
         }
     }
 
@@ -122,11 +124,13 @@ namespace Generation {
         let roomCoords: Game.ƒ.Vector2[] = getCoordsFromRooms();
         let newTreasureRooms: TreasureRoom[] = []
         rooms.forEach(room => {
-            let nextCoord = getNextPossibleCoordFromSpecificCoord(roomCoords, room.coordinates)
-            if (nextCoord != undefined) {
-                let trRoom = new TreasureRoom(nextCoord, 10);
-                if (isSpawning(trRoom.getSpawnChance)) {
-                    newTreasureRooms.push(trRoom);
+            if (room.roomType == ROOMTYPE.NORMAL) {
+                let nextCoord = getNextPossibleCoordFromSpecificCoord(roomCoords, room.coordinates)
+                if (nextCoord != undefined) {
+                    let trRoom = new TreasureRoom(nextCoord, 10);
+                    if (isSpawning(trRoom.getSpawnChance)) {
+                        newTreasureRooms.push(trRoom);
+                    }
                 }
             }
         })
@@ -244,6 +248,8 @@ namespace Generation {
      * @param _room the room it should spawn
      */
     export function addRoomToGraph(_room: Room) {
+        Networking.sendRoom(<Interfaces.IRoom>{ coordinates: _room.coordinates, roomSize: _room.roomSize, exits: _room.exits, roomType: _room.roomType, translation: _room.mtxLocal.translation });
+
         let oldObjects: Game.ƒ.Node[] = Game.graph.getChildren().filter(elem => ((<any>elem).tag != Tag.TAG.PLAYER));
         oldObjects = oldObjects.filter(elem => ((<any>elem).tag != Tag.TAG.UI));
 
@@ -253,7 +259,9 @@ namespace Generation {
 
         Game.graph.addChild(_room);
         Game.viewport.calculateTransforms();
-        _room.onAddToGraph();
+        if (Networking.client.id == Networking.client.idHost) {
+            _room.onAddToGraph();
+        }
 
         _room.walls.forEach(wall => {
             wall.setCollider();
@@ -262,7 +270,6 @@ namespace Generation {
             }
         })
 
-        Networking.sendRoom(<Interfaces.IRoom>{ coordinates: _room.coordinates, roomSize: _room.roomSize, exits: _room.exits, roomType: _room.roomType, translation: _room.mtxLocal.translation });
         Game.currentRoom = _room;
         EnemySpawner.spawnMultipleEnemiesAtRoom(Game.currentRoom.enemyCountManager.getMaxEnemyCount, Game.currentRoom.mtxLocal.translation.toVector2());
     }

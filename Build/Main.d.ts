@@ -310,9 +310,11 @@ declare namespace Items {
         imgSrc: string;
         collider: Collider.Collider;
         transform: ƒ.ComponentTransform;
-        position: ƒ.Vector2;
+        private position;
+        get getPosition(): ƒ.Vector2;
         buff: Buff.Buff[];
-        constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
+        constructor(_id: ITEMID, _netId?: number);
+        clone(): Item;
         getBuffById(): Buff.Buff;
         protected loadTexture(_texture: ƒ.TextureImage): void;
         protected setTextureById(): void;
@@ -323,27 +325,28 @@ declare namespace Items {
     }
     export class InternalItem extends Item {
         value: number;
-        constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
+        constructor(_id: ITEMID, _netId?: number);
         doYourThing(_avatar: Player.Player): void;
+        clone(): Item;
         setAttributesById(_avatar: Player.Player): void;
     }
     export class BuffItem extends Item {
         value: number;
         tickRate: number;
         duration: number;
-        constructor(_id: ITEMID, _position: ƒ.Vector2, _netId?: number);
+        constructor(_id: ITEMID, _netId?: number);
         doYourThing(_avatar: Player.Player): void;
+        clone(): BuffItem;
         setBuffById(_avatar: Entity.Entity): void;
     }
     export function getInternalItemById(_id: ITEMID): Items.InternalItem;
     export function getBuffItemById(_id: ITEMID): Items.BuffItem;
-    export class ItemGenerator {
-        private itemPool;
-        constructor();
-        fillPool(): void;
-        getItem(): Items.Item;
-        private getPossibleItems;
-        private generateRarity;
+    export abstract class ItemGenerator {
+        private static itemPool;
+        static fillPool(): void;
+        static getItem(): Items.Item;
+        private static getPossibleItems;
+        private static getRarity;
     }
     enum RARITY {
         COMMON = 0,
@@ -663,7 +666,8 @@ declare namespace Bullets {
 declare namespace Collider {
     class Collider {
         ownerNetId: number;
-        radius: number;
+        private radius;
+        get getRadius(): number;
         position: ƒ.Vector2;
         get top(): number;
         get left(): number;
