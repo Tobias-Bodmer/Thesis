@@ -85,8 +85,8 @@
             "rarity": 2
         },
         {
-            "name": "bleed",
-            "description": "harder better faster stronger",
+            "name": "Vampy",
+            "description": "let them bleed",
             "id": 10,
             "imgSrc": "./Resources/Image/Items/iceBucket.png",
             "value": 5,

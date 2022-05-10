@@ -403,7 +403,9 @@ namespace Game {
 
         //Items
         await Items.txtIceBucket.load("./Resources/Image/Items/iceBucket.png");
+        await Items.txtDmgUp.load("./Resources/Image/Items/damageUp.png");
         await Items.txtHealthUp.load("./Resources/Image/Items/healthUp.png");
+        await Items.txtSpeedUp.load("./Resources/Image/Items/speedUp.png");
         await Items.txtToxicRelationship.load("./Resources/Image/Items/toxicRelationship.png");
 
 

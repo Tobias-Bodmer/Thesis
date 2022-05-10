@@ -181,7 +181,7 @@ namespace Generation {
         private createTreasures() {
             let treasures: Items.Item[] = [];
             for (let i = 0; i < this.treasureCount; i++) {
-                treasures.push(Items.ItemGenerator.getItem());
+                treasures.push(Items.ItemGenerator.getRandomItem());
             }
             this.treasures = treasures;
         }
@@ -226,7 +226,7 @@ namespace Generation {
         private createShop() {
             let items: Items.Item[] = [];
             for (let i = 0; i < this.itemCount; i++) {
-                items.push(Items.ItemGenerator.getItem());
+                items.push(Items.ItemGenerator.getRandomItem());
             }
             this.items = items;
         }
