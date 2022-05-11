@@ -681,6 +681,19 @@ declare namespace Bullets {
         setTarget(_netID: number): void;
         private calculateHoming;
     }
+    class SwavingObjecet extends ƒ.Node {
+        private nextTarget;
+        private tolerance;
+        private avatars;
+        private playerSize;
+        private counter;
+        constructor();
+        eventUpdate: (_event: Event) => void;
+        private update;
+        spawn(): void;
+        despawn(): void;
+        private move;
+    }
 }
 declare namespace Collider {
     class Collider {

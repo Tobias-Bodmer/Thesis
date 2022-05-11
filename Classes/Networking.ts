@@ -561,7 +561,9 @@ namespace Networking {
         }
     }
     export function updateEnemyPosition(_position: ƒ.Vector3, _netId: number) {
-        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ENEMYTRANSFORM, position: _position, netId: _netId } })
+        if(Networking.client.id == Networking.client.idHost){
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ENEMYTRANSFORM, position: _position, netId: _netId } })
+        }
     }
     export function updateEntityAnimationState(_state: Entity.ANIMATIONSTATES, _netId: number) {
         if (Networking.client.idHost == Networking.client.id) {

@@ -285,4 +285,46 @@ namespace Bullets {
             this.mtxLocal.rotateZ(-rotateAmount2 * this.rotateSpeed);
         }
     }
+
+    export class SwavingObjecet extends ƒ.Node {
+        private nextTarget: Game.ƒ.Vector2;
+        private tolerance = 4;
+        private avatars: Player.Player[];
+        private playerSize: number;
+        private counter: number
+        constructor() {
+            super("StravingObject");
+            this.avatars = [Game.avatar1, Game.avatar2];
+            this.playerSize = this.avatars.length;
+            this.counter = 0;
+            this.nextTarget = this.avatars[0 % this.playerSize].mtxLocal.translation.toVector2();
+            this.addComponent(new ƒ.ComponentTransform());
+            this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
+        }
+        public eventUpdate = (_event: Event): void => {
+            this.update();
+        };
+        private update() {
+            this.move()
+        }
+
+        public spawn() {
+            Game.graph.addChild(this);
+        }
+
+        public despawn() {
+            Game.graph.removeChild(this);
+        }
+
+        private move() {
+            this.mtxLocal.translate(this.nextTarget.toVector3());
+            let distance = Game.ƒ.Vector2.DIFFERENCE(this.mtxLocal.translation.toVector2(), this.nextTarget).magnitudeSquared;
+            if (distance < 9) {
+                this.counter = (this.counter + 1) % this.playerSize;
+                this.nextTarget = this.avatars[this.counter].mtxLocal.translation.toVector2();
+            }
+        }
+
+
+    }
 }

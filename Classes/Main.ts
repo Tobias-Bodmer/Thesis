@@ -190,7 +190,8 @@ namespace Game {
                         // item1 = new Items.BuffItem(Items.ITEMID.TOXICRELATIONSHIP, new ƒ.Vector2(0, 2), null);
                         // let item2 = new Items.InternalItem(Items.ITEMID.SCALEDOWN, new ƒ.Vector2(0, -2), null);
                         // let item3 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(-2, 0), null);
-
+                        let test = new Bullets.SwavingObjecet();
+                        // graph.addChild(test);
 
                         // graph.appendChild(item1);
                         // graph.appendChild(item2);
