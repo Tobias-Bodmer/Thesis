@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -173,18 +173,24 @@ declare namespace Enemy {
         target: ƒ.Vector2;
         moveDirection: Game.ƒ.Vector3;
         flocking: FlockingBehaviour;
+        isAggressive: boolean;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
         update(): void;
+        getDamage(_value: number): void;
         doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
         move(_direction: ƒ.Vector3): void;
         moveBehaviour(): void;
         moveSimple(_target: ƒ.Vector2): ƒ.Vector2;
         moveAway(_target: ƒ.Vector2): ƒ.Vector2;
-        die(): void;
+        protected die(): void;
         collide(_direction: ƒ.Vector3): void;
     }
     class EnemyDumb extends Enemy {
+        flocking: FlockingBehaviour;
+        private aggressiveDistance;
+        private stamina;
+        private recover;
         behaviour(): void;
         moveBehaviour(): void;
     }
@@ -509,7 +515,7 @@ declare namespace Ability {
         get getCurrentCooldown(): number;
         constructor(_number: number);
         startCoolDown(): void;
-        private endCoolDOwn;
+        private endCoolDown;
         eventUpdate: (_event: Event) => void;
         updateCoolDown(): void;
     }

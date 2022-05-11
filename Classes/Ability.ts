@@ -40,7 +40,7 @@ namespace Ability {
             }
         }
 
-      
+
 
         public hasCooldown(): boolean {
             return this.cooldown.hasCoolDown;
@@ -138,7 +138,7 @@ namespace Ability {
             Game.ƒ.Loop.addEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
         }
 
-        private endCoolDOwn() {
+        private endCoolDown() {
             this.hasCoolDown = false;
             Game.ƒ.Loop.removeEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
         }
@@ -152,7 +152,7 @@ namespace Ability {
                 this.currentCooldown--;
             }
             if (this.currentCooldown <= 0 && this.hasCoolDown) {
-                this.endCoolDOwn();
+                this.endCoolDown();
                 this.currentCooldown = this.coolDown;
             }
         }

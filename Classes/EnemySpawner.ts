@@ -11,7 +11,7 @@ namespace EnemySpawner {
                     let position = new ƒ.Vector2(((Math.random() * Game.currentRoom.roomSize / 2) - ((Math.random() * Game.currentRoom.roomSize / 2))), ((Math.random() * Game.currentRoom.roomSize / 2) - ((Math.random() * Game.currentRoom.roomSize / 2))));
                     position.add(_roomPos);
                     //TODO: use ID to get random enemies
-                    spawnByID(Enemy.ENEMYCLASS.ENEMYDASH, Entity.ID.REDTICK, position);
+                    spawnByID(Enemy.ENEMYCLASS.ENEMYDUMB, Entity.ID.SMALLTICK, position);
                     spawnedEnemies++;
                 }
                 currentTime--;
@@ -43,7 +43,7 @@ namespace EnemySpawner {
                     enemy = new Enemy.EnemyDash(_id, _position, _netID);
                 }
                 break;
-            case Enemy.ENEMYCLASS.ENEMYDASH:
+            case Enemy.ENEMYCLASS.ENEMYDUMB:
                 if (_netID == null) {
                     enemy = new Enemy.EnemyDumb(_id, _position, _netID);
                 } else {
@@ -88,9 +88,9 @@ namespace EnemySpawner {
             default:
                 break;
         }
-        Networking.spawnEnemy(_enemyClass, enemy, enemy.netId);
         if (enemy != null) {
             Game.graph.addChild(enemy);
+            Networking.spawnEnemy(_enemyClass, enemy, enemy.netId);
         }
     }
 

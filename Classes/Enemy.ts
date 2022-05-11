@@ -17,12 +17,13 @@ namespace Enemy {
         target: ƒ.Vector2;
         moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
         flocking: FlockingBehaviour;
+        isAggressive: boolean;
 
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _netId);
             this.tag = Tag.TAG.ENEMY;
-
+            this.isAggressive = false;
             let ref = Game.enemiesJSON.find(enemy => enemy.name == Entity.ID[_id].toLowerCase())
             console.log(ref);
             this.attributes = new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale, ref.attributes.knockbackForce, ref.attributes.armor, ref.attributes.coolDownReduction, ref.attributes.accuracy);
@@ -45,6 +46,11 @@ namespace Enemy {
             }
         };
 
+        public getDamage(_value: number): void {
+            super.getDamage(_value);
+            this.isAggressive = true;
+        }
+
         public doKnockback(_body: Entity.Entity): void {
             // (<Player.Player>_body).getKnockback(this.attributes.knockbackForce, this.cmpTransform.mtxLocal.translation);
         }
@@ -54,7 +60,11 @@ namespace Enemy {
         }
         move(_direction: ƒ.Vector3) {
             // this.moveDirection.add(_direction);
-            this.collide(_direction);
+            if (this.isAggressive) {
+                this.collide(_direction);
+            } else {
+                this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
+            }
             // this.moveDirection.subtract(_direction);
         }
 
@@ -67,19 +77,19 @@ namespace Enemy {
             return direction.toVector2();
         }
 
-        moveAway(_target: ƒ.Vector2): ƒ.Vector2 {
+        public moveAway(_target: ƒ.Vector2): ƒ.Vector2 {
             let moveSimple = this.moveSimple(_target);
             moveSimple.x *= -1;
             moveSimple.y *= -1;
             return moveSimple;
         }
 
-        die() {
+        protected die() {
             Game.currentRoom.enemyCountManager.onEnemyDeath();
             Game.graph.removeChild(this);
         }
 
-        collide(_direction: ƒ.Vector3) {
+        public collide(_direction: ƒ.Vector3) {
             let knockback = this.currentKnockback.clone;
             if (knockback.magnitude > 0) {
                 // console.log("direction: " + knockback.magnitude);
@@ -125,19 +135,21 @@ namespace Enemy {
 
 
     export class EnemyDumb extends Enemy {
-
-
+        public flocking: FlockingBehaviour = new FlockingBehaviour(this, 2, 2, 0.1, 1, 1, 1, 0, 1);
+        private aggressiveDistance: number = 3 * 3;
+        private stamina: Ability.Cooldown = new Ability.Cooldown(180);
+        private recover: Ability.Cooldown = new Ability.Cooldown(60);
         behaviour() {
-            let target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
-            let distance = ƒ.Vector3.DIFFERENCE(target, this.cmpTransform.mtxLocal.translation).magnitude;
+            this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2();
+            let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitudeSquared;
+            this.flocking.update();
             //TODO: set to 3 after testing
-            if (distance > 2) {
-                this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW
+            if (distance < this.aggressiveDistance) {
+                this.isAggressive = true;
             }
-            else {
-                this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
+            if (this.isAggressive && !this.recover.hasCoolDown) {
+                this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
             }
-
         }
 
         moveBehaviour() {
@@ -149,11 +161,17 @@ namespace Enemy {
                     break;
                 case Entity.BEHAVIOUR.FOLLOW:
                     this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
-                    this.moveDirection = this.moveSimple(Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2()).toVector3();
+                    if (!this.stamina.hasCoolDown && !this.recover.hasCoolDown) {
+                        this.stamina.startCoolDown();
+                    }
+                    if (this.stamina.hasCoolDown) {
+                        this.moveDirection = this.flocking.getMoveVector().toVector3();
+                        if (this.stamina.getCurrentCooldown == 1) {
+                            this.recover.startCoolDown();
+                            this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
+                        }
+                    }
                     break;
-                // default:
-                //     // this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
-                //     // break;
             }
         }
 
