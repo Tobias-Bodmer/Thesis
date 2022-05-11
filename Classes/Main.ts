@@ -182,18 +182,19 @@ namespace Game {
                         // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.REDTICK, new ƒ.Vector2(3, 3), avatar1);
                         // EnemySpawner.spawnMultipleEnemiesAtRoom(5, Game.currentRoom.mtxLocal.translation.toVector2());
                         // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.ENEMYSMASH, Entity.ID.OGER, new ƒ.Vector2(3, 3), null);
-                        EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
+                        // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
                     }
 
                     //#region init Items
                     if (Networking.client.id == Networking.client.idHost) {
                         // item1 = new Items.BuffItem(Items.ITEMID.TOXICRELATIONSHIP, new ƒ.Vector2(0, 2), null);
-                        // let item2 = new Items.InternalItem(Items.ITEMID.SCALEDOWN, new ƒ.Vector2(0, -2), null);
+                        let item2 = new Items.InternalItem(Items.ITEMID.THORSHAMMER);
+                        item2.setPosition(new ƒ.Vector2(-5, 0))
                         // let item3 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(-2, 0), null);
 
 
                         // graph.appendChild(item1);
-                        // graph.appendChild(item2);
+                        graph.appendChild(item2);
                         // graph.appendChild(item3);
                     }
 
@@ -265,10 +266,10 @@ namespace Game {
 
     function playerChoice(_e: Event) {
         if ((<HTMLButtonElement>_e.target).id == "Ranged") {
-            avatar1 = new Player.Ranged(Entity.ID.RANGED, new Entity.Attributes(10000, 5, 5, 1, 2, 5, null, 80));
+            avatar1 = new Player.Ranged(Entity.ID.RANGED, new Entity.Attributes(10000, 5, 5, 1, 2, 5, 1, 80));
         }
         if ((<HTMLButtonElement>_e.target).id == "Melee") {
-            avatar1 = new Player.Melee(Entity.ID.MELEE, new Entity.Attributes(10000, 1, 5, 1, 2, 10, null, 80));
+            avatar1 = new Player.Melee(Entity.ID.MELEE, new Entity.Attributes(10000, 1, 5, 1, 2, 10, 1, 80));
         }
         document.getElementById("Lobbyscreen").style.visibility = "hidden";
         readySate();
@@ -410,6 +411,9 @@ namespace Game {
 
 
         AnimationGeneration.generateAnimationObjects();
+
+        //TODO: USE THIS
+        // console.clear();
     }
 
     function draw(): void {

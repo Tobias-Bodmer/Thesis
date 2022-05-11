@@ -11,7 +11,8 @@ namespace Items {
         HOMECOMING,
         TOXICRELATIONSHIP,
         VAMPY,
-        SLOWYSLOW
+        SLOWYSLOW,
+        THORSHAMMER
     }
 
     export let txtIceBucket: ƒ.TextureImage = new ƒ.TextureImage();
@@ -90,8 +91,7 @@ namespace Items {
                     this.loadTexture(txtIceBucket);
                     break;
                 case ITEMID.DMGUP:
-                    this.loadTexture(txtDmgUp); //TODO: add correct texture and change in JSON
-
+                    this.loadTexture(txtDmgUp);
                     break;
                 case ITEMID.SPEEDUP:
                     this.loadTexture(txtSpeedUp);
@@ -123,7 +123,10 @@ namespace Items {
                     this.loadTexture(txtToxicRelationship);
                     break;
                 case ITEMID.VAMPY:
-                    this.loadTexture(txtIceBucket);
+                    //TODO: add correct texture and change in JSON
+                    break;
+                case ITEMID.THORSHAMMER:
+                    //TODO: add correct texture and change in JSON
                     break;
             }
         }
@@ -151,6 +154,7 @@ namespace Items {
 
     export class InternalItem extends Item {
         value: number;
+        choosenOneNetId: number;
         constructor(_id: ITEMID, _netId?: number) {
             super(_id, _netId);
             const item = getInternalItemById(this.id);
@@ -163,6 +167,10 @@ namespace Items {
             }
 
             this.addRarityBuff();
+        }
+
+        setChoosenOneNetId(_netId: number) {
+            this.choosenOneNetId = _netId;
         }
 
         doYourThing(_avatar: Player.Player) {
@@ -219,6 +227,21 @@ namespace Items {
                         Networking.updateAvatarWeapon(_avatar.weapon, _avatar.netId);
                     }
                     //TODO: talk with tobi
+                    break;
+                case ITEMID.THORSHAMMER:
+                    if (_avatar instanceof Player.Ranged) {
+                        localStorage.setItem("cooldownTime", _avatar.weapon.getCoolDown.getMaxCoolDown.toString());
+                        localStorage.setItem("aimType", Weapons.AIM[_avatar.weapon.aimType]);
+                        localStorage.setItem("bulletType", Bullets.BULLETTYPE[_avatar.weapon.bulletType]);
+                        localStorage.setItem("projectileAmount", _avatar.weapon.projectileAmount.toString());
+
+                        _avatar.weapon.getCoolDown.setMaxCoolDown = 100 * 60;
+                        _avatar.weapon.aimType = Weapons.AIM.NORMAL;
+                        _avatar.weapon.bulletType = Bullets.BULLETTYPE.THORSHAMMER;
+                        _avatar.weapon.projectileAmount = 1;
+
+                        Networking.updateAvatarWeapon(_avatar.weapon, _avatar.netId);
+                    }
                     break;
             }
         }

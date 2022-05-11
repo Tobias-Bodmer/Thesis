@@ -12,7 +12,7 @@
             "name": "dmgUP",
             "description": "up up we go!",
             "id": 1,
-            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "imgSrc": "./Resources/Image/Items/damageUp.png",
             "value": 1,
             "rarity": 2
         },
@@ -62,14 +62,22 @@
             "id": 7,
             "imgSrc": "./Resources/Image/Items/iceBucket.png",
             "value": 5,
-            "rarity": 2 
+            "rarity": 2
         },
         {
             "name": "HomeComing",
             "description": "harder better faster stronger",
             "id": 8,
             "imgSrc": "./Resources/Image/Items/iceBucket.png",
-            "value": 5,
+            "value": 0,
+            "rarity": 3
+        },
+        {
+            "name": "Thors Hammer",
+            "description": "He will choose you!",
+            "id": 12,
+            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "value": 0,
             "rarity": 3
         }
     ],

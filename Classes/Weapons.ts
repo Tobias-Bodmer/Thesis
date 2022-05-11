@@ -2,7 +2,7 @@ namespace Weapons {
     export class Weapon {
         ownerNetId: number; get owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.ownerNetId) };
         protected cooldown: Ability.Cooldown; get getCoolDown() { return this.cooldown };
-        protected attackCount: number;
+        protected attackCount: number; get getAttackCount() { return this.attackCount };
         public currentAttackCount: number;
         aimType: AIM;
         bulletType: Bullets.BULLETTYPE = Bullets.BULLETTYPE.STANDARD;
