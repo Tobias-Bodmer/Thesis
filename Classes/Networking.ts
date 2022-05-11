@@ -211,7 +211,14 @@ namespace Networking {
                             } else if (Items.getInternalItemById(message.content.itemId) != null) {
                                 newItem = new Items.InternalItem(message.content.itemId, message.content.itemNetId);
                             }
-                            Game.entities.find(elem => (<Player.Player>elem).netId == message.content.netId).items.push(newItem);
+
+                            let entity = Game.entities.find(elem => (<Player.Player>elem).netId == message.content.netId);
+
+                            if (message.content.add) {
+                                entity.items.push(newItem);
+                            } else {
+                                entity.items.splice(entity.items.indexOf(entity.items.find(item => item.id == newItem.id)), 1);
+                            }
                         }
 
                         //Client request for move knockback
@@ -409,7 +416,9 @@ namespace Networking {
 
                         //apply weapon
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEWEAPON.toString()) {
-                            const tempWeapon: Weapons.Weapon = new Weapons.Weapon(message.content.weapon.cooldownTime, message.content.weapon.attackCount, message.content.weapon.bulletType, message.content.weapon.projectileAmount, message.content.weapon.owner, message.content.weapon.aimType);
+                            let refWeapon: Weapons.Weapon = <Weapons.Weapon>message.content.weapon;
+                            console.log(message.content.weapon.cooldown.coolDown);
+                            const tempWeapon: Weapons.Weapon = new Weapons.Weapon(message.content.weapon.cooldown.coolDown, message.content.weapon.attackCount, refWeapon.bulletType, refWeapon.projectileAmount, refWeapon.ownerNetId, refWeapon.aimType);
                             (<Player.Player>Game.entities.find(elem => elem.netId == message.content.netId)).weapon = tempWeapon;
                         }
 
@@ -518,8 +527,10 @@ namespace Networking {
         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.KNOCKBACKPUSH, knockbackForce: _knockbackForce, position: _position } })
     }
 
-    export function updateInventory(_itemId: Items.ITEMID, _itemNetId: number, _netId: number) {
-        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.UPDATEINVENTORY, itemId: _itemId, itemNetId: _itemNetId, netId: _netId } })
+    export function updateInventory(_add: boolean, _itemId: Items.ITEMID, _itemNetId: number, _netId: number) {
+        if (client.id == client.idHost) {
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.UPDATEINVENTORY, add: _add, itemId: _itemId, itemNetId: _itemNetId, netId: _netId } })
+        }
     }
 
     export function spawnMinimap(_miniMapInfos: Interfaces.IMinimapInfos[]) {

@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -305,7 +305,8 @@ declare namespace Items {
         HOMECOMING = 8,
         TOXICRELATIONSHIP = 9,
         VAMPY = 10,
-        SLOWYSLOW = 11
+        SLOWYSLOW = 11,
+        THORSHAMMER = 12
     }
     let txtIceBucket: ƒ.TextureImage;
     let txtDmgUp: ƒ.TextureImage;
@@ -337,7 +338,9 @@ declare namespace Items {
     }
     class InternalItem extends Item {
         value: number;
+        choosenOneNetId: number;
         constructor(_id: ITEMID, _netId?: number);
+        setChoosenOneNetId(_netId: number): void;
         doYourThing(_avatar: Player.Player): void;
         clone(): Item;
         setAttributesById(_avatar: Player.Player): void;
@@ -636,14 +639,15 @@ declare namespace Bullets {
         HIGHSPEED = 1,
         SLOW = 2,
         MELEE = 3,
-        SUMMONER = 4
+        SUMMONER = 4,
+        THORSHAMMER = 5
     }
     let bulletTxt: ƒ.TextureImage;
     let waterBallTxt: ƒ.TextureImage;
     class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable, Interfaces.INetworkable {
         tag: Tag.TAG;
-        owner: number;
-        get _owner(): Entity.Entity;
+        ownerNetId: number;
+        get owner(): Entity.Entity;
         netId: number;
         clientPrediction: Networking.ClientBulletPrediction;
         serverPrediction: Networking.ServerBulletPrediction;
@@ -667,6 +671,7 @@ declare namespace Bullets {
         doKnockback(_body: ƒAid.NodeSprite): void;
         getKnockback(_knockbackForce: number, _position: ƒ.Vector3): void;
         protected updateRotation(_direction: ƒ.Vector3): void;
+        protected spawnThorsHammer(): void;
         protected loadTexture(): void;
         setBuff(_target: Entity.Entity): void;
         collisionDetection(): void;
@@ -843,7 +848,7 @@ declare namespace Networking {
     function sendServerBuffer(_netId: number, _buffer: Interfaces.IStatePayload): void;
     function knockbackRequest(_netId: number, _knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function knockbackPush(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
-    function updateInventory(_itemId: Items.ITEMID, _itemNetId: number, _netId: number): void;
+    function updateInventory(_add: boolean, _itemId: Items.ITEMID, _itemNetId: number, _netId: number): void;
     function spawnMinimap(_miniMapInfos: Interfaces.IMinimapInfos[]): void;
     function spawnBullet(_aimType: Weapons.AIM, _direction: ƒ.Vector3, _bulletNetId: number, _ownerNetId: number, _bulletTarget?: ƒ.Vector3): void;
     function sendBulletInput(_netId: number, _inputPayload: Interfaces.IInputBulletPayload): void;
@@ -1048,6 +1053,7 @@ declare namespace Weapons {
         protected cooldown: Ability.Cooldown;
         get getCoolDown(): Ability.Cooldown;
         protected attackCount: number;
+        get getAttackCount(): number;
         currentAttackCount: number;
         aimType: AIM;
         bulletType: Bullets.BULLETTYPE;

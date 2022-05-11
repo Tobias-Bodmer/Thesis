@@ -5,7 +5,9 @@ namespace Bullets {
         HIGHSPEED,
         SLOW,
         MELEE,
-        SUMMONER
+        SUMMONER,
+        // TODO: speak with maurice
+        THORSHAMMER
     }
 
     export let bulletTxt: ƒ.TextureImage = new ƒ.TextureImage();
@@ -14,7 +16,7 @@ namespace Bullets {
 
     export class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable, Interfaces.INetworkable {
         public tag: Tag.TAG = Tag.TAG.BULLET;
-        owner: number; get _owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.owner) };
+        ownerNetId: number; get owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.ownerNetId) };
         public netId: number;
         public clientPrediction: Networking.ClientBulletPrediction;
         public serverPrediction: Networking.ServerBulletPrediction;
@@ -42,12 +44,17 @@ namespace Bullets {
                     Networking.removeBullet(this.netId);
                     Game.graph.removeChild(this);
 
+                    if (this.type == BULLETTYPE.THORSHAMMER) {
+                        this.spawnThorsHammer();
+                    }
                 }
             }
         }
 
         constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _netId?: number) {
             super(BULLETTYPE[_bulletType]);
+
+            this.type = _bulletType;
 
             if (_netId != undefined) {
                 Networking.popID(this.netId);
@@ -85,13 +92,12 @@ namespace Bullets {
             this.loadTexture();
             this.flyDirection = ƒ.Vector3.X();
             this.direction = _direction;
-            this.owner = _ownerId;
+            this.ownerNetId = _ownerId;
 
             this.serverPrediction = new Networking.ServerBulletPrediction(this.netId);
             this.clientPrediction = new Networking.ClientBulletPrediction(this.netId);
             this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
         }
-
 
         public eventUpdate = (_event: Event): void => {
             this.update();
@@ -101,13 +107,12 @@ namespace Bullets {
             this.predict();
         }
 
-
         public predict() {
-            if (Networking.client.idHost != Networking.client.id && this._owner == Game.avatar1) {
+            if (Networking.client.idHost != Networking.client.id && this.owner == Game.avatar1) {
                 this.clientPrediction.update();
             }
             else {
-                if (this._owner == Game.avatar2) {
+                if (this.owner == Game.avatar2) {
                     this.serverPrediction.update();
                 } else {
                     this.move(this.flyDirection.clone);
@@ -120,7 +125,7 @@ namespace Bullets {
         }
         public move(_direction: Game.ƒ.Vector3) {
             _direction.normalize();
-            if (Networking.client.idHost == Networking.client.id && this._owner == Game.avatar2) {
+            if (Networking.client.idHost == Networking.client.id && this.owner == Game.avatar2) {
                 _direction.scale(this.clientPrediction.minTimeBetweenTicks * this.speed);
             }
             else {
@@ -141,6 +146,28 @@ namespace Bullets {
             this.mtxLocal.rotateZ(Calculation.calcDegree(this.cmpTransform.mtxLocal.translation, ƒ.Vector3.SUM(_direction, this.cmpTransform.mtxLocal.translation)) + 90);
         }
 
+        protected spawnThorsHammer() {
+            if (Networking.client.id == Networking.client.idHost) {
+                let removeItem = this.owner.items.find(item => (<Items.InternalItem>item).id == Items.ITEMID.THORSHAMMER);
+                Networking.updateInventory(false, removeItem.id, removeItem.netId, this.ownerNetId);
+                this.owner.items.splice(this.owner.items.indexOf(removeItem), 1);
+
+                let item = new Items.InternalItem(Items.ITEMID.THORSHAMMER);
+                item.setPosition(this.mtxWorld.translation.toVector2());
+                if (this.owner == Game.avatar1) {
+                    item.setChoosenOneNetId(Game.avatar2.netId);
+                } else {
+                    item.setChoosenOneNetId(Game.avatar1.netId);
+                }
+                item.spawn();
+
+                this.owner.weapon.getCoolDown.setMaxCoolDown = +localStorage.getItem("cooldownTime");
+                this.owner.weapon.aimType = (<any>Weapons.AIM)[localStorage.getItem("aimType")];
+                this.owner.weapon.bulletType = (<any>BULLETTYPE)[localStorage.getItem("bulletType")];
+                this.owner.weapon.projectileAmount = +localStorage.getItem("projectileAmount");
+                Networking.updateAvatarWeapon(this.owner.weapon, this.ownerNetId);
+            }
+        }
 
         protected loadTexture() {
             if (this.texturePath != "" || this.texturePath != null) {
@@ -170,7 +197,7 @@ namespace Bullets {
         }
 
         setBuff(_target: Entity.Entity) {
-            this._owner.items.forEach(item => {
+            this.owner.items.forEach(item => {
                 item.buff.forEach(buff => {
                     if (buff != undefined) {
                         buff.clone().addToEntity(_target);
@@ -183,7 +210,7 @@ namespace Bullets {
             let newPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
             this.collider.position = newPosition;
             let colliders: ƒ.Node[] = [];
-            if (this._owner.tag == Tag.TAG.PLAYER) {
+            if (this.owner.tag == Tag.TAG.PLAYER) {
                 colliders = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY);
             }
             colliders.forEach((_elem) => {
@@ -191,13 +218,13 @@ namespace Bullets {
                 if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
                     if ((<Enemy.Enemy>element).attributes.healthPoints > 0) {
                         if (element instanceof Enemy.SummonorAdds) {
-                            if ((<Enemy.SummonorAdds>element).avatar == this._owner) {
+                            if ((<Enemy.SummonorAdds>element).avatar == this.owner) {
                                 this.lifetime = 0;
                                 this.killcount--;
                                 return;
                             }
                         }
-                        (<Enemy.Enemy>element).getDamage(this._owner.attributes.attackPoints * this.hitPointsScale);
+                        (<Enemy.Enemy>element).getDamage(this.owner.attributes.attackPoints * this.hitPointsScale);
                         this.setBuff((<Enemy.Enemy>element));
                         (<Enemy.Enemy>element).getKnockback(this.knockbackForce, this.mtxLocal.translation);
                         this.lifetime = 0;
@@ -205,7 +232,7 @@ namespace Bullets {
                     }
                 }
             })
-            if (this._owner.tag == Tag.TAG.ENEMY) {
+            if (this.owner.tag == Tag.TAG.ENEMY) {
                 colliders = Game.graph.getChildren().filter(element => (<Player.Player>element).tag == Tag.TAG.PLAYER);
                 colliders.forEach((_elem) => {
                     let element: Player.Player = (<Player.Player>_elem);
@@ -264,7 +291,7 @@ namespace Bullets {
             if (Networking.client.id == Networking.client.idHost) {
                 this.calculateHoming();
             } else {
-                if (this._owner == Game.avatar1) {
+                if (this.owner == Game.avatar1) {
                     this.calculateHoming();
                 }
             }

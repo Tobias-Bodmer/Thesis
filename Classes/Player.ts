@@ -92,16 +92,24 @@ namespace Player {
             let itemCollider: Items.Item[] = Game.items;
             itemCollider.forEach(item => {
                 if (this.collider.collides(item.collider)) {
+
+                    if (item instanceof Items.InternalItem && (<Items.InternalItem>item).choosenOneNetId != undefined) {
+                        if ((<Items.InternalItem>item).choosenOneNetId != this.netId) {
+                            return;
+                        }
+                    }
+
                     if (Game.currentRoom.roomType == Generation.ROOMTYPE.TREASURE) {
                         (<Generation.TreasureRoom>Game.currentRoom).onItemCollect(item);
                     }
+
                     if (Game.currentRoom.roomType == Generation.ROOMTYPE.MERCHANT) {
                         if (!(<Generation.MerchantRoom>Game.currentRoom).onItemCollect(item, this)) {
                             return;
                         }
                     }
 
-                    Networking.updateInventory(item.id, item.netId, this.netId);
+                    Networking.updateInventory(true, item.id, item.netId, this.netId);
                     item.doYourThing(this);
                     this.items.push(item);
                     //TODO: add that deletet out of room if collected
