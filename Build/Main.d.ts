@@ -308,7 +308,8 @@ declare namespace Items {
         SLOWYSLOW = 11,
         THORSHAMMER = 12,
         GETSTRONKO = 13,
-        GETWEAKO = 14
+        GETWEAKO = 14,
+        ZIPZAP = 15
     }
     let txtIceBucket: ƒ.TextureImage;
     let txtDmgUp: ƒ.TextureImage;
@@ -650,7 +651,8 @@ declare namespace Bullets {
         SLOW = 2,
         MELEE = 3,
         SUMMONER = 4,
-        THORSHAMMER = 5
+        THORSHAMMER = 5,
+        ZIPZAP = 6
     }
     let bulletTxt: ƒ.TextureImage;
     let waterBallTxt: ƒ.TextureImage;
@@ -673,9 +675,9 @@ declare namespace Bullets {
         killcount: number;
         texturePath: string;
         despawn(): void;
-        constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _netId?: number);
+        constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerNetId: number, _netId?: number);
         eventUpdate: (_event: Event) => void;
-        update(): void;
+        protected update(): void;
         predict(): void;
         move(_direction: Game.ƒ.Vector3): void;
         doKnockback(_body: ƒAid.NodeSprite): void;
@@ -683,7 +685,8 @@ declare namespace Bullets {
         protected updateRotation(_direction: ƒ.Vector3): void;
         protected spawnThorsHammer(): void;
         protected loadTexture(): void;
-        setBuff(_target: Entity.Entity): void;
+        setBuffToTarget(_target: Entity.Entity): void;
+        private offsetCollider;
         collisionDetection(): void;
     }
     class HomingBullet extends Bullet {
@@ -691,23 +694,22 @@ declare namespace Bullets {
         rotateSpeed: number;
         targetDirection: ƒ.Vector3;
         constructor(_bullettype: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _target?: ƒ.Vector3, _netId?: number);
-        update(): void;
         move(_direction: Game.ƒ.Vector3): void;
         setTarget(_netID: number): void;
         private calculateHoming;
     }
-    class StravingObject extends ƒ.Node {
+    class ZipZapObject extends Bullet {
         private nextTarget;
         private avatars;
         private playerSize;
         private counter;
-        private speed;
-        constructor();
+        private tickHit;
+        constructor(_ownerNetId: number, _netId: number);
         eventUpdate: (_event: Event) => void;
-        private update;
+        protected update(): void;
         spawn(): void;
         despawn(): void;
-        private move;
+        move(): void;
     }
 }
 declare namespace Collider {
@@ -833,8 +835,7 @@ declare namespace Networking {
         UPDATEBUFF = 25,
         UPDATEUI = 26,
         SPWANMINIMAP = 27,
-        SPAWNZIPZAP = 28,
-        UPDATEZIPZAP = 29
+        SPAWNZIPZAP = 28
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -866,7 +867,7 @@ declare namespace Networking {
     function sendBulletInput(_netId: number, _inputPayload: Interfaces.IInputBulletPayload): void;
     function updateBullet(_position: ƒ.Vector3, _rotation: ƒ.Vector3, _netId: number): void;
     function removeBullet(_netId: number): void;
-    function spawnZipZap(_netId: number): void;
+    function spawnZipZap(_ownerNetId: number, _netId: number): void;
     function spawnEnemy(_enemyClass: Enemy.ENEMYCLASS, _enemy: Enemy.Enemy, _netId: number): void;
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number): void;
     function updateEntityAnimationState(_state: Entity.ANIMATIONSTATES, _netId: number): void;

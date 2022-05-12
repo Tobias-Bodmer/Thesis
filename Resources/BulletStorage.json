@@ -59,6 +59,16 @@
             "knockbackForce": 6,
             "killcount": 100,
             "texturePath": "./Resources/Image/Projectiles/waterBall.png"
+        },
+        {
+            "name": "zipzap",
+            "type": 0,
+            "speed": 8,
+            "hitPointsScale": 0.2,
+            "lifetime": 30,
+            "knockbackForce": 0,
+            "killcount": 50,
+            "texturePath": "./Resources/Image/Projectiles/waterBall.png"
         }
     ]
 }

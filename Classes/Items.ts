@@ -14,7 +14,8 @@ namespace Items {
         SLOWYSLOW,
         THORSHAMMER,
         GETSTRONKO,
-        GETWEAKO
+        GETWEAKO,
+        ZIPZAP
     }
 
     export let txtIceBucket: ƒ.TextureImage = new ƒ.TextureImage();
@@ -250,6 +251,10 @@ namespace Items {
                         Networking.updateAvatarWeapon(_avatar.weapon, _avatar.netId);
                     }
                     break;
+                case ITEMID.ZIPZAP:
+                    let newItem: Bullets.ZipZapObject = new Bullets.ZipZapObject(_avatar.netId, null);
+                    newItem.spawn();
+                    break;
             }
         }
     }
@@ -336,11 +341,11 @@ namespace Items {
                 case RARITY.COMMON:
                     return this.itemPool.filter(item => item.rarity == RARITY.COMMON);
                 case RARITY.RARE:
-                    return this.itemPool.filter(item => item.rarity == RARITY.RARE)
+                    return this.itemPool.filter(item => item.rarity == RARITY.RARE);
                 case RARITY.EPIC:
-                    return this.itemPool.filter(item => item.rarity == RARITY.EPIC)
+                    return this.itemPool.filter(item => item.rarity == RARITY.EPIC);
                 case RARITY.LEGENDARY:
-                    return this.itemPool.filter(item => item.rarity == RARITY.LEGENDARY)
+                    return this.itemPool.filter(item => item.rarity == RARITY.LEGENDARY);
                 default:
                     return this.itemPool.filter(item => item.rarity = RARITY.COMMON);
             }

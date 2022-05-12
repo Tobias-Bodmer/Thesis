@@ -30,8 +30,7 @@ namespace Networking {
         UPDATEBUFF,
         UPDATEUI,
         SPWANMINIMAP,
-        SPAWNZIPZAP,
-        UPDATEZIPZAP
+        SPAWNZIPZAP
     }
 
     import ƒClient = FudgeNet.FudgeClient;
@@ -260,18 +259,19 @@ namespace Networking {
                                     default:
                                         break;
                                 }
-
                                 Game.graph.addChild(bullet);
                             }
                         }
 
                         //Sync bullet transform from host to client
                         if (message.content != undefined && message.content.text == FUNCTION.BULLETTRANSFORM.toString()) {
-                            if (Game.bullets.find(element => element.netId == message.content.netId) != null) {
-                                let newPosition: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
-                                let newRotation: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.rotation.data[0], message.content.rotation.data[1], message.content.rotation.data[2]);
-                                Game.bullets.find(element => element.netId == message.content.netId).mtxLocal.translation = newPosition;
-                                Game.bullets.find(element => element.netId == message.content.netId).mtxLocal.rotation = newRotation;
+                            if (Game.currentNetObj.find(element => element.netId == message.content.netId) != undefined) {
+                                if (Game.currentNetObj.find(element => element.netId == message.content.netId).netObjectNode != null) {
+                                    let newPosition: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
+                                    let newRotation: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.rotation.data[0], message.content.rotation.data[1], message.content.rotation.data[2]);
+                                    Game.currentNetObj.find(element => element.netId == message.content.netId).netObjectNode.mtxLocal.translation = newPosition;
+                                    Game.currentNetObj.find(element => element.netId == message.content.netId).netObjectNode.mtxLocal.rotation = newRotation;
+                                }
                             }
                         }
 
@@ -364,6 +364,14 @@ namespace Networking {
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEUI.toString()) {
                             let position: ƒ.Vector2 = new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]);
                             Game.graph.addChild(new UI.DamageUI(position.toVector3(), message.content.value));
+                        }
+
+                        //spawn special items
+                        if (message.content != undefined && message.content.text == FUNCTION.SPAWNZIPZAP.toString()) {
+                            if (client.id != client.idHost) {
+                                let item: Bullets.ZipZapObject = new Bullets.ZipZapObject(message.content.ownerNetId, message.content.netId);
+                                item.spawn();
+                            }
                         }
 
                         //Spawn item from host
@@ -567,9 +575,9 @@ namespace Networking {
 
     //#region specialItems
 
-    export function spawnZipZap(_netId: number) {
+    export function spawnZipZap(_ownerNetId: number, _netId: number) {
         if (Game.connected && client.idHost == client.id) {
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.BULLETDIE, netId: _netId } })
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNZIPZAP, ownerNetId: _ownerNetId, netId: _netId } })
         }
     }
     //#endregion

@@ -79,6 +79,14 @@
             "imgSrc": "./Resources/Image/Items/iceBucket.png",
             "value": 0,
             "rarity": 3
+        },
+        {
+            "name": "zip zap",
+            "description": "brrrrzt",
+            "id": 15,
+            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "value": 0,
+            "rarity": 2
         }
     ],
     "buffItems": [

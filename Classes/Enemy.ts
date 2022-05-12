@@ -389,6 +389,7 @@ namespace Enemy {
             this.flocking.update();
         }
 
+
         moveBehaviour(): void {
             this.behaviour();
             switch (this.currentBehaviour) {

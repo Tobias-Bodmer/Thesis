@@ -7,7 +7,8 @@ namespace Bullets {
         MELEE,
         SUMMONER,
         // TODO: speak with maurice
-        THORSHAMMER
+        THORSHAMMER,
+        ZIPZAP
     }
 
     export let bulletTxt: ƒ.TextureImage = new ƒ.TextureImage();
@@ -51,7 +52,7 @@ namespace Bullets {
             }
         }
 
-        constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _netId?: number) {
+        constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerNetId: number, _netId?: number) {
             super(BULLETTYPE[_bulletType]);
 
             this.type = _bulletType;
@@ -92,7 +93,7 @@ namespace Bullets {
             this.loadTexture();
             this.flyDirection = ƒ.Vector3.X();
             this.direction = _direction;
-            this.ownerNetId = _ownerId;
+            this.ownerNetId = _ownerNetId;
 
             this.serverPrediction = new Networking.ServerBulletPrediction(this.netId);
             this.clientPrediction = new Networking.ClientBulletPrediction(this.netId);
@@ -103,7 +104,7 @@ namespace Bullets {
             this.update();
         };
 
-        public update() {
+        protected update() {
             this.predict();
         }
 
@@ -132,6 +133,7 @@ namespace Bullets {
                 _direction.scale(Game.deltaTime * this.speed);
             }
             this.cmpTransform.mtxLocal.translate(_direction);
+            this.offsetCollider();
             this.collisionDetection();
         }
 
@@ -196,7 +198,7 @@ namespace Bullets {
             }
         }
 
-        setBuff(_target: Entity.Entity) {
+        setBuffToTarget(_target: Entity.Entity) {
             this.owner.items.forEach(item => {
                 item.buff.forEach(buff => {
                     if (buff != undefined) {
@@ -206,9 +208,12 @@ namespace Bullets {
             })
         }
 
-        public collisionDetection() {
+        private offsetCollider() {
             let newPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
             this.collider.position = newPosition;
+        }
+
+        public collisionDetection() {
             let colliders: ƒ.Node[] = [];
             if (this.owner.tag == Tag.TAG.PLAYER) {
                 colliders = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY);
@@ -225,7 +230,7 @@ namespace Bullets {
                             }
                         }
                         (<Enemy.Enemy>element).getDamage(this.owner.attributes.attackPoints * this.hitPointsScale);
-                        this.setBuff((<Enemy.Enemy>element));
+                        this.setBuffToTarget((<Enemy.Enemy>element));
                         (<Enemy.Enemy>element).getKnockback(this.knockbackForce, this.mtxLocal.translation);
                         this.lifetime = 0;
                         this.killcount--;
@@ -252,7 +257,7 @@ namespace Bullets {
             colliders = (<Generation.Room>Game.graph.getChildren().find(element => (<Generation.Room>element).tag == Tag.TAG.ROOM)).walls;
             colliders.forEach((_elem) => {
                 let element: Generation.Wall = (<Generation.Wall>_elem);
-                if (this.collider.collidesRect(element.collider)) {
+                if (element.collider != undefined && this.collider.collidesRect(element.collider)) {
                     this.lifetime = 0;
                 }
             })
@@ -282,10 +287,6 @@ namespace Bullets {
             }
         }
 
-        public update(): void {
-            super.update();
-        }
-
         public move(_direction: Game.ƒ.Vector3) {
             super.move(_direction);
             if (Networking.client.id == Networking.client.idHost) {
@@ -313,64 +314,69 @@ namespace Bullets {
         }
     }
 
-    export class StravingObject extends ƒ.Node {
+    export class ZipZapObject extends Bullet {
         //TODO: talk with tobi
         private nextTarget: Game.ƒ.Vector2;
         private avatars: Player.Player[];
         private playerSize: number;
-        private counter: number
-        private speed: number;
-        constructor() {
-            super("StravingObject");
+        private counter: number;
+        private tickHit: Ability.Cooldown;
+        constructor(_ownerNetId: number, _netId: number) {
+            super(BULLETTYPE.ZIPZAP, new ƒ.Vector2(0, 0), new ƒ.Vector2(0, 0).toVector3(), _ownerNetId, _netId);
             this.avatars = undefined;
             this.counter = 0;
-            this.speed = 3;
-            this.addComponent(new ƒ.ComponentTransform());
-
-            let mesh: ƒ.MeshQuad = new ƒ.MeshQuad();
-            let cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
-            this.addComponent(cmpMesh);
-
-            let mtrSolidWhite: ƒ.Material = new ƒ.Material("SolidWhite", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
-            let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(mtrSolidWhite);
-            this.addComponent(cmpMaterial);
-
-            this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
+            this.tag = Tag.TAG.UI;
+            this.tickHit = new Ability.Cooldown(12);
+            this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), this.mtxLocal.scaling.x / 2, this.netId);
         }
         public eventUpdate = (_event: Event): void => {
             this.update();
         };
-        private update() {
-            if (Game.avatar1 != undefined && Game.avatar2 != undefined) {
-                if (this.avatars == undefined) {
+        protected update() {
+            if (Networking.client.idHost == Networking.client.id) {
+                if (Game.avatar1 != undefined && Game.avatar2 != undefined) {
+                    if (this.avatars == undefined) {
+                        this.avatars = [Game.avatar1, Game.avatar2];
+                        this.playerSize = this.avatars.length;
+                        this.nextTarget = this.avatars[0 % this.playerSize].mtxLocal.translation.toVector2();
+                        this.mtxLocal.translation = this.nextTarget.toVector3();
+                    }
                     this.avatars = [Game.avatar1, Game.avatar2];
-                    this.playerSize = this.avatars.length;
-                    this.nextTarget = this.avatars[0 % this.playerSize].mtxLocal.translation.toVector2();
+                    this.move();
+                    this.collider.position = this.mtxLocal.translation.toVector2();
+                    if (!this.tickHit.hasCoolDown) {
+                        this.collisionDetection();
+                        this.tickHit.startCoolDown();
+                    }
+                    Networking.updateBullet(this.mtxLocal.translation, this.mtxLocal.rotation, this.netId);
+                    this.killcount = 50;
                 }
-                this.avatars = [Game.avatar1, Game.avatar2];
-                this.move()
             }
         }
 
+
         public spawn() {
             Game.graph.addChild(this);
-            // Networking.spawnZipZap();
+            Networking.spawnZipZap(this.ownerNetId, this.netId);
         }
 
         public despawn() {
             Game.graph.removeChild(this);
+            Networking.removeBullet(this.netId);
         }
 
-        private move() {
+        public move() {
             let direction = Game.ƒ.Vector2.DIFFERENCE(this.nextTarget, this.mtxLocal.translation.toVector2());
             let distance = direction.magnitudeSquared;
-            direction.normalize;
+            if (direction.magnitudeSquared > 0) {
+                direction.normalize();
+            }
             direction.scale(Game.deltaTime * this.speed);
             this.mtxLocal.translate(direction.toVector3());
             if (distance < 1) {
                 this.counter = (this.counter + 1) % this.playerSize;
-                this.nextTarget = this.avatars[this.counter].mtxLocal.translation.toVector2();
             }
+            this.nextTarget = this.avatars[this.counter].mtxLocal.translation.toVector2();
         }
 
 
