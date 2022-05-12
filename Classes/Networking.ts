@@ -155,7 +155,7 @@ namespace Networking {
                         let bullet: Bullets.Bullet;
                         if (netObj != undefined) {
                             bullet = <Bullets.Bullet>netObj.netObjectNode;
-                            console.log(bullet + "" + message.content.netId);
+                            // console.log(bullet + "" + message.content.netId);
                             bullet.serverPrediction.updateEntityToCheck(message.content.netId);
                             bullet.serverPrediction.onClientInput(input);
                         }
