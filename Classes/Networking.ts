@@ -421,6 +421,7 @@ namespace Networking {
                             let refWeapon: Weapons.Weapon = <Weapons.Weapon>message.content.weapon;
                             console.log(message.content.weapon.cooldown.coolDown);
                             const tempWeapon: Weapons.Weapon = new Weapons.Weapon(message.content.weapon.cooldown.coolDown, message.content.weapon.attackCount, refWeapon.bulletType, refWeapon.projectileAmount, refWeapon.ownerNetId, refWeapon.aimType);
+                            tempWeapon.canShoot = refWeapon.canShoot;
                             (<Player.Player>Game.entities.find(elem => elem.netId == message.content.netId)).weapon = tempWeapon;
                         }
 
@@ -451,6 +452,9 @@ namespace Networking {
                                     break;
                                 case Generation.ROOMTYPE.MERCHANT:
                                     newRoom = new Generation.MerchantRoom(roomInfo.coordinates, roomInfo.roomSize);
+                                    break;
+                                case Generation.ROOMTYPE.CHALLENGE:
+                                    newRoom = new Generation.ChallengeRoom(roomInfo.coordinates, roomInfo.roomSize);
                                     break;
                             }
                             newRoom.exits = roomInfo.exits;

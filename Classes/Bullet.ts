@@ -6,7 +6,6 @@ namespace Bullets {
         SLOW,
         MELEE,
         SUMMONER,
-        // TODO: speak with maurice
         THORSHAMMER
     }
 
@@ -14,7 +13,7 @@ namespace Bullets {
     export let waterBallTxt: ƒ.TextureImage = new ƒ.TextureImage();
 
 
-    export class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable, Interfaces.INetworkable {
+    export class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.INetworkable {
         public tag: Tag.TAG = Tag.TAG.BULLET;
         ownerNetId: number; get owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.ownerNetId) };
         public netId: number;
@@ -135,13 +134,6 @@ namespace Bullets {
             this.collisionDetection();
         }
 
-
-        public doKnockback(_body: ƒAid.NodeSprite): void {
-        }
-
-        public getKnockback(_knockbackForce: number, _position: ƒ.Vector3): void {
-        }
-
         protected updateRotation(_direction: ƒ.Vector3) {
             this.mtxLocal.rotateZ(Calculation.calcDegree(this.cmpTransform.mtxLocal.translation, ƒ.Vector3.SUM(_direction, this.cmpTransform.mtxLocal.translation)) + 90);
         }
@@ -165,6 +157,7 @@ namespace Bullets {
                 this.owner.weapon.aimType = (<any>Weapons.AIM)[localStorage.getItem("aimType")];
                 this.owner.weapon.bulletType = (<any>BULLETTYPE)[localStorage.getItem("bulletType")];
                 this.owner.weapon.projectileAmount = +localStorage.getItem("projectileAmount");
+                this.owner.weapon.canShoot = false;
                 Networking.updateAvatarWeapon(this.owner.weapon, this.ownerNetId);
             }
         }
@@ -219,7 +212,6 @@ namespace Bullets {
                     if ((<Enemy.Enemy>element).attributes.healthPoints > 0) {
                         if (element instanceof Enemy.SummonorAdds) {
                             if ((<Enemy.SummonorAdds>element).avatar == this.owner) {
-                                this.lifetime = 0;
                                 this.killcount--;
                                 return;
                             }
@@ -227,7 +219,6 @@ namespace Bullets {
                         (<Enemy.Enemy>element).getDamage(this.owner.attributes.attackPoints * this.hitPointsScale);
                         this.setBuff((<Enemy.Enemy>element));
                         (<Enemy.Enemy>element).getKnockback(this.knockbackForce, this.mtxLocal.translation);
-                        this.lifetime = 0;
                         this.killcount--;
                     }
                 }
@@ -241,11 +232,14 @@ namespace Bullets {
                             (<Player.Player>element).getDamage(this.hitPointsScale);
                             (<Player.Player>element).getKnockback(this.knockbackForce, this.mtxLocal.translation);
                             Game.graph.addChild(new UI.DamageUI((<Player.Player>element).cmpTransform.mtxLocal.translation, this.hitPointsScale));
-                            this.lifetime = 0;
                             this.killcount--;
                         }
                     }
                 })
+            }
+
+            if (this.killcount <= 0) {
+                this.lifetime = 0;
             }
 
             colliders = [];

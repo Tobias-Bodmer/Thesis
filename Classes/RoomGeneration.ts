@@ -20,6 +20,7 @@ namespace Generation {
         addBossRoom();
         rooms.push.apply(rooms, generateTreasureRoom());
         rooms.push(generateMerchantRoom());
+        rooms.push(generateChallengeRoom());
         setExits();
         rooms.forEach(room => { console.log(room.mtxLocal.translation.clone.toString()) });
         moveRoomToWorldCoords(rooms[0]);
@@ -143,6 +144,19 @@ namespace Generation {
                 let nextCoord = getNextPossibleCoordFromSpecificCoord(getCoordsFromRooms(), rooms[i].coordinates)
                 if (nextCoord != undefined) {
                     return new MerchantRoom(nextCoord, 20);
+                }
+            }
+        }
+        generationFailed = true;
+        return null;
+    }
+
+    function generateChallengeRoom(): ChallengeRoom {
+        for (let i = 0; i < rooms.length; i++) {
+            if (i > 0) {
+                let nextCoord = getNextPossibleCoordFromSpecificCoord(getCoordsFromRooms(), rooms[i].coordinates)
+                if (nextCoord != undefined) {
+                    return new ChallengeRoom(nextCoord, 20);
                 }
             }
         }

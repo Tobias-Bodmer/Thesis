@@ -192,8 +192,8 @@ namespace Game {
                         let item2 = new Items.InternalItem(Items.ITEMID.THORSHAMMER);
                         item2.setPosition(new ƒ.Vector2(-5, 0))
                         // let item3 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(-2, 0), null);
-                        let test = new Bullets.StravingObject();
-                        graph.addChild(test);
+                        // let test = new Bullets.StravingObject();
+                        // graph.addChild(test);
 
                         graph.appendChild(item1);
                         graph.appendChild(item2);
