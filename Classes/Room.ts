@@ -47,8 +47,6 @@ namespace Generation {
         protected avatarSpawnPointS: Game.ƒ.Vector2; get getSpawnPointS(): Game.ƒ.Vector2 { return this.avatarSpawnPointS };
         protected avatarSpawnPointW: Game.ƒ.Vector2; get getSpawnPointW(): Game.ƒ.Vector2 { return this.avatarSpawnPointW };
 
-        private challengeRoomMat: ƒ.Material = new ƒ.Material("challengeRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("blue")));
-
         protected cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial();
 
         constructor(_coordiantes: Game.ƒ.Vector2, _roomSize: number, _roomType: ROOMTYPE) {
@@ -302,6 +300,14 @@ namespace Generation {
                 }
             }
             return true;
+        }
+    }
+
+    export class ChallengeRoom extends Room {
+        challengeRoomMat: ƒ.Material = new ƒ.Material("challengeRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("blue")));
+
+        constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
+            super(_coordinates, _roomSize, ROOMTYPE.CHALLENGE);
         }
     }
 

@@ -929,7 +929,6 @@ declare namespace Generation {
         get getSpawnPointS(): Game.ƒ.Vector2;
         protected avatarSpawnPointW: Game.ƒ.Vector2;
         get getSpawnPointW(): Game.ƒ.Vector2;
-        private challengeRoomMat;
         protected cmpMaterial: ƒ.ComponentMaterial;
         constructor(_coordiantes: Game.ƒ.Vector2, _roomSize: number, _roomType: ROOMTYPE);
         protected eventUpdate: (_event: Event) => void;
@@ -976,6 +975,10 @@ declare namespace Generation {
         private createSpawnPoints;
         onItemCollect(_item: Items.Item, _avatar: Player.Player): boolean;
         private shoping;
+    }
+    class ChallengeRoom extends Room {
+        challengeRoomMat: ƒ.Material;
+        constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
     }
     class Wall extends ƒ.Node {
         tag: Tag.TAG;
