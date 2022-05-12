@@ -43,7 +43,6 @@ namespace Entity {
             this.attackPoints = Math.round(this.attackPoints * this.scale);
             this.speed = Math.fround(this.speed / this.scale);
             this.knockbackForce = this.knockbackForce * (100 + (10 * this.scale)) / 100;
-            console.log("im beeing called");
         }
     }
 }

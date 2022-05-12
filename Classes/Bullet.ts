@@ -312,4 +312,67 @@ namespace Bullets {
             this.mtxLocal.rotateZ(-rotateAmount2 * this.rotateSpeed);
         }
     }
+
+    export class StravingObject extends ƒ.Node {
+        //TODO: talk with tobi
+        private nextTarget: Game.ƒ.Vector2;
+        private avatars: Player.Player[];
+        private playerSize: number;
+        private counter: number
+        private speed: number;
+        constructor() {
+            super("StravingObject");
+            this.avatars = undefined;
+            this.counter = 0;
+            this.speed = 3;
+            this.addComponent(new ƒ.ComponentTransform());
+
+            let mesh: ƒ.MeshQuad = new ƒ.MeshQuad();
+            let cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
+            this.addComponent(cmpMesh);
+
+            let mtrSolidWhite: ƒ.Material = new ƒ.Material("SolidWhite", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
+            let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(mtrSolidWhite);
+            this.addComponent(cmpMaterial);
+
+            this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
+        }
+        public eventUpdate = (_event: Event): void => {
+            this.update();
+        };
+        private update() {
+            if (Game.avatar1 != undefined && Game.avatar2 != undefined) {
+                if (this.avatars == undefined) {
+                    this.avatars = [Game.avatar1, Game.avatar2];
+                    this.playerSize = this.avatars.length;
+                    this.nextTarget = this.avatars[0 % this.playerSize].mtxLocal.translation.toVector2();
+                }
+                this.avatars = [Game.avatar1, Game.avatar2];
+                this.move()
+            }
+        }
+
+        public spawn() {
+            Game.graph.addChild(this);
+            // Networking.spawnZipZap();
+        }
+
+        public despawn() {
+            Game.graph.removeChild(this);
+        }
+
+        private move() {
+            let direction = Game.ƒ.Vector2.DIFFERENCE(this.nextTarget, this.mtxLocal.translation.toVector2());
+            let distance = direction.magnitudeSquared;
+            direction.normalize;
+            direction.scale(Game.deltaTime * this.speed);
+            this.mtxLocal.translate(direction.toVector3());
+            if (distance < 1) {
+                this.counter = (this.counter + 1) % this.playerSize;
+                this.nextTarget = this.avatars[this.counter].mtxLocal.translation.toVector2();
+            }
+        }
+
+
+    }
 }

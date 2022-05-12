@@ -187,13 +187,15 @@ namespace Game {
 
                     //#region init Items
                     if (Networking.client.id == Networking.client.idHost) {
-                        // item1 = new Items.BuffItem(Items.ITEMID.TOXICRELATIONSHIP, new ƒ.Vector2(0, 2), null);
+                        let item1 = new Items.BuffItem(Items.ITEMID.GETSTRONKO);
+                        item1.setPosition(new ƒ.Vector2(5, 0));
                         let item2 = new Items.InternalItem(Items.ITEMID.THORSHAMMER);
                         item2.setPosition(new ƒ.Vector2(-5, 0))
                         // let item3 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(-2, 0), null);
+                        let test = new Bullets.StravingObject();
+                        graph.addChild(test);
 
-
-                        // graph.appendChild(item1);
+                        graph.appendChild(item1);
                         graph.appendChild(item2);
                         // graph.appendChild(item3);
                     }

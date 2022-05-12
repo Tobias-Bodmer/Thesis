@@ -111,6 +111,26 @@
             "duration": 300,
             "tickRate": 0,
             "rarity": 3
+        },
+        {
+            "name": "GetStronko",
+            "description": "scalesYouUP",
+            "id": 13,
+            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "value": 25,
+            "duration": 180,
+            "tickRate": 0,
+            "rarity": 0
+        },
+        {
+            "name": "GetWeako",
+            "description": "scalesYouDown",
+            "id": 14,
+            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "value": 10,
+            "duration": 180,
+            "tickRate": 0,
+            "rarity": 0
         }
     ]
 }

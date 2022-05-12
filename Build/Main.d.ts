@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -306,7 +306,9 @@ declare namespace Items {
         TOXICRELATIONSHIP = 9,
         VAMPY = 10,
         SLOWYSLOW = 11,
-        THORSHAMMER = 12
+        THORSHAMMER = 12,
+        GETSTRONKO = 13,
+        GETWEAKO = 14
     }
     let txtIceBucket: ƒ.TextureImage;
     let txtDmgUp: ƒ.TextureImage;
@@ -578,7 +580,9 @@ declare namespace Buff {
         POISON = 1,
         HEAL = 2,
         SLOW = 3,
-        IMMUNE = 4
+        IMMUNE = 4,
+        SCALEUP = 5,
+        SCALEDOWN = 6
     }
     abstract class Buff {
         duration: number;
@@ -616,6 +620,9 @@ declare namespace Buff {
         private getParticleById;
         private addParticleToItem;
     }
+    /**
+     * creates a new Buff that does Damage to an Entity;
+     */
     class DamageBuff extends Buff {
         value: number;
         constructor(_id: BUFFID, _duration: number, _tickRate: number, _value: number);
@@ -623,6 +630,9 @@ declare namespace Buff {
         doBuffStuff(_avatar: Entity.Entity): void;
         protected getBuffById(_id: BUFFID, _avatar: Entity.Entity, _add: boolean): void;
     }
+    /**
+     * creates a new Buff that changes an attribute of an Entity for the duration of the buff
+     */
     class AttributesBuff extends Buff {
         isBuffApplied: boolean;
         value: number;
@@ -685,6 +695,19 @@ declare namespace Bullets {
         move(_direction: Game.ƒ.Vector3): void;
         setTarget(_netID: number): void;
         private calculateHoming;
+    }
+    class StravingObject extends ƒ.Node {
+        private nextTarget;
+        private avatars;
+        private playerSize;
+        private counter;
+        private speed;
+        constructor();
+        eventUpdate: (_event: Event) => void;
+        private update;
+        spawn(): void;
+        despawn(): void;
+        private move;
     }
 }
 declare namespace Collider {
@@ -809,7 +832,9 @@ declare namespace Networking {
         SWITCHROOMREQUEST = 24,
         UPDATEBUFF = 25,
         UPDATEUI = 26,
-        SPWANMINIMAP = 27
+        SPWANMINIMAP = 27,
+        SPAWNZIPZAP = 28,
+        UPDATEZIPZAP = 29
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -841,6 +866,7 @@ declare namespace Networking {
     function sendBulletInput(_netId: number, _inputPayload: Interfaces.IInputBulletPayload): void;
     function updateBullet(_position: ƒ.Vector3, _rotation: ƒ.Vector3, _netId: number): void;
     function removeBullet(_netId: number): void;
+    function spawnZipZap(_netId: number): void;
     function spawnEnemy(_enemyClass: Enemy.ENEMYCLASS, _enemy: Enemy.Enemy, _netId: number): void;
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number): void;
     function updateEntityAnimationState(_state: Entity.ANIMATIONSTATES, _netId: number): void;

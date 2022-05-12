@@ -206,6 +206,7 @@ namespace Entity {
                     this.attributes.healthPoints -= hitValue;
                     Game.graph.addChild(new UI.DamageUI(this.mtxLocal.translation, Math.round(hitValue)));
                     Networking.updateUI(this.mtxLocal.translation.toVector2(), Math.round(hitValue));
+                    Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: this.attributes.healthPoints, type: ATTRIBUTETYPE.HEALTHPOINTS }, this.netId);
                 }
                 if (this.attributes.healthPoints <= 0) {
 

@@ -5,7 +5,9 @@ namespace Buff {
         POISON,
         HEAL,
         SLOW,
-        IMMUNE
+        IMMUNE,
+        SCALEUP,
+        SCALEDOWN
     }
     export abstract class Buff {
         duration: number;
@@ -140,7 +142,9 @@ namespace Buff {
             }
         }
     }
-
+    /**
+     * creates a new Buff that does Damage to an Entity;
+     */
     export class DamageBuff extends Buff {
         value: number;
         constructor(_id: BUFFID, _duration: number, _tickRate: number, _value: number) {
@@ -192,7 +196,9 @@ namespace Buff {
             else { return; }
         }
     }
-
+    /**
+     * creates a new Buff that changes an attribute of an Entity for the duration of the buff
+     */
     export class AttributesBuff extends Buff {
         isBuffApplied: boolean;
         value: number;
@@ -226,11 +232,12 @@ namespace Buff {
         }
 
         protected getBuffById(_id: BUFFID, _avatar: Entity.Entity, _add: boolean) {
+            let payload: Interfaces.IAttributeValuePayload;
             switch (_id) {
                 case BUFFID.SLOW:
                     if (_add) {
-                        this.removedValue = Calculation.subPercentageAmountToValue(_avatar.attributes.speed, 50);
-                        _avatar.attributes.speed -= this.removedValue;
+                        this.removedValue = _avatar.attributes.speed - Calculation.subPercentageAmountToValue(_avatar.attributes.speed, this.value);
+                        _avatar.attributes.speed -= Calculation.subPercentageAmountToValue(_avatar.attributes.speed, this.value);
                     } else {
                         _avatar.attributes.speed += this.removedValue;
                     }
@@ -239,12 +246,34 @@ namespace Buff {
                     if (_add) {
                         _avatar.attributes.hitable = false;
                     } else {
-                        _avatar.attributes.hitable = false;
+                        _avatar.attributes.hitable = true;
                     }
-                    let payload: Interfaces.IAttributeValuePayload = <Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.hitable, type: Entity.ATTRIBUTETYPE.HITABLE }
-                    Networking.updateEntityAttributes(payload, _avatar.netId);
+                    payload = <Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.hitable, type: Entity.ATTRIBUTETYPE.HITABLE }
+                    break;
+                case BUFFID.SCALEUP:
+                    if (_add) {
+                        this.removedValue = Calculation.addPercentageAmountToValue(_avatar.attributes.scale, this.value) - _avatar.attributes.scale;
+                        _avatar.attributes.scale = Calculation.addPercentageAmountToValue(_avatar.attributes.scale, this.value);
+                    }
+                    else {
+                        _avatar.attributes.scale -= this.removedValue;
+                    }
+                    _avatar.updateScale();
+                    payload = <Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.scale, type: Entity.ATTRIBUTETYPE.SCALE };
+                    break;
+                case BUFFID.SCALEDOWN:
+                    if (_add) {
+                        this.removedValue = _avatar.attributes.scale - Calculation.subPercentageAmountToValue(_avatar.attributes.scale, this.value);
+                        _avatar.attributes.scale = Calculation.subPercentageAmountToValue(_avatar.attributes.scale, this.value);
+                    }
+                    else {
+                        _avatar.attributes.scale += this.removedValue;
+                    }
+                    _avatar.updateScale();
+                    payload = <Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.scale, type: Entity.ATTRIBUTETYPE.SCALE };
                     break;
             }
+            Networking.updateEntityAttributes(payload, _avatar.netId);
         }
     }
 }
