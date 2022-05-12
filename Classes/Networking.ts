@@ -29,7 +29,9 @@ namespace Networking {
         SWITCHROOMREQUEST,
         UPDATEBUFF,
         UPDATEUI,
-        SPWANMINIMAP
+        SPWANMINIMAP,
+        SPAWNZIPZAP,
+        UPDATEZIPZAP
     }
 
     import ƒClient = FudgeNet.FudgeClient;
@@ -390,25 +392,25 @@ namespace Networking {
                                     entity.attributes.maxHealthPoints = message.content.payload.value
                                     break;
                                 case Entity.ATTRIBUTETYPE.KNOCKBACKFORCE:
-                                    entity.attributes.knockbackForce = message.content.payload.value
+                                    entity.attributes.knockbackForce = message.content.payload.value;
                                     break;
                                 case Entity.ATTRIBUTETYPE.HITABLE:
-                                    entity.attributes.hitable = message.content.payload.value
+                                    entity.attributes.hitable = message.content.payload.value;
                                     break;
                                 case Entity.ATTRIBUTETYPE.ARMOR:
-                                    entity.attributes.armor = message.content.payload.value
+                                    entity.attributes.armor = message.content.payload.value;
                                     break;
                                 case Entity.ATTRIBUTETYPE.SPEED:
-                                    entity.attributes.speed = message.content.payload.value
+                                    entity.attributes.speed = message.content.payload.value;
                                     break;
                                 case Entity.ATTRIBUTETYPE.ATTACKPOINTS:
-                                    entity.attributes.attackPoints = message.content.payload.value
+                                    entity.attributes.attackPoints = message.content.payload.value;
                                     break;
                                 case Entity.ATTRIBUTETYPE.COOLDOWNREDUCTION:
-                                    entity.attributes.coolDownReduction = message.content.payload.value
+                                    entity.attributes.coolDownReduction = message.content.payload.value;
                                     break;
                                 case Entity.ATTRIBUTETYPE.SCALE:
-                                    entity.attributes.scale = message.content.payload.value
+                                    entity.attributes.scale = message.content.payload.value;
                                     entity.updateScale();
                                     break;
                             }
@@ -563,7 +565,14 @@ namespace Networking {
     }
     //#endregion
 
+    //#region specialItems
 
+    export function spawnZipZap(_netId: number) {
+        if (Game.connected && client.idHost == client.id) {
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.BULLETDIE, netId: _netId } })
+        }
+    }
+    //#endregion
 
     //#region enemy
     export function spawnEnemy(_enemyClass: Enemy.ENEMYCLASS, _enemy: Enemy.Enemy, _netId: number) {
@@ -572,7 +581,7 @@ namespace Networking {
         }
     }
     export function updateEnemyPosition(_position: ƒ.Vector3, _netId: number) {
-        if(Networking.client.id == Networking.client.idHost){
+        if (Networking.client.id == Networking.client.idHost) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ENEMYTRANSFORM, position: _position, netId: _netId } })
         }
     }

@@ -19,7 +19,7 @@
         {
             "name": "smalltick",
             "attributes": {
-                "healthPoints": 5,
+                "healthPoints": 10,
                 "attackPoints": 1,
                 "speed": 2.5,
                 "scale": 1,

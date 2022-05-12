@@ -12,7 +12,9 @@ namespace Items {
         TOXICRELATIONSHIP,
         VAMPY,
         SLOWYSLOW,
-        THORSHAMMER
+        THORSHAMMER,
+        GETSTRONKO,
+        GETWEAKO
     }
 
     export let txtIceBucket: ƒ.TextureImage = new ƒ.TextureImage();
@@ -71,6 +73,10 @@ namespace Items {
                     return new Buff.DamageBuff(Buff.BUFFID.BLEEDING, temp.duration, temp.tickRate, temp.value);
                 case ITEMID.SLOWYSLOW:
                     return new Buff.AttributesBuff(Buff.BUFFID.SLOW, temp.duration, temp.tickRate, temp.value);
+                case ITEMID.GETSTRONKO:
+                    return new Buff.AttributesBuff(Buff.BUFFID.SCALEUP, temp.duration, temp.tickRate, temp.value);
+                case ITEMID.GETWEAKO:
+                    return new Buff.AttributesBuff(Buff.BUFFID.SCALEDOWN, temp.duration, temp.tickRate, temp.value);
                 default:
                     return null;
             }
