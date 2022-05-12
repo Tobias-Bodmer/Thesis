@@ -110,9 +110,8 @@ namespace Player {
                     }
 
                     Networking.updateInventory(true, item.id, item.netId, this.netId);
-                    item.doYourThing(this);
-                    this.items.push(item);
-                    //TODO: add that deletet out of room if collected
+                    item.addItemToEntity(this);
+
                     if (item instanceof Items.InternalItem) {
                         console.log(item.name + ": " + item.description + " smth changed to: " + (<Items.InternalItem>item).value);
                     }

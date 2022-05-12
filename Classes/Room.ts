@@ -275,24 +275,31 @@ namespace Generation {
 
             if (sameRarity.length > 0) {
                 let index: number = Math.round(Math.random() * (sameRarity.length - 1));
-                _avatar.items = _avatar.items.filter(item => item != sameRarity[index]);
+                sameRarity[index].removeItemToEntity(_avatar);
                 this.items.splice(this.items.indexOf(_item), 1);
+                Networking.updateInventory(false, sameRarity[index].id, sameRarity[index].netId, _avatar.netId);
             } else {
                 if (lowerRarity.length >= 3) {
                     let index1: number = Math.round(Math.random() * (lowerRarity.length - 1));
-                    _avatar.items = _avatar.items.filter(item => item != lowerRarity[index1]);
+                    lowerRarity[index1].removeItemToEntity(_avatar);
                     lowerRarity.splice(lowerRarity.indexOf(lowerRarity[index1]), 1);
                     lowerRarity.slice(index1, 1);
+                    lowerRarity.splice(index1, 1);
+                    Networking.updateInventory(false, lowerRarity[index1].id, lowerRarity[index1].netId, _avatar.netId);
 
                     let index2: number = Math.round(Math.random() * (lowerRarity.length - 1));
-                    _avatar.items = _avatar.items.filter(item => item != lowerRarity[index2]);
+                    lowerRarity[index2].removeItemToEntity(_avatar);
                     lowerRarity.splice(lowerRarity.indexOf(lowerRarity[index2]), 1);
                     lowerRarity.slice(index2, 1);
+                    lowerRarity.splice(index2, 1);
+                    Networking.updateInventory(false, lowerRarity[index2].id, lowerRarity[index2].netId, _avatar.netId);
 
                     let index3: number = Math.round(Math.random() * (lowerRarity.length - 1));
-                    _avatar.items = _avatar.items.filter(item => item != lowerRarity[index3]);
+                    lowerRarity[index3].removeItemToEntity(_avatar);
                     lowerRarity.splice(lowerRarity.indexOf(lowerRarity[index3]), 1);
                     lowerRarity.slice(index3, 1);
+                    lowerRarity.splice(index3, 1);
+                    Networking.updateInventory(false, lowerRarity[index3].id, lowerRarity[index3].netId, _avatar.netId);
 
                     this.items.splice(this.items.indexOf(_item), 1);
                 } else {
@@ -365,7 +372,7 @@ namespace Generation {
                 choosenOne = Game.avatar2;
             }
 
-            thorshammer.doYourThing(choosenOne);
+            thorshammer.addItemToEntity(choosenOne);
             choosenOne.items.push(thorshammer);
             Networking.updateInventory(true, thorshammer.id, thorshammer.netId, choosenOne.netId);
             Networking.updateAvatarWeapon(Game.avatar1.weapon, Game.avatar1.netId);
@@ -418,6 +425,7 @@ namespace Generation {
         public tag: Tag.TAG = Tag.TAG.WALL;
         public collider: Game.ƒ.Rectangle;
         public door: Door;
+        private normal: Game.ƒ.Vector3; get getNormal(): Game.ƒ.Vector3 { return this.normal };
 
         constructor(_pos: Game.ƒ.Vector2, _scaling: Game.ƒ.Vector2, _room: Room) {
             super("Wall");
@@ -434,17 +442,22 @@ namespace Generation {
             if (_pos.x != 0) {
                 if (_pos.x > 0) {
                     this.addDoor(_pos, _scaling);
+                    this.normal = new ƒ.Vector3(-1, 0, 0);
                 } else if (_pos.x < 0) {
                     this.addDoor(_pos, _scaling);
+                    this.normal = new ƒ.Vector3(1, 0, 0);
                 }
             } else {
                 if (_pos.y > 0) {
                     this.addDoor(_pos, _scaling);
+                    this.normal = new ƒ.Vector3(0, -1, 0);
                 } else if (_pos.y < 0) {
                     this.addDoor(_pos, _scaling);
+                    this.normal = new ƒ.Vector3(0, 1, 0);
                 }
             }
         }
+
 
         addDoor(_pos: Game.ƒ.Vector2, _scaling: Game.ƒ.Vector2) {
             this.door = new Door();

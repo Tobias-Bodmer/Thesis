@@ -328,32 +328,35 @@ declare namespace Items {
         private position;
         get getPosition(): ƒ.Vector2;
         buff: Buff.Buff[];
+        protected changedValue: number;
         constructor(_id: ITEMID, _netId?: number);
         clone(): Item;
         protected addRarityBuff(): void;
-        getBuffById(): Buff.Buff;
+        protected getBuffById(): Buff.Buff;
         protected loadTexture(_texture: ƒ.TextureImage): void;
         protected setTextureById(): void;
         setPosition(_position: ƒ.Vector2): void;
         spawn(): void;
         despawn(): void;
-        doYourThing(_avatar: Player.Player): void;
+        addItemToEntity(_avatar: Player.Player): void;
+        removeItemToEntity(_avatar: Player.Player): void;
     }
     class InternalItem extends Item {
         value: number;
         choosenOneNetId: number;
         constructor(_id: ITEMID, _netId?: number);
         setChoosenOneNetId(_netId: number): void;
-        doYourThing(_avatar: Player.Player): void;
+        addItemToEntity(_avatar: Player.Player): void;
+        removeItemToEntity(_avatar: Player.Player): void;
         clone(): Item;
-        setAttributesById(_avatar: Player.Player): void;
+        protected setAttributesById(_avatar: Player.Player, _add: boolean): void;
     }
     class BuffItem extends Item {
         value: number;
         tickRate: number;
         duration: number;
         constructor(_id: ITEMID, _netId?: number);
-        doYourThing(_avatar: Player.Player): void;
+        addItemToEntity(_avatar: Player.Player): void;
         clone(): BuffItem;
         setBuffById(_avatar: Entity.Entity): void;
     }
@@ -1018,6 +1021,8 @@ declare namespace Generation {
         tag: Tag.TAG;
         collider: Game.ƒ.Rectangle;
         door: Door;
+        private normal;
+        get getNormal(): Game.ƒ.Vector3;
         constructor(_pos: Game.ƒ.Vector2, _scaling: Game.ƒ.Vector2, _room: Room);
         addDoor(_pos: Game.ƒ.Vector2, _scaling: Game.ƒ.Vector2): void;
         setCollider(): void;

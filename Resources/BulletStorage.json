@@ -55,7 +55,7 @@
             "type": 0,
             "speed": 10,
             "hitPointsScale": 10,
-            "lifetime": 30,
+            "lifetime": 120,
             "knockbackForce": 6,
             "killcount": 100,
             "texturePath": "./Resources/Image/Projectiles/waterBall.png"
