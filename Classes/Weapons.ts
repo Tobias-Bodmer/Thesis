@@ -7,6 +7,7 @@ namespace Weapons {
         aimType: AIM;
         bulletType: Bullets.BULLETTYPE = Bullets.BULLETTYPE.STANDARD;
         projectileAmount: number = 1;
+        canShoot = true;
 
         constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _ownerNetId: number, _aimType: AIM) {
             this.attackCount = _attackCount;
@@ -20,33 +21,35 @@ namespace Weapons {
         }
 
         public shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _bulletNetId?: number, _sync?: boolean) {
-            if (_sync) {
-                if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
-                    this.currentAttackCount = this.attackCount;
-                }
-                if (this.currentAttackCount > 0 && !this.cooldown.hasCoolDown) {
-
-                    if (this.owner.attributes.accuracy < 100) {
-                        this.inaccuracy(_direciton);
+            if (this.canShoot) {
+                if (_sync) {
+                    if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
+                        this.currentAttackCount = this.attackCount;
                     }
+                    if (this.currentAttackCount > 0 && !this.cooldown.hasCoolDown) {
 
+                        if (this.owner.attributes.accuracy < 100) {
+                            this.inaccuracy(_direciton);
+                        }
+
+                        _direciton.normalize();
+
+                        let magazine: Bullets.Bullet[] = this.loadMagazine(_position, _direciton, this.bulletType, _bulletNetId);
+                        this.setBulletDirection(magazine);
+                        this.fire(magazine, _sync);
+                        this.currentAttackCount--;
+                        if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
+                            this.cooldown.setMaxCoolDown = this.cooldown.getMaxCoolDown * this.owner.attributes.coolDownReduction;
+                            this.cooldown.startCoolDown();
+                        }
+                    }
+                }
+                else {
                     _direciton.normalize();
-
                     let magazine: Bullets.Bullet[] = this.loadMagazine(_position, _direciton, this.bulletType, _bulletNetId);
                     this.setBulletDirection(magazine);
                     this.fire(magazine, _sync);
-                    this.currentAttackCount--;
-                    if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
-                        this.cooldown.setMaxCoolDown = this.cooldown.getMaxCoolDown * this.owner.attributes.coolDownReduction;
-                        this.cooldown.startCoolDown();
-                    }
                 }
-            }
-            else {
-                _direciton.normalize();
-                let magazine: Bullets.Bullet[] = this.loadMagazine(_position, _direciton, this.bulletType, _bulletNetId);
-                this.setBulletDirection(magazine);
-                this.fire(magazine, _sync);
             }
         }
 

@@ -656,7 +656,7 @@ declare namespace Bullets {
     }
     let bulletTxt: ƒ.TextureImage;
     let waterBallTxt: ƒ.TextureImage;
-    class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.IKnockbackable, Interfaces.INetworkable {
+    class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.INetworkable {
         tag: Tag.TAG;
         ownerNetId: number;
         get owner(): Entity.Entity;
@@ -680,8 +680,6 @@ declare namespace Bullets {
         protected update(): void;
         predict(): void;
         move(_direction: Game.ƒ.Vector3): void;
-        doKnockback(_body: ƒAid.NodeSprite): void;
-        getKnockback(_knockbackForce: number, _position: ƒ.Vector3): void;
         protected updateRotation(_direction: ƒ.Vector3): void;
         protected spawnThorsHammer(): void;
         protected loadTexture(): void;
@@ -919,7 +917,7 @@ declare namespace Player {
     }
 }
 declare namespace Generation {
-    enum ROOMTYPE {
+    export enum ROOMTYPE {
         START = 0,
         NORMAL = 1,
         MERCHANT = 2,
@@ -927,7 +925,7 @@ declare namespace Generation {
         CHALLENGE = 4,
         BOSS = 5
     }
-    class EnemyCountManager {
+    export class EnemyCountManager {
         private maxEnemyCount;
         get getMaxEnemyCount(): number;
         private currentEnemyCoount;
@@ -935,8 +933,8 @@ declare namespace Generation {
         constructor(_enemyCount: number);
         onEnemyDeath(): void;
     }
-    let txtStartRoom: Game.ƒ.TextureImage;
-    abstract class Room extends ƒ.Node {
+    export let txtStartRoom: Game.ƒ.TextureImage;
+    export abstract class Room extends ƒ.Node {
         tag: Tag.TAG;
         roomType: ROOMTYPE;
         coordinates: Game.ƒ.Vector2;
@@ -956,7 +954,6 @@ declare namespace Generation {
         get getSpawnPointS(): Game.ƒ.Vector2;
         protected avatarSpawnPointW: Game.ƒ.Vector2;
         get getSpawnPointW(): Game.ƒ.Vector2;
-        private challengeRoomMat;
         protected cmpMaterial: ƒ.ComponentMaterial;
         constructor(_coordiantes: Game.ƒ.Vector2, _roomSize: number, _roomType: ROOMTYPE);
         protected eventUpdate: (_event: Event) => void;
@@ -968,19 +965,19 @@ declare namespace Generation {
         setRoomExit(_neighbour: Room): void;
         openDoors(): void;
     }
-    class StartRoom extends Room {
+    export class StartRoom extends Room {
         private startRoomMat;
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
     }
-    class NormalRoom extends Room {
+    export class NormalRoom extends Room {
         normalRoomMat: ƒ.Material;
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
     }
-    class BossRoom extends Room {
+    export class BossRoom extends Room {
         bossRoomMat: ƒ.Material;
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
     }
-    class TreasureRoom extends Room {
+    export class TreasureRoom extends Room {
         private treasureRoomMat;
         private spawnChance;
         get getSpawnChance(): number;
@@ -991,7 +988,7 @@ declare namespace Generation {
         onAddToGraph(): void;
         onItemCollect(_item: Items.Item): void;
     }
-    class MerchantRoom extends Room {
+    export class MerchantRoom extends Room {
         private merchantRoomMat;
         private merchant;
         private items;
@@ -1004,7 +1001,20 @@ declare namespace Generation {
         onItemCollect(_item: Items.Item, _avatar: Player.Player): boolean;
         private shoping;
     }
-    class Wall extends ƒ.Node {
+    enum CHALLENGE {
+        THORSHAMMER = 0
+    }
+    export class ChallengeRoom extends Room {
+        challenge: CHALLENGE;
+        challengeRoomMat: ƒ.Material;
+        constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
+        protected randomChallenge(): CHALLENGE;
+        update(): void;
+        onAddToGraph(): void;
+        protected startThorsHammerChallenge(): void;
+        protected stopThorsHammerChallenge(): void;
+    }
+    export class Wall extends ƒ.Node {
         tag: Tag.TAG;
         collider: Game.ƒ.Rectangle;
         door: Door;
@@ -1012,7 +1022,7 @@ declare namespace Generation {
         addDoor(_pos: Game.ƒ.Vector2, _scaling: Game.ƒ.Vector2): void;
         setCollider(): void;
     }
-    class Door extends ƒ.Node {
+    export class Door extends ƒ.Node {
         tag: Tag.TAG;
         collider: Game.ƒ.Rectangle;
         direction: Interfaces.IRoomExits;
@@ -1022,13 +1032,14 @@ declare namespace Generation {
         openDoor(): void;
         closeDoor(): void;
     }
-    class Obsitcal extends ƒ.Node {
+    export class Obsitcal extends ƒ.Node {
         tag: Tag.TAG;
         collider: Collider.Collider;
         parentRoom: Room;
         direction: Interfaces.IRoomExits;
         constructor(_parent: Room, _position: Game.ƒ.Vector2, _scale: number);
     }
+    export {};
 }
 declare namespace Generation {
     let generationFailed: boolean;
@@ -1072,6 +1083,7 @@ declare namespace Weapons {
         aimType: AIM;
         bulletType: Bullets.BULLETTYPE;
         projectileAmount: number;
+        canShoot: boolean;
         constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _ownerNetId: number, _aimType: AIM);
         shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _bulletNetId?: number, _sync?: boolean): void;
         inaccuracy(_direciton: ƒ.Vector3): void;

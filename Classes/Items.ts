@@ -247,6 +247,7 @@ namespace Items {
                         _avatar.weapon.aimType = Weapons.AIM.NORMAL;
                         _avatar.weapon.bulletType = Bullets.BULLETTYPE.THORSHAMMER;
                         _avatar.weapon.projectileAmount = 1;
+                        _avatar.weapon.canShoot = true;
 
                         Networking.updateAvatarWeapon(_avatar.weapon, _avatar.netId);
                     }

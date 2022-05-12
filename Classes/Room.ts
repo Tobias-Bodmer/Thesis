@@ -47,8 +47,6 @@ namespace Generation {
         protected avatarSpawnPointS: Game.ƒ.Vector2; get getSpawnPointS(): Game.ƒ.Vector2 { return this.avatarSpawnPointS };
         protected avatarSpawnPointW: Game.ƒ.Vector2; get getSpawnPointW(): Game.ƒ.Vector2 { return this.avatarSpawnPointW };
 
-        private challengeRoomMat: ƒ.Material = new ƒ.Material("challengeRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("blue")));
-
         protected cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial();
 
         constructor(_coordiantes: Game.ƒ.Vector2, _roomSize: number, _roomType: ROOMTYPE) {
@@ -303,6 +301,117 @@ namespace Generation {
             }
             return true;
         }
+    }
+
+    enum CHALLENGE {
+        THORSHAMMER
+    }
+    export class ChallengeRoom extends Room {
+        challenge: CHALLENGE;
+        challengeRoomMat: ƒ.Material = new ƒ.Material("challengeRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("blue")));
+
+        constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
+            super(_coordinates, _roomSize, ROOMTYPE.CHALLENGE);
+            this.enemyCountManager = new EnemyCountManager(10);
+            this.getComponent(Game.ƒ.ComponentMaterial).material = this.challengeRoomMat;
+            this.challenge = this.randomChallenge();
+        }
+
+        protected randomChallenge(): CHALLENGE {
+            let index: number = Math.round(Math.random() * (Object.keys(CHALLENGE).length / 2 - 1));
+            return (<any>CHALLENGE)[CHALLENGE[index]];
+        }
+
+        public update(): void {
+            if (this.enemyCountManager.finished) {
+                if (Networking.client.id == Networking.client.idHost) {
+                    switch (this.challenge) {
+                        case CHALLENGE.THORSHAMMER:
+                            this.stopThorsHammerChallenge();
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+
+        public onAddToGraph(): void {
+            switch (this.challenge) {
+                case CHALLENGE.THORSHAMMER:
+                    this.startThorsHammerChallenge();
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        protected startThorsHammerChallenge() {
+            //TODO: activate
+            // if (this.enemyCountManager.finished) {
+            //     return;
+            // }
+
+            Game.avatar1.weapon.canShoot = false;
+            Game.avatar2.weapon.canShoot = false;
+
+            let thorshammer: Items.InternalItem = new Items.InternalItem(Items.ITEMID.THORSHAMMER);
+            let choosenOne: Player.Player;
+            if (Math.round(Math.random()) > 0) {
+                choosenOne = Game.avatar1;
+            } else {
+                choosenOne = Game.avatar2;
+            }
+
+            thorshammer.doYourThing(choosenOne);
+            choosenOne.items.push(thorshammer);
+            Networking.updateInventory(true, thorshammer.id, thorshammer.netId, choosenOne.netId);
+            Networking.updateAvatarWeapon(Game.avatar1.weapon, Game.avatar1.netId);
+            Networking.updateAvatarWeapon(Game.avatar2.weapon, Game.avatar2.netId);
+        }
+
+        protected stopThorsHammerChallenge() {
+            let avatar1Inv = Game.avatar1.items.find(item => item.id == Items.ITEMID.THORSHAMMER);
+            let avatar2Inv = Game.avatar2.items.find(item => item.id == Items.ITEMID.THORSHAMMER);
+
+            if (avatar1Inv != undefined || avatar2Inv != undefined) {
+                if (avatar1Inv != undefined) {
+                    Game.avatar1.items.splice(Game.avatar1.items.indexOf(avatar1Inv), 1);
+                    Networking.updateInventory(false, avatar1Inv.id, avatar1Inv.netId, Game.avatar1.netId);
+
+                    Game.avatar1.weapon.getCoolDown.setMaxCoolDown = +localStorage.getItem("cooldownTime");
+                    Game.avatar1.weapon.aimType = (<any>Weapons.AIM)[localStorage.getItem("aimType")];
+                    Game.avatar1.weapon.bulletType = (<any>Bullets.BULLETTYPE)[localStorage.getItem("bulletType")];
+                    Game.avatar1.weapon.projectileAmount = +localStorage.getItem("projectileAmount");
+                }
+
+                if (avatar2Inv != undefined) {
+                    Game.avatar2.items.splice(Game.avatar2.items.indexOf(avatar2Inv), 1);
+                    Networking.updateInventory(false, avatar2Inv.id, avatar2Inv.netId, Game.avatar2.netId);
+
+                    Game.avatar2.weapon.getCoolDown.setMaxCoolDown = +localStorage.getItem("cooldownTime");
+                    Game.avatar2.weapon.aimType = (<any>Weapons.AIM)[localStorage.getItem("aimType")];
+                    Game.avatar2.weapon.bulletType = (<any>Bullets.BULLETTYPE)[localStorage.getItem("bulletType")];
+                    Game.avatar2.weapon.projectileAmount = +localStorage.getItem("projectileAmount");
+                }
+
+
+                Game.avatar1.weapon.canShoot = true;
+                Game.avatar2.weapon.canShoot = true;
+
+                Networking.updateAvatarWeapon(Game.avatar1.weapon, Game.avatar1.netId);
+                Networking.updateAvatarWeapon(Game.avatar2.weapon, Game.avatar2.netId);
+            }
+
+            let roomInv = Game.items.find(item => item.id == Items.ITEMID.THORSHAMMER);
+
+            if (roomInv != undefined) {
+                roomInv.despawn();
+            }
+        }
+
     }
 
     export class Wall extends ƒ.Node {
