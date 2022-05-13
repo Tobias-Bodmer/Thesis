@@ -38,10 +38,14 @@ namespace InputSystem {
 
     function keyboardDownEvent(_e: KeyboardEvent) {
         if (Game.gamestate == Game.GAMESTATES.PLAYING) {
+            if (_e.code.toUpperCase() == "KEYE") {
+                Game.avatar1.openDoor();
+            }
             if (_e.code.toUpperCase() != "SPACE") {
                 let key: string = _e.code.toUpperCase().substring(3);
                 controller.set(key, true);
-            } else {
+            }
+            if (_e.code.toUpperCase() == "SPACE") {
                 //Do abilty from player
                 ability();
             }

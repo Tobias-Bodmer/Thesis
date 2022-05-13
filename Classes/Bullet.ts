@@ -309,7 +309,6 @@ namespace Bullets {
     }
 
     export class ZipZapObject extends Bullet {
-        //TODO: talk with tobi
         private nextTarget: Game.ƒ.Vector2;
         private avatars: Player.Player[];
         private playerSize: number;
@@ -372,7 +371,5 @@ namespace Bullets {
             }
             this.nextTarget = this.avatars[this.counter].mtxLocal.translation.toVector2();
         }
-
-
     }
 }

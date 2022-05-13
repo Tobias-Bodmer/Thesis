@@ -33,7 +33,9 @@ namespace Player {
             this.collide(this.moveDirection);
 
             this.moveDirection.subtract(_direction);
+        }
 
+        public openDoor(): void {
             let walls: Generation.Wall[] = (<Generation.Wall[]>Game.currentRoom.getChildren());
             walls.forEach((wall) => {
                 if (wall.door != undefined && wall.door.isActive) {
