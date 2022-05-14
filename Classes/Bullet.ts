@@ -56,14 +56,7 @@ namespace Bullets {
 
             this.type = _bulletType;
 
-            if (_netId != undefined) {
-                Networking.popID(this.netId);
-                Networking.currentIDs.push(_netId);
-                this.netId = _netId;
-            }
-            else {
-                this.netId = Networking.idGenerator();
-            }
+            this.netId = Networking.IdManager(_netId);
 
             let ref = Game.bulletsJSON.find(bullet => bullet.name == BULLETTYPE[_bulletType].toLowerCase());
 

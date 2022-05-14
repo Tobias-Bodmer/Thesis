@@ -29,7 +29,7 @@ namespace Items {
         public tag: Tag.TAG = Tag.TAG.ITEM;
         id: ITEMID;
         public rarity: RARITY;
-        public netId: number = Networking.idGenerator();
+        public netId: number;
         public description: string;
         public imgSrc: string;
         public collider: Collider.Collider;
@@ -41,11 +41,7 @@ namespace Items {
         constructor(_id: ITEMID, _netId?: number) {
             super(ITEMID[_id]);
             this.id = _id;
-            if (_netId != undefined) {
-                Networking.popID(this.netId);
-                Networking.currentIDs.push(_netId);
-                this.netId = _netId;
-            }
+            this.netId = Networking.IdManager(_netId);
 
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshQuad()));
             let material: ƒ.Material = new ƒ.Material("white", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));

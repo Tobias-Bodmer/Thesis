@@ -84,9 +84,9 @@ namespace Enemy {
             return moveSimple;
         }
 
-        protected die() {
+        public die() {
+            super.die();
             Game.currentRoom.enemyCountManager.onEnemyDeath();
-            Game.graph.removeChild(this);
         }
 
         public collide(_direction: ƒ.Vector3) {

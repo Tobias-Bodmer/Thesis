@@ -319,8 +319,9 @@ namespace Networking {
                         //Kill enemy at the client from host
                         if (message.content != undefined && message.content.text == FUNCTION.ENEMYDIE.toString()) {
                             let enemy = Game.enemies.find(enem => enem.netId == message.content.netId);
-                            Game.graph.removeChild(enemy);
-                            popID(message.content.netId);
+                            if (enemy != undefined) {
+                                enemy.die()
+                            }
                         }
 
                         //update Entity buff List
@@ -676,18 +677,35 @@ namespace Networking {
     }
     //#endregion
 
-
-
-
-    export function idGenerator(): number {
-        let id = Math.floor(Math.random() * 1000);
-        if (currentIDs.find(element => element == id)) {
-            idGenerator();
+    /**
+     * generates individual IDs on Host without duplicates returns the given NetId
+     * @param _netId if undefined generates a new NetId -> only undefined on Host
+     * @returns a new netId or the netId provided by the host
+     */
+    export function IdManager(_netId: number): number {
+        if (_netId != undefined) {
+            currentIDs.push(_netId);
+            return _netId;
         }
         else {
-            currentIDs.push(id);
+            return generateNewId();
         }
+    }
 
+    function generateNewId(): number {
+        let newId: number;
+        while (true) {
+            newId = idGenerator();
+            if (currentIDs.find(id => id == newId) == undefined) {
+                break;
+            }
+        }
+        currentIDs.push(newId);
+        return newId;
+    }
+
+    function idGenerator(): number {
+        let id = Math.floor(Math.random() * 1000);
         return id;
     }
 

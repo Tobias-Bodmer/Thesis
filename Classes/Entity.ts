@@ -27,6 +27,7 @@ namespace Entity {
 
         constructor(_id: Entity.ID, _netId: number) {
             super(getNameById(_id));
+            this.netId = Networking.IdManager(_netId);
             this.id = _id;
             this.attributes = new Attributes(1, 1, 1, 1, 1, 1, 1, 1);
             if (AnimationGeneration.getAnimationById(this.id) != null) {
@@ -35,23 +36,10 @@ namespace Entity {
                 this.idleScale = ani.scale.find(animation => animation[0] == "idle")[1];
             }
             this.addComponent(new ƒ.ComponentTransform());
-
             this.offsetColliderX = 0;
             this.offsetColliderY = 0;
             this.colliderScaleFaktor = 1;
             this.collider = new Collider.Collider(new ƒ.Vector2(this.mtxLocal.translation.x + (this.offsetColliderX * this.mtxLocal.scaling.x), this.mtxLocal.translation.y + (this.offsetColliderY * this.mtxLocal.scaling.y)), (this.cmpTransform.mtxLocal.scaling.x / 2) * this.colliderScaleFaktor, this.netId);
-
-
-            if (_netId != undefined) {
-                if (this.netId != undefined) {
-                    Networking.popID(this.netId);
-                }
-                Networking.currentIDs.push(_netId);
-                this.netId = _netId;
-            }
-            else {
-                this.netId = Networking.idGenerator();
-            }
 
             if (AnimationGeneration.getAnimationById(this.id) != null) {
                 let ani = AnimationGeneration.getAnimationById(this.id);
@@ -62,6 +50,8 @@ namespace Entity {
             // this.addChild(this.shadow);
             this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
         }
+
+
 
         public eventUpdate = (_event: Event): void => {
             this.update();
@@ -211,13 +201,13 @@ namespace Entity {
                 if (this.attributes.healthPoints <= 0) {
 
                     Networking.removeEnemy(this.netId);
-                    Networking.popID(this.netId);
                     this.die();
                 }
             }
         }
 
-        protected die() {
+        public die() {
+            Networking.popID(this.netId);
             Game.graph.removeChild(this);
         }
 

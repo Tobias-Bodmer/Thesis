@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -125,7 +125,7 @@ declare namespace Entity {
         protected collide(_direction: ƒ.Vector3): void;
         protected calculateCollision(_collider: Collider.Collider[] | Game.ƒ.Rectangle[], _direction: ƒ.Vector3): void;
         getDamage(_value: number): void;
-        protected die(): void;
+        die(): void;
         private getDamageReduction;
         doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
@@ -183,7 +183,7 @@ declare namespace Enemy {
         moveBehaviour(): void;
         moveSimple(_target: ƒ.Vector2): ƒ.Vector2;
         moveAway(_target: ƒ.Vector2): ƒ.Vector2;
-        protected die(): void;
+        die(): void;
         collide(_direction: ƒ.Vector3): void;
     }
     class EnemyDumb extends Enemy {
@@ -528,6 +528,8 @@ declare namespace Ability {
         eventUpdate: (_event: Event) => void;
         updateCoolDown(): void;
     }
+}
+declare namespace Ability {
 }
 declare namespace Entity {
     enum ATTRIBUTETYPE {
@@ -881,7 +883,12 @@ declare namespace Networking {
     function updateUI(_position: Game.ƒ.Vector2, _value: number): void;
     function sendRoom(_room: Interfaces.IRoom): void;
     function switchRoomRequest(_direction: Interfaces.IRoomExits): void;
-    function idGenerator(): number;
+    /**
+     * generates individual IDs on Host without duplicates returns the given NetId
+     * @param _netId if undefined generates a new NetId -> only undefined on Host
+     * @returns a new netId or the netId provided by the host
+     */
+    function IdManager(_netId: number): number;
     function popID(_id: number): void;
     function isNetworkObject(_object: any): _object is Interfaces.INetworkable;
     function getNetId(_object: Game.ƒ.Node): number;
