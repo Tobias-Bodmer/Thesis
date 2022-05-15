@@ -199,8 +199,7 @@ namespace Entity {
                     Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: this.attributes.healthPoints, type: ATTRIBUTETYPE.HEALTHPOINTS }, this.netId);
                 }
                 if (this.attributes.healthPoints <= 0) {
-
-                    Networking.removeEnemy(this.netId);
+                    Networking.removeEntity(this.netId);
                     this.die();
                 }
             }

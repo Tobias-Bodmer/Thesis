@@ -20,7 +20,7 @@ namespace Networking {
         SPAWNENEMY,
         ENEMYTRANSFORM,
         ENTITYANIMATIONSTATE,
-        ENEMYDIE,
+        ENTITYDIE,
         SPAWNINTERNALITEM,
         UPDATEATTRIBUTES,
         UPDATEWEAPON,
@@ -290,7 +290,6 @@ namespace Networking {
 
                         //Spawn enemy at the client 
                         if (message.content != undefined && message.content.text == FUNCTION.SPAWNENEMY.toString()) {
-                            //TODO: change attributes
                             EnemySpawner.networkSpawnById(
                                 message.content.enemyClass,
                                 message.content.id,
@@ -316,11 +315,11 @@ namespace Networking {
                             }
                         }
 
-                        //Kill enemy at the client from host
-                        if (message.content != undefined && message.content.text == FUNCTION.ENEMYDIE.toString()) {
-                            let enemy = Game.enemies.find(enem => enem.netId == message.content.netId);
-                            if (enemy != undefined) {
-                                enemy.die()
+                        //Kill entity at the client from host
+                        if (message.content != undefined && message.content.text == FUNCTION.ENTITYDIE.toString()) {
+                            let entity = Game.entities.find(enem => enem.netId == message.content.netId);
+                            if (entity != undefined) {
+                                entity.die()
                             }
                         }
 
@@ -328,7 +327,6 @@ namespace Networking {
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEBUFF.toString()) {
                             let buffList: Buff.Buff[] = <Buff.Buff[]>message.content.buffList;
                             let entity = Game.entities.find(ent => ent.netId == message.content.netId);
-                            // let newBuffs: Buff.Buff[] = [];
                             entity.buffs.forEach(oldBuff => {
                                 let buffToCheck = buffList.find(buff => buff.id == oldBuff.id)
                                 if (buffToCheck == undefined) {
@@ -343,20 +341,11 @@ namespace Networking {
                                     case Buff.BUFFID.IMMUNE:
                                         new Buff.AttributesBuff(buff.id, buff.duration, buff.tickRate, (<Buff.AttributesBuff>buff).value).addToEntity(entity);
                                         break;
+                                    default:
+                                        console.warn("buff: " + Buff.BUFFID[buff.id].toLowerCase() + " does not exist in switch list");
+                                        break;
                                 }
                             });
-                            // entity.buffs.forEach(buff => {
-                            //     let flag: boolean = false;
-                            //     buffList.forEach(newBuff => {
-                            //         if (buff.id == newBuff.id) {
-                            //             flag = true;
-                            //         }
-                            //     })
-                            //     if (!flag) {
-                            //         entity.removeChild(entity.getChildren().find(child => (<UI.Particles>child).id == buff.id));
-                            //     }
-                            // });
-                            // entity.buffs = newBuffs;
                         }
 
 
@@ -607,8 +596,8 @@ namespace Networking {
 
         // }
     }
-    export function removeEnemy(_netId: number) {
-        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ENEMYDIE, netId: _netId } })
+    export function removeEntity(_netId: number) {
+        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ENTITYDIE, netId: _netId } })
     }
     //#endregion
 
@@ -710,7 +699,7 @@ namespace Networking {
     }
 
     export function popID(_id: number) {
-        currentIDs = currentIDs.filter(elem => elem != _id)
+        currentIDs.splice(currentIDs.indexOf(_id),1);
     }
 
     export function isNetworkObject(_object: any): _object is Interfaces.INetworkable {

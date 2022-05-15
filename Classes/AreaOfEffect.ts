@@ -14,6 +14,13 @@ namespace Ability {
 
         constructor(_id: AOETYPE, _netId: number) {
             super(AOETYPE[_id].toLowerCase());
+            Networking.IdManager(_netId);
+            this.addComponent(new Game.ƒ.ComponentTransform());
+        }
+
+        protected update(): void {
+            this.collider.position = this.mtxLocal.translation.toVector2();
+            Networking.updateEnemyPosition()
         }
     }
 }

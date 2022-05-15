@@ -828,7 +828,7 @@ declare namespace Networking {
         SPAWNENEMY = 15,
         ENEMYTRANSFORM = 16,
         ENTITYANIMATIONSTATE = 17,
-        ENEMYDIE = 18,
+        ENTITYDIE = 18,
         SPAWNINTERNALITEM = 19,
         UPDATEATTRIBUTES = 20,
         UPDATEWEAPON = 21,
@@ -874,7 +874,7 @@ declare namespace Networking {
     function spawnEnemy(_enemyClass: Enemy.ENEMYCLASS, _enemy: Enemy.Enemy, _netId: number): void;
     function updateEnemyPosition(_position: ƒ.Vector3, _netId: number): void;
     function updateEntityAnimationState(_state: Entity.ANIMATIONSTATES, _netId: number): void;
-    function removeEnemy(_netId: number): void;
+    function removeEntity(_netId: number): void;
     function spawnItem(_id: number, _position: ƒ.Vector2, _netId: number): void;
     function updateEntityAttributes(_attributePayload: Interfaces.IAttributeValuePayload, _netId: number): void;
     function updateAvatarWeapon(_weapon: Weapons.Weapon, _targetNetId: number): void;
