@@ -315,7 +315,8 @@ declare namespace Items {
         THORSHAMMER = 12,
         GETSTRONKO = 13,
         GETWEAKO = 14,
-        ZIPZAP = 15
+        ZIPZAP = 15,
+        TEST = 16
     }
     let txtIceBucket: ƒ.TextureImage;
     let txtDmgUp: ƒ.TextureImage;
@@ -528,6 +529,7 @@ declare namespace Ability {
         set setMaxCoolDown(_param: number);
         private currentCooldown;
         get getCurrentCooldown(): number;
+        onEndCoolDown: () => void;
         constructor(_number: number);
         startCoolDown(): void;
         private endCoolDown;
@@ -548,18 +550,17 @@ declare namespace Ability {
         private collider;
         get getCollider(): Collider.Collider;
         private duration;
+        private areaMat;
+        private ownerNetId;
         private buffList;
         get getBuffList(): Buff.Buff[];
-        private areMat;
         private damageValue;
-        private ownerNetId;
         constructor(_id: AOETYPE, _netId: number);
         eventUpdate: (_event: Event) => void;
         protected update(): void;
         despawn(): void;
         protected spawn(_entity: Entity.Entity): void;
         addToEntity(_entity: Entity.Entity): void;
-        protected checkDuration(): void;
         protected collisionDetection(): void;
         protected applyAreaOfEffect(_entity: Entity.Entity): void;
     }

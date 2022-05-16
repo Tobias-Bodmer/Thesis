@@ -15,7 +15,8 @@ namespace Items {
         THORSHAMMER,
         GETSTRONKO,
         GETWEAKO,
-        ZIPZAP
+        ZIPZAP,
+        TEST
     }
 
     export let txtIceBucket: ƒ.TextureImage = new ƒ.TextureImage();
@@ -59,7 +60,6 @@ namespace Items {
 
         protected addRarityBuff() {
             let buff = new Buff.RarityBuff(this.rarity);
-            console.log(this.id);
             buff.addToItem(this);
         }
 
@@ -313,6 +313,12 @@ namespace Items {
                         zipzap.despawn();
                     }
                     break;
+                case ITEMID.TEST:
+                    if (_add) {
+                        new Ability.AreaOfEffect(Ability.AOETYPE.HEALTHUP, null).addToEntity(_avatar);
+                    } else {
+                        (<Ability.AreaOfEffect>_avatar.getChildren().find(child => (<Ability.AreaOfEffect>child).id == Ability.AOETYPE.HEALTHUP)).despawn();
+                    }
             }
         }
     }

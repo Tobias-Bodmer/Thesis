@@ -127,6 +127,7 @@ namespace Ability {
         public hasCoolDown: boolean
         private coolDown: number; get getMaxCoolDown(): number { return this.coolDown }; set setMaxCoolDown(_param: number) { this.hasCoolDown = false; this.coolDown = _param; this.currentCooldown = this.coolDown; }
         private currentCooldown: number; get getCurrentCooldown(): number { return this.currentCooldown };
+        public onEndCoolDown: () => void;
         constructor(_number: number) {
             this.coolDown = _number;
             this.currentCooldown = _number;
@@ -139,6 +140,9 @@ namespace Ability {
         }
 
         private endCoolDown() {
+            if (this.onEndCoolDown != undefined) {
+                this.onEndCoolDown();
+            }
             this.hasCoolDown = false;
             Game.ƒ.Loop.removeEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
         }

@@ -9,21 +9,23 @@ namespace Ability {
         public id: AOETYPE;
         private position: Game.ƒ.Vector2; get getPosition(): Game.ƒ.Vector2 { return this.position }; set setPosition(_pos: Game.ƒ.Vector2) { this.position = _pos };
         private collider: Collider.Collider; get getCollider(): Collider.Collider { return this.collider };
-        private duration: Ability.Cooldown;
-        private buffList: Buff.Buff[]; get getBuffList(): Buff.Buff[] { return this.buffList };
-        private areMat: Game.ƒ.Material;
-        private damageValue: number;
+        private duration: Cooldown;
+        private areaMat: Game.ƒ.Material;
         private ownerNetId: number;
+
+        private buffList: Buff.Buff[]; get getBuffList(): Buff.Buff[] { return this.buffList };
+        private damageValue: number;
 
         constructor(_id: AOETYPE, _netId: number) {
             super(AOETYPE[_id].toLowerCase());
             Networking.IdManager(_netId);
 
-
+            this.duration = new Cooldown(120);
+            this.duration.onEndCoolDown = this.despawn;
             this.addComponent(new Game.ƒ.ComponentMesh(new Game.ƒ.MeshQuad));
             this.damageValue = 1;
-            this.areMat = new ƒ.Material("aoeShader", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), UI.commonParticle));
-            let cmpMat = new Game.ƒ.ComponentMaterial(this.areMat);
+            this.areaMat = new ƒ.Material("aoeShader", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), UI.commonParticle));
+            let cmpMat = new Game.ƒ.ComponentMaterial(this.areaMat);
             this.addComponent(cmpMat);
 
             this.addComponent(new Game.ƒ.ComponentTransform());
@@ -41,22 +43,26 @@ namespace Ability {
             this.collisionDetection();
         }
         public despawn() {
-            Networking.popID(this.netId);
+            console.log("despawn");
+            //TODO: find right parent to cancel;
             Game.graph.removeChild(this);
+            Networking.popID(this.netId);
         }
 
         protected spawn(_entity: Entity.Entity) {
             _entity.addChild(this);
             this.mtxLocal.translateZ(0.01);
+            if (this.duration == undefined) {
+                return;
+            }
+            else {
+                this.duration.startCoolDown();
+            }
         }
 
         public addToEntity(_entity: Entity.Entity) {
             this.spawn(_entity);
             this.ownerNetId = _entity.netId;
-        }
-
-        protected checkDuration() {
-
         }
 
         protected collisionDetection() {
@@ -67,7 +73,6 @@ namespace Ability {
                 if (this.collider.collides(entity.collider) && entity.attributes != undefined) {
                     //TODO: overwrite in other children to do own thing
                     this.applyAreaOfEffect(entity);
-                    console.log("colliding");
                 }
             })
         }
@@ -75,7 +80,8 @@ namespace Ability {
         protected applyAreaOfEffect(_entity: Entity.Entity) {
             //TODO: overwrite in other classes
             if (this.ownerNetId != _entity.netId) {
-                new Buff.AttributesBuff(Buff.BUFFID.SCALEUP, 0, 60, 10).addToEntity(_entity);
+                console.log("colliding with: " + _entity.name);
+                Buff.getBuffById(Buff.BUFFID.POISON).addToEntity(_entity);
             }
         }
 
