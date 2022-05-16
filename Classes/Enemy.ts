@@ -158,7 +158,7 @@ namespace Enemy {
             }
         }
 
-        private recoverStam() {
+        private recoverStam = () => {
             this.recover.startCoolDown();
             this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
         }
@@ -324,7 +324,6 @@ namespace Enemy {
 
     export class EnemyShoot extends Enemy {
         viewRadius: number = 3;
-        gotRecognized: boolean = false;
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _position, _netId);
@@ -332,46 +331,46 @@ namespace Enemy {
             this.weapon = new Weapons.Weapon(60, 1, Bullets.BULLETTYPE.STANDARD, 2, this.netId, Weapons.AIM.NORMAL);
         }
 
-        moveBehaviour(): void {
+        behaviour(): void {
             this.target = Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2();
             let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
 
             if (distance < 5) {
-                this.moveDirection = this.moveAway(this.target).toVector3();
-                this.gotRecognized = true;
+                this.currentBehaviour = Entity.BEHAVIOUR.FLEE;
+                this.isAggressive = true;
+            } else if (distance < 9 && this.isAggressive) {
+                this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
             } else {
-                this.moveDirection = ƒ.Vector3.ZERO();
+                this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
             }
-
-            this.shoot();
         }
 
-        public getDamage(_value: number): void {
-            super.getDamage(_value);
-            this.gotRecognized = true;
+        moveBehaviour(): void {
+            this.behaviour();
+
+            switch (this.currentBehaviour) {
+                case Entity.BEHAVIOUR.FOLLOW:
+                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
+                    this.moveDirection = this.moveSimple(this.target).toVector3();
+                    break;
+                case Entity.BEHAVIOUR.IDLE:
+                    this.moveDirection = ƒ.Vector3.ZERO();
+                    this.shoot();
+                    break;
+                case Entity.BEHAVIOUR.FLEE:
+                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
+                    this.moveDirection = this.moveAway(this.target).toVector3();
+                    break;
+            }
         }
 
         public shoot(_netId?: number) {
             this.target = Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2();
             let _direction = ƒ.Vector3.DIFFERENCE(this.target.toVector3(0), this.mtxLocal.translation);
 
-            if (_direction.magnitude < 3 || this.gotRecognized) {
+            if (_direction.magnitude < 3 || this.isAggressive) {
                 this.weapon.shoot(this.mtxLocal.translation.toVector2(), _direction, _netId, true);
             }
-
-
-            // if (this.weapon.currentAttackCount > 0 && _direction.magnitude < this.viewRadius) {
-            //     _direction.normalize();
-            //     // let bullet: Bullets.Bullet = new Bullets.HomingBullet(new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x, this.cmpTransform.mtxLocal.translation.y), _direction, Calculation.getCloserAvatarPosition(this.mtxLocal.translation), _netId);
-            //     bullet.owner = this.tag;
-            //     bullet.flyDirection.scale(1 / Game.frameRate * bullet.speed);
-            //     Game.graph.addChild(bullet);
-            //     if (Networking.client.id == Networking.client.idHost) {
-            //         Networking.spawnBulletAtEnemy(bullet.netId, this.netId);
-            //         this.weapon.currentAttackCount--;
-            //     }
-
-            // }
         }
     }
 

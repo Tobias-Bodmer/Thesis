@@ -97,7 +97,7 @@ declare namespace Tag {
 }
 declare namespace Entity {
     class Entity extends Game.ƒAid.NodeSprite implements Interfaces.INetworkable {
-        private currentAnimationState;
+        protected currentAnimationState: ANIMATIONSTATES;
         private performKnockback;
         tag: Tag.TAG;
         netId: number;
@@ -142,7 +142,8 @@ declare namespace Entity {
         IDLE = 0,
         WALK = 1,
         SUMMON = 2,
-        ATTACK = 3
+        ATTACK = 3,
+        TELEPORT = 4
     }
     enum BEHAVIOUR {
         IDLE = 0,
@@ -229,10 +230,9 @@ declare namespace Enemy {
     }
     class EnemyShoot extends Enemy {
         viewRadius: number;
-        gotRecognized: boolean;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
+        behaviour(): void;
         moveBehaviour(): void;
-        getDamage(_value: number): void;
         shoot(_netId?: number): void;
     }
     class SummonorAdds extends EnemyDash {
@@ -560,7 +560,7 @@ declare namespace Ability {
         constructor(_id: AOETYPE, _netId: number);
         eventUpdate: (_event: Event) => void;
         protected update(): void;
-        despawn(): void;
+        despawn: () => void;
         protected spawn(_entity: Entity.Entity): void;
         addToEntity(_entity: Entity.Entity): void;
         protected collisionDetection(): void;
@@ -607,6 +607,7 @@ declare namespace Enemy {
         beginShooting: boolean;
         shootingCount: number;
         currentShootingCount: number;
+        summonPosition: ƒ.Vector3;
         private summon;
         private dash;
         private shoot360;
@@ -618,6 +619,8 @@ declare namespace Enemy {
         moveBehaviour(): void;
         attackingPhase(): void;
         defencePhase(): void;
+        stopDefencePhase: () => void;
+        teleport(): boolean;
         shooting360(): void;
     }
 }

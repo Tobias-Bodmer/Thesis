@@ -1,7 +1,7 @@
 namespace Entity {
 
     export class Entity extends Game.ƒAid.NodeSprite implements Interfaces.INetworkable {
-        private currentAnimationState: ANIMATIONSTATES;
+        protected currentAnimationState: ANIMATIONSTATES;
         private performKnockback: boolean = false;
         public tag: Tag.TAG;
         public netId: number;
@@ -267,6 +267,10 @@ namespace Entity {
                             this.currentAnimationState = ANIMATIONSTATES.ATTACK;
 
                             break;
+                        case ANIMATIONSTATES.TELEPORT:
+                            this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name]);
+                            this.currentAnimationState = ANIMATIONSTATES.TELEPORT;
+                            break;
                     }
                     this.framerate = this.animationContainer.frameRate.find(obj => obj[0] == name)[1];
                     this.setFrameDirection(1);
@@ -281,7 +285,7 @@ namespace Entity {
 
     }
     export enum ANIMATIONSTATES {
-        IDLE, WALK, SUMMON, ATTACK
+        IDLE, WALK, SUMMON, ATTACK, TELEPORT
     }
 
     export enum BEHAVIOUR {

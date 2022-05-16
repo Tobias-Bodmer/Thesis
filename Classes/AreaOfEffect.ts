@@ -42,7 +42,7 @@ namespace Ability {
             this.collider.position = this.mtxWorld.translation.toVector2();
             this.collisionDetection();
         }
-        public despawn() {
+        public despawn = () => {
             console.log("despawn");
             //TODO: find right parent to cancel;
             Game.graph.removeChild(this);

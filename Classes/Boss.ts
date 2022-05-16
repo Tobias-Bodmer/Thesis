@@ -39,6 +39,7 @@ namespace Enemy {
         beginShooting: boolean = false;
         shootingCount: number = 3;
         currentShootingCount: number = 0;
+        summonPosition: ƒ.Vector3 = new ƒ.Vector3();
 
         private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 0, 1, 45);
         private dash: Ability.Dash = new Ability.Dash(this.netId, 45, 1, 13 * 60, 5);
@@ -49,6 +50,8 @@ namespace Enemy {
             super(_id, _position, _netId);
             this.tag = Tag.TAG.ENEMY;
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), this.mtxLocal.scaling.x / 2, this.netId);
+
+            this.defencePhaseCd.onEndCoolDown = this.stopDefencePhase;
         }
 
 
@@ -58,7 +61,7 @@ namespace Enemy {
             this.flock.update();
             this.moveDirection = this.flock.getMoveVector().toVector3();
             if (distance < 5) {
-                this.gotRecognized = true;
+                this.isAggressive = true;
                 this.flock.avoidWeight = 5;
                 //TODO: Intro animation here and when it is done then fight...
             }
@@ -70,7 +73,6 @@ namespace Enemy {
                 new Buff.AttributesBuff(Buff.BUFFID.IMMUNE, null, 1, 0).addToEntity(this);
                 // new Buff.DamageBuff(Buff.BUFFID.POISON, 120, 30, 3).addToEntity(this);
                 this.currentBehaviour = Entity.BEHAVIOUR.SUMMON;
-                // this.damageTaken = 0;
             } else {
                 this.currentBehaviour = Entity.BEHAVIOUR.FLEE;
             }
@@ -93,11 +95,9 @@ namespace Enemy {
                     this.attackingPhase();
                     break;
                 case Entity.BEHAVIOUR.SUMMON:
-                    this.switchAnimation(Entity.ANIMATIONSTATES.SUMMON);
                     this.defencePhase();
                     break;
                 default:
-                    // this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
                     break;
             }
         }
@@ -130,29 +130,46 @@ namespace Enemy {
         }
 
         defencePhase(): void {
-            this.summon.doAbility();
-            //TODO: make if dependent from teleport animation frame
-            // if (!this.mtxLocal.translation.equals(new ƒ.Vector2(0, -13).toVector3(), 1)) {
-            // let summonPosition: Game.ƒ.Vector2 = new ƒ.Vector2(0, -10);
-            // this.mtxLocal.translation = summonPosition.toVector3();
-            // // } else {
-            // if (!this.defencePhaseCd.hasCoolDown) {
-            //     this.defencePhaseCd.setMaxCoolDown = Math.round(this.defencePhaseCd.getMaxCoolDown + Math.random() * 5 + Math.random() * -5);
-            //     this.defencePhaseCd.startCoolDown();
-            // }
-            // if (this.defencePhaseCd.hasCoolDown) {
-            //     if (this.mtxLocal.translation.equals(summonPosition.toVector3(), 1) && this.getCurrentFrame == 9) {
-            //         console.log("spawning");
-            //         this.moveDirection = ƒ.Vector3.ZERO();
-            //         // this.summon.doAbility();
-            //     }
-            // } else {
-            //     // (<Buff.AttributesBuff>this.buffs.find(buff => buff.id == Buff.BUFFID.IMMUNE)).duration = 0;
-            //     this.mtxLocal.translation = (new ƒ.Vector2(0, 0)).toVector3();
-            //     this.shooting360();
-            //     this.currentBehaviour = Entity.BEHAVIOUR.FLEE;
-            // }
-            // }
+            this.summonPosition.set(Game.currentRoom.mtxWorld.translation.x, Game.currentRoom.mtxWorld.translation.y - (Game.currentRoom.roomSize / 3), this.mtxWorld.translation.z);
+
+            if (this.teleport()) {
+                this.switchAnimation(Entity.ANIMATIONSTATES.SUMMON);
+
+                if (!this.defencePhaseCd.hasCoolDown) {
+                    this.defencePhaseCd.setMaxCoolDown = Math.round(this.defencePhaseCd.getMaxCoolDown + Math.random() * 5 + Math.random() * -5);
+                    this.defencePhaseCd.startCoolDown();
+                } else {
+                    if (this.mtxLocal.translation.equals(this.summonPosition, 1)) {
+                        console.log("spawning");
+                        this.moveDirection = ƒ.Vector3.ZERO();
+                        this.summon.doAbility();
+                    }
+                }
+            }
+        }
+
+        stopDefencePhase = () => {
+            this.damageTaken = 0;
+            this.summonPosition.set(Game.currentRoom.mtxWorld.translation.x, Game.currentRoom.mtxWorld.translation.y, this.mtxWorld.translation.z);
+            if (this.teleport()) {
+                this.shooting360();
+                this.damageTaken = 0;
+            }
+        }
+
+        teleport(): boolean {
+            if (!this.mtxLocal.translation.equals(this.summonPosition)) {
+                this.switchAnimation(Entity.ANIMATIONSTATES.TELEPORT);
+
+                if (this.getCurrentFrame >= 5) {
+                    this.mtxLocal.translation = this.summonPosition;
+                    return true;
+                }
+            } else {
+                return true;
+            }
+
+            return false;
         }
 
         shooting360() {

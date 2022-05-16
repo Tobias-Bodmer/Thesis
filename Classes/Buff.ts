@@ -278,25 +278,18 @@ namespace Buff {
     }
 
     export function getBuffById(_id: BUFFID): Buff {
-        let ref: Buff;
-        switch (_id) {
-            case BUFFID.BLEEDING:
-            case BUFFID.POISON:
-            case BUFFID.HEAL:
-                ref = <DamageBuff>Game.damageBuffJSON.find(buff => buff.id == _id);
-                return new DamageBuff(_id, ref.duration, ref.tickRate, (<DamageBuff>ref).value);
-            case BUFFID.SLOW:
-            case BUFFID.IMMUNE:
-            case BUFFID.SCALEUP:
-            case BUFFID.SCALEDOWN:
-                ref = Game.attributeBuffJSON.find(buff => buff.id == _id);
-                return new AttributesBuff(_id, ref.duration, ref.tickRate, (<AttributesBuff>ref).value);
-            default:
-                console.warn(BUFFID[_id].toLocaleLowerCase() + " is not in  list");
-                return null;
+        let ref: Buff = undefined;
 
+        ref = <DamageBuff>Game.damageBuffJSON.find(buff => buff.id == _id);
+        if (ref != undefined) {
+            return new DamageBuff(_id, ref.duration, ref.tickRate, (<DamageBuff>ref).value);
         }
+
+        ref = <AttributesBuff>Game.attributeBuffJSON.find(buff => buff.id == _id);
+        if (ref != undefined) {
+            return new AttributesBuff(_id, ref.duration, ref.tickRate, (<AttributesBuff>ref).value);
+        }
+
+        return null;
     }
-
-
 }
