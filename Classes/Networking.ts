@@ -92,6 +92,25 @@ namespace Networking {
                     }
                 }
 
+                if (message.command == FudgeNet.COMMAND.ROOM_GET_IDS) {
+                    if (message.content != undefined && document.getElementById("Hostscreen").style.visibility != "hidden") {
+                        let rooms: string[] = message.content.rooms;
+                        document.getElementById("Rooms").innerHTML = "";
+                        if (rooms.length > 0) {
+                            let newRooms: string[] = [];
+                            rooms.forEach(room => {
+                                if (room != "Lobby") {
+                                    newRooms.push("<p>" + room + "</p>");
+                                }
+                            });
+                            document.getElementById("Rooms").innerHTML = newRooms.toString().replaceAll(",", "");
+                        }
+                        setTimeout(() => {
+                            getRooms();
+                        }, 5000);
+                    }
+                }
+
                 if (message.command != FudgeNet.COMMAND.SERVER_HEARTBEAT && message.command != FudgeNet.COMMAND.CLIENT_HEARTBEAT) {
                     //Add new client to array clients
                     if (message.content != undefined && message.content.text == FUNCTION.CONNECTED.toString()) {
@@ -478,11 +497,15 @@ namespace Networking {
     }
 
     export function createRoom() {
-        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, command: FudgeNet.COMMAND.ROOM_CREATE });
+        client.dispatch({ route: FudgeNet.ROUTE.SERVER, command: FudgeNet.COMMAND.ROOM_CREATE });
     }
 
     export function joinRoom(_roomId: string) {
-        client.dispatch({ route: FudgeNet.ROUTE.VIA_SERVER, command: FudgeNet.COMMAND.ROOM_ENTER, content: { room: _roomId } });
+        client.dispatch({ route: FudgeNet.ROUTE.SERVER, command: FudgeNet.COMMAND.ROOM_ENTER, content: { room: _roomId } });
+    }
+
+    export function getRooms() {
+        client.dispatch({ route: FudgeNet.ROUTE.SERVER, command: FudgeNet.COMMAND.ROOM_GET_IDS });
     }
 
     //#region player

@@ -1,10 +1,16 @@
+body {
+    font-family: 'MinecraftiaRegular';
+    font-weight: normal;
+    font-style: normal;
+}
+
 canvas {
     border: 1px solid black;
     width: 1000px;
     height: 600px;
 }
 
-#Hostscreen{
+#Hostscreen {
     position: absolute;
     visibility: hidden;
     top: 30px;
@@ -12,21 +18,29 @@ canvas {
     width: 1000px;
 }
 
-#Hostscreen > p {
+#Hostscreen>#Rooms {
+    position: absolute;
+    overflow-y: scroll;
+    width: 200px;
+    height: 300px;
+    top: 10px;
+    right: 0px;
+    transform: translateX(-20%);
+    font-size: large;
+}
+
+#Hostscreen>p {
     margin-left: 50%;
-    transform:translateX(-50%);
+    transform: translateX(-50%);
     text-align: center;
     width: 400px;
-    font-family: 'MinecraftiaRegular';
-    font-weight: normal;
-    font-style: normal; 
     font-weight: bold;
     font-size: x-large;
 }
 
-#Hostscreen > button {
+#Hostscreen>button {
     margin-left: 10%;
-    transform:translateX(-50%);
+    transform: translateX(-50%);
     width: 150px;
     height: 40px;
 }
@@ -38,7 +52,7 @@ canvas {
     top: 500px;
 }
 
-#Lobbyscreen > button {
+#Lobbyscreen>button {
     margin-left: 170px;
     margin-right: 170px;
     width: 150px;
@@ -52,7 +66,7 @@ canvas {
     left: 70px;
 }
 
-#Startscreen > button {
+#Startscreen>button {
     margin-left: 40px;
     margin-right: 40px;
     width: 200px;
@@ -67,7 +81,7 @@ canvas {
     transform: scale(70%);
     font-family: 'MinecraftiaRegular';
     font-weight: normal;
-    font-style: normal; 
+    font-style: normal;
 }
 
 #Inventory {
@@ -76,7 +90,7 @@ canvas {
     height: 30px;
 }
 
-#Inventory > .tooltip > img {
+#Inventory>.tooltip>img {
     position: relative;
     width: auto;
     height: 25px;
@@ -105,7 +119,7 @@ canvas {
     width: 1000px;
     font-family: 'MinecraftiaRegular';
     font-weight: normal;
-    font-style: normal; 
+    font-style: normal;
     text-align: center;
 }
 
@@ -118,35 +132,35 @@ canvas {
     width: 1000px;
     font-family: 'MinecraftiaRegular';
     font-weight: normal;
-    font-style: normal; 
+    font-style: normal;
     text-align: center;
 }
 
-#Creditscreen > div {
+#Creditscreen>div {
     position: relative;
     top: 50%;
-    transform:translateY(-55%);
+    transform: translateY(-55%);
 }
 
 .Back {
     position: relative;
     left: 48%;
-    transform:translateX(-50%);
+    transform: translateX(-50%);
     width: 100px;
     height: 40px;
 }
 
-#Creditscreen > div > #medium {
+#Creditscreen>div>#medium {
     font-weight: bold;
     font-size: large;
 }
 
-#Creditscreen > div > #big {
+#Creditscreen>div>#big {
     font-weight: bold;
     font-size: x-large;
 }
 
-#IMHOST{
+#IMHOST {
     width: 250px;
     height: inherit;
     font-size: 32px;
@@ -157,9 +171,9 @@ canvas {
 .tooltip {
     position: relative;
     display: inline-block;
-  }
-  
-  .tooltip .tooltiptext {
+}
+
+.tooltip .tooltiptext {
     visibility: hidden;
     border: 2px solid white;
     width: 300px;
@@ -169,15 +183,15 @@ canvas {
     border-radius: 6px;
     padding-top: 0px;
     padding: 10px;
-  
+
     /* Position the tooltip */
     position: absolute;
     z-index: 3;
 
     top: 100%;
     margin-left: -50px;
-  }
-  
-  .tooltip:hover .tooltiptext {
+}
+
+.tooltip:hover .tooltiptext {
     visibility: visible;
-  }
+}

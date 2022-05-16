@@ -229,6 +229,7 @@ namespace Game {
                 Networking.joinRoom(roomId);
             });
 
+            updateRooms();
             waitForLobby();
             function waitForLobby() {
                 if (Networking.clients.length > 1 && Networking.client.idRoom.toLocaleLowerCase() != "lobby") {
@@ -240,6 +241,17 @@ namespace Game {
                 } else {
                     setTimeout(() => {
                         waitForLobby();
+                    }, 200);
+                }
+            }
+
+            async function updateRooms() {
+                if (Networking.client.socket.readyState == Networking.client.socket.OPEN) {
+                    Networking.getRooms();
+                    return;
+                } else {
+                    setTimeout(() => {
+                        updateRooms();
                     }, 200);
                 }
             }

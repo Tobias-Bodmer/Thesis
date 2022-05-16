@@ -901,6 +901,7 @@ declare namespace Networking {
     function setGamestate(_playing: boolean): void;
     function createRoom(): void;
     function joinRoom(_roomId: string): void;
+    function getRooms(): void;
     function loaded(): void;
     function spawnPlayer(): void;
     function setClient(): void;
