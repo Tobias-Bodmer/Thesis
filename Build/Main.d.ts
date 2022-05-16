@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -559,6 +559,11 @@ declare namespace Entity {
     }
 }
 declare namespace Enemy {
+    class BigBoom extends EnemyDumb {
+        constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
+        behaviour(): void;
+        moveBehaviour(): void;
+    }
     class Summonor extends EnemyShoot {
         damageTaken: number;
         attackPhaseCd: Ability.Cooldown;

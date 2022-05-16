@@ -1,4 +1,36 @@
 namespace Enemy {
+    export class BigBoom extends EnemyDumb {
+
+        constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
+            super(_id, _position, _netId);
+            this.tag = Tag.TAG.ENEMY;
+            this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), this.mtxLocal.scaling.x / 2, this.netId);
+        }
+
+        behaviour() {
+
+        }
+
+        moveBehaviour() {
+            this.behaviour();
+
+            switch (this.currentBehaviour) {
+                case Entity.BEHAVIOUR.IDLE:
+                    this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
+                    break;
+                case Entity.BEHAVIOUR.FLEE:
+                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
+                    break;
+                case Entity.BEHAVIOUR.SUMMON:
+                    this.switchAnimation(Entity.ANIMATIONSTATES.SUMMON);
+                    break;
+                default:
+                    // this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animations["idle"]);
+                    break;
+            }
+        }
+    }
+
     export class Summonor extends EnemyShoot {
         damageTaken: number = 0;
 

@@ -2,15 +2,15 @@
     "internalItems": [
         {
             "name": "Ice Bucket Challenge",
-            "description": "cools not only you but also your cooldown down",
+            "description": "Cools not only you but also your cooldown down.",
             "id": 0,
             "imgSrc": "./Resources/Image/Items/iceBucket.png",
             "value": 10,
             "rarity": 1
         },
         {
-            "name": "dmgUP",
-            "description": "up up we go!",
+            "name": "Sharpening Stone",
+            "description": "A divine whetstone, sharpening your weapons with it will make them incredibly sharp. With such a weapon, even bones can be cut without effort.",
             "id": 1,
             "imgSrc": "./Resources/Image/Items/damageUp.png",
             "value": 1,
@@ -26,7 +26,7 @@
         },
         {
             "name": "projectilesUp",
-            "description": "i hope you like it",
+            "description": "It's dangerous to go alone, take this.",
             "id": 3,
             "imgSrc": "./Resources/Image/Items/iceBucket.png",
             "value": 1,
@@ -92,7 +92,7 @@
     "buffItems": [
         {
             "name": "toxicRelationship",
-            "description": "everyone is toxic today",
+            "description": "Everyone is toxic today.",
             "id": 9,
             "imgSrc": "./Resources/Image/Items/toxicRelationship.png",
             "value": 1,
