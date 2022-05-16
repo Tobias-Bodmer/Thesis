@@ -139,6 +139,12 @@ namespace Enemy {
         private aggressiveDistance: number = 3 * 3;
         private stamina: Ability.Cooldown = new Ability.Cooldown(180);
         private recover: Ability.Cooldown = new Ability.Cooldown(60);
+
+        constructor(_id: Entity.ID, _pos: Game.ƒ.Vector2, _netId: number) {
+            super(_id, _pos, _netId);
+            //TODO: talk with tobi
+            this.stamina.onEndCoolDown = () => this.recoverStam;
+        }
         behaviour() {
             this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2();
             let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitudeSquared;
@@ -150,6 +156,11 @@ namespace Enemy {
             if (this.isAggressive && !this.recover.hasCoolDown) {
                 this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
             }
+        }
+
+        private recoverStam() {
+            this.recover.startCoolDown();
+            this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
         }
 
         moveBehaviour() {
@@ -166,10 +177,11 @@ namespace Enemy {
                     }
                     if (this.stamina.hasCoolDown) {
                         this.moveDirection = this.flocking.getMoveVector().toVector3();
-                        if (this.stamina.getCurrentCooldown == 1) {
-                            this.recover.startCoolDown();
-                            this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
-                        }
+                        //TODO: set a callback function to do this.
+                        // if (this.stamina.getCurrentCooldown == 1) {
+                        //     this.recover.startCoolDown();
+                        //     this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
+                        // }
                     }
                     break;
             }

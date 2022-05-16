@@ -197,7 +197,9 @@ declare namespace Enemy {
         private aggressiveDistance;
         private stamina;
         private recover;
+        constructor(_id: Entity.ID, _pos: Game.ƒ.Vector2, _netId: number);
         behaviour(): void;
+        private recoverStam;
         moveBehaviour(): void;
     }
     class EnemySmash extends Enemy {
