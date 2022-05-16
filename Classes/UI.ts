@@ -8,39 +8,31 @@ namespace UI {
         (<HTMLDivElement>player1UI.querySelector("#HP")).style.width = (Game.avatar1.attributes.healthPoints / Game.avatar1.attributes.maxHealthPoints * 100) + "%";
 
         //InventoryUI
-        Game.avatar1.items.forEach((element) => {
-            if (element != undefined) {
-                let exsist: boolean = false;
-
-                if (element.imgSrc == undefined) {
-                    exsist = true;
-                } else {
-                    //search DOMImg for Item
-                    player1UI.querySelector("#Inventory").querySelectorAll("img").forEach((imgElement) => {
-
-                        let imgName = element.imgSrc.split("/");
-                        if (imgElement.src.split("/").find(elem => elem == imgName[imgName.length - 1]) != null) {
-                            exsist = true;
-                        }
-                    });
-                }
-
-
-                //none exsisting DOMImg for Item
-                if (!exsist) {
-                    let newItem: HTMLImageElement = document.createElement("img");
-                    newItem.src = element.imgSrc;
-                    player1UI.querySelector("#Inventory").appendChild(newItem);
-                }
-            }
-        });
+        updateInvUI(Game.avatar1.items, player1UI);
 
         //Avatar2 UI
         if (Game.connected) {
             (<HTMLDivElement>player2UI.querySelector("#HP")).style.width = (Game.avatar2.attributes.healthPoints / Game.avatar2.attributes.maxHealthPoints * 100) + "%";
 
             //InventoryUI
-            Game.avatar2.items.forEach((element) => {
+            updateInvUI(Game.avatar2.items, player2UI);
+        }
+
+        function updateInvUI(_inv: Items.Item[], _ui: HTMLElement) {
+            _ui.querySelector("#Inventory").querySelectorAll("img").forEach((imgElement) => {
+                let remove = true;
+                _inv.forEach((element) => {
+                    let imgName = element.imgSrc.split("/");
+                    if (imgElement.src.split("/").find(elem => elem == imgName[imgName.length - 1]) != null) {
+                        remove = false;
+                    }
+                });
+                if (remove) {
+                    imgElement.parentElement.remove();
+                }
+            });
+
+            _inv.forEach((element) => {
                 if (element != undefined) {
                     let exsist: boolean = false;
 
@@ -48,7 +40,7 @@ namespace UI {
                         exsist = true;
                     } else {
                         //search DOMImg for Item
-                        player2UI.querySelector("#Inventory").querySelectorAll("img").forEach((imgElement) => {
+                        _ui.querySelector("#Inventory").querySelectorAll("img").forEach((imgElement) => {
                             let imgName = element.imgSrc.split("/");
                             if (imgElement.src.split("/").find(elem => elem == imgName[imgName.length - 1]) != null) {
                                 exsist = true;
@@ -59,9 +51,23 @@ namespace UI {
 
                     //none exsisting DOMImg for Item
                     if (!exsist) {
+                        let newDiv: HTMLDivElement = document.createElement("div");
+                        newDiv.className = "tooltip";
+
                         let newItem: HTMLImageElement = document.createElement("img");
                         newItem.src = element.imgSrc;
-                        player2UI.querySelector("#Inventory").appendChild(newItem);
+                        newDiv.appendChild(newItem);
+
+                        let newTooltip: HTMLSpanElement = document.createElement("span");
+                        newTooltip.textContent = element.description;
+                        newTooltip.className = "tooltiptext";
+                        newDiv.appendChild(newTooltip);
+
+                        let newTooltipLabel: HTMLParagraphElement = document.createElement("p");
+                        newTooltipLabel.textContent = element.name;
+                        newTooltip.insertAdjacentElement("afterbegin", newTooltipLabel);
+
+                        _ui.querySelector("#Inventory").appendChild(newDiv);
                     }
                 }
             });
