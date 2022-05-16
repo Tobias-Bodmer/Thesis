@@ -334,17 +334,18 @@ namespace Networking {
                                 }
                             })
                             buffList.forEach(buff => {
-                                switch (buff.id) {
-                                    case Buff.BUFFID.POISON | Buff.BUFFID.BLEEDING:
-                                        new Buff.DamageBuff(buff.id, buff.duration, buff.tickRate, (<Buff.DamageBuff>buff).value).addToEntity(entity);
-                                        break;
-                                    case Buff.BUFFID.IMMUNE:
-                                        new Buff.AttributesBuff(buff.id, buff.duration, buff.tickRate, (<Buff.AttributesBuff>buff).value).addToEntity(entity);
-                                        break;
-                                    default:
-                                        console.warn("buff: " + Buff.BUFFID[buff.id].toLowerCase() + " does not exist in switch list");
-                                        break;
-                                }
+                                // switch (buff.id) {
+                                //     case Buff.BUFFID.POISON | Buff.BUFFID.BLEEDING:
+                                //         new Buff.DamageBuff(buff.id, buff.duration, buff.tickRate, (<Buff.DamageBuff>buff).value).addToEntity(entity);
+                                //         break;
+                                //     case Buff.BUFFID.IMMUNE:
+                                //         new Buff.AttributesBuff(buff.id, buff.duration, buff.tickRate, (<Buff.AttributesBuff>buff).value).addToEntity(entity);
+                                //         break;
+                                //     default:
+                                //         console.warn("buff: " + Buff.BUFFID[buff.id].toLowerCase() + " does not exist in switch list");
+                                //         break;
+                                // }
+                                Buff.getBuffById(buff.id).addToEntity(entity);
                             });
                         }
 
@@ -699,7 +700,7 @@ namespace Networking {
     }
 
     export function popID(_id: number) {
-        currentIDs.splice(currentIDs.indexOf(_id),1);
+        currentIDs.splice(currentIDs.indexOf(_id), 1);
     }
 
     export function isNetworkObject(_object: any): _object is Interfaces.INetworkable {

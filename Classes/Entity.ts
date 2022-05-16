@@ -68,7 +68,7 @@ namespace Entity {
         public updateScale() {
             this.attributes.updateScaleDependencies();
             this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale);
-            this.collider.setScale((this.cmpTransform.mtxLocal.scaling.x / 2) * this.colliderScaleFaktor);
+            this.collider.setRadius((this.cmpTransform.mtxLocal.scaling.x / 2) * this.colliderScaleFaktor);
         }
 
         public setCollider() {
@@ -188,7 +188,10 @@ namespace Entity {
                 }
             })
         }
-
+        /**
+         * does Damage to the Entity
+         * @param _value value how much damage is applied
+         */
         public getDamage(_value: number) {
             if (Networking.client.idHost == Networking.client.id) {
                 if (_value != null && this.attributes.hitable) {

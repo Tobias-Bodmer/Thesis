@@ -27,8 +27,8 @@ namespace Collider {
             this.position = _position;
         }
 
-        public setScale(_scaleAmount: number) {
-            this.radius = _scaleAmount;
+        public setRadius(_newRadius: number) {
+            this.radius = _newRadius;
         }
 
         collides(_collider: Collider): boolean {

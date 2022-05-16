@@ -29,6 +29,8 @@ declare namespace Game {
     let enemiesJSON: Entity.Entity[];
     let internalItemJSON: Items.InternalItem[];
     let buffItemJSON: Items.BuffItem[];
+    let damageBuffJSON: Buff.DamageBuff[];
+    let attributeBuffJSON: Buff.AttributesBuff[];
     let bulletsJSON: Bullets.Bullet[];
     let loaded: boolean;
     function pause(_sync: boolean, _triggerOption: boolean): void;
@@ -124,6 +126,10 @@ declare namespace Entity {
         protected updateBuffs(): void;
         protected collide(_direction: ƒ.Vector3): void;
         protected calculateCollision(_collider: Collider.Collider[] | Game.ƒ.Rectangle[], _direction: ƒ.Vector3): void;
+        /**
+         * does Damage to the Entity
+         * @param _value value how much damage is applied
+         */
         getDamage(_value: number): void;
         die(): void;
         private getDamageReduction;
@@ -530,6 +536,33 @@ declare namespace Ability {
     }
 }
 declare namespace Ability {
+    enum AOETYPE {
+        HEALTHUP = 0
+    }
+    class AreaOfEffect extends Game.ƒ.Node implements Interfaces.INetworkable {
+        netId: number;
+        id: AOETYPE;
+        private position;
+        get getPosition(): Game.ƒ.Vector2;
+        set setPosition(_pos: Game.ƒ.Vector2);
+        private collider;
+        get getCollider(): Collider.Collider;
+        private duration;
+        private buffList;
+        get getBuffList(): Buff.Buff[];
+        private areMat;
+        private damageValue;
+        private ownerNetId;
+        constructor(_id: AOETYPE, _netId: number);
+        eventUpdate: (_event: Event) => void;
+        protected update(): void;
+        despawn(): void;
+        protected spawn(_entity: Entity.Entity): void;
+        addToEntity(_entity: Entity.Entity): void;
+        protected checkDuration(): void;
+        protected collisionDetection(): void;
+        protected applyAreaOfEffect(_entity: Entity.Entity): void;
+    }
 }
 declare namespace Entity {
     enum ATTRIBUTETYPE {
@@ -616,7 +649,7 @@ declare namespace Buff {
          * @param _avatar entity it should be add to
          */
         doBuffStuff(_avatar: Entity.Entity): void;
-        protected getBuffById(_id: Buff.BUFFID, _avatar: Entity.Entity, _add: boolean): void;
+        protected getBuffStatsById(_id: Buff.BUFFID, _avatar: Entity.Entity, _add: boolean): void;
         protected addParticle(_avatar: Entity.Entity): void;
     }
     class RarityBuff {
@@ -634,20 +667,21 @@ declare namespace Buff {
         constructor(_id: BUFFID, _duration: number, _tickRate: number, _value: number);
         clone(): DamageBuff;
         doBuffStuff(_avatar: Entity.Entity): void;
-        protected getBuffById(_id: BUFFID, _avatar: Entity.Entity, _add: boolean): void;
+        protected getBuffStatsById(_id: BUFFID, _avatar: Entity.Entity, _add: boolean): void;
     }
     /**
      * creates a new Buff that changes an attribute of an Entity for the duration of the buff
      */
     class AttributesBuff extends Buff {
-        isBuffApplied: boolean;
+        private isBuffApplied;
         value: number;
-        removedValue: number;
+        private removedValue;
         constructor(_id: BUFFID, _duration: number, _tickRate: number, _value: number);
         clone(): AttributesBuff;
         doBuffStuff(_avatar: Entity.Entity): void;
-        protected getBuffById(_id: BUFFID, _avatar: Entity.Entity, _add: boolean): void;
+        protected getBuffStatsById(_id: BUFFID, _avatar: Entity.Entity, _add: boolean): void;
     }
+    function getBuffById(_id: BUFFID): Buff;
 }
 declare namespace Bullets {
     enum BULLETTYPE {
@@ -727,7 +761,7 @@ declare namespace Collider {
         get bottom(): number;
         constructor(_position: ƒ.Vector2, _radius: number, _netId: number);
         setPosition(_position: Game.ƒ.Vector2): void;
-        setScale(_scaleAmount: number): void;
+        setRadius(_newRadius: number): void;
         collides(_collider: Collider): boolean;
         collidesRect(_collider: Game.ƒ.Rectangle): boolean;
         getIntersection(_collider: Collider): number;
