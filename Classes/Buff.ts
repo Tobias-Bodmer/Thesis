@@ -45,7 +45,7 @@ namespace Buff {
 
         protected applyBuff(_avatar: Entity.Entity) {
             if (Networking.client.id == Networking.client.idHost) {
-                this.getBuffById(this.id, _avatar, true);
+                this.getBuffStatsById(this.id, _avatar, true);
                 Networking.updateBuffList(_avatar.buffs, _avatar.netId);
             }
         }
@@ -57,7 +57,7 @@ namespace Buff {
             _avatar.removeChild(_avatar.getChildren().find(child => (<UI.Particles>child).id == this.id));
             _avatar.buffs.splice(_avatar.buffs.indexOf(this));
             if (Networking.client.idHost == Networking.client.id) {
-                this.getBuffById(this.id, _avatar, false);
+                this.getBuffStatsById(this.id, _avatar, false);
                 Networking.updateBuffList(_avatar.buffs, _avatar.netId);
             }
         }
@@ -88,7 +88,7 @@ namespace Buff {
 
         }
 
-        protected getBuffById(_id: Buff.BUFFID, _avatar: Entity.Entity, _add: boolean) {
+        protected getBuffStatsById(_id: Buff.BUFFID, _avatar: Entity.Entity, _add: boolean) {
 
         }
 
@@ -174,7 +174,7 @@ namespace Buff {
             }
         }
 
-        protected getBuffById(_id: BUFFID, _avatar: Entity.Entity, _add: boolean) {
+        protected getBuffStatsById(_id: BUFFID, _avatar: Entity.Entity, _add: boolean) {
             if (_add) {
                 switch (_id) {
                     case BUFFID.BLEEDING:
@@ -200,9 +200,9 @@ namespace Buff {
      * creates a new Buff that changes an attribute of an Entity for the duration of the buff
      */
     export class AttributesBuff extends Buff {
-        isBuffApplied: boolean;
+        private isBuffApplied: boolean;
         value: number;
-        removedValue: number;
+        private removedValue: number;
         constructor(_id: BUFFID, _duration: number, _tickRate: number, _value: number) {
             super(_id, _duration, _tickRate);
             this.isBuffApplied = false;
@@ -231,7 +231,7 @@ namespace Buff {
             }
         }
 
-        protected getBuffById(_id: BUFFID, _avatar: Entity.Entity, _add: boolean) {
+        protected getBuffStatsById(_id: BUFFID, _avatar: Entity.Entity, _add: boolean) {
             let payload: Interfaces.IAttributeValuePayload;
             switch (_id) {
                 case BUFFID.SLOW:
@@ -276,4 +276,27 @@ namespace Buff {
             Networking.updateEntityAttributes(payload, _avatar.netId);
         }
     }
+
+    export function getBuffById(_id: BUFFID): Buff {
+        let ref: Buff;
+        switch (_id) {
+            case BUFFID.BLEEDING:
+            case BUFFID.POISON:
+            case BUFFID.HEAL:
+                ref = <DamageBuff>Game.damageBuffJSON.find(buff => buff.id == _id);
+                return new DamageBuff(_id, ref.duration, ref.tickRate, (<DamageBuff>ref).value);
+            case BUFFID.SLOW:
+            case BUFFID.IMMUNE:
+            case BUFFID.SCALEUP:
+            case BUFFID.SCALEDOWN:
+                ref = Game.attributeBuffJSON.find(buff => buff.id == _id);
+                return new AttributesBuff(_id, ref.duration, ref.tickRate, (<AttributesBuff>ref).value);
+            default:
+                console.warn(BUFFID[_id].toLocaleLowerCase() + " is not in  list");
+                return null;
+
+        }
+    }
+
+
 }

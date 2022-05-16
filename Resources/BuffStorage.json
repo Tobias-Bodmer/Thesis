@@ -1,0 +1,48 @@
+{
+    "damageBuff": [
+        {
+            "id": 0,
+            "duration": 300,
+            "tickRate": 100,
+            "value": 5
+        },
+        {
+            "id": 1,
+            "duration": 600,
+            "tickRate": 60,
+            "value": 1
+        },
+        {
+            "id": 2,
+            "duration": 500,
+            "tickRate": 30,
+            "value": 0.5
+        }
+    ],
+    "attributeBuff": [
+        {
+            "id": 3,
+            "duration": 300,
+            "tickRate": 0,
+            "value": 100
+        },
+        {
+            "id": 4,
+            "duration": 20,
+            "tickRate": 100,
+            "value": 0
+        },
+        {
+            "id": 5,
+            "duration": 180,
+            "tickRate": 0,
+            "value": 25
+        },
+        {
+            "id": 6,
+            "duration": 180,
+            "tickRate": 0,
+            "value": 10
+        }
+    ]
+}

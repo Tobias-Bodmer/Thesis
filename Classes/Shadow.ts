@@ -8,7 +8,7 @@ namespace Entity {
             super("shadow");
             this.shadowParent = _parent;
             this.addComponent(new Game.ƒ.ComponentMesh(this.mesh));
-            let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(this.shadowMatt);;
+            let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(this.shadowMatt);
 
             this.addComponent(cmpMaterial);
             this.addComponent(new Game.ƒ.ComponentTransform());

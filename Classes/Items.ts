@@ -15,7 +15,8 @@ namespace Items {
         THORSHAMMER,
         GETSTRONKO,
         GETWEAKO,
-        ZIPZAP
+        ZIPZAP,
+        TEST
     }
 
     export let txtIceBucket: ƒ.TextureImage = new ƒ.TextureImage();
@@ -66,15 +67,15 @@ namespace Items {
             let temp: Items.BuffItem = getBuffItemById(this.id);
             switch (this.id) {
                 case ITEMID.TOXICRELATIONSHIP:
-                    return new Buff.DamageBuff(Buff.BUFFID.POISON, temp.duration, temp.tickRate, temp.value);
+                    return Buff.getBuffById(Buff.BUFFID.POISON);
                 case ITEMID.VAMPY:
-                    return new Buff.DamageBuff(Buff.BUFFID.BLEEDING, temp.duration, temp.tickRate, temp.value);
+                    return Buff.getBuffById(Buff.BUFFID.BLEEDING);
                 case ITEMID.SLOWYSLOW:
-                    return new Buff.AttributesBuff(Buff.BUFFID.SLOW, temp.duration, temp.tickRate, temp.value);
+                    return Buff.getBuffById(Buff.BUFFID.SLOW);
                 case ITEMID.GETSTRONKO:
-                    return new Buff.AttributesBuff(Buff.BUFFID.SCALEUP, temp.duration, temp.tickRate, temp.value);
+                    return Buff.getBuffById(Buff.BUFFID.SCALEUP);
                 case ITEMID.GETWEAKO:
-                    return new Buff.AttributesBuff(Buff.BUFFID.SCALEDOWN, temp.duration, temp.tickRate, temp.value);
+                    return Buff.getBuffById(Buff.BUFFID.SCALEDOWN);
                 default:
                     return null;
             }
@@ -312,6 +313,12 @@ namespace Items {
                         zipzap.despawn();
                     }
                     break;
+                case ITEMID.TEST:
+                    if (_add) {
+                        new Ability.AreaOfEffect(Ability.AOETYPE.HEALTHUP, null).addToEntity(_avatar);
+                    } else {
+                        (<Ability.AreaOfEffect>_avatar.getChildren().find(child => (<Ability.AreaOfEffect>child).id == Ability.AOETYPE.HEALTHUP)).despawn();
+                    }
             }
         }
     }

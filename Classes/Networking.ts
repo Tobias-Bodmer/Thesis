@@ -327,25 +327,20 @@ namespace Networking {
                         if (message.content != undefined && message.content.text == FUNCTION.UPDATEBUFF.toString()) {
                             let buffList: Buff.Buff[] = <Buff.Buff[]>message.content.buffList;
                             let entity = Game.entities.find(ent => ent.netId == message.content.netId);
-                            entity.buffs.forEach(oldBuff => {
-                                let buffToCheck = buffList.find(buff => buff.id == oldBuff.id)
-                                if (buffToCheck == undefined) {
-                                    oldBuff.removeBuff(entity);
-                                }
-                            })
-                            buffList.forEach(buff => {
-                                switch (buff.id) {
-                                    case Buff.BUFFID.POISON | Buff.BUFFID.BLEEDING:
-                                        new Buff.DamageBuff(buff.id, buff.duration, buff.tickRate, (<Buff.DamageBuff>buff).value).addToEntity(entity);
-                                        break;
-                                    case Buff.BUFFID.IMMUNE:
-                                        new Buff.AttributesBuff(buff.id, buff.duration, buff.tickRate, (<Buff.AttributesBuff>buff).value).addToEntity(entity);
-                                        break;
-                                    default:
-                                        console.warn("buff: " + Buff.BUFFID[buff.id].toLowerCase() + " does not exist in switch list");
-                                        break;
-                                }
-                            });
+                            if (entity != undefined) {
+                                entity.buffs.forEach(oldBuff => {
+                                    let buffToCheck = buffList.find(buff => buff.id == oldBuff.id)
+                                    if (buffToCheck == undefined) {
+                                        oldBuff.removeBuff(entity);
+                                    }
+                                })
+                                buffList.forEach(buff => {
+                                    let newBuff = Buff.getBuffById(buff.id);
+                                    newBuff.tickRate = buff.tickRate;
+                                    newBuff.duration = buff.duration;
+                                    newBuff.addToEntity(entity);
+                                });
+                            }
                         }
 
 
@@ -699,7 +694,7 @@ namespace Networking {
     }
 
     export function popID(_id: number) {
-        currentIDs.splice(currentIDs.indexOf(_id),1);
+        currentIDs.splice(currentIDs.indexOf(_id), 1);
     }
 
     export function isNetworkObject(_object: any): _object is Interfaces.INetworkable {

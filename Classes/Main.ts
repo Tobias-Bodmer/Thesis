@@ -54,6 +54,9 @@ namespace Game {
     export let internalItemJSON: Items.InternalItem[];
     export let buffItemJSON: Items.BuffItem[];
 
+    export let damageBuffJSON: Buff.DamageBuff[];
+    export let attributeBuffJSON: Buff.AttributesBuff[];
+
     export let bulletsJSON: Bullets.Bullet[];
     export let loaded = false;
     //#endregion "PublicVariables"
@@ -165,6 +168,7 @@ namespace Game {
             document.getElementById("Startscreen").style.visibility = "hidden";
 
             Networking.connecting();
+            loadJSON();
 
             waitOnConnection();
             async function waitOnConnection() {
@@ -173,7 +177,6 @@ namespace Game {
                     if (Networking.client.id == Networking.client.idHost) {
                         document.getElementById("IMHOST").style.visibility = "visible";
                     }
-                    await loadJSON();
                     await init();
                     gamestate = GAMESTATES.PLAYING;
                     // EnemySpawner.spawnEnemies();
@@ -190,10 +193,9 @@ namespace Game {
                         let item2 = new Items.InternalItem(Items.ITEMID.THORSHAMMER);
                         item2.setPosition(new ƒ.Vector2(-5, 0))
                         // let item3 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(-2, 0), null);
-                        let zipzap = new Items.InternalItem(Items.ITEMID.ZIPZAP);
+                        let zipzap = new Items.InternalItem(Items.ITEMID.TEST);
                         zipzap.setPosition(new ƒ.Vector2(5, 0));
                         zipzap.spawn();
-
                         graph.appendChild(item2);
                         // graph.appendChild(item3);
                     }
@@ -333,6 +335,12 @@ namespace Game {
 
         const loadBullets = await (await fetch("./Resources/BulletStorage.json")).json();
         bulletsJSON = (<Bullets.Bullet[]>loadBullets.standardBullets);
+
+        const loadBuffs = await (await fetch("./Resources/BuffStorage.json")).json();
+        damageBuffJSON = (<Buff.DamageBuff[]>loadBuffs.damageBuff);
+        attributeBuffJSON = (<Buff.AttributesBuff[]>loadBuffs.attributeBuff);
+
+        console.warn("all JSON loaded");
 
     }
 
