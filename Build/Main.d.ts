@@ -724,11 +724,14 @@ declare namespace Bullets {
         time: number;
         killcount: number;
         texturePath: string;
+        lastPosition: ƒ.Vector3;
+        countCheckUpdate: number;
         despawn(): void;
         constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerNetId: number, _netId?: number);
         eventUpdate: (_event: Event) => void;
         protected update(): void;
         predict(): void;
+        protected checkUpdate(): void;
         move(_direction: Game.ƒ.Vector3): void;
         protected updateRotation(_direction: ƒ.Vector3): void;
         protected spawnThorsHammer(): void;

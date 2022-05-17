@@ -35,6 +35,8 @@ namespace Bullets {
         killcount: number = 1;
 
         texturePath: string;
+        lastPosition: ƒ.Vector3;
+        countCheckUpdate: number = 0;
 
         public despawn() {
             if (this.lifetime >= 0 && this.lifetime != null) {
@@ -89,6 +91,7 @@ namespace Bullets {
 
             this.serverPrediction = new Networking.ServerBulletPrediction(this.netId);
             this.clientPrediction = new Networking.ClientBulletPrediction(this.netId);
+            this.lastPosition = this.mtxLocal.translation;
             this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
         }
 
@@ -101,8 +104,12 @@ namespace Bullets {
         }
 
         public predict() {
-            if (Networking.client.idHost != Networking.client.id && this.owner == Game.avatar1) {
-                this.clientPrediction.update();
+            if (Networking.client.idHost != Networking.client.id) {
+                if (this.owner == Game.avatar1) {
+                    this.clientPrediction.update();
+                } else {
+                    this.checkUpdate();
+                }
             }
             else {
                 if (this.owner == Game.avatar2) {
@@ -116,6 +123,20 @@ namespace Bullets {
                 this.despawn();
             }
         }
+
+        protected checkUpdate() {
+            if (this.lastPosition == this.mtxLocal.translation) {
+                this.countCheckUpdate++;
+                if (this.countCheckUpdate >= (2 * 60)) {
+                    this.lifetime = 0;
+                    this.despawn();
+                }
+            } else {
+                this.countCheckUpdate = 0;
+            }
+            this.lastPosition = this.mtxLocal.translation;
+        }
+
         public move(_direction: Game.ƒ.Vector3) {
             _direction.normalize();
             if (Networking.client.idHost == Networking.client.id && this.owner == Game.avatar2) {
