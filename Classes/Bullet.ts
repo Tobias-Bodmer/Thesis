@@ -158,7 +158,7 @@ namespace Bullets {
         }
 
         protected loadTexture() {
-            if (this.texturePath != "" || this.texturePath != null) {
+            if (this.texturePath != "" && this.texturePath != null) {
                 let newTxt: ƒ.TextureImage = new ƒ.TextureImage();
                 let newCoat: ƒ.CoatRemissiveTextured = new ƒ.CoatRemissiveTextured();
                 let newMtr: ƒ.Material = new ƒ.Material("mtr", ƒ.ShaderFlatTextured, newCoat);

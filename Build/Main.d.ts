@@ -962,6 +962,7 @@ declare namespace Player {
         readonly abilityCooldownTime: number;
         currentabilityCooldownTime: number;
         weapon: Weapons.Weapon;
+        swordRadius: number;
         attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
         doAbility(): void;
     }

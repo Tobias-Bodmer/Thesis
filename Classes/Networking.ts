@@ -551,7 +551,7 @@ namespace Networking {
 
     export function updateInventory(_add: boolean, _itemId: Items.ITEMID, _itemNetId: number, _netId: number) {
         if (client.id == client.idHost) {
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.UPDATEINVENTORY, add: _add, itemId: _itemId, itemNetId: _itemNetId, netId: _netId } })
+            client.dispatch({ route: undefined, idTarget: client.idHost, content: { text: FUNCTION.UPDATEINVENTORY, add: _add, itemId: _itemId, itemNetId: _itemNetId, netId: _netId } })
         }
     }
 

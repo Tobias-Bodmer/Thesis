@@ -289,20 +289,18 @@ namespace Items {
                     }
                     break;
                 case ITEMID.THORSHAMMER:
-                    if (_avatar instanceof Player.Ranged) {
-                        localStorage.setItem("cooldownTime", _avatar.weapon.getCoolDown.getMaxCoolDown.toString());
-                        localStorage.setItem("aimType", Weapons.AIM[_avatar.weapon.aimType]);
-                        localStorage.setItem("bulletType", Bullets.BULLETTYPE[_avatar.weapon.bulletType]);
-                        localStorage.setItem("projectileAmount", _avatar.weapon.projectileAmount.toString());
+                    localStorage.setItem("cooldownTime", _avatar.weapon.getCoolDown.getMaxCoolDown.toString());
+                    localStorage.setItem("aimType", Weapons.AIM[_avatar.weapon.aimType]);
+                    localStorage.setItem("bulletType", Bullets.BULLETTYPE[_avatar.weapon.bulletType]);
+                    localStorage.setItem("projectileAmount", _avatar.weapon.projectileAmount.toString());
 
-                        _avatar.weapon.getCoolDown.setMaxCoolDown = 100 * 60;
-                        _avatar.weapon.aimType = Weapons.AIM.NORMAL;
-                        _avatar.weapon.bulletType = Bullets.BULLETTYPE.THORSHAMMER;
-                        _avatar.weapon.projectileAmount = 1;
-                        _avatar.weapon.canShoot = true;
+                    _avatar.weapon.getCoolDown.setMaxCoolDown = 100 * 60;
+                    _avatar.weapon.aimType = Weapons.AIM.NORMAL;
+                    _avatar.weapon.bulletType = Bullets.BULLETTYPE.THORSHAMMER;
+                    _avatar.weapon.projectileAmount = 1;
+                    _avatar.weapon.canShoot = true;
 
-                        Networking.updateAvatarWeapon(_avatar.weapon, _avatar.netId);
-                    }
+                    Networking.updateAvatarWeapon(_avatar.weapon, _avatar.netId);
                     break;
                 case ITEMID.ZIPZAP:
                     if (_add) {

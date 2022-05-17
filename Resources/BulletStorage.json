@@ -33,9 +33,9 @@
         {
             "name": "melee",
             "type": 3,
-            "speed": 6,
+            "speed": 30,
             "hitPointsScale": 2,
-            "lifetime": 6,
+            "lifetime": 0,
             "knockbackForce": 4,
             "killcount": 8,
             "texturePath": ""

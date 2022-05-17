@@ -148,15 +148,35 @@ namespace Player {
         currentabilityCooldownTime: number = this.abilityCooldownTime;
 
         public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.MELEE, 1, this.netId, Weapons.AIM.NORMAL);
+        public swordRadius: number = 0.75;
 
 
         public attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean) {
             this.weapon.shoot(this.mtxLocal.translation.toVector2(), _direction, _netId, _sync);
         }
 
+        // public attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean) {
+        //     let newPos: Game.ƒ.Vector2 = this.mtxLocal.translation.clone.toVector2();
+
+        //     if (_direction.magnitude > 0) {
+        //         _direction.normalize();
+        //         _direction.scale(0.5);
+        //     }
+
+        //     newPos.add(_direction.toVector2());
+
+        //     let swordCollider: Collider.Collider = new Collider.Collider(newPos, this.swordRadius / 2, this.netId);
+
+        //     Game.enemies.forEach(enemy => {
+        //         if (swordCollider.collides(enemy.collider)) {
+        //             enemy.getDamage(this.attributes.attackPoints);
+        //         }
+        //     })
+        // }
+
         //Block
         public doAbility() {
-
+            this.block.doAbility();
         }
     }
     export class Ranged extends Player {

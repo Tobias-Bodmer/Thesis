@@ -345,13 +345,15 @@ namespace Generation {
         }
 
         public onAddToGraph(): void {
-            switch (this.challenge) {
-                case CHALLENGE.THORSHAMMER:
-                    this.startThorsHammerChallenge();
-                    break;
+            if (Networking.client.id == Networking.client.idHost) {
+                switch (this.challenge) {
+                    case CHALLENGE.THORSHAMMER:
+                        this.startThorsHammerChallenge();
+                        break;
 
-                default:
-                    break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -373,7 +375,6 @@ namespace Generation {
             }
 
             thorshammer.addItemToEntity(choosenOne);
-            choosenOne.items.push(thorshammer);
             Networking.updateInventory(true, thorshammer.id, thorshammer.netId, choosenOne.netId);
             Networking.updateAvatarWeapon(Game.avatar1.weapon, Game.avatar1.netId);
             Networking.updateAvatarWeapon(Game.avatar2.weapon, Game.avatar2.netId);
