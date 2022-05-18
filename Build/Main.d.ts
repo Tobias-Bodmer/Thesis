@@ -1166,7 +1166,6 @@ declare namespace Weapons {
         abstract getType(): WEAPONTYPE;
         protected inaccuracy(_direciton: ƒ.Vector3): void;
         protected fire(_magazine: Bullets.Bullet[], _sync: boolean): void;
-        setBulletDirection(_magazine: Bullets.Bullet[]): Bullets.Bullet[];
     }
     class RangedWeapon extends Weapon {
         magazin: Bullets.Bullet[];

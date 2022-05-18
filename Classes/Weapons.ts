@@ -44,24 +44,6 @@ namespace Weapons {
                 bullet.spawn(_sync);
             })
         }
-
-        setBulletDirection(_magazine: Bullets.Bullet[]) {
-            switch (_magazine.length) {
-                case 1:
-                    return _magazine;
-                case 2:
-                    _magazine[0].mtxLocal.rotateZ(45 / 2);
-                    _magazine[1].mtxLocal.rotateZ(45 / 2 * -1);
-                    return _magazine;
-                case 3:
-                    _magazine[0].mtxLocal.rotateZ(45 / 2);
-                    _magazine[1].mtxLocal.rotateZ(45 / 2 * -1);
-                default:
-                    return _magazine;
-            }
-        }
-
-
     }
 
     //TODO: BIG FUCKING CHANGES.
@@ -207,7 +189,6 @@ namespace Weapons {
                 }
                 else {
                     let magazine: Bullets.Bullet[] = this.loadMagazine(_position, _direction, this.bulletType, _bulletNetId);
-                    this.setBulletDirection(magazine);
                     this.fire(magazine, _sync);
                 }
             }
