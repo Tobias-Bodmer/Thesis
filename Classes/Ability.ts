@@ -118,7 +118,7 @@ namespace Ability {
             }
             for (let i = 0; i < this.bulletAmount; i++) {
                 Game.graph.addChild(this.bullets[i]);
-                Networking.spawnBullet(Weapons.AIM.NORMAL, this.bullets[i].direction, this.bullets[i].netId, this.ownerNetId);
+                Networking.spawnBullet(this.bullets[i].direction, this.bullets[i].netId, this.ownerNetId);
             }
         }
     }
@@ -137,6 +137,7 @@ namespace Ability {
         public startCoolDown() {
             this.hasCoolDown = true
             Game.ƒ.Loop.addEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
+
         }
 
         private endCoolDown() {
@@ -145,6 +146,7 @@ namespace Ability {
             }
             this.hasCoolDown = false;
             Game.ƒ.Loop.removeEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
+
         }
 
         public eventUpdate = (_event: Event): void => {

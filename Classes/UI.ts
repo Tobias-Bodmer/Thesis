@@ -11,12 +11,12 @@ namespace UI {
         updateInvUI(Game.avatar1.items, player1UI);
 
         //Avatar2 UI
-        if (Game.connected) {
-            (<HTMLDivElement>player2UI.querySelector("#HP")).style.width = (Game.avatar2.attributes.healthPoints / Game.avatar2.attributes.maxHealthPoints * 100) + "%";
 
-            //InventoryUI
-            updateInvUI(Game.avatar2.items, player2UI);
-        }
+        (<HTMLDivElement>player2UI.querySelector("#HP")).style.width = (Game.avatar2.attributes.healthPoints / Game.avatar2.attributes.maxHealthPoints * 100) + "%";
+
+        //InventoryUI
+        updateInvUI(Game.avatar2.items, player2UI);
+
 
         function updateInvUI(_inv: Items.Item[], _ui: HTMLElement) {
             _ui.querySelector("#Inventory").querySelectorAll("img").forEach((imgElement) => {

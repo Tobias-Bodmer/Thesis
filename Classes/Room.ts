@@ -363,8 +363,6 @@ namespace Generation {
             //     return;
             // }
 
-            Game.avatar1.weapon.canShoot = false;
-            Game.avatar2.weapon.canShoot = false;
 
             let thorshammer: Items.InternalItem = new Items.InternalItem(Items.ITEMID.THORSHAMMER);
             let choosenOne: Player.Player;
@@ -376,6 +374,13 @@ namespace Generation {
 
             thorshammer.addItemToEntity(choosenOne);
             Networking.updateInventory(true, thorshammer.id, thorshammer.netId, choosenOne.netId);
+
+            if (choosenOne != Game.avatar1) {
+                Game.avatar1.weapon = new Weapons.ThorsHammer(100 * 60, 1, Bullets.BULLETTYPE.THORSHAMMER, 1, Game.avatar1.netId);
+            } else {
+                Game.avatar2.weapon = new Weapons.ThorsHammer(100 * 60, 1, Bullets.BULLETTYPE.THORSHAMMER, 1, Game.avatar1.netId);
+            }
+
             Networking.updateAvatarWeapon(Game.avatar1.weapon, Game.avatar1.netId);
             Networking.updateAvatarWeapon(Game.avatar2.weapon, Game.avatar2.netId);
         }
@@ -388,26 +393,15 @@ namespace Generation {
                 if (avatar1Inv != undefined) {
                     Game.avatar1.items.splice(Game.avatar1.items.indexOf(avatar1Inv), 1);
                     Networking.updateInventory(false, avatar1Inv.id, avatar1Inv.netId, Game.avatar1.netId);
-
-                    Game.avatar1.weapon.getCoolDown.setMaxCoolDown = +localStorage.getItem("cooldownTime");
-                    Game.avatar1.weapon.aimType = (<any>Weapons.AIM)[localStorage.getItem("aimType")];
-                    Game.avatar1.weapon.bulletType = (<any>Bullets.BULLETTYPE)[localStorage.getItem("bulletType")];
-                    Game.avatar1.weapon.projectileAmount = +localStorage.getItem("projectileAmount");
                 }
 
                 if (avatar2Inv != undefined) {
                     Game.avatar2.items.splice(Game.avatar2.items.indexOf(avatar2Inv), 1);
                     Networking.updateInventory(false, avatar2Inv.id, avatar2Inv.netId, Game.avatar2.netId);
-
-                    Game.avatar2.weapon.getCoolDown.setMaxCoolDown = +localStorage.getItem("cooldownTime");
-                    Game.avatar2.weapon.aimType = (<any>Weapons.AIM)[localStorage.getItem("aimType")];
-                    Game.avatar2.weapon.bulletType = (<any>Bullets.BULLETTYPE)[localStorage.getItem("bulletType")];
-                    Game.avatar2.weapon.projectileAmount = +localStorage.getItem("projectileAmount");
                 }
 
-
-                Game.avatar1.weapon.canShoot = true;
-                Game.avatar2.weapon.canShoot = true;
+                Game.avatar1.weapon = (<Weapons.ThorsHammer>Game.avatar1.weapon).weaponStorage;
+                Game.avatar2.weapon = (<Weapons.ThorsHammer>Game.avatar2.weapon).weaponStorage;
 
                 Networking.updateAvatarWeapon(Game.avatar1.weapon, Game.avatar1.netId);
                 Networking.updateAvatarWeapon(Game.avatar2.weapon, Game.avatar2.netId);

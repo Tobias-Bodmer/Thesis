@@ -44,7 +44,7 @@ namespace Enemy {
         private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 0, 1, 45);
         private dash: Ability.Dash = new Ability.Dash(this.netId, 45, 1, 13 * 60, 5);
         private shoot360: Ability.circleShoot = new Ability.circleShoot(this.netId, 0, 3, 5 * 60);
-        private dashWeapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.SUMMONER, 1, this.netId, Weapons.AIM.NORMAL);
+        private dashWeapon: Weapons.Weapon = new Weapons.RangedWeapon(12, 1, Bullets.BULLETTYPE.SUMMONER, 1, this.netId, Weapons.AIM.NORMAL);
         private flock: FlockingBehaviour = new FlockingBehaviour(this, 4, 4, 0, 0, 1, 1, 1, 2);
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _position, _netId);
@@ -120,7 +120,7 @@ namespace Enemy {
                 }
 
                 if (this.dash.doesAbility) {
-                    this.dashWeapon.shoot(this.mtxLocal.translation.toVector2(), Game.ƒ.Vector2.DIFFERENCE(this.target, this.mtxLocal.translation.toVector2()).toVector3(), null, true);
+                    this.dashWeapon.shoot(Game.ƒ.Vector2.DIFFERENCE(this.target, this.mtxLocal.translation.toVector2()).toVector3(), true, null);
                     this.dashWeapon.getCoolDown.setMaxCoolDown = Calculation.clampNumber(Math.random() * 30, 8, 30);
                 }
             } else {
@@ -149,7 +149,6 @@ namespace Enemy {
         }
 
         stopDefencePhase = () => {
-            this.damageTaken = 0;
             this.summonPosition.set(Game.currentRoom.mtxWorld.translation.x, Game.currentRoom.mtxWorld.translation.y, this.mtxWorld.translation.z);
             if (this.teleport()) {
                 this.shooting360();

@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -17,7 +17,6 @@ declare namespace Game {
     let avatar2: Player.Player;
     let currentRoom: Generation.Room;
     let miniMap: UI.Minimap;
-    let connected: boolean;
     let deltaTime: number;
     let serverPredictionAvatar: Networking.ServerPrediction;
     let currentNetObj: Interfaces.INetworkObjects[];
@@ -106,11 +105,11 @@ declare namespace Entity {
         attributes: Attributes;
         collider: Collider.Collider;
         items: Array<Items.Item>;
-        weapon: Weapons.Weapon;
         buffs: Buff.Buff[];
         offsetColliderX: number;
         offsetColliderY: number;
         colliderScaleFaktor: number;
+        weapon: Weapons.Weapon;
         protected canMoveX: boolean;
         protected canMoveY: boolean;
         protected moveDirection: Game.ƒ.Vector3;
@@ -133,7 +132,6 @@ declare namespace Entity {
         getDamage(_value: number): void;
         die(): void;
         private getDamageReduction;
-        doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
         protected reduceKnockback(): void;
         switchAnimation(_name: ANIMATIONSTATES): void;
@@ -184,7 +182,6 @@ declare namespace Enemy {
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
         update(): void;
         getDamage(_value: number): void;
-        doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
         move(_direction: ƒ.Vector3): void;
         moveBehaviour(): void;
@@ -249,7 +246,6 @@ declare namespace Interfaces {
         despawn(): void;
     }
     interface IKnockbackable {
-        doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     }
     interface IKillable {
@@ -281,6 +277,12 @@ declare namespace Interfaces {
     interface IStatePayload {
         tick: number;
         position: Game.ƒ.Vector3;
+    }
+    interface IMagazin {
+        bulletTypes: Bullets.BULLETTYPE[];
+        directions: Game.ƒ.Vector2[];
+        ownerNetId: number;
+        netIds: number[];
     }
     interface IRoomExits {
         north: boolean;
@@ -318,7 +320,7 @@ declare namespace Items {
         GETSTRONKO = 13,
         GETWEAKO = 14,
         ZIPZAP = 15,
-        TEST = 16
+        AOETEST = 16
     }
     let txtIceBucket: ƒ.TextureImage;
     let txtDmgUp: ƒ.TextureImage;
@@ -726,10 +728,12 @@ declare namespace Bullets {
         texturePath: string;
         lastPosition: ƒ.Vector3;
         countCheckUpdate: number;
-        despawn(): void;
         constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerNetId: number, _netId?: number);
         eventUpdate: (_event: Event) => void;
         protected update(): void;
+        spawn(_sync: boolean): void;
+        despawn(): void;
+        protected updateLifetime(): void;
         predict(): void;
         protected checkUpdate(): void;
         move(_direction: Game.ƒ.Vector3): void;
@@ -873,20 +877,21 @@ declare namespace Networking {
         BULLETPREDICT = 12,
         BULLETTRANSFORM = 13,
         BULLETDIE = 14,
-        SPAWNENEMY = 15,
-        ENEMYTRANSFORM = 16,
-        ENTITYANIMATIONSTATE = 17,
-        ENTITYDIE = 18,
-        SPAWNINTERNALITEM = 19,
-        UPDATEATTRIBUTES = 20,
-        UPDATEWEAPON = 21,
-        ITEMDIE = 22,
-        SENDROOM = 23,
-        SWITCHROOMREQUEST = 24,
-        UPDATEBUFF = 25,
-        UPDATEUI = 26,
-        SPWANMINIMAP = 27,
-        SPAWNZIPZAP = 28
+        SENDMAGAZIN = 15,
+        SPAWNENEMY = 16,
+        ENEMYTRANSFORM = 17,
+        ENTITYANIMATIONSTATE = 18,
+        ENTITYDIE = 19,
+        SPAWNINTERNALITEM = 20,
+        UPDATEATTRIBUTES = 21,
+        UPDATEWEAPON = 22,
+        ITEMDIE = 23,
+        SENDROOM = 24,
+        SWITCHROOMREQUEST = 25,
+        UPDATEBUFF = 26,
+        UPDATEUI = 27,
+        SPWANMINIMAP = 28,
+        SPAWNZIPZAP = 29
     }
     import ƒClient = FudgeNet.FudgeClient;
     let client: ƒClient;
@@ -915,7 +920,8 @@ declare namespace Networking {
     function knockbackPush(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function updateInventory(_add: boolean, _itemId: Items.ITEMID, _itemNetId: number, _netId: number): void;
     function spawnMinimap(_miniMapInfos: Interfaces.IMinimapInfos[]): void;
-    function spawnBullet(_aimType: Weapons.AIM, _direction: ƒ.Vector3, _bulletNetId: number, _ownerNetId: number, _bulletTarget?: ƒ.Vector3): void;
+    function spawnBullet(_direction: ƒ.Vector3, _bulletNetId: number, _ownerNetId: number): void;
+    function sendMagazin(_magazin: Interfaces.IMagazin): void;
     function sendBulletInput(_netId: number, _inputPayload: Interfaces.IInputBulletPayload): void;
     function updateBullet(_position: ƒ.Vector3, _rotation: ƒ.Vector3, _netId: number): void;
     function removeBullet(_netId: number): void;
@@ -944,7 +950,6 @@ declare namespace Networking {
 }
 declare namespace Player {
     abstract class Player extends Entity.Entity {
-        weapon: Weapons.Weapon;
         client: Networking.ClientPrediction;
         readonly abilityCount: number;
         currentabilityCount: number;
@@ -955,8 +960,7 @@ declare namespace Player {
         predict(): void;
         collide(_direction: Game.ƒ.Vector3): void;
         getItemCollision(): void;
-        attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
-        doKnockback(_body: Entity.Entity): void;
+        abstract attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
         getKnockback(_knockbackForce: number, _position: ƒ.Vector3): void;
         doAbility(): void;
     }
@@ -970,9 +974,11 @@ declare namespace Player {
         doAbility(): void;
     }
     class Ranged extends Player {
+        weapon: Weapons.RangedWeapon;
         dash: Ability.Dash;
         performAbility: boolean;
         lastMoveDirection: Game.ƒ.Vector3;
+        attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
         move(_direction: ƒ.Vector3): void;
         doAbility(): void;
     }
@@ -1135,7 +1141,16 @@ declare namespace Entity {
     }
 }
 declare namespace Weapons {
-    class Weapon {
+    enum AIM {
+        NORMAL = 0,
+        HOMING = 1
+    }
+    enum WEAPONTYPE {
+        RANGEDWEAPON = 0,
+        MELEEWEAPON = 1,
+        THORSHAMMERWEAPON = 2
+    }
+    abstract class Weapon {
         ownerNetId: number;
         get owner(): Entity.Entity;
         protected cooldown: Ability.Cooldown;
@@ -1146,16 +1161,35 @@ declare namespace Weapons {
         aimType: AIM;
         bulletType: Bullets.BULLETTYPE;
         projectileAmount: number;
-        canShoot: boolean;
         constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _ownerNetId: number, _aimType: AIM);
-        shoot(_position: ƒ.Vector2, _direciton: ƒ.Vector3, _bulletNetId?: number, _sync?: boolean): void;
-        inaccuracy(_direciton: ƒ.Vector3): void;
-        fire(_magazine: Bullets.Bullet[], _sync?: boolean): void;
+        abstract shoot(_direction: ƒ.Vector3, _sync: boolean, _bulletNetId?: number): void;
+        abstract getType(): WEAPONTYPE;
+        protected inaccuracy(_direciton: ƒ.Vector3): void;
+        protected fire(_magazine: Bullets.Bullet[], _sync: boolean): void;
         setBulletDirection(_magazine: Bullets.Bullet[]): Bullets.Bullet[];
-        loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.BULLETTYPE, _netId?: number): Bullets.Bullet[];
     }
-    enum AIM {
-        NORMAL = 0,
-        HOMING = 1
+    class RangedWeapon extends Weapon {
+        magazin: Bullets.Bullet[];
+        get getMagazin(): Bullets.Bullet[];
+        set setMagazin(_magazin: Bullets.Bullet[]);
+        protected ItemFunctions: Function[];
+        shoot(_direction: ƒ.Vector3, _sync: boolean, _bulletNetId?: number): void;
+        private sendMagazin;
+        protected fire(_magazine: Bullets.Bullet[], _sync: boolean): void;
+        addFunction(_func: Function): void;
+        deleteFunction(_func: Function): void;
+        private processItemEffects;
+        protected loadMagazine(_position: ƒ.Vector2, _direction: ƒ.Vector3, _bulletType: Bullets.BULLETTYPE, _netId?: number): Bullets.Bullet[];
+        getType(): WEAPONTYPE;
+    }
+    class MeleeWeapon extends Weapon {
+        shoot(_direction: ƒ.Vector3, _sync: boolean, _bulletNetId?: number): void;
+        getType(): WEAPONTYPE;
+    }
+    class ThorsHammer extends RangedWeapon {
+        weaponStorage: Weapon;
+        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _ownerNetId: number);
+        getType(): WEAPONTYPE;
+        shoot(_direction: ƒ.Vector3, _sync: boolean, _bulletNetId?: number): void;
     }
 }

@@ -84,7 +84,7 @@ namespace Generation {
     }
 
     function generateStartRoom(): StartRoom {
-        let startRoom: StartRoom = new StartRoom(new ƒ.Vector2(0, 0), 20);
+        let startRoom: StartRoom = new StartRoom(new ƒ.Vector2(0, 0), 30);
         return startRoom;
     }
 

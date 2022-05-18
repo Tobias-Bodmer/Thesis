@@ -38,20 +38,7 @@ namespace Bullets {
         lastPosition: ƒ.Vector3;
         countCheckUpdate: number = 0;
 
-        public despawn() {
-            if (this.lifetime >= 0 && this.lifetime != null) {
-                this.lifetime--;
-                if (this.lifetime < 0) {
-                    Networking.popID(this.netId);
-                    Networking.removeBullet(this.netId);
-                    Game.graph.removeChild(this);
 
-                    if (this.type == BULLETTYPE.THORSHAMMER) {
-                        this.spawnThorsHammer();
-                    }
-                }
-            }
-        }
 
         constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerNetId: number, _netId?: number) {
             super(BULLETTYPE[_bulletType]);
@@ -83,6 +70,7 @@ namespace Bullets {
 
             let colliderPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
             this.collider = new Collider.Collider(colliderPosition, this.cmpTransform.mtxLocal.scaling.y / 1.5, this.netId);
+            _direction.normalize();
             this.updateRotation(_direction);
             this.loadTexture();
             this.flyDirection = ƒ.Vector3.X();
@@ -101,15 +89,43 @@ namespace Bullets {
 
         protected update() {
             this.predict();
+            if (Networking.client.idHost == Networking.client.id) {
+                this.updateLifetime();
+            }
+        }
+
+        public spawn(_sync: boolean) {
+            Game.graph.addChild(this);
+            if (_sync) {
+                // Networking.spawnBullet(this.direction, this.netId, this.ownerNetId);
+            }
+        }
+
+        public despawn() {
+            Networking.popID(this.netId);
+            Networking.removeBullet(this.netId);
+            Game.graph.removeChild(this);
+
+            if (this.type == BULLETTYPE.THORSHAMMER) {
+                this.spawnThorsHammer();
+            }
+        }
+
+        protected updateLifetime() {
+            if (this.lifetime >= 0 && this.lifetime != null) {
+                this.lifetime--;
+                if (this.lifetime < 0) {
+                    this.despawn();
+                }
+            }
         }
 
         public predict() {
             if (Networking.client.idHost != Networking.client.id) {
                 if (this.owner == Game.avatar1) {
                     this.clientPrediction.update();
-                } else {
-                    this.checkUpdate();
                 }
+                this.checkUpdate();
             }
             else {
                 if (this.owner == Game.avatar2) {
@@ -119,16 +135,12 @@ namespace Bullets {
                     Networking.updateBullet(this.mtxLocal.translation, this.mtxLocal.rotation, this.netId);
                 }
             }
-            if (Networking.client.idHost == Networking.client.id) {
-                this.despawn();
-            }
         }
 
         protected checkUpdate() {
             if (this.lastPosition == this.mtxLocal.translation) {
                 this.countCheckUpdate++;
                 if (this.countCheckUpdate >= (2 * 60)) {
-                    this.lifetime = 0;
                     this.despawn();
                 }
             } else {
@@ -169,12 +181,14 @@ namespace Bullets {
                 }
                 item.spawn();
 
-                this.owner.weapon.getCoolDown.setMaxCoolDown = +localStorage.getItem("cooldownTime");
-                this.owner.weapon.aimType = (<any>Weapons.AIM)[localStorage.getItem("aimType")];
-                this.owner.weapon.bulletType = (<any>BULLETTYPE)[localStorage.getItem("bulletType")];
-                this.owner.weapon.projectileAmount = +localStorage.getItem("projectileAmount");
-                this.owner.weapon.canShoot = false;
-                Networking.updateAvatarWeapon(this.owner.weapon, this.ownerNetId);
+                this.owner.weapon = (<Weapons.ThorsHammer>this.owner.weapon).weaponStorage;
+
+                // this.owner.weapon.getCoolDown.setMaxCoolDown = +localStorage.getItem("cooldownTime");
+                // this.owner.weapon.aimType = (<any>Weapons.AIM)[localStorage.getItem("aimType")];
+                // this.owner.weapon.bulletType = (<any>BULLETTYPE)[localStorage.getItem("bulletType")];
+                // this.owner.weapon.projectileAmount = +localStorage.getItem("projectileAmount");
+                // this.owner.weapon.canShoot = false;
+                Networking.updateAvatarWeapon((<Player.Player>this.owner).weapon, this.ownerNetId);
             }
         }
 
@@ -258,7 +272,7 @@ namespace Bullets {
             }
 
             if (this.killcount <= 0) {
-                this.lifetime = 0;
+                this.despawn();
             }
 
             colliders = [];
@@ -266,7 +280,7 @@ namespace Bullets {
             colliders.forEach((_elem) => {
                 let element: Generation.Wall = (<Generation.Wall>_elem);
                 if (element.collider != undefined && this.collider.collidesRect(element.collider)) {
-                    this.lifetime = 0;
+                    this.despawn();
                 }
             })
         }

@@ -1,8 +1,6 @@
 namespace Player {
 
     export abstract class Player extends Entity.Entity {
-        public weapon: Weapons.Weapon = new Weapons.Weapon(25, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId, Weapons.AIM.NORMAL);
-
         public client: Networking.ClientPrediction;
         readonly abilityCount: number = 1;
         currentabilityCount: number = this.abilityCount;
@@ -125,13 +123,9 @@ namespace Player {
         }
 
 
-        public attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean) {
-            this.weapon.shoot(this.mtxLocal.translation.toVector2(), _direction, _netId, _sync);
-        }
+        public abstract attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
 
-        public doKnockback(_body: Entity.Entity): void {
-            // (<Enemy.Enemy>_body).getKnockback(this.knockbackForce, this.cmpTransform.mtxLocal.translation);
-        }
+
 
         public getKnockback(_knockbackForce: number, _position: ƒ.Vector3): void {
             super.getKnockback(_knockbackForce, _position);
@@ -147,32 +141,13 @@ namespace Player {
         readonly abilityCooldownTime: number = 40;
         currentabilityCooldownTime: number = this.abilityCooldownTime;
 
-        public weapon: Weapons.Weapon = new Weapons.Weapon(12, 1, Bullets.BULLETTYPE.MELEE, 1, this.netId, Weapons.AIM.NORMAL);
+        public weapon: Weapons.Weapon = new Weapons.MeleeWeapon(12, 1, Bullets.BULLETTYPE.MELEE, 1, this.netId, Weapons.AIM.NORMAL);
         public swordRadius: number = 0.75;
 
 
         public attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean) {
-            this.weapon.shoot(this.mtxLocal.translation.toVector2(), _direction, _netId, _sync);
+            this.weapon.shoot(_direction, _sync, _netId);
         }
-
-        // public attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean) {
-        //     let newPos: Game.ƒ.Vector2 = this.mtxLocal.translation.clone.toVector2();
-
-        //     if (_direction.magnitude > 0) {
-        //         _direction.normalize();
-        //         _direction.scale(0.5);
-        //     }
-
-        //     newPos.add(_direction.toVector2());
-
-        //     let swordCollider: Collider.Collider = new Collider.Collider(newPos, this.swordRadius / 2, this.netId);
-
-        //     Game.enemies.forEach(enemy => {
-        //         if (swordCollider.collides(enemy.collider)) {
-        //             enemy.getDamage(this.attributes.attackPoints);
-        //         }
-        //     })
-        // }
 
         //Block
         public doAbility() {
@@ -180,11 +155,14 @@ namespace Player {
         }
     }
     export class Ranged extends Player {
-
+        public weapon = new Weapons.RangedWeapon(25, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId, Weapons.AIM.NORMAL);
         public dash: Ability.Dash = new Ability.Dash(this.netId, 8, 1, 60, 5);
         performAbility: boolean = false;
         lastMoveDirection: Game.ƒ.Vector3;
 
+        public attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean): void {
+            this.weapon.shoot(_direction, _sync, _netId);
+        }
         public move(_direction: ƒ.Vector3) {
             if (this.dash.doesAbility) {
                 super.move(this.lastMoveDirection);

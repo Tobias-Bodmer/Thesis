@@ -17,6 +17,7 @@ namespace Networking {
         BULLETPREDICT,
         BULLETTRANSFORM,
         BULLETDIE,
+        SENDMAGAZIN,
         SPAWNENEMY,
         ENEMYTRANSFORM,
         ENTITYANIMATIONSTATE,
@@ -204,283 +205,298 @@ namespace Networking {
                     }
 
                     //Runtime updates and communication
-                    if (Game.connected) {
+                    //Sync avatar2 position and rotation
+                    if (message.content != undefined && message.content.text == FUNCTION.TRANSFORM.toString()) {
+                        // let test: Game.ƒ.Vector3 = message.content.value.data;
+                        // // console.log(test);
+                        let moveVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.value.data[0], message.content.value.data[1], message.content.value.data[2]);
+                        let rotateVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.rotation.data[0], message.content.rotation.data[1], message.content.rotation.data[2]);
 
-                        //Sync avatar2 position and rotation
-                        if (message.content != undefined && message.content.text == FUNCTION.TRANSFORM.toString()) {
-                            // let test: Game.ƒ.Vector3 = message.content.value.data;
-                            // // console.log(test);
-                            let moveVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.value.data[0], message.content.value.data[1], message.content.value.data[2]);
-                            let rotateVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.rotation.data[0], message.content.rotation.data[1], message.content.rotation.data[2]);
-
-                            if (Game.avatar2 != undefined) {
-                                Game.avatar2.mtxLocal.translation = moveVector;
-                                Game.avatar2.mtxLocal.rotation = rotateVector;
-                                Game.avatar2.collider.position = moveVector.toVector2();
-                                if (Networking.client.id == Networking.client.idHost) {
-                                    // Game.avatar2.avatarPrediction();
-                                }
+                        if (Game.avatar2 != undefined) {
+                            Game.avatar2.mtxLocal.translation = moveVector;
+                            Game.avatar2.mtxLocal.rotation = rotateVector;
+                            Game.avatar2.collider.position = moveVector.toVector2();
+                            if (Networking.client.id == Networking.client.idHost) {
+                                // Game.avatar2.avatarPrediction();
                             }
-                        }
-
-                        //Update inventory
-                        if (message.content != undefined && message.content.text == FUNCTION.UPDATEINVENTORY.toString()) {
-                            let newItem: Items.Item;
-                            if (Items.getBuffItemById(message.content.itemId) != null) {
-                                newItem = new Items.BuffItem(message.content.itemId, message.content.itemNetId);
-                            } else if (Items.getInternalItemById(message.content.itemId) != null) {
-                                newItem = new Items.InternalItem(message.content.itemId, message.content.itemNetId);
-                            }
-
-                            let entity = Game.entities.find(elem => (<Player.Player>elem).netId == message.content.netId);
-
-                            if (message.content.add) {
-                                entity.items.push(newItem);
-                            } else {
-                                entity.items.splice(entity.items.indexOf(entity.items.find(item => item.id == newItem.id)), 1);
-                            }
-                        }
-
-                        //Client request for move knockback
-                        if (message.content != undefined && message.content.text == FUNCTION.KNOCKBACKREQUEST.toString()) {
-                            let position: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
-                            let enemy: Enemy.Enemy = Game.enemies.find(elem => elem.netId == message.content.netId);
-
-                            enemy.getKnockback(message.content.knockbackForce, position);
-                        }
-
-                        //Host push move knockback from enemy
-                        if (message.content != undefined && message.content.text == FUNCTION.KNOCKBACKPUSH.toString()) {
-                            if (client.id != client.idHost) {
-                                let position: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
-
-                                Game.avatar1.getKnockback(message.content.knockbackForce, position);
-                            }
-                        }
-
-                        //Spawn bullet from host
-                        if (message.content != undefined && message.content.text == FUNCTION.SPAWNBULLET.toString()) {
-                            let bullet: Bullets.Bullet;
-                            let entity: Entity.Entity = Game.entities.find(elem => elem.netId == message.content.ownerNetId);
-
-                            if (entity != null) {
-                                let weapon: Weapons.Weapon = entity.weapon;
-                                let direciton: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]);
-                                switch (<Weapons.AIM>message.content.aimType) {
-                                    case Weapons.AIM.NORMAL:
-                                        bullet = new Bullets.Bullet(weapon.bulletType, entity.mtxLocal.translation.toVector2(), direciton, entity.netId, message.content.bulletNetId);
-                                        break;
-                                    case Weapons.AIM.HOMING:
-                                        let bulletTarget: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.bulletTarget.data[0], message.content.bulletTarget.data[1], message.content.bulletTarget.data[2]);
-                                        bullet = new Bullets.HomingBullet(weapon.bulletType, entity.mtxLocal.translation.toVector2(), direciton, entity.netId, bulletTarget, message.content.bulletNetId);
-                                        break;
-
-                                    default:
-                                        break;
-                                }
-                                Game.graph.addChild(bullet);
-                            }
-                        }
-
-                        //Sync bullet transform from host to client
-                        if (message.content != undefined && message.content.text == FUNCTION.BULLETTRANSFORM.toString()) {
-                            if (Game.currentNetObj.find(element => element.netId == message.content.netId) != undefined) {
-                                if (Game.currentNetObj.find(element => element.netId == message.content.netId).netObjectNode != null) {
-                                    let newPosition: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
-                                    let newRotation: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.rotation.data[0], message.content.rotation.data[1], message.content.rotation.data[2]);
-                                    Game.currentNetObj.find(element => element.netId == message.content.netId).netObjectNode.mtxLocal.translation = newPosition;
-                                    Game.currentNetObj.find(element => element.netId == message.content.netId).netObjectNode.mtxLocal.rotation = newRotation;
-                                }
-                            }
-                        }
-
-
-                        //Kill bullet at the client from host
-                        if (message.content != undefined && message.content.text == FUNCTION.BULLETDIE.toString()) {
-                            if (client.id != client.idHost) {
-                                let bullet = Game.bullets.find(element => element.netId == message.content.netId);
-
-                                if (bullet != undefined) {
-                                    bullet.lifetime = 0;
-                                    bullet.despawn();
-                                }
-                            }
-                        }
-
-                        //Spawn enemy at the client 
-                        if (message.content != undefined && message.content.text == FUNCTION.SPAWNENEMY.toString()) {
-                            EnemySpawner.networkSpawnById(
-                                message.content.enemyClass,
-                                message.content.id,
-                                new ƒ.Vector2(
-                                    message.content.position.data[0],
-                                    message.content.position.data[1]),
-                                message.content.netId, message.content.target);
-                        }
-
-                        //Sync enemy transform from host to client
-                        if (message.content != undefined && message.content.text == FUNCTION.ENEMYTRANSFORM.toString()) {
-                            let enemy = Game.enemies.find(enem => enem.netId == message.content.netId);
-                            if (enemy != undefined) {
-                                enemy.cmpTransform.mtxLocal.translation = new ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
-                                enemy.setCollider();
-                            }
-                        }
-                        //Sync animation state
-                        if (message.content != undefined && message.content.text == FUNCTION.ENTITYANIMATIONSTATE.toString()) {
-                            let entity = Game.entities.find(enem => enem.netId == message.content.netId);
-                            if (entity != undefined) {
-                                entity.switchAnimation(message.content.state);
-                            }
-                        }
-
-                        //Kill entity at the client from host
-                        if (message.content != undefined && message.content.text == FUNCTION.ENTITYDIE.toString()) {
-                            let entity = Game.entities.find(enem => enem.netId == message.content.netId);
-                            if (entity != undefined) {
-                                entity.die()
-                            }
-                        }
-
-                        //update Entity buff List
-                        if (message.content != undefined && message.content.text == FUNCTION.UPDATEBUFF.toString()) {
-                            let buffList: Buff.Buff[] = <Buff.Buff[]>message.content.buffList;
-                            let entity = Game.entities.find(ent => ent.netId == message.content.netId);
-                            if (entity != undefined) {
-                                entity.buffs.forEach(oldBuff => {
-                                    let buffToCheck = buffList.find(buff => buff.id == oldBuff.id)
-                                    if (buffToCheck == undefined) {
-                                        oldBuff.removeBuff(entity);
-                                    }
-                                })
-                                buffList.forEach(buff => {
-                                    let newBuff = Buff.getBuffById(buff.id);
-                                    newBuff.tickRate = buff.tickRate;
-                                    newBuff.duration = buff.duration;
-                                    newBuff.addToEntity(entity);
-                                });
-                            }
-                        }
-
-
-
-                        //update UI
-                        if (message.content != undefined && message.content.text == FUNCTION.UPDATEUI.toString()) {
-                            let position: ƒ.Vector2 = new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]);
-                            Game.graph.addChild(new UI.DamageUI(position.toVector3(), message.content.value));
-                        }
-
-                        //spawn special items
-                        if (message.content != undefined && message.content.text == FUNCTION.SPAWNZIPZAP.toString()) {
-                            if (client.id != client.idHost) {
-                                let item: Bullets.ZipZapObject = new Bullets.ZipZapObject(message.content.ownerNetId, message.content.netId);
-                                item.spawn();
-                            }
-                        }
-
-                        //Spawn item from host
-                        if (message.content != undefined && message.content.text == FUNCTION.SPAWNINTERNALITEM.toString()) {
-                            if (client.id != client.idHost) {
-                                if (Items.getBuffItemById(message.content.id) != null) {
-                                    let newItem = new Items.BuffItem(message.content.id, message.content.netId);
-                                    newItem.setPosition(new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]))
-                                    Game.graph.addChild(newItem);
-                                } else if (Items.getInternalItemById(message.content.id) != null) {
-                                    let newItem = new Items.InternalItem(message.content.id, message.content.netId);
-                                    newItem.setPosition(new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]));
-                                    Game.graph.addChild(newItem);
-                                }
-                            }
-                        }
-
-                        //apply item attributes
-                        if (message.content != undefined && message.content.text == FUNCTION.UPDATEATTRIBUTES.toString()) {
-                            let entity = Game.entities.find(elem => elem.netId == message.content.netId);
-                            switch (message.content.payload.type) {
-                                case Entity.ATTRIBUTETYPE.HEALTHPOINTS:
-                                    entity.attributes.healthPoints = message.content.payload.value;
-                                    break;
-                                case Entity.ATTRIBUTETYPE.MAXHEALTHPOINTS:
-                                    entity.attributes.maxHealthPoints = message.content.payload.value
-                                    break;
-                                case Entity.ATTRIBUTETYPE.KNOCKBACKFORCE:
-                                    entity.attributes.knockbackForce = message.content.payload.value;
-                                    break;
-                                case Entity.ATTRIBUTETYPE.HITABLE:
-                                    entity.attributes.hitable = message.content.payload.value;
-                                    break;
-                                case Entity.ATTRIBUTETYPE.ARMOR:
-                                    entity.attributes.armor = message.content.payload.value;
-                                    break;
-                                case Entity.ATTRIBUTETYPE.SPEED:
-                                    entity.attributes.speed = message.content.payload.value;
-                                    break;
-                                case Entity.ATTRIBUTETYPE.ATTACKPOINTS:
-                                    entity.attributes.attackPoints = message.content.payload.value;
-                                    break;
-                                case Entity.ATTRIBUTETYPE.COOLDOWNREDUCTION:
-                                    entity.attributes.coolDownReduction = message.content.payload.value;
-                                    break;
-                                case Entity.ATTRIBUTETYPE.SCALE:
-                                    entity.attributes.scale = message.content.payload.value;
-                                    entity.updateScale();
-                                    break;
-                            }
-                        }
-
-                        //apply weapon
-                        if (message.content != undefined && message.content.text == FUNCTION.UPDATEWEAPON.toString()) {
-                            let refWeapon: Weapons.Weapon = <Weapons.Weapon>message.content.weapon;
-                            console.log(message.content.weapon.cooldown.coolDown);
-                            const tempWeapon: Weapons.Weapon = new Weapons.Weapon(message.content.weapon.cooldown.coolDown, message.content.weapon.attackCount, refWeapon.bulletType, refWeapon.projectileAmount, refWeapon.ownerNetId, refWeapon.aimType);
-                            tempWeapon.canShoot = refWeapon.canShoot;
-                            (<Player.Player>Game.entities.find(elem => elem.netId == message.content.netId)).weapon = tempWeapon;
-                        }
-
-                        //Kill item from host
-                        if (message.content != undefined && message.content.text == FUNCTION.ITEMDIE.toString()) {
-                            let item = Game.graph.getChildren().find(enem => (<Items.Item>enem).netId == message.content.netId);
-                            Game.graph.removeChild(item);
-                            popID(message.content.netId);
-                        }
-                        //send room 
-                        if (message.content != undefined && message.content.text == FUNCTION.SENDROOM.toString()) {
-                            let coordiantes: Game.ƒ.Vector2 = new Game.ƒ.Vector2(message.content.room.coordinates.data[0], message.content.room.coordinates.data[1]);
-                            let tanslation: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.room.translation.data[0], message.content.room.translation.data[1], message.content.room.translation.data[2]);
-                            let roomInfo: Interfaces.IRoom = { coordinates: coordiantes, roomSize: message.content.room.roomSize, exits: message.content.room.exits, roomType: message.content.room.roomType, translation: tanslation };
-                            let newRoom: Generation.Room;
-                            switch (roomInfo.roomType) {
-                                case Generation.ROOMTYPE.START:
-                                    newRoom = new Generation.StartRoom(roomInfo.coordinates, roomInfo.roomSize);
-                                    break;
-                                case Generation.ROOMTYPE.NORMAL:
-                                    newRoom = new Generation.NormalRoom(roomInfo.coordinates, roomInfo.roomSize);
-                                    break;
-                                case Generation.ROOMTYPE.BOSS:
-                                    newRoom = new Generation.BossRoom(roomInfo.coordinates, roomInfo.roomSize);
-                                    break;
-                                case Generation.ROOMTYPE.TREASURE:
-                                    newRoom = new Generation.TreasureRoom(roomInfo.coordinates, roomInfo.roomSize);
-                                    break;
-                                case Generation.ROOMTYPE.MERCHANT:
-                                    newRoom = new Generation.MerchantRoom(roomInfo.coordinates, roomInfo.roomSize);
-                                    break;
-                                case Generation.ROOMTYPE.CHALLENGE:
-                                    newRoom = new Generation.ChallengeRoom(roomInfo.coordinates, roomInfo.roomSize);
-                                    break;
-                            }
-                            newRoom.exits = roomInfo.exits;
-                            newRoom.mtxLocal.translation = roomInfo.translation;
-                            newRoom.setSpawnPoints();
-                            newRoom.openDoors();
-                            Generation.addRoomToGraph(newRoom);
-
-                        }
-                        //send request to switch rooms
-                        if (message.content != undefined && message.content.text == FUNCTION.SWITCHROOMREQUEST.toString()) {
-                            Generation.switchRoom(message.content.direction);
                         }
                     }
+
+                    //Update inventory
+                    if (message.content != undefined && message.content.text == FUNCTION.UPDATEINVENTORY.toString()) {
+                        let newItem: Items.Item;
+                        if (Items.getBuffItemById(message.content.itemId) != null) {
+                            newItem = new Items.BuffItem(message.content.itemId, message.content.itemNetId);
+                        } else if (Items.getInternalItemById(message.content.itemId) != null) {
+                            newItem = new Items.InternalItem(message.content.itemId, message.content.itemNetId);
+                        }
+
+                        let entity = Game.entities.find(elem => (<Player.Player>elem).netId == message.content.netId);
+
+                        if (message.content.add) {
+                            entity.items.push(newItem);
+                        } else {
+                            entity.items.splice(entity.items.indexOf(entity.items.find(item => item.id == newItem.id)), 1);
+                        }
+                    }
+
+                    //Client request for move knockback
+                    if (message.content != undefined && message.content.text == FUNCTION.KNOCKBACKREQUEST.toString()) {
+                        let position: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
+                        let enemy: Enemy.Enemy = Game.enemies.find(elem => elem.netId == message.content.netId);
+
+                        enemy.getKnockback(message.content.knockbackForce, position);
+                    }
+
+                    //Host push move knockback from enemy
+                    if (message.content != undefined && message.content.text == FUNCTION.KNOCKBACKPUSH.toString()) {
+                        if (client.id != client.idHost) {
+                            let position: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
+
+                            Game.avatar1.getKnockback(message.content.knockbackForce, position);
+                        }
+                    }
+
+                    //Spawn normal bullet from host
+                    if (message.content != undefined && message.content.text == FUNCTION.SPAWNBULLET.toString()) {
+                        let bullet: Bullets.Bullet;
+                        let entity: Entity.Entity = Game.entities.find(elem => elem.netId == message.content.ownerNetId);
+                        if (entity != null) {
+                            let direction: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]);
+
+                            bullet = new Bullets.Bullet(entity.weapon.bulletType, entity.mtxLocal.translation.toVector2(), direction, message.content.ownerNetId, message.content.bulletNetId)
+                            bullet.spawn(false);
+                        }
+                    }
+
+                    //Send magazin
+                    if (message.content != undefined && message.content.text == FUNCTION.SENDMAGAZIN.toString()) {
+                        let entity: Entity.Entity = Game.entities.find(elem => elem.netId == message.content.magazin.ownerNetId);
+                        let tempMagazin: Interfaces.IMagazin = message.content.magazin;
+                        (<Weapons.RangedWeapon>entity.weapon).magazin = [];
+                        for (let i = 0; i < tempMagazin.bulletTypes.length; i++) {
+                            let direction: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.magazin.directions[i].data[0], message.content.magazin.directions[i].data[1], 0);
+                            if ((<Weapons.RangedWeapon>entity.weapon).aimType == Weapons.AIM.NORMAL) {
+                                (<Weapons.RangedWeapon>entity.weapon).magazin.push(new Bullets.Bullet(tempMagazin.bulletTypes[i], entity.mtxLocal.translation.toVector2(), direction, tempMagazin.ownerNetId, tempMagazin.netIds[i]));
+                            } else {
+                                (<Weapons.RangedWeapon>entity.weapon).magazin.push(new Bullets.HomingBullet(tempMagazin.bulletTypes[i], entity.mtxLocal.translation.toVector2(), direction, tempMagazin.ownerNetId, null, tempMagazin.netIds[i]));
+                            }
+                        }
+                        (<Weapons.RangedWeapon>entity.weapon).shoot(Game.ƒ.Vector3.ZERO(), false);
+                    }
+
+                    //Sync bullet transform from host to client
+                    if (message.content != undefined && message.content.text == FUNCTION.BULLETTRANSFORM.toString()) {
+                        if (Game.currentNetObj.find(element => element.netId == message.content.netId) != undefined) {
+                            if (Game.currentNetObj.find(element => element.netId == message.content.netId).netObjectNode != null) {
+                                let newPosition: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
+                                let newRotation: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.rotation.data[0], message.content.rotation.data[1], message.content.rotation.data[2]);
+                                Game.currentNetObj.find(element => element.netId == message.content.netId).netObjectNode.mtxLocal.translation = newPosition;
+                                Game.currentNetObj.find(element => element.netId == message.content.netId).netObjectNode.mtxLocal.rotation = newRotation;
+                            }
+                        }
+                    }
+
+
+                    //Kill bullet at the client from host
+                    if (message.content != undefined && message.content.text == FUNCTION.BULLETDIE.toString()) {
+                        if (client.id != client.idHost) {
+                            let bullet = Game.bullets.find(element => element.netId == message.content.netId);
+
+                            if (bullet != undefined) {
+                                bullet.despawn();
+                            }
+                        }
+                    }
+
+                    //Spawn enemy at the client 
+                    if (message.content != undefined && message.content.text == FUNCTION.SPAWNENEMY.toString()) {
+                        EnemySpawner.networkSpawnById(
+                            message.content.enemyClass,
+                            message.content.id,
+                            new ƒ.Vector2(
+                                message.content.position.data[0],
+                                message.content.position.data[1]),
+                            message.content.netId, message.content.target);
+                    }
+
+                    //Sync enemy transform from host to client
+                    if (message.content != undefined && message.content.text == FUNCTION.ENEMYTRANSFORM.toString()) {
+                        let enemy = Game.enemies.find(enem => enem.netId == message.content.netId);
+                        if (enemy != undefined) {
+                            enemy.cmpTransform.mtxLocal.translation = new ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], message.content.position.data[2]);
+                            enemy.setCollider();
+                        }
+                    }
+                    //Sync animation state
+                    if (message.content != undefined && message.content.text == FUNCTION.ENTITYANIMATIONSTATE.toString()) {
+                        let entity = Game.entities.find(enem => enem.netId == message.content.netId);
+                        if (entity != undefined) {
+                            entity.switchAnimation(message.content.state);
+                        }
+                    }
+
+                    //Kill entity at the client from host
+                    if (message.content != undefined && message.content.text == FUNCTION.ENTITYDIE.toString()) {
+                        let entity = Game.entities.find(enem => enem.netId == message.content.netId);
+                        if (entity != undefined) {
+                            entity.die()
+                        }
+                    }
+
+                    //update Entity buff List
+                    if (message.content != undefined && message.content.text == FUNCTION.UPDATEBUFF.toString()) {
+                        let buffList: Buff.Buff[] = <Buff.Buff[]>message.content.buffList;
+                        let entity = Game.entities.find(ent => ent.netId == message.content.netId);
+                        if (entity != undefined) {
+                            entity.buffs.forEach(oldBuff => {
+                                let buffToCheck = buffList.find(buff => buff.id == oldBuff.id)
+                                if (buffToCheck == undefined) {
+                                    oldBuff.removeBuff(entity);
+                                }
+                            })
+                            buffList.forEach(buff => {
+                                let newBuff = Buff.getBuffById(buff.id);
+                                newBuff.tickRate = buff.tickRate;
+                                newBuff.duration = buff.duration;
+                                newBuff.addToEntity(entity);
+                            });
+                        }
+                    }
+
+
+
+                    //update UI
+                    if (message.content != undefined && message.content.text == FUNCTION.UPDATEUI.toString()) {
+                        let position: ƒ.Vector2 = new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]);
+                        Game.graph.addChild(new UI.DamageUI(position.toVector3(), message.content.value));
+                    }
+
+                    //spawn special items
+                    if (message.content != undefined && message.content.text == FUNCTION.SPAWNZIPZAP.toString()) {
+                        if (client.id != client.idHost) {
+                            let item: Bullets.ZipZapObject = new Bullets.ZipZapObject(message.content.ownerNetId, message.content.netId);
+                            item.spawn();
+                        }
+                    }
+
+                    //Spawn item from host
+                    if (message.content != undefined && message.content.text == FUNCTION.SPAWNINTERNALITEM.toString()) {
+                        if (client.id != client.idHost) {
+                            if (Items.getBuffItemById(message.content.id) != null) {
+                                let newItem = new Items.BuffItem(message.content.id, message.content.netId);
+                                newItem.setPosition(new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]))
+                                Game.graph.addChild(newItem);
+                            } else if (Items.getInternalItemById(message.content.id) != null) {
+                                let newItem = new Items.InternalItem(message.content.id, message.content.netId);
+                                newItem.setPosition(new ƒ.Vector2(message.content.position.data[0], message.content.position.data[1]));
+                                Game.graph.addChild(newItem);
+                            }
+                        }
+                    }
+
+                    //apply item attributes
+                    if (message.content != undefined && message.content.text == FUNCTION.UPDATEATTRIBUTES.toString()) {
+                        let entity = Game.entities.find(elem => elem.netId == message.content.netId);
+                        switch (message.content.payload.type) {
+                            case Entity.ATTRIBUTETYPE.HEALTHPOINTS:
+                                entity.attributes.healthPoints = message.content.payload.value;
+                                break;
+                            case Entity.ATTRIBUTETYPE.MAXHEALTHPOINTS:
+                                entity.attributes.maxHealthPoints = message.content.payload.value
+                                break;
+                            case Entity.ATTRIBUTETYPE.KNOCKBACKFORCE:
+                                entity.attributes.knockbackForce = message.content.payload.value;
+                                break;
+                            case Entity.ATTRIBUTETYPE.HITABLE:
+                                entity.attributes.hitable = message.content.payload.value;
+                                break;
+                            case Entity.ATTRIBUTETYPE.ARMOR:
+                                entity.attributes.armor = message.content.payload.value;
+                                break;
+                            case Entity.ATTRIBUTETYPE.SPEED:
+                                entity.attributes.speed = message.content.payload.value;
+                                break;
+                            case Entity.ATTRIBUTETYPE.ATTACKPOINTS:
+                                entity.attributes.attackPoints = message.content.payload.value;
+                                break;
+                            case Entity.ATTRIBUTETYPE.COOLDOWNREDUCTION:
+                                entity.attributes.coolDownReduction = message.content.payload.value;
+                                break;
+                            case Entity.ATTRIBUTETYPE.SCALE:
+                                entity.attributes.scale = message.content.payload.value;
+                                entity.updateScale();
+                                break;
+                        }
+                    }
+
+                    //apply weapon
+                    if (message.content != undefined && message.content.text == FUNCTION.UPDATEWEAPON.toString()) {
+                        let refWeapon: Weapons.Weapon = <Weapons.Weapon>message.content.weapon;
+                        console.log((<Weapons.RangedWeapon>refWeapon).magazin);
+                        let tempWeapon;
+                        switch (message.content.type) {
+                            case Weapons.WEAPONTYPE.RANGEDWEAPON:
+                                tempWeapon = new Weapons.RangedWeapon(message.content.weapon.cooldown.coolDown, message.content.weapon.attackCount, refWeapon.bulletType, refWeapon.projectileAmount, refWeapon.ownerNetId, refWeapon.aimType);
+                                break;
+                            case Weapons.WEAPONTYPE.MELEEWEAPON:
+                                tempWeapon = new Weapons.MeleeWeapon(message.content.weapon.cooldown.coolDown, message.content.weapon.attackCount, refWeapon.bulletType, refWeapon.projectileAmount, refWeapon.ownerNetId, refWeapon.aimType);
+                                break;
+                            case Weapons.WEAPONTYPE.THORSHAMMERWEAPON:
+                                tempWeapon = new Weapons.ThorsHammer(message.content.weapon.cooldown.coolDown, message.content.weapon.attackCount, refWeapon.bulletType, refWeapon.projectileAmount, refWeapon.ownerNetId);
+                                break;
+                            default:
+                                console.warn(Weapons.WEAPONTYPE[message.content.type] + " does not exist in Networking switch");
+                                break;
+                        }
+
+                        (<Player.Player>Game.entities.find(elem => elem.netId == message.content.netId)).weapon = tempWeapon;
+                    }
+
+                    //Kill item from host
+                    if (message.content != undefined && message.content.text == FUNCTION.ITEMDIE.toString()) {
+                        let item = Game.graph.getChildren().find(enem => (<Items.Item>enem).netId == message.content.netId);
+                        Game.graph.removeChild(item);
+                        popID(message.content.netId);
+                    }
+                    //send room 
+                    if (message.content != undefined && message.content.text == FUNCTION.SENDROOM.toString()) {
+                        let coordiantes: Game.ƒ.Vector2 = new Game.ƒ.Vector2(message.content.room.coordinates.data[0], message.content.room.coordinates.data[1]);
+                        let tanslation: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.room.translation.data[0], message.content.room.translation.data[1], message.content.room.translation.data[2]);
+                        let roomInfo: Interfaces.IRoom = { coordinates: coordiantes, roomSize: message.content.room.roomSize, exits: message.content.room.exits, roomType: message.content.room.roomType, translation: tanslation };
+                        let newRoom: Generation.Room;
+                        switch (roomInfo.roomType) {
+                            case Generation.ROOMTYPE.START:
+                                newRoom = new Generation.StartRoom(roomInfo.coordinates, roomInfo.roomSize);
+                                break;
+                            case Generation.ROOMTYPE.NORMAL:
+                                newRoom = new Generation.NormalRoom(roomInfo.coordinates, roomInfo.roomSize);
+                                break;
+                            case Generation.ROOMTYPE.BOSS:
+                                newRoom = new Generation.BossRoom(roomInfo.coordinates, roomInfo.roomSize);
+                                break;
+                            case Generation.ROOMTYPE.TREASURE:
+                                newRoom = new Generation.TreasureRoom(roomInfo.coordinates, roomInfo.roomSize);
+                                break;
+                            case Generation.ROOMTYPE.MERCHANT:
+                                newRoom = new Generation.MerchantRoom(roomInfo.coordinates, roomInfo.roomSize);
+                                break;
+                            case Generation.ROOMTYPE.CHALLENGE:
+                                newRoom = new Generation.ChallengeRoom(roomInfo.coordinates, roomInfo.roomSize);
+                                break;
+                        }
+                        newRoom.exits = roomInfo.exits;
+                        newRoom.mtxLocal.translation = roomInfo.translation;
+                        newRoom.setSpawnPoints();
+                        newRoom.openDoors();
+                        Generation.addRoomToGraph(newRoom);
+
+                    }
+                    //send request to switch rooms
+                    if (message.content != undefined && message.content.text == FUNCTION.SWITCHROOMREQUEST.toString()) {
+                        Generation.switchRoom(message.content.direction);
+                    }
+
                 }
             }
         }
@@ -551,7 +567,7 @@ namespace Networking {
 
     export function updateInventory(_add: boolean, _itemId: Items.ITEMID, _itemNetId: number, _netId: number) {
         if (client.id == client.idHost) {
-            client.dispatch({ route: undefined, idTarget: client.idHost, content: { text: FUNCTION.UPDATEINVENTORY, add: _add, itemId: _itemId, itemNetId: _itemNetId, netId: _netId } })
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEINVENTORY, add: _add, itemId: _itemId, itemNetId: _itemNetId, netId: _netId } })
         }
     }
 
@@ -564,22 +580,25 @@ namespace Networking {
 
 
     //#region bullet
-    export function spawnBullet(_aimType: Weapons.AIM, _direction: ƒ.Vector3, _bulletNetId: number, _ownerNetId: number, _bulletTarget?: ƒ.Vector3) {
-        if (Game.connected) {
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.SPAWNBULLET, aimType: _aimType, direction: _direction, ownerNetId: _ownerNetId, bulletNetId: _bulletNetId, bulletTarget: _bulletTarget } })
-        }
+    export function spawnBullet(_direction: ƒ.Vector3, _bulletNetId: number, _ownerNetId: number) {
+        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.SPAWNBULLET, direction: _direction, ownerNetId: _ownerNetId, bulletNetId: _bulletNetId } })
     }
+
+    export function sendMagazin(_magazin: Interfaces.IMagazin) {
+        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.SENDMAGAZIN, magazin: _magazin } })
+    }
+
     export function sendBulletInput(_netId: number, _inputPayload: Interfaces.IInputBulletPayload) {
         client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.BULLETPREDICT, netId: _netId, input: _inputPayload } })
     }
 
     export function updateBullet(_position: ƒ.Vector3, _rotation: ƒ.Vector3, _netId: number) {
-        if (Game.connected && client.idHost == client.id) {
+        if (client.idHost == client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.BULLETTRANSFORM, position: _position, rotation: _rotation, netId: _netId } })
         }
     }
     export function removeBullet(_netId: number) {
-        if (Game.connected && client.idHost == client.id) {
+        if (client.idHost == client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.BULLETDIE, netId: _netId } })
         }
     }
@@ -588,7 +607,7 @@ namespace Networking {
     //#region specialItems
 
     export function spawnZipZap(_ownerNetId: number, _netId: number) {
-        if (Game.connected && client.idHost == client.id) {
+        if (client.idHost == client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNZIPZAP, ownerNetId: _ownerNetId, netId: _netId } })
         }
     }
@@ -596,7 +615,7 @@ namespace Networking {
 
     //#region enemy
     export function spawnEnemy(_enemyClass: Enemy.ENEMYCLASS, _enemy: Enemy.Enemy, _netId: number) {
-        if (Game.connected && client.idHost == client.id) {
+        if (client.idHost == client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, enemyClass: _enemyClass, id: _enemy.id, attributes: _enemy.attributes, position: _enemy.mtxLocal.translation, netId: _netId, target: _enemy.target } })
         }
     }
@@ -623,7 +642,7 @@ namespace Networking {
 
     //#region items
     export function spawnItem(_id: number, _position: ƒ.Vector2, _netId: number) {
-        if (Game.connected && client.idHost == client.id) {
+        if (client.idHost == client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNINTERNALITEM, id: _id, position: _position, netId: _netId } });
         }
     }
@@ -637,10 +656,10 @@ namespace Networking {
     }
     export function updateAvatarWeapon(_weapon: Weapons.Weapon, _targetNetId: number) {
         if (client.idHost != client.id) {
-            client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.UPDATEWEAPON, weapon: _weapon, netId: _targetNetId } });
+            client.dispatch({ route: FudgeNet.ROUTE.HOST, content: { text: FUNCTION.UPDATEWEAPON, weapon: _weapon, type: _weapon.getType(), netId: _targetNetId } });
         }
         else {
-            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEWEAPON, weapon: _weapon, netId: _targetNetId } });
+            client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEWEAPON, weapon: _weapon, type: _weapon.getType(), netId: _targetNetId } });
         }
     }
 
@@ -656,7 +675,7 @@ namespace Networking {
     //#endregion
     //#region buffs
     export function updateBuffList(_buffList: Buff.Buff[], _netId: number) {
-        if (Game.connected && client.idHost == client.id) {
+        if (client.idHost == client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEBUFF, buffList: _buffList, netId: _netId } });
         }
     }
@@ -664,7 +683,7 @@ namespace Networking {
 
     //#region UI
     export function updateUI(_position: Game.ƒ.Vector2, _value: number) {
-        if (Game.connected && client.idHost == client.id) {
+        if (client.idHost == client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.UPDATEUI, position: _position, value: _value } });
         }
     }
@@ -673,12 +692,12 @@ namespace Networking {
 
     //#region room
     export function sendRoom(_room: Interfaces.IRoom) {
-        if (Game.connected && client.idHost == client.id) {
+        if (client.idHost == client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SENDROOM, room: _room } })
         }
     }
     export function switchRoomRequest(_direction: Interfaces.IRoomExits) {
-        if (Game.connected && client.idHost != client.id) {
+        if (client.idHost != client.id) {
             client.dispatch({ route: undefined, idTarget: client.idHost, content: { text: FUNCTION.SWITCHROOMREQUEST, direction: _direction } })
         }
     }

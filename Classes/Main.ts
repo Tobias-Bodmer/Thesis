@@ -36,7 +36,6 @@ namespace Game {
     export let currentRoom: Generation.Room;
     export let miniMap: UI.Minimap;
 
-    export let connected: boolean = false;
     export let deltaTime: number;
 
     export let serverPredictionAvatar: Networking.ServerPrediction;
@@ -190,13 +189,13 @@ namespace Game {
 
                     //#region init Items
                     if (Networking.client.id == Networking.client.idHost) {
-                        // let item2 = new Items.InternalItem(Items.ITEMID.THORSHAMMER);
-                        // item2.setPosition(new ƒ.Vector2(-5, 0))
+                        let item2 = new Items.InternalItem(Items.ITEMID.PROJECTILESUP);
+                        item2.setPosition(new ƒ.Vector2(-5, 0));
+                        item2.spawn();
                         // // let item3 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(-2, 0), null);
                         // let zipzap = new Items.InternalItem(Items.ITEMID.TEST);
                         // zipzap.setPosition(new ƒ.Vector2(5, 0));
                         // zipzap.spawn();
-                        // graph.appendChild(item2);
                         // graph.appendChild(item3);
                     }
 
@@ -237,7 +236,6 @@ namespace Game {
                     document.getElementById("RoomId").parentElement.style.visibility = "hidden";
 
                     document.getElementById("Lobbyscreen").style.visibility = "visible";
-                    connected = true;
                 } else {
                     setTimeout(() => {
                         waitForLobby();

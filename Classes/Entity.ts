@@ -10,11 +10,11 @@ namespace Entity {
         public attributes: Attributes;
         public collider: Collider.Collider;
         public items: Array<Items.Item> = [];
-        public weapon: Weapons.Weapon;
         public buffs: Buff.Buff[] = [];
         public offsetColliderX: number;
         public offsetColliderY: number;
         public colliderScaleFaktor: number;
+        public weapon: Weapons.Weapon;
         protected canMoveX: boolean = true;
         protected canMoveY: boolean = true;
         protected moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
@@ -60,7 +60,7 @@ namespace Entity {
         public update(): void {
             this.updateBuffs();
             this.shadow.updateShadowPos();
-            if (Game.connected && Networking.client.idHost == Networking.client.id) {
+            if (Networking.client.idHost == Networking.client.id) {
                 this.setCollider();
             }
         }
@@ -217,9 +217,6 @@ namespace Entity {
             return _value * (1 - (this.attributes.armor / 100));
         }
         //#region knockback
-        public doKnockback(_body: Entity.Entity) {
-
-        }
 
         public getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3) {
             if (!this.performKnockback) {

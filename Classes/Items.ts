@@ -16,7 +16,7 @@ namespace Items {
         GETSTRONKO,
         GETWEAKO,
         ZIPZAP,
-        TEST
+        AOETEST,
     }
 
     export let txtIceBucket: ƒ.TextureImage = new ƒ.TextureImage();
@@ -227,10 +227,27 @@ namespace Items {
                     Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.speed, type: Entity.ATTRIBUTETYPE.SPEED }, _avatar.netId);
                     break;
                 case ITEMID.PROJECTILESUP:
+                    function rotateBullets() {
+                        let magazin = (<Weapons.RangedWeapon>_avatar.weapon).getMagazin;
+                        switch (magazin.length) {
+                            case 2:
+                            case 3:
+                                console.log("rotating");
+                                magazin[0].mtxLocal.rotateZ(45 / 2);
+                                magazin[1].mtxLocal.rotateZ(45 / 2 * -1);
+                                (<Weapons.RangedWeapon>_avatar.weapon).magazin = magazin;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                     if (_add) {
                         _avatar.weapon.projectileAmount += this.value;
+                        (<Weapons.RangedWeapon>_avatar.weapon).addFunction(rotateBullets);
                     } else {
                         _avatar.weapon.projectileAmount -= this.value;
+                        (<Weapons.RangedWeapon>_avatar.weapon).deleteFunction(rotateBullets);
+
                     }
                     Networking.updateAvatarWeapon(_avatar.weapon, _avatar.netId);
                     break;
@@ -289,17 +306,18 @@ namespace Items {
                     }
                     break;
                 case ITEMID.THORSHAMMER:
-                    localStorage.setItem("cooldownTime", _avatar.weapon.getCoolDown.getMaxCoolDown.toString());
-                    localStorage.setItem("aimType", Weapons.AIM[_avatar.weapon.aimType]);
-                    localStorage.setItem("bulletType", Bullets.BULLETTYPE[_avatar.weapon.bulletType]);
-                    localStorage.setItem("projectileAmount", _avatar.weapon.projectileAmount.toString());
+                    // localStorage.setItem("cooldownTime", _avatar.weapon.getCoolDown.getMaxCoolDown.toString());
+                    // localStorage.setItem("aimType", Weapons.AIM[_avatar.weapon.aimType]);
+                    // localStorage.setItem("bulletType", Bullets.BULLETTYPE[_avatar.weapon.bulletType]);
+                    // localStorage.setItem("projectileAmount", _avatar.weapon.projectileAmount.toString());
 
-                    _avatar.weapon.getCoolDown.setMaxCoolDown = 100 * 60;
-                    _avatar.weapon.aimType = Weapons.AIM.NORMAL;
-                    _avatar.weapon.bulletType = Bullets.BULLETTYPE.THORSHAMMER;
-                    _avatar.weapon.projectileAmount = 1;
-                    _avatar.weapon.canShoot = true;
+                    // _avatar.weapon.getCoolDown.setMaxCoolDown = 100 * 60;
+                    // _avatar.weapon.aimType = Weapons.AIM.NORMAL;
+                    // _avatar.weapon.bulletType = Bullets.BULLETTYPE.THORSHAMMER;
+                    // _avatar.weapon.projectileAmount = 1;
+                    // _avatar.weapon.canShoot = true;
 
+                    _avatar.weapon = new Weapons.ThorsHammer(100 * 60, 1, Bullets.BULLETTYPE.THORSHAMMER, 1, _avatar.netId);
                     Networking.updateAvatarWeapon(_avatar.weapon, _avatar.netId);
                     break;
                 case ITEMID.ZIPZAP:
@@ -311,7 +329,7 @@ namespace Items {
                         zipzap.despawn();
                     }
                     break;
-                case ITEMID.TEST:
+                case ITEMID.AOETEST:
                     if (_add) {
                         new Ability.AreaOfEffect(Ability.AOETYPE.HEALTHUP, null).addToEntity(_avatar);
                     } else {

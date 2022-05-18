@@ -49,7 +49,7 @@ namespace Ability {
             Networking.popID(this.netId);
         }
 
-        protected spawn(_entity: Entity.Entity) {
+        protected spawn (_entity: Entity.Entity) {
             _entity.addChild(this);
             this.mtxLocal.translateZ(0.01);
             if (this.duration == undefined) {

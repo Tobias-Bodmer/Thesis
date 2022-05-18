@@ -2,17 +2,17 @@ namespace Calculation {
     export function getCloserAvatarPosition(_startPoint: ƒ.Vector3): ƒ.Vector3 {
         let target = Game.avatar1;
 
-        if (Game.connected) {
-            let distancePlayer1 = _startPoint.getDistance(Game.avatar1.cmpTransform.mtxLocal.translation);
-            let distancePlayer2 = _startPoint.getDistance(Game.avatar2.cmpTransform.mtxLocal.translation);
 
-            if (distancePlayer1 < distancePlayer2) {
-                target = Game.avatar1;
-            }
-            else {
-                target = Game.avatar2;
-            }
+        let distancePlayer1 = _startPoint.getDistance(Game.avatar1.cmpTransform.mtxLocal.translation);
+        let distancePlayer2 = _startPoint.getDistance(Game.avatar2.cmpTransform.mtxLocal.translation);
+
+        if (distancePlayer1 < distancePlayer2) {
+            target = Game.avatar1;
         }
+        else {
+            target = Game.avatar2;
+        }
+
 
         return target.cmpTransform.mtxLocal.translation;
     }

@@ -5,7 +5,6 @@ namespace Interfaces {
     }
 
     export interface IKnockbackable {
-        doKnockback(_body: Entity.Entity): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     }
 
@@ -45,6 +44,13 @@ namespace Interfaces {
     export interface IStatePayload {
         tick: number;
         position: Game.ƒ.Vector3;
+    }
+
+    export interface IMagazin {
+        bulletTypes: Bullets.BULLETTYPE[];
+        directions: Game.ƒ.Vector2[];
+        ownerNetId: number;
+        netIds: number[];
     }
 
     // export interface BulletInformation {

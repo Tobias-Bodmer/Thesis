@@ -51,10 +51,6 @@ namespace Enemy {
             this.isAggressive = true;
         }
 
-        public doKnockback(_body: Entity.Entity): void {
-            // (<Player.Player>_body).getKnockback(this.attributes.knockbackForce, this.cmpTransform.mtxLocal.translation);
-        }
-
         public getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void {
             super.getKnockback(_knockbackForce, _position);
         }
@@ -142,14 +138,13 @@ namespace Enemy {
 
         constructor(_id: Entity.ID, _pos: Game.ƒ.Vector2, _netId: number) {
             super(_id, _pos, _netId);
-            //TODO: talk with tobi
             this.stamina.onEndCoolDown = () => this.recoverStam;
         }
         behaviour() {
             this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2();
             let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitudeSquared;
             this.flocking.update();
-            //TODO: set to 3 after testing
+
             if (distance < this.aggressiveDistance) {
                 this.isAggressive = true;
             }
@@ -324,11 +319,10 @@ namespace Enemy {
 
     export class EnemyShoot extends Enemy {
         viewRadius: number = 3;
-
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _position, _netId);
 
-            this.weapon = new Weapons.Weapon(60, 1, Bullets.BULLETTYPE.STANDARD, 2, this.netId, Weapons.AIM.NORMAL);
+            this.weapon = new Weapons.RangedWeapon(60, 1, Bullets.BULLETTYPE.STANDARD, 2, this.netId, Weapons.AIM.NORMAL);
         }
 
         behaviour(): void {
@@ -369,7 +363,7 @@ namespace Enemy {
             let _direction = ƒ.Vector3.DIFFERENCE(this.target.toVector3(0), this.mtxLocal.translation);
 
             if (_direction.magnitude < 3 || this.isAggressive) {
-                this.weapon.shoot(this.mtxLocal.translation.toVector2(), _direction, _netId, true);
+                this.weapon.shoot(_direction, true, _netId);
             }
         }
     }
@@ -381,7 +375,7 @@ namespace Enemy {
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _target: Player.Player, _netId?: number) {
             super(_id, _position, _netId);
             this.avatar = _target;
-            this.flocking = new FlockingBehaviour(this, 3, 0.8, 1.5, 1, 1, 0.1, 0);
+            this.flocking = new FlockingBehaviour(this, 3, 5, 1.5, 1, 1, 0.1, 0);
 
         }
 
