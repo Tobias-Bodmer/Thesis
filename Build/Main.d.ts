@@ -1187,7 +1187,7 @@ declare namespace Weapons {
         magazin: Bullets.Bullet[];
         get getMagazin(): Bullets.Bullet[];
         set setMagazin(_magazin: Bullets.Bullet[]);
-        protected ItemFunctions: Function[];
+        ItemFunctions: Function[];
         shoot(_direction: ƒ.Vector3, _sync: boolean, _bulletNetId?: number): void;
         protected sendMagazin(): void;
         protected fire(_magazine: Bullets.Bullet[], _sync: boolean): void;

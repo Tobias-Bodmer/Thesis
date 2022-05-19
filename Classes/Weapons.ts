@@ -46,10 +46,9 @@ namespace Weapons {
         }
     }
 
-    //TODO: BIG FUCKING CHANGES.
     export class RangedWeapon extends Weapon {
         public magazin: Bullets.Bullet[]; get getMagazin(): Bullets.Bullet[] { return this.magazin }; set setMagazin(_magazin: Bullets.Bullet[]) { this.magazin = _magazin };
-        protected ItemFunctions: Function[] = [];
+        public ItemFunctions: Function[] = [];
 
         public shoot(_direction: ƒ.Vector3, _sync: boolean, _bulletNetId?: number): void {
             let _position: ƒ.Vector2 = this.owner.mtxLocal.translation.toVector2();

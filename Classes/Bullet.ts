@@ -108,6 +108,8 @@ namespace Bullets {
             Networking.removeBullet(this.netId);
             Game.graph.removeChild(this);
 
+            console.log("despawn");
+
             if (this.type == BULLETTYPE.THORSHAMMER) {
                 this.spawnThorsHammer();
             }
@@ -171,13 +173,14 @@ namespace Bullets {
         protected spawnThorsHammer() {
             if (Networking.client.id == Networking.client.idHost) {
                 let item = new Items.InternalItem(Items.ITEMID.THORSHAMMER);
-                item.setPosition(this.mtxWorld.translation.toVector2());
+                item.setPosition(this.mtxLocal.translation.toVector2());
                 if (this.owner == Game.avatar1) {
                     item.setChoosenOneNetId(Game.avatar2.netId);
                 } else {
                     item.setChoosenOneNetId(Game.avatar1.netId);
                 }
                 item.spawn();
+                console.log("spawn");
             }
         }
 

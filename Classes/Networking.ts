@@ -434,10 +434,9 @@ namespace Networking {
 
                     //apply weapon
                     if (message.content != undefined && message.content.text == FUNCTION.UPDATEWEAPON.toString()) {
-                        //TODO: Itemfunctions mit übernehmen....
+                        let entity = (<Player.Player>Game.entities.find(elem => elem.netId == message.content.netId));
 
                         let refWeapon: Weapons.Weapon = <Weapons.Weapon>message.content.weapon;
-                        console.log((<Weapons.RangedWeapon>refWeapon).magazin);
                         let tempWeapon;
                         switch (message.content.type) {
                             case Weapons.WEAPONTYPE.RANGEDWEAPON:
@@ -454,7 +453,12 @@ namespace Networking {
                                 break;
                         }
 
-                        (<Player.Player>Game.entities.find(elem => elem.netId == message.content.netId)).weapon = tempWeapon;
+                        if (entity.weapon instanceof Weapons.MeleeWeapon) {
+                            entity.weapon = tempWeapon;
+                        } else {
+                            (<Weapons.RangedWeapon>tempWeapon).ItemFunctions = (<Weapons.RangedWeapon>entity.weapon).ItemFunctions;
+                            entity.weapon = tempWeapon;
+                        }
                     }
 
                     //Kill item from host
