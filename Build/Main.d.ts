@@ -148,7 +148,8 @@ declare namespace Entity {
         FOLLOW = 1,
         FLEE = 2,
         SUMMON = 3,
-        ATTACK = 4
+        ATTACK = 4,
+        TELEPORT = 5
     }
     enum ID {
         RANGED = 0,
@@ -602,27 +603,42 @@ declare namespace Enemy {
         behaviour(): void;
         moveBehaviour(): void;
     }
-    class Summonor extends EnemyShoot {
+    enum SUMMNORBEHAVIOUR {
+        IDLE = 0,
+        WALK = 1,
+        SUMMON = 2,
+        ATTACK = 3,
+        TELEPORT = 4,
+        ABILITY = 5
+    }
+    class Summonor extends EnemyShoot implements Game.ƒAid.StateMachine<SUMMNORBEHAVIOUR> {
         damageTaken: number;
+        stateCurrent: SUMMNORBEHAVIOUR;
+        stateNext: SUMMNORBEHAVIOUR;
+        instructions: ƒAid.StateMachineInstructions<SUMMNORBEHAVIOUR>;
         attackPhaseCd: Ability.Cooldown;
         defencePhaseCd: Ability.Cooldown;
         beginShooting: boolean;
         shootingCount: number;
         currentShootingCount: number;
         summonPosition: ƒ.Vector3;
+        stateMachineInstructions: Game.ƒAid.StateMachineInstructions<SUMMNORBEHAVIOUR>;
+        lastState: SUMMNORBEHAVIOUR;
         private summon;
         private dash;
         private shoot360;
         private dashWeapon;
         private flock;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
-        behaviour(): void;
+        transit(_next: SUMMNORBEHAVIOUR): void;
+        act(): void;
+        update(): void;
+        behaviour: () => void;
         getDamage(_value: number): void;
-        moveBehaviour(): void;
-        attackingPhase(): void;
-        defencePhase(): void;
+        attackingPhase: () => void;
+        defencePhase: () => void;
         stopDefencePhase: () => void;
-        teleport(): boolean;
+        teleport: () => void;
         shooting360(): void;
     }
 }

@@ -52,7 +52,6 @@ namespace Weapons {
         protected ItemFunctions: Function[] = [];
 
         public shoot(_direction: ƒ.Vector3, _sync: boolean, _bulletNetId?: number): void {
-            console.log("shooting");
             let _position: ƒ.Vector2 = this.owner.mtxLocal.translation.toVector2();
             if (_sync) {
                 if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
