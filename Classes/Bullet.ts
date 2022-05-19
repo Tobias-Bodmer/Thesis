@@ -240,29 +240,29 @@ namespace Bullets {
             let colliders: ƒ.Node[] = [];
             if (this.owner.tag == Tag.TAG.PLAYER) {
                 colliders = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY);
-            }
-            colliders.forEach((_elem) => {
-                let element: Enemy.Enemy = (<Enemy.Enemy>_elem);
-                if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
-                    if ((<Enemy.Enemy>element).attributes.healthPoints > 0) {
-                        if (element instanceof Enemy.SummonorAdds) {
-                            if ((<Enemy.SummonorAdds>element).avatar == this.owner) {
-                                this.killcount--;
-                                return;
+                colliders.forEach((_elem) => {
+                    let element: Enemy.Enemy = (<Enemy.Enemy>_elem);
+                    if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
+                        if ((<Enemy.Enemy>element).attributes.healthPoints > 0) {
+                            if (element instanceof Enemy.SummonorAdds) {
+                                if ((<Enemy.SummonorAdds>element).avatar == this.owner) {
+                                    this.killcount--;
+                                    return;
+                                }
                             }
+                            (<Enemy.Enemy>element).getDamage(this.owner.attributes.attackPoints * this.hitPointsScale);
+                            this.setBuffToTarget((<Enemy.Enemy>element));
+                            (<Enemy.Enemy>element).getKnockback(this.knockbackForce, this.mtxLocal.translation);
+                            this.killcount--;
                         }
-                        (<Enemy.Enemy>element).getDamage(this.owner.attributes.attackPoints * this.hitPointsScale);
-                        this.setBuffToTarget((<Enemy.Enemy>element));
-                        (<Enemy.Enemy>element).getKnockback(this.knockbackForce, this.mtxLocal.translation);
-                        this.killcount--;
                     }
-                }
-            })
+                })
+            }
             if (this.owner.tag == Tag.TAG.ENEMY) {
                 colliders = Game.graph.getChildren().filter(element => (<Player.Player>element).tag == Tag.TAG.PLAYER);
                 colliders.forEach((_elem) => {
                     let element: Player.Player = (<Player.Player>_elem);
-                    if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
+                    if (this.collider.collides(element.collider) && element.attributes != undefined) {
                         if ((<Player.Player>element).attributes.healthPoints > 0 && (<Player.Player>element).attributes.hitable) {
                             (<Player.Player>element).getDamage(this.hitPointsScale);
                             (<Player.Player>element).getKnockback(this.knockbackForce, this.mtxLocal.translation);

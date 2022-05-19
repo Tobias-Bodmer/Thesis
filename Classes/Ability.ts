@@ -125,7 +125,7 @@ namespace Ability {
 
     export class Cooldown {
         public hasCoolDown: boolean
-        private coolDown: number; get getMaxCoolDown(): number { return this.coolDown }; set setMaxCoolDown(_param: number) { this.hasCoolDown = false; this.coolDown = _param; this.currentCooldown = this.coolDown; }
+        private coolDown: number; get getMaxCoolDown(): number { return this.coolDown }; set setMaxCoolDown(_param: number) { this.coolDown = _param; }
         private currentCooldown: number; get getCurrentCooldown(): number { return this.currentCooldown };
         public onEndCoolDown: () => void;
         constructor(_number: number) {

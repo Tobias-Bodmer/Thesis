@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -633,13 +633,13 @@ declare namespace Enemy {
         transit(_next: SUMMNORBEHAVIOUR): void;
         act(): void;
         update(): void;
-        behaviour: () => void;
+        intro: () => void;
         getDamage(_value: number): void;
         attackingPhase: () => void;
         defencePhase: () => void;
         stopDefencePhase: () => void;
         teleport: () => void;
-        shooting360(): void;
+        shooting360: () => void;
     }
 }
 declare namespace Buff {

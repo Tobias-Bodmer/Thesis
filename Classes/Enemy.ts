@@ -67,6 +67,7 @@ namespace Enemy {
         moveBehaviour() {
 
         }
+
         public moveSimple(_target: ƒ.Vector2): ƒ.Vector2 {
             this.target = _target;
             let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation);

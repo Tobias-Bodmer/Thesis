@@ -52,7 +52,7 @@ namespace Enemy {
 
         private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 0, 1, 45);
         private dash: Ability.Dash = new Ability.Dash(this.netId, 45, 1, 13 * 60, 5);
-        private shoot360: Ability.circleShoot = new Ability.circleShoot(this.netId, 0, 3, 5 * 60);
+        private shoot360: Ability.circleShoot = new Ability.circleShoot(this.netId, 0, 1, 5 * 60);
         private dashWeapon: Weapons.Weapon = new Weapons.RangedWeapon(12, 1, Bullets.BULLETTYPE.SUMMONER, 1, this.netId, Weapons.AIM.NORMAL);
         private flock: FlockingBehaviour = new FlockingBehaviour(
             this,
@@ -61,7 +61,7 @@ namespace Enemy {
             1,
             1,
             1,
-            0,
+            1,
             1,
             10);
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
@@ -72,13 +72,11 @@ namespace Enemy {
 
             this.stateMachineInstructions = new Game.ƒAid.StateMachineInstructions();
             this.stateMachineInstructions.transitDefault = () => { };
-            this.stateMachineInstructions.actDefault = this.behaviour;
-            // this.stateMachineInstructions.setTransition(Entity.BEHAVIOUR.FLEE, Entity.BEHAVIOUR.SUMMON, this.teleport);
+            this.stateMachineInstructions.actDefault = this.intro;
             this.stateMachineInstructions.setAction(SUMMNORBEHAVIOUR.ATTACK, this.attackingPhase);
             this.stateMachineInstructions.setAction(SUMMNORBEHAVIOUR.SUMMON, this.defencePhase);
             this.stateMachineInstructions.setAction(SUMMNORBEHAVIOUR.TELEPORT, this.teleport);
             this.stateMachineInstructions.setAction(SUMMNORBEHAVIOUR.ABILITY, this.shooting360);
-
 
             this.instructions = this.stateMachineInstructions;
 
@@ -86,7 +84,7 @@ namespace Enemy {
         }
 
         public transit(_next: SUMMNORBEHAVIOUR): void {
-            console.log(SUMMNORBEHAVIOUR[this.stateCurrent]);
+            console.info(SUMMNORBEHAVIOUR[this.stateCurrent]);
             this.lastState = this.stateCurrent;
             this.instructions.transit(this.stateCurrent, _next, this);
         }
@@ -95,63 +93,39 @@ namespace Enemy {
         }
 
         public update(): void {
-            this.act();
+            if (Networking.client.id == Networking.client.idHost) {
+                this.updateBuffs();
+                this.shadow.updateShadowPos();
+                this.setCollider();
+                this.act();
+                this.move(this.moveDirection);
+                Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId);
+            }
         }
 
-        behaviour = () => {
-            this.target = Game.avatar1.mtxLocal.translation.toVector2();
-            let distance = ƒ.Vector3.DIFFERENCE(Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2().toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
-            this.flock.update();
-            this.moveDirection = this.flock.getMoveVector().toVector3();
-            console.log(distance);
-            if (distance < 5) {
-                this.isAggressive = true;
-                this.flock.notToTargetWeight = 2;
-                this.flock.toTargetWeight = 0;
-                //TODO: Intro animation here and when it is done then fight...
-            }
-            else {
-                this.flock.notToTargetWeight = 0;
-                this.flock.toTargetWeight = 2;
+        intro = () => {
+            //TODO: Intro animation here and when it is done then fight...
 
-            }
-
-            if (this.damageTaken >= 4) {
+            if (this.damageTaken >= 1) {
                 // new Buff.DamageBuff(Buff.BUFFID.POISON, 120, 30, 3).addToEntity(this);
-                this.transit(SUMMNORBEHAVIOUR.SUMMON);
-                // this.currentBehaviour = Entity.BEHAVIOUR.SUMMON;
-                // } else {
-                //     this.stateMachine.transit(Entity.BEHAVIOUR.FLEE);
+                this.transit(SUMMNORBEHAVIOUR.ATTACK);
             }
-
-            this.move(this.moveDirection);
         }
 
         public getDamage(_value: number): void {
             super.getDamage(_value);
-            this.damageTaken += _value;
+            if (this.attributes.hitable) {
+                this.damageTaken += _value;
+            }
         }
 
-        // moveBehaviour = () => {
-        //     this.behaviour();
-
-        //     // switch (this.currentBehaviour) {
-        //     //     case Entity.BEHAVIOUR.IDLE:
-        //     //         this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
-        //     //         break;
-        //     //     case Entity.BEHAVIOUR.FLEE:
-        //     //         this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
-        //     //         this.attackingPhase();
-        //     //         break;
-        //     //     case Entity.BEHAVIOUR.SUMMON:
-        //     //         this.defencePhase();
-        //     //         break;
-        //     //     default:
-        //     //         break;
-        //     // }
-        // }
-
         attackingPhase = (): void => {
+            if (this.damageTaken >= (this.attributes.maxHealthPoints * 0.34)) {
+                this.moveDirection = Game.ƒ.Vector3.ZERO();
+                this.summonPosition.set(Game.currentRoom.mtxWorld.translation.x, Game.currentRoom.mtxWorld.translation.y - Game.currentRoom.roomSize / 3, this.mtxWorld.translation.z);
+                this.transit(SUMMNORBEHAVIOUR.TELEPORT);
+                return;
+            }
             if (!this.attackPhaseCd.hasCoolDown) {
                 this.attackPhaseCd.setMaxCoolDown = Math.round(this.attackPhaseCd.getMaxCoolDown + Math.random() * 5 + Math.random() * -5);
                 this.attackPhaseCd.startCoolDown();
@@ -159,47 +133,51 @@ namespace Enemy {
             if (this.attackPhaseCd.hasCoolDown) {
                 let distance = ƒ.Vector3.DIFFERENCE(Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2().toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
 
-                if (distance > 10 || this.dash.doesAbility) {
-                    this.moveDirection = Calculation.getRotatedVectorByAngle2D(this.moveDirection, 90);
-                    if (Math.round(Math.random() * 100) >= 10) {
-                        this.dash.doAbility();
+                this.target = Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2();
+
+                if (distance < 5) {
+                    this.isAggressive = true;
+                    this.flock.notToTargetWeight = 2;
+                    this.flock.toTargetWeight = 1;
+                } else if (distance > 8) {
+                    this.flock.notToTargetWeight = 1;
+                    this.flock.toTargetWeight = 2;
+
+                    if (!this.dash.hasCooldown()) {
+                        this.moveDirection = Calculation.getRotatedVectorByAngle2D(this.moveDirection, 90);
+                        if (Math.round(Math.random() * 100) >= 10) {
+                            this.dash.doAbility();
+                        }
                     }
-                } else {
-                    // this.moveDirection = this.moveAway(Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2()).toVector3();
+
+                    if (this.dash.doesAbility) {
+                        this.dashWeapon.shoot(Game.ƒ.Vector2.DIFFERENCE(this.target, this.mtxLocal.translation.toVector2()).toVector3(), true, null);
+                        this.dashWeapon.getCoolDown.setMaxCoolDown = Calculation.clampNumber(Math.random() * 24, 10, 24);
+                    }
                 }
 
-                if (this.dash.doesAbility) {
-                    this.dashWeapon.shoot(Game.ƒ.Vector2.DIFFERENCE(this.target, this.mtxLocal.translation.toVector2()).toVector3(), true, null);
-                    this.dashWeapon.getCoolDown.setMaxCoolDown = Calculation.clampNumber(Math.random() * 30, 8, 30);
+                if (!this.dash.doesAbility) {
+                    this.flock.update();
+                    this.moveDirection = this.flock.getMoveVector().toVector3();
                 }
-            } else {
-                this.mtxLocal.translation = (new ƒ.Vector2(0, 0)).toVector3();
-                this.shooting360();
             }
         }
 
         defencePhase = (): void => {
-
-            // if (this.teleport()) {
-
             if (!this.defencePhaseCd.hasCoolDown) {
                 this.defencePhaseCd.setMaxCoolDown = Math.round(this.defencePhaseCd.getMaxCoolDown + Math.random() * 5 + Math.random() * -5);
                 this.defencePhaseCd.startCoolDown();
-
-                this.summonPosition.set(Game.currentRoom.mtxWorld.translation.x, Game.currentRoom.mtxWorld.translation.y - (Game.currentRoom.roomSize / 3), this.mtxWorld.translation.z);
+                new Buff.AttributesBuff(Buff.BUFFID.IMMUNE, null, 1, 0).addToEntity(this);
             } else {
                 if (this.mtxLocal.translation.equals(this.summonPosition, 1)) {
                     this.switchAnimation(Entity.ANIMATIONSTATES.SUMMON);
-                    new Buff.AttributesBuff(Buff.BUFFID.IMMUNE, null, 1, 0).addToEntity(this);
 
                     console.log("spawning");
 
                     this.moveDirection = ƒ.Vector3.ZERO();
                     this.summon.doAbility();
                 }
-                // }
             }
-
         }
 
         stopDefencePhase = () => {
@@ -210,8 +188,6 @@ namespace Enemy {
         teleport = (): void => {
             if (!this.mtxLocal.translation.equals(this.summonPosition)) {
                 this.switchAnimation(Entity.ANIMATIONSTATES.TELEPORT);
-                console.log(this.getCurrentFrame);
-
 
                 if (this.getCurrentFrame >= 5) {
                     this.mtxLocal.translation = this.summonPosition;
@@ -230,20 +206,23 @@ namespace Enemy {
             }
         }
 
-        shooting360() {
+        shooting360 = (): void => {
             if (!this.beginShooting) {
+                this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
                 this.currentShootingCount = Math.round(this.shootingCount + Math.random() * 2);
                 this.beginShooting = true;
             } else {
                 if (this.currentShootingCount > 0) {
-                    this.shoot360.bulletAmount = Math.round(8 + Math.random() * 8);
-                    this.shoot360.doAbility();
-                    if (this.shoot360.doesAbility) {
+                    if (!this.shoot360.hasCooldown()) {
+                        this.shoot360.bulletAmount = Math.round(8 + Math.random() * 8);
+                        this.shoot360.doAbility();
                         this.currentShootingCount--;
                     }
                 } else {
                     this.beginShooting = false;
                     this.damageTaken = 0;
+                    new Buff.AttributesBuff(Buff.BUFFID.IMMUNE, null, 1, 0).removeBuff(this);
+                    this.transit(SUMMNORBEHAVIOUR.ATTACK);
                 }
             }
         }
