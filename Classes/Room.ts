@@ -275,27 +275,27 @@ namespace Generation {
 
             if (sameRarity.length > 0) {
                 let index: number = Math.round(Math.random() * (sameRarity.length - 1));
-                sameRarity[index].removeItemToEntity(_avatar);
+                sameRarity[index].removeItemFromEntity(_avatar);
                 this.items.splice(this.items.indexOf(_item), 1);
                 Networking.updateInventory(false, sameRarity[index].id, sameRarity[index].netId, _avatar.netId);
             } else {
                 if (lowerRarity.length >= 3) {
                     let index1: number = Math.round(Math.random() * (lowerRarity.length - 1));
-                    lowerRarity[index1].removeItemToEntity(_avatar);
+                    lowerRarity[index1].removeItemFromEntity(_avatar);
                     lowerRarity.splice(lowerRarity.indexOf(lowerRarity[index1]), 1);
                     lowerRarity.slice(index1, 1);
                     lowerRarity.splice(index1, 1);
                     Networking.updateInventory(false, lowerRarity[index1].id, lowerRarity[index1].netId, _avatar.netId);
 
                     let index2: number = Math.round(Math.random() * (lowerRarity.length - 1));
-                    lowerRarity[index2].removeItemToEntity(_avatar);
+                    lowerRarity[index2].removeItemFromEntity(_avatar);
                     lowerRarity.splice(lowerRarity.indexOf(lowerRarity[index2]), 1);
                     lowerRarity.slice(index2, 1);
                     lowerRarity.splice(index2, 1);
                     Networking.updateInventory(false, lowerRarity[index2].id, lowerRarity[index2].netId, _avatar.netId);
 
                     let index3: number = Math.round(Math.random() * (lowerRarity.length - 1));
-                    lowerRarity[index3].removeItemToEntity(_avatar);
+                    lowerRarity[index3].removeItemFromEntity(_avatar);
                     lowerRarity.splice(lowerRarity.indexOf(lowerRarity[index3]), 1);
                     lowerRarity.slice(index3, 1);
                     lowerRarity.splice(index3, 1);
@@ -362,7 +362,11 @@ namespace Generation {
             // if (this.enemyCountManager.finished) {
             //     return;
             // }
+            Game.avatar1.weapon = new Weapons.ThorsHammer(1, Bullets.BULLETTYPE.THORSHAMMER, 1, Game.avatar1.netId);
+            Game.avatar2.weapon = new Weapons.ThorsHammer(1, Bullets.BULLETTYPE.THORSHAMMER, 1, Game.avatar2.netId);
 
+            Networking.updateAvatarWeapon(Game.avatar1.weapon, Game.avatar1.netId);
+            Networking.updateAvatarWeapon(Game.avatar2.weapon, Game.avatar2.netId);
 
             let thorshammer: Items.InternalItem = new Items.InternalItem(Items.ITEMID.THORSHAMMER);
             let choosenOne: Player.Player;
@@ -374,15 +378,6 @@ namespace Generation {
 
             thorshammer.addItemToEntity(choosenOne);
             Networking.updateInventory(true, thorshammer.id, thorshammer.netId, choosenOne.netId);
-
-            if (choosenOne != Game.avatar1) {
-                Game.avatar1.weapon = new Weapons.ThorsHammer(100 * 60, 1, Bullets.BULLETTYPE.THORSHAMMER, 1, Game.avatar1.netId);
-            } else {
-                Game.avatar2.weapon = new Weapons.ThorsHammer(100 * 60, 1, Bullets.BULLETTYPE.THORSHAMMER, 1, Game.avatar1.netId);
-            }
-
-            Networking.updateAvatarWeapon(Game.avatar1.weapon, Game.avatar1.netId);
-            Networking.updateAvatarWeapon(Game.avatar2.weapon, Game.avatar2.netId);
         }
 
         protected stopThorsHammerChallenge() {
@@ -399,7 +394,9 @@ namespace Generation {
                     Game.avatar2.items.splice(Game.avatar2.items.indexOf(avatar2Inv), 1);
                     Networking.updateInventory(false, avatar2Inv.id, avatar2Inv.netId, Game.avatar2.netId);
                 }
+            }
 
+            if (Game.avatar1.weapon instanceof Weapons.ThorsHammer || Game.avatar2.weapon instanceof Weapons.ThorsHammer) {
                 Game.avatar1.weapon = (<Weapons.ThorsHammer>Game.avatar1.weapon).weaponStorage;
                 Game.avatar2.weapon = (<Weapons.ThorsHammer>Game.avatar2.weapon).weaponStorage;
 

@@ -173,6 +173,7 @@ namespace UI {
                     newTxt = txtTen;
                     break;
                 default:
+                    newTxt = txtTen;
                     break;
             }
             if (_damage >= 0) {

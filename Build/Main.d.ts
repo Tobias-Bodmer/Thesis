@@ -351,7 +351,7 @@ declare namespace Items {
         spawn(): void;
         despawn(): void;
         addItemToEntity(_avatar: Player.Player): void;
-        removeItemToEntity(_avatar: Player.Player): void;
+        removeItemFromEntity(_avatar: Player.Player): void;
     }
     class InternalItem extends Item {
         value: number;
@@ -359,7 +359,7 @@ declare namespace Items {
         constructor(_id: ITEMID, _netId?: number);
         setChoosenOneNetId(_netId: number): void;
         addItemToEntity(_avatar: Player.Player): void;
-        removeItemToEntity(_avatar: Player.Player): void;
+        removeItemFromEntity(_avatar: Player.Player): void;
         clone(): Item;
         protected setAttributesById(_avatar: Player.Player, _add: boolean): void;
     }
@@ -1189,7 +1189,7 @@ declare namespace Weapons {
         set setMagazin(_magazin: Bullets.Bullet[]);
         protected ItemFunctions: Function[];
         shoot(_direction: ƒ.Vector3, _sync: boolean, _bulletNetId?: number): void;
-        private sendMagazin;
+        protected sendMagazin(): void;
         protected fire(_magazine: Bullets.Bullet[], _sync: boolean): void;
         addFunction(_func: Function): void;
         deleteFunction(_func: Function): void;
@@ -1203,8 +1203,9 @@ declare namespace Weapons {
     }
     class ThorsHammer extends RangedWeapon {
         weaponStorage: Weapon;
-        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _ownerNetId: number);
+        constructor(_attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _ownerNetId: number);
         getType(): WEAPONTYPE;
         shoot(_direction: ƒ.Vector3, _sync: boolean, _bulletNetId?: number): void;
+        protected fire(_magazine: Bullets.Bullet[], _sync: boolean): void;
     }
 }

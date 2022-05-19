@@ -109,8 +109,8 @@ namespace Player {
                         }
                     }
 
-                    Networking.updateInventory(true, item.id, item.netId, this.netId);
                     item.addItemToEntity(this);
+                    Networking.updateInventory(true, item.id, item.netId, this.netId);
 
                     if (item instanceof Items.InternalItem) {
                         console.log(item.name + ": " + item.description + " smth changed to: " + (<Items.InternalItem>item).value);

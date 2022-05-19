@@ -234,9 +234,11 @@ namespace Networking {
                         let entity = Game.entities.find(elem => (<Player.Player>elem).netId == message.content.netId);
 
                         if (message.content.add) {
-                            entity.items.push(newItem);
+                            newItem.addItemToEntity(<Player.Player>entity);
+                            // entity.items.push(newItem);
                         } else {
-                            entity.items.splice(entity.items.indexOf(entity.items.find(item => item.id == newItem.id)), 1);
+                            newItem.removeItemFromEntity(<Player.Player>entity);
+                            // entity.items.splice(entity.items.indexOf(entity.items.find(item => item.id == newItem.id)), 1);
                         }
                     }
 
@@ -432,6 +434,8 @@ namespace Networking {
 
                     //apply weapon
                     if (message.content != undefined && message.content.text == FUNCTION.UPDATEWEAPON.toString()) {
+                        //TODO: Itemfunctions mit übernehmen....
+
                         let refWeapon: Weapons.Weapon = <Weapons.Weapon>message.content.weapon;
                         console.log((<Weapons.RangedWeapon>refWeapon).magazin);
                         let tempWeapon;
@@ -443,7 +447,7 @@ namespace Networking {
                                 tempWeapon = new Weapons.MeleeWeapon(message.content.weapon.cooldown.coolDown, message.content.weapon.attackCount, refWeapon.bulletType, refWeapon.projectileAmount, refWeapon.ownerNetId, refWeapon.aimType);
                                 break;
                             case Weapons.WEAPONTYPE.THORSHAMMERWEAPON:
-                                tempWeapon = new Weapons.ThorsHammer(message.content.weapon.cooldown.coolDown, message.content.weapon.attackCount, refWeapon.bulletType, refWeapon.projectileAmount, refWeapon.ownerNetId);
+                                tempWeapon = new Weapons.ThorsHammer(message.content.weapon.attackCount, refWeapon.bulletType, refWeapon.projectileAmount, refWeapon.ownerNetId);
                                 break;
                             default:
                                 console.warn(Weapons.WEAPONTYPE[message.content.type] + " does not exist in Networking switch");

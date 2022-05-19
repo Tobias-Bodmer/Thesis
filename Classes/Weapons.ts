@@ -83,7 +83,7 @@ namespace Weapons {
             }
         }
 
-        private sendMagazin() {
+        protected sendMagazin() {
             let bulletType: Bullets.BULLETTYPE[] = [];
             let directions: Game.ƒ.Vector2[] = [];
             let netIds: number[] = [];
@@ -159,8 +159,8 @@ namespace Weapons {
     export class ThorsHammer extends RangedWeapon {
         public weaponStorage: Weapon;
 
-        constructor(_cooldownTime: number, _attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _ownerNetId: number) {
-            super(_cooldownTime, _attackCount, _bulletType, _projectileAmount, _ownerNetId, AIM.NORMAL);
+        constructor(_attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _ownerNetId: number) {
+            super(1, _attackCount, _bulletType, _projectileAmount, _ownerNetId, AIM.NORMAL);
             this.weaponStorage = (<Player.Player>this.owner).weapon;
             this.bulletType = Bullets.BULLETTYPE.THORSHAMMER;
         }
@@ -178,6 +178,9 @@ namespace Weapons {
                     }
                     if (this.currentAttackCount > 0 && !this.cooldown.hasCoolDown) {
                         this.magazin = this.loadMagazine(_position, _direction, this.bulletType, _bulletNetId);
+
+                        this.sendMagazin();
+
                         this.fire(this.magazin, _sync);
                         this.currentAttackCount--;
                         if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
@@ -187,9 +190,18 @@ namespace Weapons {
                     }
                 }
                 else {
-                    let magazine: Bullets.Bullet[] = this.loadMagazine(_position, _direction, this.bulletType, _bulletNetId);
-                    this.fire(magazine, _sync);
+                    this.fire(this.magazin, _sync);
                 }
+            }
+        }
+
+        protected fire(_magazine: Bullets.Bullet[], _sync: boolean): void {
+            super.fire(_magazine, _sync);
+            let removeItem = this.owner.items.find(item => (<Items.InternalItem>item).id == Items.ITEMID.THORSHAMMER);
+
+            if (removeItem != undefined) {
+                Networking.updateInventory(false, removeItem.id, removeItem.netId, this.ownerNetId);
+                this.owner.items.splice(this.owner.items.indexOf(removeItem), 1);
             }
         }
     }

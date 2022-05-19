@@ -79,7 +79,7 @@ namespace Networking {
         private lastProcessedState: Interfaces.IStatePayload;
         private flyDirection: Game.ƒ.Vector3;
 
-        private AsyncTolerance: number = 0.2;
+        private AsyncTolerance: number = 0.3;
 
 
         constructor(_ownerNetId: number) {

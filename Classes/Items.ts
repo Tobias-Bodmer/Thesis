@@ -146,16 +146,18 @@ namespace Items {
             Networking.spawnItem(this.id, this.position, this.netId);
         }
         public despawn(): void {
-            Networking.popID(this.netId);
-            Networking.removeItem(this.netId);
-            Game.graph.removeChild(this);
+            if (Networking.client.id == Networking.client.idHost) {
+                Networking.popID(this.netId);
+                Networking.removeItem(this.netId);
+                Game.graph.removeChild(this);
+            }
         }
 
         public addItemToEntity(_avatar: Player.Player) {
             _avatar.items.push(this);
         }
 
-        public removeItemToEntity(_avatar: Player.Player) {
+        public removeItemFromEntity(_avatar: Player.Player) {
 
         }
     }
@@ -188,7 +190,7 @@ namespace Items {
             this.despawn();
         }
 
-        public removeItemToEntity(_avatar: Player.Player): void {
+        public removeItemFromEntity(_avatar: Player.Player): void {
             this.setAttributesById(_avatar, false);
             _avatar.items.splice(_avatar.items.indexOf(_avatar.items.find(item => item.id == this.id)), 1);
         }
@@ -198,33 +200,40 @@ namespace Items {
         }
 
         protected setAttributesById(_avatar: Player.Player, _add: boolean) {
+            let host: boolean = Networking.client.id == Networking.client.idHost;
             switch (this.id) {
                 case ITEMID.ICEBUCKETCHALLENGE:
-                    if (_add) {
-                        this.changedValue = _avatar.attributes.coolDownReduction - Calculation.subPercentageAmountToValue(_avatar.attributes.coolDownReduction, this.value);
-                        _avatar.attributes.coolDownReduction = Calculation.subPercentageAmountToValue(_avatar.attributes.coolDownReduction, this.value);
+                    if (host) {
+                        if (_add) {
+                            this.changedValue = _avatar.attributes.coolDownReduction - Calculation.subPercentageAmountToValue(_avatar.attributes.coolDownReduction, this.value);
+                            _avatar.attributes.coolDownReduction = Calculation.subPercentageAmountToValue(_avatar.attributes.coolDownReduction, this.value);
+                        }
+                        else {
+                            _avatar.attributes.coolDownReduction += this.changedValue;
+                        }
+                        Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.coolDownReduction, type: Entity.ATTRIBUTETYPE.COOLDOWNREDUCTION }, _avatar.netId);
                     }
-                    else {
-                        _avatar.attributes.coolDownReduction += this.changedValue;
-                    }
-                    Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.coolDownReduction, type: Entity.ATTRIBUTETYPE.COOLDOWNREDUCTION }, _avatar.netId);
                     break;
                 case ITEMID.DMGUP:
-                    if (_add) {
-                        _avatar.attributes.attackPoints += this.value;
-                    } else {
-                        _avatar.attributes.attackPoints -= this.value;
+                    if (host) {
+                        if (_add) {
+                            _avatar.attributes.attackPoints += this.value;
+                        } else {
+                            _avatar.attributes.attackPoints -= this.value;
+                        }
+                        Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.attackPoints, type: Entity.ATTRIBUTETYPE.ATTACKPOINTS }, _avatar.netId);
                     }
-                    Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.attackPoints, type: Entity.ATTRIBUTETYPE.ATTACKPOINTS }, _avatar.netId);
                     break;
                 case ITEMID.SPEEDUP:
-                    if (_add) {
-                        this.changedValue = Calculation.addPercentageAmountToValue(_avatar.attributes.speed, this.value) - _avatar.attributes.speed;
-                        _avatar.attributes.speed = Calculation.addPercentageAmountToValue(_avatar.attributes.speed, this.value);
-                    } else {
-                        _avatar.attributes.speed -= this.changedValue;
+                    if (host) {
+                        if (_add) {
+                            this.changedValue = Calculation.addPercentageAmountToValue(_avatar.attributes.speed, this.value) - _avatar.attributes.speed;
+                            _avatar.attributes.speed = Calculation.addPercentageAmountToValue(_avatar.attributes.speed, this.value);
+                        } else {
+                            _avatar.attributes.speed -= this.changedValue;
+                        }
+                        Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.speed, type: Entity.ATTRIBUTETYPE.SPEED }, _avatar.netId);
                     }
-                    Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.speed, type: Entity.ATTRIBUTETYPE.SPEED }, _avatar.netId);
                     break;
                 case ITEMID.PROJECTILESUP:
                     function rotateBullets() {
@@ -241,99 +250,116 @@ namespace Items {
                                 break;
                         }
                     }
-                    if (_add) {
-                        _avatar.weapon.projectileAmount += this.value;
-                        (<Weapons.RangedWeapon>_avatar.weapon).addFunction(rotateBullets);
-                    } else {
-                        _avatar.weapon.projectileAmount -= this.value;
-                        (<Weapons.RangedWeapon>_avatar.weapon).deleteFunction(rotateBullets);
-
-                    }
-                    Networking.updateAvatarWeapon(_avatar.weapon, _avatar.netId);
-                    break;
-                case ITEMID.HEALTHUP:
-                    if (_add) {
-                        this.changedValue = Calculation.addPercentageAmountToValue(_avatar.attributes.maxHealthPoints, this.value) - _avatar.attributes.maxHealthPoints;
-                        let currentMaxPoints = _avatar.attributes.maxHealthPoints;
-                        _avatar.attributes.maxHealthPoints = Calculation.addPercentageAmountToValue(_avatar.attributes.maxHealthPoints, this.value);
-                        let amount = _avatar.attributes.maxHealthPoints - currentMaxPoints;
-                        _avatar.attributes.healthPoints += amount;
-                    } else {
-                        _avatar.attributes.maxHealthPoints -= this.changedValue;
-                        let currentMaxPoints = _avatar.attributes.maxHealthPoints;
-                        let amount = _avatar.attributes.maxHealthPoints - currentMaxPoints;
-                        _avatar.attributes.healthPoints -= amount;
-                    }
-                    Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.healthPoints, type: Entity.ATTRIBUTETYPE.HEALTHPOINTS }, _avatar.netId);
-                    Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.maxHealthPoints, type: Entity.ATTRIBUTETYPE.MAXHEALTHPOINTS }, _avatar.netId);
-                    break;
-                case ITEMID.SCALEUP:
-                    if (_add) {
-                        this.changedValue = Calculation.addPercentageAmountToValue(_avatar.attributes.scale, this.value) - _avatar.attributes.scale;
-                        _avatar.attributes.scale = Calculation.addPercentageAmountToValue(_avatar.attributes.scale, this.value);
-                    } else {
-                        _avatar.attributes.scale -= this.changedValue;
-                    }
-                    _avatar.updateScale();
-                    Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.scale, type: Entity.ATTRIBUTETYPE.SCALE }, _avatar.netId);
-                    break;
-                case ITEMID.SCALEDOWN:
-                    if (_add) {
-                        this.changedValue = Calculation.subPercentageAmountToValue(_avatar.attributes.scale, this.value) - _avatar.attributes.scale;
-                        _avatar.attributes.scale = Calculation.subPercentageAmountToValue(_avatar.attributes.scale, this.value);
-                    } else {
-                        _avatar.attributes.scale -= this.changedValue;
-                    }
-                    _avatar.updateScale();
-                    Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.scale, type: Entity.ATTRIBUTETYPE.SCALE }, _avatar.netId);
-                    break;
-                case ITEMID.ARMORUP:
-                    if (_add) {
-                        _avatar.attributes.armor += this.value;
-                    } else {
-                        _avatar.attributes.armor -= this.value;
-                    }
-                    Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.armor, type: Entity.ATTRIBUTETYPE.ARMOR }, _avatar.netId);
-                    break;
-                case ITEMID.HOMECOMING:
-                    if (_avatar instanceof Player.Ranged) {
+                    if (host) {
                         if (_add) {
-                            _avatar.weapon.aimType = Weapons.AIM.HOMING;
+                            _avatar.weapon.projectileAmount += this.value;
+                            (<Weapons.RangedWeapon>_avatar.weapon).addFunction(rotateBullets);
                         } else {
-                            _avatar.weapon.aimType = Weapons.AIM.NORMAL;
+                            _avatar.weapon.projectileAmount -= this.value;
+                            (<Weapons.RangedWeapon>_avatar.weapon).deleteFunction(rotateBullets);
+
                         }
                         Networking.updateAvatarWeapon(_avatar.weapon, _avatar.netId);
+                    } else {
+                        if (_add) {
+                            (<Weapons.RangedWeapon>_avatar.weapon).addFunction(rotateBullets);
+                        } else {
+                            (<Weapons.RangedWeapon>_avatar.weapon).deleteFunction(rotateBullets);
+
+                        }
+                    }
+                    break;
+                case ITEMID.HEALTHUP:
+                    if (host) {
+                        if (_add) {
+                            this.changedValue = Calculation.addPercentageAmountToValue(_avatar.attributes.maxHealthPoints, this.value) - _avatar.attributes.maxHealthPoints;
+                            let currentMaxPoints = _avatar.attributes.maxHealthPoints;
+                            _avatar.attributes.maxHealthPoints = Calculation.addPercentageAmountToValue(_avatar.attributes.maxHealthPoints, this.value);
+                            let amount = _avatar.attributes.maxHealthPoints - currentMaxPoints;
+                            _avatar.attributes.healthPoints += amount;
+                        } else {
+                            _avatar.attributes.maxHealthPoints -= this.changedValue;
+                            let currentMaxPoints = _avatar.attributes.maxHealthPoints;
+                            let amount = _avatar.attributes.maxHealthPoints - currentMaxPoints;
+                            _avatar.attributes.healthPoints -= amount;
+                        }
+                        Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.healthPoints, type: Entity.ATTRIBUTETYPE.HEALTHPOINTS }, _avatar.netId);
+                        Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.maxHealthPoints, type: Entity.ATTRIBUTETYPE.MAXHEALTHPOINTS }, _avatar.netId);
+                    }
+                    break;
+                case ITEMID.SCALEUP:
+                    if (host) {
+                        if (_add) {
+                            this.changedValue = Calculation.addPercentageAmountToValue(_avatar.attributes.scale, this.value) - _avatar.attributes.scale;
+                            _avatar.attributes.scale = Calculation.addPercentageAmountToValue(_avatar.attributes.scale, this.value);
+                        } else {
+                            _avatar.attributes.scale -= this.changedValue;
+                        }
+                        _avatar.updateScale();
+                        Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.scale, type: Entity.ATTRIBUTETYPE.SCALE }, _avatar.netId);
+                    }
+                    break;
+                case ITEMID.SCALEDOWN:
+                    if (host) {
+                        if (_add) {
+                            this.changedValue = Calculation.subPercentageAmountToValue(_avatar.attributes.scale, this.value) - _avatar.attributes.scale;
+                            _avatar.attributes.scale = Calculation.subPercentageAmountToValue(_avatar.attributes.scale, this.value);
+                        } else {
+                            _avatar.attributes.scale -= this.changedValue;
+                        }
+                        _avatar.updateScale();
+                        Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.scale, type: Entity.ATTRIBUTETYPE.SCALE }, _avatar.netId);
+                    }
+                    break;
+                case ITEMID.ARMORUP:
+                    if (host) {
+                        if (_add) {
+                            _avatar.attributes.armor += this.value;
+                        } else {
+                            _avatar.attributes.armor -= this.value;
+                        }
+                        Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.armor, type: Entity.ATTRIBUTETYPE.ARMOR }, _avatar.netId);
+                    }
+                    break;
+                case ITEMID.HOMECOMING:
+                    if (host) {
+                        if (_avatar instanceof Player.Ranged) {
+                            if (_add) {
+                                _avatar.weapon.aimType = Weapons.AIM.HOMING;
+                            } else {
+                                _avatar.weapon.aimType = Weapons.AIM.NORMAL;
+                            }
+                            Networking.updateAvatarWeapon(_avatar.weapon, _avatar.netId);
+                        }
                     }
                     break;
                 case ITEMID.THORSHAMMER:
-                    // localStorage.setItem("cooldownTime", _avatar.weapon.getCoolDown.getMaxCoolDown.toString());
-                    // localStorage.setItem("aimType", Weapons.AIM[_avatar.weapon.aimType]);
-                    // localStorage.setItem("bulletType", Bullets.BULLETTYPE[_avatar.weapon.bulletType]);
-                    // localStorage.setItem("projectileAmount", _avatar.weapon.projectileAmount.toString());
-
-                    // _avatar.weapon.getCoolDown.setMaxCoolDown = 100 * 60;
-                    // _avatar.weapon.aimType = Weapons.AIM.NORMAL;
-                    // _avatar.weapon.bulletType = Bullets.BULLETTYPE.THORSHAMMER;
-                    // _avatar.weapon.projectileAmount = 1;
-                    // _avatar.weapon.canShoot = true;
-
-                    _avatar.weapon = new Weapons.ThorsHammer(100 * 60, 1, Bullets.BULLETTYPE.THORSHAMMER, 1, _avatar.netId);
-                    Networking.updateAvatarWeapon(_avatar.weapon, _avatar.netId);
+                    if (host) {
+                        if (_avatar.weapon instanceof Weapons.ThorsHammer) {
+                            return;
+                        }
+                        _avatar.weapon = new Weapons.ThorsHammer(1, Bullets.BULLETTYPE.THORSHAMMER, 1, _avatar.netId);
+                        Networking.updateAvatarWeapon(_avatar.weapon, _avatar.netId);
+                    }
                     break;
                 case ITEMID.ZIPZAP:
-                    if (_add) {
-                        let newItem: Bullets.ZipZapObject = new Bullets.ZipZapObject(_avatar.netId, null);
-                        newItem.spawn();
-                    } else {
-                        let zipzap = <Bullets.ZipZapObject>Game.graph.getChildren().find(item => (<Bullets.ZipZapObject>item).type == Bullets.BULLETTYPE.ZIPZAP);
-                        zipzap.despawn();
+                    if (host) {
+                        if (_add) {
+                            let newItem: Bullets.ZipZapObject = new Bullets.ZipZapObject(_avatar.netId, null);
+                            newItem.spawn();
+                        } else {
+                            let zipzap = <Bullets.ZipZapObject>Game.graph.getChildren().find(item => (<Bullets.ZipZapObject>item).type == Bullets.BULLETTYPE.ZIPZAP);
+                            zipzap.despawn();
+                        }
                     }
                     break;
                 case ITEMID.AOETEST:
-                    if (_add) {
-                        new Ability.AreaOfEffect(Ability.AOETYPE.HEALTHUP, null).addToEntity(_avatar);
-                    } else {
-                        (<Ability.AreaOfEffect>_avatar.getChildren().find(child => (<Ability.AreaOfEffect>child).id == Ability.AOETYPE.HEALTHUP)).despawn();
+                    if (host) {
+                        if (_add) {
+                            new Ability.AreaOfEffect(Ability.AOETYPE.HEALTHUP, null).addToEntity(_avatar);
+                        } else {
+                            (<Ability.AreaOfEffect>_avatar.getChildren().find(child => (<Ability.AreaOfEffect>child).id == Ability.AOETYPE.HEALTHUP)).despawn();
+                        }
                     }
             }
         }
@@ -368,12 +394,16 @@ namespace Items {
         }
 
         setBuffById(_avatar: Entity.Entity) {
+            let host: boolean = Networking.client.id == Networking.client.idHost;
+
             switch (this.id) {
                 case ITEMID.TOXICRELATIONSHIP:
-                    let newBuff = this.buff.find(buff => buff.id == Buff.BUFFID.POISON).clone();
-                    newBuff.duration = undefined;
-                    (<Buff.DamageBuff>newBuff).value = 0.5;
-                    newBuff.addToEntity(_avatar);
+                    if (host) {
+                        let newBuff = this.buff.find(buff => buff.id == Buff.BUFFID.POISON).clone();
+                        newBuff.duration = undefined;
+                        (<Buff.DamageBuff>newBuff).value = 0.5;
+                        newBuff.addToEntity(_avatar);
+                    }
                     break;
             }
         }

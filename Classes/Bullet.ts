@@ -170,10 +170,6 @@ namespace Bullets {
 
         protected spawnThorsHammer() {
             if (Networking.client.id == Networking.client.idHost) {
-                let removeItem = this.owner.items.find(item => (<Items.InternalItem>item).id == Items.ITEMID.THORSHAMMER);
-                Networking.updateInventory(false, removeItem.id, removeItem.netId, this.ownerNetId);
-                this.owner.items.splice(this.owner.items.indexOf(removeItem), 1);
-
                 let item = new Items.InternalItem(Items.ITEMID.THORSHAMMER);
                 item.setPosition(this.mtxWorld.translation.toVector2());
                 if (this.owner == Game.avatar1) {
@@ -182,15 +178,6 @@ namespace Bullets {
                     item.setChoosenOneNetId(Game.avatar1.netId);
                 }
                 item.spawn();
-
-                this.owner.weapon = (<Weapons.ThorsHammer>this.owner.weapon).weaponStorage;
-
-                // this.owner.weapon.getCoolDown.setMaxCoolDown = +localStorage.getItem("cooldownTime");
-                // this.owner.weapon.aimType = (<any>Weapons.AIM)[localStorage.getItem("aimType")];
-                // this.owner.weapon.bulletType = (<any>BULLETTYPE)[localStorage.getItem("bulletType")];
-                // this.owner.weapon.projectileAmount = +localStorage.getItem("projectileAmount");
-                // this.owner.weapon.canShoot = false;
-                Networking.updateAvatarWeapon((<Player.Player>this.owner).weapon, this.ownerNetId);
             }
         }
 
