@@ -242,7 +242,7 @@ namespace Entity {
         }
         //#endregion
 
-        public switchAnimation(_name: ANIMATIONSTATES) {
+        public  switchAnimation(_name: ANIMATIONSTATES) {
             let name: string = ANIMATIONSTATES[_name].toLowerCase();
             if (this.animationContainer != null && <ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name] != null) {
                 if (this.currentAnimationState != _name) {
@@ -286,7 +286,7 @@ namespace Entity {
     }
 
     export enum BEHAVIOUR {
-        IDLE, FOLLOW, FLEE, SUMMON, ATTACK
+        IDLE, FOLLOW, FLEE, SUMMON, ATTACK, TELEPORT
     }
 
     export enum ID {

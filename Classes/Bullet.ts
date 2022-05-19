@@ -70,7 +70,9 @@ namespace Bullets {
 
             let colliderPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
             this.collider = new Collider.Collider(colliderPosition, this.cmpTransform.mtxLocal.scaling.y / 1.5, this.netId);
-            _direction.normalize();
+            if (_direction.magnitudeSquared > 0) {
+                _direction.normalize();
+            }
             this.updateRotation(_direction);
             this.loadTexture();
             this.flyDirection = ƒ.Vector3.X();
