@@ -76,8 +76,7 @@ namespace Enemy {
 
         public moveAway(_target: ƒ.Vector2): ƒ.Vector2 {
             let moveSimple = this.moveSimple(_target);
-            moveSimple.x *= -1;
-            moveSimple.y *= -1;
+            moveSimple.scale(-1);
             return moveSimple;
         }
 
@@ -99,16 +98,23 @@ namespace Enemy {
                 _direction.scale((Game.deltaTime * this.attributes.speed));
                 knockback.scale((Game.deltaTime * this.attributes.speed));
 
-
                 super.collide(_direction);
 
-                let avatar: Player.Player[] = (<Player.Player[]>Game.graph.getChildren().filter(element => (<Player.Player>element).tag == Tag.TAG.PLAYER));
-                let avatarColliders: Collider.Collider[] = [];
-                avatar.forEach((elem) => {
-                    avatarColliders.push((<Player.Player>elem).collider);
-                });
+                // let avatar: Player.Player[] = (<Player.Player[]>Game.graph.getChildren().filter(element => (<Player.Player>element).tag == Tag.TAG.PLAYER));
+                // let avatarColliders: Collider.Collider[] = [];
+                // avatar.forEach((elem) => {
+                //     avatarColliders.push((<Player.Player>elem).collider);
+                // });
 
-                this.calculateCollision(avatarColliders, _direction);
+                // this.calculateCollision(avatarColliders, _direction);
+
+                // let enemies: Enemy.Enemy[] = Game.enemies;
+                // let enemyColliders: Collider.Collider[] = [];
+                // enemies.forEach((elem) => {
+                //     enemyColliders.push((<Enemy.Enemy>elem).collider);
+                // });
+
+                // this.calculateCollision(enemyColliders, _direction);
 
                 if (this.canMoveX && this.canMoveY) {
                     this.cmpTransform.mtxLocal.translate(_direction);
@@ -132,26 +138,29 @@ namespace Enemy {
 
 
     export class EnemyDumb extends Enemy {
-        public flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 3, 0.1, 0, 0);
+        public flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0, 0, 0, 1, 0, 0);
         private aggressiveDistance: number = 3 * 3;
         private stamina: Ability.Cooldown = new Ability.Cooldown(180);
         private recover: Ability.Cooldown = new Ability.Cooldown(60);
 
         constructor(_id: Entity.ID, _pos: Game.ƒ.Vector2, _netId: number) {
             super(_id, _pos, _netId);
+            this.isAggressive = true;
             this.stamina.onEndCoolDown = () => this.recoverStam;
         }
         behaviour() {
-            this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2();
+            // this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2();
+            this.target = Game.avatar1.mtxLocal.translation.toVector2();
             let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitudeSquared;
             this.flocking.update();
 
-            if (distance < this.aggressiveDistance) {
-                this.isAggressive = true;
-            }
-            if (this.isAggressive && !this.recover.hasCoolDown) {
-                this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
-            }
+            // if (distance < this.aggressiveDistance) {
+            //     this.isAggressive = true;
+            // }
+            // if (this.isAggressive && !this.recover.hasCoolDown) {
+            //     this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
+            // }
+            this.moveDirection = this.flocking.getMoveVector().toVector3();
         }
 
         private recoverStam = () => {
@@ -161,26 +170,25 @@ namespace Enemy {
 
         moveBehaviour() {
             this.behaviour();
-            switch (this.currentBehaviour) {
-                case Entity.BEHAVIOUR.IDLE:
-                    this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
-                    this.moveDirection = ƒ.Vector3.ZERO();
-                    break;
-                case Entity.BEHAVIOUR.FOLLOW:
-                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
-                    if (!this.stamina.hasCoolDown && !this.recover.hasCoolDown) {
-                        this.stamina.startCoolDown();
-                    }
-                    if (this.stamina.hasCoolDown) {
-                        this.moveDirection = this.flocking.getMoveVector().toVector3();
-                        //TODO: set a callback function to do this.
-                        // if (this.stamina.getCurrentCooldown == 1) {
-                        //     this.recover.startCoolDown();
-                        //     this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
-                        // }
-                    }
-                    break;
-            }
+            //     switch (this.currentBehaviour) {
+            //         case Entity.BEHAVIOUR.IDLE:
+            //             this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
+            //             // this.moveDirection = ƒ.Vector3.ZERO();
+            //             break;
+            //         case Entity.BEHAVIOUR.FOLLOW:
+            //             this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
+            //             if (!this.stamina.hasCoolDown && !this.recover.hasCoolDown) {
+            //                 this.stamina.startCoolDown();
+            //             }
+            //             if (this.stamina.hasCoolDown) {
+            //                 //TODO: set a callback function to do this.
+            //                 // if (this.stamina.getCurrentCooldown == 1) {
+            //                 //     this.recover.startCoolDown();
+            //                 //     this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
+            //                 // }
+            //             }
+            //             break;
+            //     }
         }
 
     }
@@ -242,7 +250,7 @@ namespace Enemy {
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _position, _netId);
-            this.flocking = new FlockingBehaviour(this, 3, 3, 1, 1, 4, 0.1, 0, 0);
+            this.flocking = new FlockingBehaviour(this, 3, 3, 1, 1, 2, 0, 0, 0);
 
         }
 

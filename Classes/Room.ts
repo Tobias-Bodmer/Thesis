@@ -149,7 +149,7 @@ namespace Generation {
         normalRoomMat: ƒ.Material = new ƒ.Material("normalRoomMat", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
             super(_coordinates, _roomSize, ROOMTYPE.NORMAL);
-            this.enemyCountManager = new EnemyCountManager(25);
+            this.enemyCountManager = new EnemyCountManager(1);
 
             this.getComponent(Game.ƒ.ComponentMaterial).material = this.normalRoomMat;
         }

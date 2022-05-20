@@ -44,7 +44,7 @@ namespace Enemy {
         private findNeighbours() {
             this.currentNeighbours = [];
             this.enemies.forEach(enem => {
-                if (this.myEnemy.netId != enem.netId && this.myEnemy.id == enem.id) {
+                if (this.myEnemy.netId != enem.netId) {
                     if (enem.mtxLocal.translation.getDistance(this.pos.toVector3()) < this.sightRadius) {
                         this.currentNeighbours.push(enem);
                     }
@@ -63,7 +63,18 @@ namespace Enemy {
                 })
                 cohesionMove.scale(1 / this.currentNeighbours.length);
                 cohesionMove.subtract(this.pos);
-                cohesionMove = Calculation.getRotatedVectorByAngle2D(this.myEnemy.moveDirection, Calculation.calcDegree(this.myEnemy.mtxLocal.translation, cohesionMove.toVector3()) / 10).toVector2()
+                // if (this.myEnemy.moveDirection.magnitudeSquared > 0) {
+                //     cohesionMove = Calculation.getRotatedVectorByAngle2D(this.myEnemy.moveDirection, Calculation.calcDegree(this.myEnemy.mtxLocal.translation, cohesionMove.toVector3()) / 10).toVector2()
+                // }
+                let newDirection = ƒ.Vector3.DIFFERENCE(cohesionMove.toVector3(), this.myEnemy.mtxLocal.translation);
+                if (newDirection.magnitude > 0) {
+                    newDirection.normalize();
+                }
+                let rotateAmount2: number = ƒ.Vector3.CROSS(newDirection, this.myEnemy.moveDirection).z;
+                if (this.myEnemy.moveDirection.magnitudeSquared > 0) {
+                    cohesionMove = Calculation.getRotatedVectorByAngle2D(this.myEnemy.moveDirection, -rotateAmount2 * 0.01).toVector2();
+
+                }
                 return cohesionMove;
             }
         }
@@ -75,7 +86,7 @@ namespace Enemy {
             else {
                 let allignmentMove: Game.ƒ.Vector2 = ƒ.Vector2.ZERO();
                 this.currentNeighbours.forEach(enem => {
-                    allignmentMove = Game.ƒ.Vector2.SUM(allignmentMove, enem.moveDirection.toVector2());
+                    allignmentMove.add(enem.moveDirection.toVector2());
                 })
                 allignmentMove.scale(1 / this.currentNeighbours.length);
                 return allignmentMove;
@@ -92,7 +103,7 @@ namespace Enemy {
                 this.currentNeighbours.forEach(enem => {
                     if (enem.mtxLocal.translation.getDistance(this.pos.toVector3()) < this.avoidRadius) {
                         nAvoid++;
-                        avoidanceMove = Game.ƒ.Vector2.SUM(avoidanceMove, Game.ƒ.Vector2.DIFFERENCE(this.pos, enem.mtxLocal.translation.toVector2()));
+                        avoidanceMove.add(Game.ƒ.Vector2.DIFFERENCE(this.pos, enem.mtxLocal.translation.toVector2()));
                     }
                 })
                 if (nAvoid > 0) {
@@ -166,47 +177,52 @@ namespace Enemy {
         }
 
         public getMoveVector(): Game.ƒ.Vector2 {
+            let target: Game.ƒ.Vector2 = Game.ƒ.Vector2.ZERO();
+            let notToTarget: Game.ƒ.Vector2 = Game.ƒ.Vector2.ZERO();
             let cohesion: Game.ƒ.Vector2 = Game.ƒ.Vector2.ZERO();
             let avoid: Game.ƒ.Vector2 = Game.ƒ.Vector2.ZERO();
             let allign: Game.ƒ.Vector2 = Game.ƒ.Vector2.ZERO();
             let obsticalAvoid: Game.ƒ.Vector2 = Game.ƒ.Vector2.ZERO();
 
 
-            let target = this.myEnemy.moveSimple(this.myEnemy.target);
+            target = this.myEnemy.moveSimple(this.myEnemy.target);
             if (target.magnitudeSquared > this.toTargetWeight * this.toTargetWeight) {
-                target.normalize;
+                target.normalize();
                 target.scale(this.toTargetWeight);
             }
 
-            let notToTarget = this.myEnemy.moveAway(this.myEnemy.target)
+            notToTarget = this.myEnemy.moveAway(this.myEnemy.target);
             if (notToTarget.magnitudeSquared > this.notToTargetWeight * this.notToTargetWeight) {
-                notToTarget.normalize;
+                notToTarget.normalize();
                 notToTarget.scale(this.notToTargetWeight);
             }
 
+
             cohesion = this.calculateCohesionMove();
             if (cohesion.magnitudeSquared > this.cohesionWeight * this.cohesionWeight) {
-                cohesion.normalize;
+                cohesion.normalize();
                 cohesion.scale(this.cohesionWeight);
             }
             avoid = this.calculateAvoidanceMove();
-            if (avoid.magnitudeSquared > this.avoidWeight * this.avoidWeight) {
-                avoid.normalize;
+            if (avoid.magnitudeSquared > 0) {
+                avoid.normalize();
                 avoid.scale(this.avoidWeight);
             }
             allign = this.calculateAllignmentMove();
             if (allign.magnitudeSquared > this.allignWeight * this.allignWeight) {
-                allign.normalize;
+                allign.normalize();
                 allign.scale(this.allignWeight);
             }
 
             obsticalAvoid = this.calculateObsticalAvoidanceMove();
             if (obsticalAvoid.magnitudeSquared > this.obsticalAvoidWeight * this.obsticalAvoidWeight) {
-                obsticalAvoid.normalize;
+                obsticalAvoid.normalize();
                 obsticalAvoid.scale(this.obsticalAvoidWeight);
             }
 
             let move = Game.ƒ.Vector2.SUM(notToTarget, target, cohesion, avoid, allign, obsticalAvoid);
+            // console.log("move magnitude" + move.toString());
+
             return move;
         }
     }

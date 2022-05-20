@@ -158,7 +158,6 @@ namespace Enemy {
 
         private nextAttack() {
             let random: number = Math.round(Math.random() * 100);
-            console.log(random);
             switch (true) {
                 case random > 99:
                     if (!this.shoot360Cooldown.hasCoolDown) {
@@ -173,9 +172,7 @@ namespace Enemy {
         }
 
         private doDash() {
-            console.log("try to dash");
             if (this.dash.hasCooldown()) {
-                console.log("has cooldown");
                 return;
             }
 
