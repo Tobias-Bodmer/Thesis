@@ -233,10 +233,11 @@ declare namespace Enemy {
         moveBehaviour(): void;
         shoot(_netId?: number): void;
     }
-    class SummonorAdds extends EnemyDumb {
+    class SummonorAdds extends EnemyDash {
         avatar: Player.Player;
         randomPlayer: number;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _target: Player.Player, _netId?: number);
+        behaviour(): void;
     }
 }
 declare namespace Interfaces {
@@ -624,11 +625,11 @@ declare namespace Enemy {
         afterTeleportState: SUMMNORBEHAVIOUR;
         stateMachineInstructions: Game.ƒAid.StateMachineInstructions<SUMMNORBEHAVIOUR>;
         dashDirection: number;
+        weapon: Weapons.Weapon;
         private summon;
         private dash;
         private shoot360;
         private shoot360Cooldown;
-        private dashWeapon;
         private flock;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
         transit(_next: SUMMNORBEHAVIOUR): void;
@@ -758,7 +759,7 @@ declare namespace Bullets {
         constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerNetId: number, _netId?: number);
         eventUpdate: (_event: Event) => void;
         protected update(): void;
-        spawn(_sync: boolean): void;
+        spawn(): void;
         despawn(): void;
         protected updateLifetime(): void;
         predict(): void;
@@ -1192,7 +1193,7 @@ declare namespace Weapons {
         abstract shoot(_direction: ƒ.Vector3, _sync: boolean, _bulletNetId?: number): void;
         abstract getType(): WEAPONTYPE;
         protected inaccuracy(_direciton: ƒ.Vector3): void;
-        protected fire(_magazine: Bullets.Bullet[], _sync: boolean): void;
+        protected fire(_magazine: Bullets.Bullet[]): void;
     }
     class RangedWeapon extends Weapon {
         magazin: Bullets.Bullet[];
@@ -1201,7 +1202,7 @@ declare namespace Weapons {
         ItemFunctions: Function[];
         shoot(_direction: ƒ.Vector3, _sync: boolean, _bulletNetId?: number): void;
         protected sendMagazin(): void;
-        protected fire(_magazine: Bullets.Bullet[], _sync: boolean): void;
+        protected fire(_magazine: Bullets.Bullet[]): void;
         addFunction(_func: Function): void;
         deleteFunction(_func: Function): void;
         private processItemEffects;
@@ -1217,6 +1218,6 @@ declare namespace Weapons {
         constructor(_attackCount: number, _bulletType: Bullets.BULLETTYPE, _projectileAmount: number, _ownerNetId: number);
         getType(): WEAPONTYPE;
         shoot(_direction: ƒ.Vector3, _sync: boolean, _bulletNetId?: number): void;
-        protected fire(_magazine: Bullets.Bullet[], _sync: boolean): void;
+        protected fire(_magazine: Bullets.Bullet[]): void;
     }
 }

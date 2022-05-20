@@ -193,6 +193,7 @@ namespace Entity {
          * @param _value value how much damage is applied
          */
         public getDamage(_value: number) {
+            console.log("get hit");
             if (Networking.client.idHost == Networking.client.id) {
                 if (_value != null && this.attributes.hitable) {
                     let hitValue = this.getDamageReduction(_value);

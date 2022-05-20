@@ -51,11 +51,11 @@ namespace Enemy {
         dashDirection: number = 100;
 
 
+        public weapon: Weapons.Weapon = new Weapons.RangedWeapon(12, 1, Bullets.BULLETTYPE.SUMMONER, 1, this.netId, Weapons.AIM.NORMAL);
         private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 0, 1, 45);
-        private dash: Ability.Dash = new Ability.Dash(this.netId, 45, 1, 6 * 60, 5);
+        private dash: Ability.Dash = new Ability.Dash(this.netId, 60, 1, 6 * 60, 4);
         private shoot360: Ability.circleShoot = new Ability.circleShoot(this.netId, 0, 1, 60);
         private shoot360Cooldown: Ability.Cooldown = new Ability.Cooldown(580);
-        private dashWeapon: Weapons.Weapon = new Weapons.RangedWeapon(12, 1, Bullets.BULLETTYPE.SUMMONER, 1, this.netId, Weapons.AIM.NORMAL);
         private flock: FlockingBehaviour = new FlockingBehaviour(
             this,
             4,
@@ -192,8 +192,8 @@ namespace Enemy {
         private shootOnDash = () => {
             let distance = ƒ.Vector3.DIFFERENCE(Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2().toVector3(), this.cmpTransform.mtxLocal.translation);
             this.moveDirection = Calculation.getRotatedVectorByAngle2D(distance, this.dashDirection);
-            this.dashWeapon.shoot(Game.ƒ.Vector2.DIFFERENCE(this.target, this.mtxLocal.translation.toVector2()).toVector3(), true, null);
-            this.dashWeapon.getCoolDown.setMaxCoolDown = Calculation.clampNumber(Math.random() * 24, 10, 24);
+            this.weapon.shoot(Game.ƒ.Vector2.DIFFERENCE(this.target, this.mtxLocal.translation.toVector2()).toVector3(), true);
+            this.weapon.getCoolDown.setMaxCoolDown = Calculation.clampNumber(Math.random() * 24, 10, 24);
         }
 
         defencePhase = (): void => {

@@ -267,7 +267,7 @@ namespace Networking {
                             let direction: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]);
 
                             bullet = new Bullets.Bullet(entity.weapon.bulletType, entity.mtxLocal.translation.toVector2(), direction, message.content.ownerNetId, message.content.bulletNetId)
-                            bullet.spawn(false);
+                            bullet.spawn();
                         }
                     }
 

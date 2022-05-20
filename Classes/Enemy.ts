@@ -138,7 +138,7 @@ namespace Enemy {
 
 
     export class EnemyDumb extends Enemy {
-        public flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0, 0, 0, 1, 0, 0);
+        public flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 4, 1, 0, 0);
         private aggressiveDistance: number = 3 * 3;
         private stamina: Ability.Cooldown = new Ability.Cooldown(180);
         private recover: Ability.Cooldown = new Ability.Cooldown(60);
@@ -149,17 +149,17 @@ namespace Enemy {
             this.stamina.onEndCoolDown = () => this.recoverStam;
         }
         behaviour() {
-            // this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2();
+            this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2();
             this.target = Game.avatar1.mtxLocal.translation.toVector2();
             let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitudeSquared;
             this.flocking.update();
 
-            // if (distance < this.aggressiveDistance) {
-            //     this.isAggressive = true;
-            // }
-            // if (this.isAggressive && !this.recover.hasCoolDown) {
-            //     this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
-            // }
+            if (distance < this.aggressiveDistance) {
+                this.isAggressive = true;
+            }
+            if (this.isAggressive && !this.recover.hasCoolDown) {
+                this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
+            }
             this.moveDirection = this.flocking.getMoveVector().toVector3();
         }
 
@@ -170,25 +170,25 @@ namespace Enemy {
 
         moveBehaviour() {
             this.behaviour();
-            //     switch (this.currentBehaviour) {
-            //         case Entity.BEHAVIOUR.IDLE:
-            //             this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
-            //             // this.moveDirection = ƒ.Vector3.ZERO();
-            //             break;
-            //         case Entity.BEHAVIOUR.FOLLOW:
-            //             this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
-            //             if (!this.stamina.hasCoolDown && !this.recover.hasCoolDown) {
-            //                 this.stamina.startCoolDown();
-            //             }
-            //             if (this.stamina.hasCoolDown) {
-            //                 //TODO: set a callback function to do this.
-            //                 // if (this.stamina.getCurrentCooldown == 1) {
-            //                 //     this.recover.startCoolDown();
-            //                 //     this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
-            //                 // }
-            //             }
-            //             break;
-            //     }
+            switch (this.currentBehaviour) {
+                case Entity.BEHAVIOUR.IDLE:
+                    this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
+                    // this.moveDirection = ƒ.Vector3.ZERO();
+                    break;
+                case Entity.BEHAVIOUR.FOLLOW:
+                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
+                    if (!this.stamina.hasCoolDown && !this.recover.hasCoolDown) {
+                        this.stamina.startCoolDown();
+                    }
+                    if (this.stamina.hasCoolDown) {
+                        //TODO: set a callback function to do this.
+                        // if (this.stamina.getCurrentCooldown == 1) {
+                        //     this.recover.startCoolDown();
+                        //     this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
+                        // }
+                    }
+                    break;
+            }
         }
 
     }
@@ -254,8 +254,6 @@ namespace Enemy {
 
         }
 
-
-
         behaviour() {
             this.avatars = [Game.avatar1, Game.avatar2]
             this.target = (<Player.Player>this.avatars[this.randomPlayer]).mtxLocal.translation.toVector2();
@@ -267,7 +265,6 @@ namespace Enemy {
             }
             if (Math.random() * 100 < 0.1) {
                 this.dash.doAbility();
-
             }
 
 
@@ -377,52 +374,22 @@ namespace Enemy {
         }
     }
 
-    export class SummonorAdds extends EnemyDumb {
+    export class SummonorAdds extends EnemyDash {
         avatar: Player.Player;
         randomPlayer = Math.round(Math.random());
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _target: Player.Player, _netId?: number) {
             super(_id, _position, _netId);
             this.avatar = _target;
-            // this.flocking = new FlockingBehaviour(this, 3, 5, 1.5, 1, 1, 0.1, 0);
+            this.flocking = new FlockingBehaviour(this, 3, 1, 0.1, 1, 4, 1, 0, 0);
             this.isAggressive = true;
         }
 
-        // behaviour() {
-        //     this.target = this.avatar.mtxLocal.translation.toVector2();
-
-        //     let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
-
-        //     if (distance > 5) {
-        //         this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
-
-        //     }
-        //     // else if (distance < 3) {
-        //     //     this.dash.doAbility();
-        //     // }
-        //     this.flocking.update();
-        // }
-
-
-        // moveBehaviour(): void {
-        //     this.behaviour();
-        //     switch (this.currentBehaviour) {
-        //         case Entity.BEHAVIOUR.FOLLOW:
-        //             this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
-        //             this.flocking.notToTargetWeight = 1;
-        //             this.flocking.toTargetWeight = 2;
-        //             this.moveDirection = this.flocking.getMoveVector().toVector3();
-        //             // if (!this.dash.doesAbility) {
-        //             //     this.lastMoveDireciton = this.moveDirection;
-        //             //     this.moveDirection = this.flocking.getMoveVector().toVector3();
-        //             // }
-        //             break;
-        //         case Entity.BEHAVIOUR.IDLE:
-        //             this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
-        //             this.moveDirection = ƒ.Vector3.ZERO();
-        //             break;
-        //     }
-        // }
+        behaviour() {
+            this.target = this.avatar.mtxLocal.translation.toVector2();
+            this.flocking.update();
+            this.moveDirection = this.flocking.getMoveVector().toVector3();
+        }
     }
 
 

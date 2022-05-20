@@ -39,9 +39,9 @@ namespace Weapons {
             _direciton.y = _direciton.y + Math.random() * 10 / this.owner.attributes.accuracy - Math.random() * 10 / this.owner.attributes.accuracy;
         }
 
-        protected fire(_magazine: Bullets.Bullet[], _sync: boolean) {
+        protected fire(_magazine: Bullets.Bullet[]) {
             _magazine.forEach(bullet => {
-                bullet.spawn(_sync);
+                bullet.spawn();
             })
         }
     }
@@ -66,7 +66,7 @@ namespace Weapons {
 
                     this.sendMagazin();
 
-                    this.fire(this.magazin, _sync);
+                    this.fire(this.magazin);
                     this.currentAttackCount--;
                     if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
                         this.cooldown.setMaxCoolDown = this.cooldown.getMaxCoolDown * this.owner.attributes.coolDownReduction;
@@ -78,7 +78,7 @@ namespace Weapons {
             else {
                 // this.magazin = this.loadMagazine(_position, _direction, this.bulletType, _bulletNetId);
                 this.processItemEffects();
-                this.fire(this.magazin, _sync);
+                this.fire(this.magazin);
             }
         }
 
@@ -91,8 +91,8 @@ namespace Weapons {
             Networking.sendMagazin(magazinpayload);
         }
 
-        protected fire(_magazine: Bullets.Bullet[], _sync: boolean): void {
-            super.fire(_magazine, _sync);
+        protected fire(_magazine: Bullets.Bullet[]): void {
+            super.fire(_magazine);
             this.magazin = [];
         }
         public addFunction(_func: Function) {
@@ -180,7 +180,7 @@ namespace Weapons {
 
                         this.sendMagazin();
 
-                        this.fire(this.magazin, _sync);
+                        this.fire(this.magazin);
                         this.currentAttackCount--;
                         if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
                             this.cooldown.setMaxCoolDown = this.cooldown.getMaxCoolDown * this.owner.attributes.coolDownReduction;
@@ -189,13 +189,13 @@ namespace Weapons {
                     }
                 }
                 else {
-                    this.fire(this.magazin, _sync);
+                    this.fire(this.magazin);
                 }
             }
         }
 
-        protected fire(_magazine: Bullets.Bullet[], _sync: boolean): void {
-            super.fire(_magazine, _sync);
+        protected fire(_magazine: Bullets.Bullet[]): void {
+            super.fire(_magazine);
             let removeItem = this.owner.items.find(item => (<Items.InternalItem>item).id == Items.ITEMID.THORSHAMMER);
 
             if (removeItem != undefined) {

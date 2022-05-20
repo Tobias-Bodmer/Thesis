@@ -82,6 +82,7 @@ namespace Bullets {
             this.serverPrediction = new Networking.ServerBulletPrediction(this.netId);
             this.clientPrediction = new Networking.ClientBulletPrediction(this.netId);
             this.lastPosition = this.mtxLocal.translation;
+            this.mtxLocal.translateZ(0.1);
             this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
         }
 
@@ -96,11 +97,8 @@ namespace Bullets {
             }
         }
 
-        public spawn(_sync: boolean) {
+        public spawn() {
             Game.graph.addChild(this);
-            if (_sync) {
-                // Networking.spawnBullet(this.direction, this.netId, this.ownerNetId);
-            }
         }
 
         public despawn() {
@@ -118,7 +116,7 @@ namespace Bullets {
         protected updateLifetime() {
             if (this.lifetime >= 0 && this.lifetime != null) {
                 this.lifetime--;
-                if (this.lifetime < 0) {
+                if (this.lifetime <= 0) {
                     this.despawn();
                 }
             }
@@ -256,7 +254,6 @@ namespace Bullets {
                         if ((<Player.Player>element).attributes.healthPoints > 0 && (<Player.Player>element).attributes.hitable) {
                             (<Player.Player>element).getDamage(this.hitPointsScale);
                             (<Player.Player>element).getKnockback(this.knockbackForce, this.mtxLocal.translation);
-                            Game.graph.addChild(new UI.DamageUI((<Player.Player>element).cmpTransform.mtxLocal.translation, this.hitPointsScale));
                             this.killcount--;
                         }
                     }
