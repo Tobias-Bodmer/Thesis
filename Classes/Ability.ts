@@ -6,6 +6,8 @@ namespace Ability {
         protected currentabilityCount: number;
         protected duration: Cooldown;
         public doesAbility: boolean = false;
+        public onDoAbility: () => void;
+        public onEndAbility: () => void;
 
         constructor(_ownerNetId: number, _duration: number, _abilityCount: number, _cooldownTime: number) {
             this.ownerNetId = _ownerNetId;
@@ -22,6 +24,9 @@ namespace Ability {
             if (this.doesAbility && !this.duration.hasCoolDown) {
                 this.deactivateAbility();
                 this.doesAbility = false;
+            }
+            if (this.onDoAbility != undefined) {
+                this.onDoAbility();
             }
         }
         public doAbility(): void {
@@ -51,6 +56,9 @@ namespace Ability {
 
         }
         protected deactivateAbility() {
+            if (this.onEndAbility != undefined) {
+                this.onEndAbility();
+            }
             Game.ƒ.Loop.removeEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
         }
 
@@ -78,13 +86,11 @@ namespace Ability {
         }
         protected activateAbility(): void {
             super.activateAbility();
-            console.log("activate");
             this.owner.attributes.hitable = false;
             this.owner.attributes.speed *= this.speed;
         }
         protected deactivateAbility(): void {
             super.deactivateAbility();
-            console.log("deactivate");
             this.owner.attributes.hitable = true;
             this.owner.attributes.speed /= this.speed;
         }
@@ -95,7 +101,7 @@ namespace Ability {
         protected activateAbility(): void {
             super.activateAbility();
             if (Networking.client.id == Networking.client.idHost) {
-                let position: Game.ƒ.Vector2 = new ƒ.Vector2(this.owner.mtxLocal.translation.x + Math.random() * this.spawnRadius, this.owner.mtxLocal.translation.y + 2)
+                let position: Game.ƒ.Vector2 = new ƒ.Vector2(this.owner.mtxLocal.translation.x + Math.random() * this.spawnRadius, this.owner.mtxLocal.translation.y + 5)
                 if (Math.round(Math.random()) > 0.5) {
                     EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.BAT, position, Game.avatar1, null);
                 } else {
@@ -113,7 +119,7 @@ namespace Ability {
             super.activateAbility();
             this.bullets = [];
             for (let i = 0; i < this.bulletAmount; i++) {
-                this.bullets.push(new Bullets.Bullet(Bullets.BULLETTYPE.STANDARD, this.owner.mtxLocal.translation.toVector2(), Game.ƒ.Vector3.ZERO(), this.ownerNetId));
+                this.bullets.push(new Bullets.Bullet(Bullets.BULLETTYPE.SUMMONER, this.owner.mtxLocal.translation.toVector2(), Game.ƒ.Vector3.ZERO(), this.ownerNetId));
                 this.bullets[i].mtxLocal.rotateZ((360 / this.bulletAmount * i));
             }
             for (let i = 0; i < this.bulletAmount; i++) {

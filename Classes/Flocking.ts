@@ -44,7 +44,7 @@ namespace Enemy {
         private findNeighbours() {
             this.currentNeighbours = [];
             this.enemies.forEach(enem => {
-                if (this.myEnemy.netId != enem.netId) {
+                if (this.myEnemy.netId != enem.netId && this.myEnemy.id == enem.id) {
                     if (enem.mtxLocal.translation.getDistance(this.pos.toVector3()) < this.sightRadius) {
                         this.currentNeighbours.push(enem);
                     }

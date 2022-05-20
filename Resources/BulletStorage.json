@@ -42,7 +42,7 @@
         },
         {
             "name": "summoner",
-            "type": 0,
+            "type": 4,
             "speed": 4,
             "hitPointsScale": 1,
             "lifetime": 300,

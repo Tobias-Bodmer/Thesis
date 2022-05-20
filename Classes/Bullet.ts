@@ -41,7 +41,7 @@ namespace Bullets {
 
 
         constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerNetId: number, _netId?: number) {
-            super(BULLETTYPE[_bulletType]);
+            super(BULLETTYPE[_bulletType].toLowerCase());
 
             this.type = _bulletType;
 

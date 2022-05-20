@@ -132,7 +132,7 @@ namespace Enemy {
 
 
     export class EnemyDumb extends Enemy {
-        public flocking: FlockingBehaviour = new FlockingBehaviour(this, 2, 2, 0.1, 1, 1, 1, 0, 1);
+        public flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 3, 0.1, 0, 0);
         private aggressiveDistance: number = 3 * 3;
         private stamina: Ability.Cooldown = new Ability.Cooldown(180);
         private recover: Ability.Cooldown = new Ability.Cooldown(60);
@@ -242,7 +242,7 @@ namespace Enemy {
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _position, _netId);
-            this.flocking = new FlockingBehaviour(this, 3, 0.8, 1.5, 1, 1, 0.1, 0);
+            this.flocking = new FlockingBehaviour(this, 3, 3, 1, 1, 4, 0.1, 0, 0);
 
         }
 
@@ -369,53 +369,52 @@ namespace Enemy {
         }
     }
 
-    export class SummonorAdds extends EnemyDash {
+    export class SummonorAdds extends EnemyDumb {
         avatar: Player.Player;
         randomPlayer = Math.round(Math.random());
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _target: Player.Player, _netId?: number) {
             super(_id, _position, _netId);
             this.avatar = _target;
-            this.flocking = new FlockingBehaviour(this, 3, 5, 1.5, 1, 1, 0.1, 0);
-
+            // this.flocking = new FlockingBehaviour(this, 3, 5, 1.5, 1, 1, 0.1, 0);
+            this.isAggressive = true;
         }
 
-        behaviour() {
-            this.target = this.avatar.mtxLocal.translation.toVector2();
+        // behaviour() {
+        //     this.target = this.avatar.mtxLocal.translation.toVector2();
 
-            let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
+        //     let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
 
-            if (distance > 5) {
-                this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
+        //     if (distance > 5) {
+        //         this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
 
-            }
-            else if (distance < 3) {
-                this.dash.doAbility();
-            }
-            this.flocking.update();
-        }
+        //     }
+        //     // else if (distance < 3) {
+        //     //     this.dash.doAbility();
+        //     // }
+        //     this.flocking.update();
+        // }
 
 
-        moveBehaviour(): void {
-            this.behaviour();
-            switch (this.currentBehaviour) {
-                case Entity.BEHAVIOUR.FOLLOW:
-                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
-                    if (!this.dash.doesAbility) {
-                        this.lastMoveDireciton = this.moveDirection;
-                        this.moveDirection = this.flocking.getMoveVector().toVector3();
-                    }
-                    break;
-                case Entity.BEHAVIOUR.IDLE:
-                    this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
-                    this.moveDirection = ƒ.Vector3.ZERO();
-                    break;
-                case Entity.BEHAVIOUR.FLEE:
-                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
-                    this.moveDirection = this.moveAway(this.target).toVector3();
-                    break;
-            }
-        }
+        // moveBehaviour(): void {
+        //     this.behaviour();
+        //     switch (this.currentBehaviour) {
+        //         case Entity.BEHAVIOUR.FOLLOW:
+        //             this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
+        //             this.flocking.notToTargetWeight = 1;
+        //             this.flocking.toTargetWeight = 2;
+        //             this.moveDirection = this.flocking.getMoveVector().toVector3();
+        //             // if (!this.dash.doesAbility) {
+        //             //     this.lastMoveDireciton = this.moveDirection;
+        //             //     this.moveDirection = this.flocking.getMoveVector().toVector3();
+        //             // }
+        //             break;
+        //         case Entity.BEHAVIOUR.IDLE:
+        //             this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
+        //             this.moveDirection = ƒ.Vector3.ZERO();
+        //             break;
+        //     }
+        // }
     }
 
 

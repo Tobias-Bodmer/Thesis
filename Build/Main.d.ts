@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -233,12 +233,10 @@ declare namespace Enemy {
         moveBehaviour(): void;
         shoot(_netId?: number): void;
     }
-    class SummonorAdds extends EnemyDash {
+    class SummonorAdds extends EnemyDumb {
         avatar: Player.Player;
         randomPlayer: number;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _target: Player.Player, _netId?: number);
-        behaviour(): void;
-        moveBehaviour(): void;
     }
 }
 declare namespace Interfaces {
@@ -500,6 +498,8 @@ declare namespace Ability {
         protected currentabilityCount: number;
         protected duration: Cooldown;
         doesAbility: boolean;
+        onDoAbility: () => void;
+        onEndAbility: () => void;
         constructor(_ownerNetId: number, _duration: number, _abilityCount: number, _cooldownTime: number);
         eventUpdate: (_event: Event) => void;
         protected updateAbility(): void;
@@ -609,7 +609,7 @@ declare namespace Enemy {
         SUMMON = 2,
         ATTACK = 3,
         TELEPORT = 4,
-        ABILITY = 5
+        SHOOT360 = 5
     }
     class Summonor extends EnemyShoot implements Game.ƒAid.StateMachine<SUMMNORBEHAVIOUR> {
         damageTaken: number;
@@ -618,15 +618,16 @@ declare namespace Enemy {
         instructions: ƒAid.StateMachineInstructions<SUMMNORBEHAVIOUR>;
         attackPhaseCd: Ability.Cooldown;
         defencePhaseCd: Ability.Cooldown;
-        beginShooting: boolean;
         shootingCount: number;
         currentShootingCount: number;
-        summonPosition: ƒ.Vector3;
+        teleportPosition: ƒ.Vector3;
+        afterTeleportState: SUMMNORBEHAVIOUR;
         stateMachineInstructions: Game.ƒAid.StateMachineInstructions<SUMMNORBEHAVIOUR>;
-        lastState: SUMMNORBEHAVIOUR;
+        dashDirection: number;
         private summon;
         private dash;
         private shoot360;
+        private shoot360Cooldown;
         private dashWeapon;
         private flock;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
@@ -636,9 +637,19 @@ declare namespace Enemy {
         intro: () => void;
         getDamage(_value: number): void;
         attackingPhase: () => void;
+        private nextAttack;
+        private doDash;
+        private changeDashDirection;
+        private shootOnDash;
         defencePhase: () => void;
         stopDefencePhase: () => void;
-        teleport: () => void;
+        /**
+         * used to prepare Teleport
+         * @param _nextState nextState after the Teleport is done
+         * @param _teleportPosition teleportPosistion the Summoner is teleporting to
+         */
+        private teleport;
+        private doTeleport;
         shooting360: () => void;
     }
 }
