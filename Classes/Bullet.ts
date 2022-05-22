@@ -6,6 +6,7 @@ namespace Bullets {
         SLOW,
         MELEE,
         SUMMONER,
+        STONE,
         THORSHAMMER,
         ZIPZAP
     }

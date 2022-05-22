@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -495,6 +495,7 @@ declare namespace Ability {
         protected ownerNetId: number;
         get owner(): Entity.Entity;
         protected cooldown: Cooldown;
+        get getCooldown(): Cooldown;
         protected abilityCount: number;
         protected currentabilityCount: number;
         protected duration: Cooldown;
@@ -527,6 +528,10 @@ declare namespace Ability {
         bulletAmount: number;
         private bullets;
         protected activateAbility(): void;
+    }
+    class Stomp extends Ability {
+    }
+    class Smash extends Ability {
     }
     class Cooldown {
         hasCoolDown: boolean;
@@ -599,10 +604,37 @@ declare namespace Entity {
     }
 }
 declare namespace Enemy {
-    class BigBoom extends EnemyDumb {
+    enum BIGBOOMBEHAVIOUR {
+        IDLE = 0,
+        WALK = 1
+    }
+    class BigBoom extends EnemyDumb implements Game.ƒAid.StateMachine<BIGBOOMBEHAVIOUR> {
+        damageTaken: number;
+        stateCurrent: BIGBOOMBEHAVIOUR;
+        stateNext: BIGBOOMBEHAVIOUR;
+        instructions: ƒAid.StateMachineInstructions<BIGBOOMBEHAVIOUR>;
+        normalPhaseCd: Ability.Cooldown;
+        furiousPhaseCd: Ability.Cooldown;
+        exaustedPhaseCd: Ability.Cooldown;
+        stompingCount: number;
+        currentStompingCount: number;
+        stateMachineInstructions: Game.ƒAid.StateMachineInstructions<BIGBOOMBEHAVIOUR>;
+        weapon: Weapons.Weapon;
+        private stomp;
+        private smash;
+        private flock;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
-        behaviour(): void;
-        moveBehaviour(): void;
+        update(): void;
+        private intro;
+        private walking;
+        private nextAttack;
+        private startFuriousPhase;
+        private stopFuriousPhase;
+        private startExaustedPhase;
+        private stopExaustedPhase;
+        transit(_next: BIGBOOMBEHAVIOUR): void;
+        act(): void;
+        getDamage(_value: number): void;
     }
     enum SUMMNORBEHAVIOUR {
         IDLE = 0,
@@ -731,8 +763,9 @@ declare namespace Bullets {
         SLOW = 2,
         MELEE = 3,
         SUMMONER = 4,
-        THORSHAMMER = 5,
-        ZIPZAP = 6
+        STONE = 5,
+        THORSHAMMER = 6,
+        ZIPZAP = 7
     }
     let bulletTxt: ƒ.TextureImage;
     let waterBallTxt: ƒ.TextureImage;

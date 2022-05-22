@@ -95,6 +95,22 @@
             "offsetColliderX": 0,
             "offsetColliderY": -0.4,
             "colliderScaleFaktor": 0.4
+        },
+        {
+            "name": "bigboom",
+            "attributes": {
+                "healthPoints": 250,
+                "attackPoints": 0,
+                "speed": 0.8,
+                "scale": 2,
+                "knockbackForce": 0.1,
+                "armor": 10,
+                "coolDownReduction": 1,
+                "accuracy": 70
+            },
+            "offsetColliderX": 0,
+            "offsetColliderY": -0.4,
+            "colliderScaleFaktor": 0.4
         }
     ]
 }

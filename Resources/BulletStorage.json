@@ -51,8 +51,18 @@
             "texturePath": "./Resources/Image/Projectiles/waterBall.png"
         },
         {
+            "name": "stone",
+            "type": 5,
+            "speed": 5,
+            "hitPointsScale": 2,
+            "lifetime": 300,
+            "knockbackForce": 12,
+            "killcount": 1,
+            "texturePath": "./Resources/Image/Projectiles/waterBall.png"
+        },
+        {
             "name": "thorshammer",
-            "type": 0,
+            "type": 6,
             "speed": 10,
             "hitPointsScale": 10,
             "lifetime": 120,
@@ -62,7 +72,7 @@
         },
         {
             "name": "zipzap",
-            "type": 0,
+            "type": 7,
             "speed": 8,
             "hitPointsScale": 0.2,
             "lifetime": 30,

@@ -1,7 +1,7 @@
 namespace Ability {
     export abstract class Ability {
         protected ownerNetId: number; get owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.ownerNetId) };
-        protected cooldown: Cooldown;
+        protected cooldown: Cooldown; get getCooldown(): Cooldown { return this.cooldown; };
         protected abilityCount: number;
         protected currentabilityCount: number;
         protected duration: Cooldown;
@@ -127,6 +127,14 @@ namespace Ability {
                 Networking.spawnBullet(this.bullets[i].direction, this.bullets[i].netId, this.ownerNetId);
             }
         }
+    }
+
+    export class Stomp extends Ability {
+        //TODO: DoStomp
+    }
+
+    export class Smash extends Ability {
+        //TODO: DoSmash
     }
 
     export class Cooldown {
