@@ -84,10 +84,6 @@ namespace Game {
             }
             serverPredictionAvatar = new Networking.ServerPrediction(null);
         }
-
-        graph.appendChild(avatar1);
-
-        ƒAid.addStandardLightComponents(graph);
     }
 
     function update(): void {
@@ -150,6 +146,8 @@ namespace Game {
         if (Game.loaded) {
             ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, deltaTime);
             document.getElementById("UI").style.visibility = "visible";
+            graph.appendChild(avatar1);
+            graph.appendChild(avatar2);
         } else {
             setTimeout(() => {
                 startLoop();
@@ -159,6 +157,7 @@ namespace Game {
 
     function start() {
         loadTextures();
+        ƒAid.addStandardLightComponents(graph);
         // loadJSON();
 
         //TODO: add sprite to graphe for startscreen
@@ -176,6 +175,8 @@ namespace Game {
                     if (Networking.client.id == Networking.client.idHost) {
                         document.getElementById("IMHOST").style.visibility = "visible";
                     }
+
+
                     await init();
                     gamestate = GAMESTATES.PLAYING;
                     // EnemySpawner.spawnEnemies();
@@ -211,7 +212,6 @@ namespace Game {
                         miniMap = new UI.Minimap(roomInfos);
                         graph.addChild(miniMap);
                     }
-
 
                     startLoop();
                 } else {
@@ -285,7 +285,6 @@ namespace Game {
         }
         document.getElementById("Lobbyscreen").style.visibility = "hidden";
         readySate();
-
     }
 
     function pauseCheck() {
