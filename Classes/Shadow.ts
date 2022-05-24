@@ -10,10 +10,11 @@ namespace Entity {
             this.addComponent(new Game.ƒ.ComponentMesh(this.mesh));
             let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(this.shadowMatt);
 
+            cmpMaterial.sortForAlpha = true;
+
             this.addComponent(cmpMaterial);
             this.addComponent(new Game.ƒ.ComponentTransform());
-            this.mtxLocal.translation = new Game.ƒ.Vector3(_parent.mtxLocal.translation.x, _parent.mtxLocal.translation.y, -0.01);
-            this.mtxLocal.scaling = new Game.ƒ.Vector3(2, 2, 2);
+            this.mtxLocal.scaling = new Game.ƒ.Vector3(2, 2, 1);
 
             _parent.addChild(this);
         }

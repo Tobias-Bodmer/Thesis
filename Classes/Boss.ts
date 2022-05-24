@@ -1,7 +1,7 @@
 namespace Enemy {
 
     export enum BIGBOOMBEHAVIOUR {
-        IDLE, WALK
+        IDLE, WALK, SMASH
     }
     export class BigBoom extends EnemyDumb implements Game.ƒAid.StateMachine<BIGBOOMBEHAVIOUR> {
         damageTaken: number = 0;
@@ -14,14 +14,18 @@ namespace Enemy {
         furiousPhaseCd: Ability.Cooldown = new Ability.Cooldown(10 * 60);
         exaustedPhaseCd: Ability.Cooldown = new Ability.Cooldown(5 * 60);
 
-        stompingCount: number = 3;
-        currentStompingCount: number = 0;
+        smashCd: Ability.Cooldown = new Ability.Cooldown(5 * 60);
+
+        
         stateMachineInstructions: Game.ƒAid.StateMachineInstructions<BIGBOOMBEHAVIOUR>;
 
         public weapon: Weapons.Weapon = new Weapons.RangedWeapon(12, 1, Bullets.BULLETTYPE.STONE, 1, this.netId, Weapons.AIM.NORMAL);
         private stomp: Ability.Stomp;
-        private smash: Ability.Smash;
-        private flock: FlockingBehaviour = new FlockingBehaviour(this, 4, 4, 1, 1, 1, 1, 1, 10);
+        private flock: FlockingBehaviour = new FlockingBehaviour(this, 4, 4, 1, 1, 1, 1, 0, 10);
+
+        private furiousArmor = 95;
+        private normalArmor = 50;
+        private exhaustedArmor = 0;
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _position, _netId);
@@ -32,13 +36,17 @@ namespace Enemy {
             this.exaustedPhaseCd.onEndCoolDown = this.stopExaustedPhase;
             this.normalPhaseCd.onEndCoolDown = this.startFuriousPhase;
 
+            this.stomp = new Ability.Stomp(this.netId, 1000, 2, 600);
+
             this.stateMachineInstructions = new Game.ƒAid.StateMachineInstructions();
             this.stateMachineInstructions.transitDefault = () => { };
             this.stateMachineInstructions.actDefault = this.intro;
-            this.stateMachineInstructions.setAction(BIGBOOMBEHAVIOUR.IDLE, () => { });
+            this.stateMachineInstructions.setAction(BIGBOOMBEHAVIOUR.IDLE, this.idlePhase);
             this.stateMachineInstructions.setAction(BIGBOOMBEHAVIOUR.WALK, this.walking);
 
             this.instructions = this.stateMachineInstructions;
+
+            this.target = Game.avatar1.mtxLocal.translation.toVector2();
 
             this.isAggressive = true;
         }
@@ -73,46 +81,55 @@ namespace Enemy {
 
 
             if (distance < 2) {
-                this.flock.notToTargetWeight = 2;
-                this.flock.toTargetWeight = 1;
-
-                let random: number = Math.round(Math.random() * 100);
-                if (random > 95) {
-                    this.smash.doAbility();
-                }
-            } else if (distance > 10) {
-                this.flock.notToTargetWeight = 1;
-                this.flock.toTargetWeight = 2;
+                // let random: number = Math.round(Math.random() * 100);
+                // if (random > 95) {
+                //     this.doSmash();
+                // }
             }
 
             if (!this.stomp.doesAbility) {
                 this.nextAttack();
-
-                this.flock.update();
-                this.moveDirection = this.flock.getMoveVector().toVector3();
             }
+
+            this.flock.update();
+            this.moveDirection = this.flock.getMoveVector().toVector3();
         }
 
         private nextAttack() {
             let random: number = Math.round(Math.random() * 100);
             switch (true) {
-                case random > 99:
+                case random > 70:
                     //Stomp
                     this.stomp.doAbility();
                     break;
-                case random > 70 && random <= 90:
+                case random > 89 && random <= 90:
                     //Big stone throw
-                    this.weapon.shoot(ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation), true);
+                    //TODO: Dash away and the throw
+                    // this.weapon.shoot(ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation), true);
                     break;
             }
         }
 
-        private startFuriousPhase(): void {
-            this.attributes.armor *= 2;
+        private doSmash = () => {
+            if (!this.smashCd.hasCoolDown) {
+                this.smashCd.startCoolDown();
+
+                //TODO: change animation and then in the right frame deal damage
+            }
+        }
+
+        private idlePhase = () => {
+            this.moveDirection = Game.ƒ.Vector3.ZERO();
+        }
+
+        private startFuriousPhase = (): void => {
+            this.normalPhaseCd.resetCoolDown();
+
+            this.attributes.armor = this.furiousArmor;
+            this.attributes.speed *= 2;
 
             //Cooldowns
             this.stomp.getCooldown.setMaxCoolDown = this.stomp.getCooldown.getMaxCoolDown / 2;
-            this.smash.getCooldown.setMaxCoolDown = this.smash.getCooldown.getMaxCoolDown / 2;
             this.weapon.getCoolDown.setMaxCoolDown = this.weapon.getCoolDown.getMaxCoolDown / 2;
 
             this.furiousPhaseCd.startCoolDown();
@@ -120,21 +137,20 @@ namespace Enemy {
         }
 
         private stopFuriousPhase = (): void => {
-            this.attributes.armor /= 2;
+            this.attributes.speed /= 2;
             this.startExaustedPhase();
         }
 
         private startExaustedPhase = (): void => {
-            this.attributes.armor /= 4;
+            this.attributes.armor = this.exhaustedArmor;
             this.transit(BIGBOOMBEHAVIOUR.IDLE);
+            this.exaustedPhaseCd.startCoolDown();
         }
 
         private stopExaustedPhase = (): void => {
-            this.attributes.armor *= 4;
-
+            this.attributes.armor = this.normalArmor;
             //Cooldowns
             this.stomp.getCooldown.setMaxCoolDown = this.stomp.getCooldown.getMaxCoolDown * 2;
-            this.smash.getCooldown.setMaxCoolDown = this.smash.getCooldown.getMaxCoolDown * 2;
             this.weapon.getCoolDown.setMaxCoolDown = this.weapon.getCoolDown.getMaxCoolDown * 2;
 
             this.normalPhaseCd.startCoolDown();
@@ -151,9 +167,11 @@ namespace Enemy {
         }
 
         public getDamage(_value: number): void {
+            let hpBefore = this.attributes.healthPoints;
             super.getDamage(_value);
+
             if (this.attributes.hitable) {
-                this.damageTaken += _value;
+                this.damageTaken += hpBefore - this.attributes.healthPoints;
             }
         }
     }

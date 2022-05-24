@@ -11,6 +11,10 @@ namespace Bullets {
         ZIPZAP
     }
 
+    export enum BULLETCLASS {
+        NORMAL, FALLING, HOMING
+    }
+
     export let bulletTxt: ƒ.TextureImage = new ƒ.TextureImage();
     export let waterBallTxt: ƒ.TextureImage = new ƒ.TextureImage();
 
@@ -60,7 +64,7 @@ namespace Bullets {
             let cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
             this.addComponent(cmpMesh);
 
-            let mtrSolidWhite: ƒ.Material = new ƒ.Material("SolidWhite", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
+            let mtrSolidWhite: ƒ.Material = new ƒ.Material("SolidWhite", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
             let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(mtrSolidWhite);
             this.addComponent(cmpMaterial);
 
@@ -77,7 +81,7 @@ namespace Bullets {
 
             this.serverPrediction = new Networking.ServerBulletPrediction(this.netId);
             this.clientPrediction = new Networking.ClientBulletPrediction(this.netId);
-            this.lastPosition = this.mtxLocal.translation;
+            this.lastPosition = Game.ƒ.Vector3.ZERO();
             this.mtxLocal.translateZ(0.1);
             this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
         }
@@ -136,7 +140,7 @@ namespace Bullets {
         }
 
         protected checkUpdate() {
-            if (this.lastPosition == this.mtxLocal.translation) {
+            if (this.mtxLocal.translation.equals(this.lastPosition, 0)) {
                 this.countCheckUpdate++;
                 if (this.countCheckUpdate >= (2 * 60)) {
                     this.despawn();
@@ -144,7 +148,7 @@ namespace Bullets {
             } else {
                 this.countCheckUpdate = 0;
             }
-            this.lastPosition = this.mtxLocal.translation;
+            this.lastPosition = this.mtxLocal.translation.clone;
         }
 
         public move(_direction: Game.ƒ.Vector3) {
@@ -182,7 +186,7 @@ namespace Bullets {
             if (this.texturePath != "" && this.texturePath != null) {
                 let newTxt: ƒ.TextureImage = new ƒ.TextureImage();
                 let newCoat: ƒ.CoatRemissiveTextured = new ƒ.CoatRemissiveTextured();
-                let newMtr: ƒ.Material = new ƒ.Material("mtr", ƒ.ShaderFlatTextured, newCoat);
+                let newMtr: ƒ.Material = new ƒ.Material("mtr", ƒ.ShaderLitTextured, newCoat);
 
                 let oldComCoat: ƒ.ComponentMaterial = new ƒ.ComponentMaterial();
 
@@ -215,7 +219,7 @@ namespace Bullets {
             })
         }
 
-        private offsetCollider() {
+        protected offsetCollider() {
             let newPosition = new ƒ.Vector2(this.cmpTransform.mtxLocal.translation.x + this.cmpTransform.mtxLocal.scaling.x / 2, this.cmpTransform.mtxLocal.translation.y);
             this.collider.position = newPosition;
         }
@@ -271,9 +275,51 @@ namespace Bullets {
         }
     }
 
-    export class NormalBullet extends Bullet implements Interfaces.ISpawnable, Interfaces.INetworkable {
+    export class NormalBullet extends Bullet {
         constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerNetId: number, _netId?: number) {
             super(_bulletType, _position, _direction, _ownerNetId, _netId);
+        }
+    }
+
+    export class FallingBullet extends Bullet {
+        private shadow: Entity.Shadow;
+        constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _ownerNetId: number, _netId?: number) {
+            super(_bulletType, _position, Game.ƒ.Vector3.ZERO(), _ownerNetId, _netId);
+
+            this.flyDirection = ƒ.Vector3.Z();
+            this.flyDirection.scale(-1);
+            this.shadow = new Entity.Shadow(this);
+
+            this.mtxLocal.translateZ(this.generateZIndex());
+        }
+
+        protected update(): void {
+            super.update();
+            this.shadow.updateShadowPos();
+        }
+
+        public move(_direction: ƒ.Vector3): void {
+
+            _direction.normalize();
+            if (Networking.client.idHost == Networking.client.id && this.owner == Game.avatar2) {
+                _direction.scale(this.clientPrediction.minTimeBetweenTicks * this.speed);
+            }
+            else {
+                _direction.scale(Game.deltaTime * this.speed);
+            }
+            this.cmpTransform.mtxLocal.translate(_direction);
+            if (this.mtxLocal.translation.z <= 1) {
+                this.collisionDetection();
+                if (Networking.client.id == Networking.client.idHost) {
+                    if (this.mtxLocal.translation.z < 0) {
+                        this.despawn();
+                    }
+                }
+            }
+        }
+
+        protected generateZIndex(): number {
+            return Math.random() * 25 + 25;
         }
     }
 
@@ -361,7 +407,6 @@ namespace Bullets {
                 }
             }
         }
-
 
         public spawn() {
             Game.graph.addChild(this);

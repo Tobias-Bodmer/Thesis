@@ -160,7 +160,8 @@ declare namespace Entity {
         SMALLTICK = 5,
         SKELETON = 6,
         OGER = 7,
-        SUMMONOR = 8
+        SUMMONOR = 8,
+        BIGBOOM = 9
     }
     function getNameById(_id: Entity.ID): string;
 }
@@ -172,7 +173,8 @@ declare namespace Enemy {
         ENEMYPATROL = 3,
         ENEMYSHOOT = 4,
         SUMMONOR = 5,
-        SUMMONORADDS = 6
+        BIGBOOM = 6,
+        SUMMONORADDS = 7
     }
     class Enemy extends Entity.Entity implements Interfaces.IKnockbackable {
         currentBehaviour: Entity.BEHAVIOUR;
@@ -533,8 +535,10 @@ declare namespace Ability {
         protected activateAbility(): void;
     }
     class Stomp extends Ability {
-    }
-    class Smash extends Ability {
+        bulletAmount: number;
+        private bullets;
+        protected activateAbility(): void;
+        protected generateSpawnPoints(): Game.ƒ.Vector2[];
     }
     class Cooldown {
         hasCoolDown: boolean;
@@ -547,6 +551,7 @@ declare namespace Ability {
         constructor(_number: number);
         startCoolDown(): void;
         private endCoolDown;
+        resetCoolDown(): void;
         eventUpdate: (_event: Event) => void;
         updateCoolDown(): void;
     }
@@ -609,7 +614,8 @@ declare namespace Entity {
 declare namespace Enemy {
     enum BIGBOOMBEHAVIOUR {
         IDLE = 0,
-        WALK = 1
+        WALK = 1,
+        SMASH = 2
     }
     class BigBoom extends EnemyDumb implements Game.ƒAid.StateMachine<BIGBOOMBEHAVIOUR> {
         damageTaken: number;
@@ -619,18 +625,21 @@ declare namespace Enemy {
         normalPhaseCd: Ability.Cooldown;
         furiousPhaseCd: Ability.Cooldown;
         exaustedPhaseCd: Ability.Cooldown;
-        stompingCount: number;
-        currentStompingCount: number;
+        smashCd: Ability.Cooldown;
         stateMachineInstructions: Game.ƒAid.StateMachineInstructions<BIGBOOMBEHAVIOUR>;
         weapon: Weapons.Weapon;
         private stomp;
-        private smash;
         private flock;
+        private furiousArmor;
+        private normalArmor;
+        private exhaustedArmor;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
         update(): void;
         private intro;
         private walking;
         private nextAttack;
+        private doSmash;
+        private idlePhase;
         private startFuriousPhase;
         private stopFuriousPhase;
         private startExaustedPhase;
@@ -770,6 +779,11 @@ declare namespace Bullets {
         THORSHAMMER = 6,
         ZIPZAP = 7
     }
+    enum BULLETCLASS {
+        NORMAL = 0,
+        FALLING = 1,
+        HOMING = 2
+    }
     let bulletTxt: ƒ.TextureImage;
     let waterBallTxt: ƒ.TextureImage;
     abstract class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.INetworkable {
@@ -805,11 +819,18 @@ declare namespace Bullets {
         protected spawnThorsHammer(): void;
         protected loadTexture(): void;
         setBuffToTarget(_target: Entity.Entity): void;
-        private offsetCollider;
+        protected offsetCollider(): void;
         collisionDetection(): void;
     }
-    class NormalBullet extends Bullet implements Interfaces.ISpawnable, Interfaces.INetworkable {
+    class NormalBullet extends Bullet {
         constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerNetId: number, _netId?: number);
+    }
+    class FallingBullet extends Bullet {
+        private shadow;
+        constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _ownerNetId: number, _netId?: number);
+        protected update(): void;
+        move(_direction: ƒ.Vector3): void;
+        protected generateZIndex(): number;
     }
     class HomingBullet extends Bullet {
         target: ƒ.Vector3;
@@ -987,7 +1008,7 @@ declare namespace Networking {
     function knockbackPush(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
     function updateInventory(_add: boolean, _itemId: Items.ITEMID, _itemNetId: number, _netId: number): void;
     function spawnMinimap(_miniMapInfos: Interfaces.IMinimapInfos[]): void;
-    function spawnBullet(_direction: ƒ.Vector3, _bulletNetId: number, _ownerNetId: number): void;
+    function spawnBullet(_bulletType: Bullets.BULLETCLASS, _direction: ƒ.Vector3, _bulletNetId: number, _ownerNetId: number): void;
     function sendMagazin(_magazin: Interfaces.IMagazin): void;
     function sendBulletInput(_netId: number, _inputPayload: Interfaces.IInputBulletPayload): void;
     function updateBullet(_position: ƒ.Vector3, _rotation: ƒ.Vector3, _netId: number): void;

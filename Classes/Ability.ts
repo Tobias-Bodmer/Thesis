@@ -30,7 +30,6 @@ namespace Ability {
             }
         }
         public doAbility(): void {
-            //do stuff
             if (!this.cooldown.hasCoolDown && this.currentabilityCount <= 0) {
                 this.currentabilityCount = this.abilityCount;
             }
@@ -45,15 +44,12 @@ namespace Ability {
             }
         }
 
-
-
         public hasCooldown(): boolean {
             return this.cooldown.hasCoolDown;
         }
 
         protected activateAbility() {
             Game.ƒ.Loop.addEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
-
         }
         protected deactivateAbility() {
             if (this.onEndAbility != undefined) {
@@ -61,12 +57,9 @@ namespace Ability {
             }
             Game.ƒ.Loop.removeEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
         }
-
-
     }
 
     export class Block extends Ability {
-
         protected activateAbility(): void {
             super.activateAbility();
             this.owner.attributes.hitable = false;
@@ -114,7 +107,6 @@ namespace Ability {
     export class circleShoot extends Ability {
         public bulletAmount: number;
         private bullets: Bullets.Bullet[] = [];
-
         protected activateAbility(): void {
             super.activateAbility();
             this.bullets = [];
@@ -124,17 +116,43 @@ namespace Ability {
             }
             for (let i = 0; i < this.bulletAmount; i++) {
                 Game.graph.addChild(this.bullets[i]);
-                Networking.spawnBullet(this.bullets[i].direction, this.bullets[i].netId, this.ownerNetId);
+                Networking.spawnBullet(Bullets.BULLETCLASS.NORMAL, this.bullets[i].direction, this.bullets[i].netId, this.ownerNetId);
             }
         }
     }
 
     export class Stomp extends Ability {
         //TODO: DoStomp
-    }
+        public bulletAmount: number = 60;
+        private bullets: Bullets.Bullet[] = [];
+        protected activateAbility(): void {
+            console.log("stomp");
+            let spawnPoints = this.generateSpawnPoints();
+            spawnPoints.forEach(spawnpoint => {
+                this.bullets.push(new Bullets.FallingBullet(Bullets.BULLETTYPE.STONE, spawnpoint, this.ownerNetId));
+            })
 
-    export class Smash extends Ability {
-        //TODO: DoSmash
+            this.bullets.forEach(bullet => {
+                bullet.spawn();
+                Networking.spawnBullet(Bullets.BULLETCLASS.FALLING, bullet.direction, bullet.netId, this.ownerNetId);
+            });
+        }
+
+        protected generateSpawnPoints(): Game.ƒ.Vector2[] {
+            let maxSpawnPoints: Game.ƒ.Vector2 = new ƒ.Vector2(Game.currentRoom.roomSize / 2, Game.currentRoom.roomSize / 2);
+            let spawnPoints: Game.ƒ.Vector2[] = [];
+            let rotateAmount = 360 / this.bulletAmount;
+            let normale: Game.ƒ.Vector2 = new Game.ƒ.Vector2(0, 1);
+            for (let i = 0; i < this.bulletAmount; i++) {
+                let distanceFromOrigin: number = Math.random() * maxSpawnPoints.x;
+
+                let newSpawnPoint = Calculation.getRotatedVectorByAngle2D(normale.clone.toVector3(), rotateAmount * i).toVector2();
+                newSpawnPoint.scale(distanceFromOrigin);
+                newSpawnPoint.add(Game.currentRoom.mtxLocal.translation.toVector2());
+                spawnPoints.push(newSpawnPoint);
+            }
+            return spawnPoints;
+        }
     }
 
     export class Cooldown {
@@ -159,8 +177,14 @@ namespace Ability {
                 this.onEndCoolDown();
             }
             this.hasCoolDown = false;
+            this.currentCooldown = this.coolDown;
             Game.ƒ.Loop.removeEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
+        }
 
+        public resetCoolDown() {
+            this.hasCoolDown = false;
+            this.currentCooldown = this.coolDown;
+            Game.ƒ.Loop.removeEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
         }
 
         public eventUpdate = (_event: Event): void => {
@@ -173,7 +197,6 @@ namespace Ability {
             }
             if (this.currentCooldown <= 0 && this.hasCoolDown) {
                 this.endCoolDown();
-                this.currentCooldown = this.coolDown;
             }
         }
     }

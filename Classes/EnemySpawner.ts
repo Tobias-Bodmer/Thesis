@@ -85,6 +85,13 @@ namespace EnemySpawner {
                     enemy = new Enemy.Summonor(_id, _position, _netID);
                 }
                 break;
+            case Enemy.ENEMYCLASS.BIGBOOM:
+                if (_netID == null) {
+                    enemy = new Enemy.BigBoom(_id, _position, _netID);
+                } else {
+                    enemy = new Enemy.BigBoom(_id, _position, _netID);
+                }
+                break;
             default:
                 break;
         }

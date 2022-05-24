@@ -7,6 +7,7 @@ namespace Enemy {
         ENEMYPATROL,
         ENEMYSHOOT,
         SUMMONOR,
+        BIGBOOM,
         SUMMONORADDS
     }
 
@@ -28,7 +29,10 @@ namespace Enemy {
             console.log(ref);
             this.attributes = new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale, ref.attributes.knockbackForce, ref.attributes.armor, ref.attributes.coolDownReduction, ref.attributes.accuracy);
 
-            this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["idle"]);
+            if (this.animationContainer != undefined) {
+                this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["idle"]);
+            }
+
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
             this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale);
             this.offsetColliderX = ref.offsetColliderX;
@@ -38,6 +42,7 @@ namespace Enemy {
         }
 
         public update() {
+            this.shadow.updateShadowPos();
             if (Networking.client.id == Networking.client.idHost) {
                 super.update();
                 this.moveBehaviour();

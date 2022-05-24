@@ -45,7 +45,7 @@ namespace Items {
             this.netId = Networking.IdManager(_netId);
 
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshQuad()));
-            let material: ƒ.Material = new ƒ.Material("white", ƒ.ShaderFlat, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
+            let material: ƒ.Material = new ƒ.Material("white", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
             this.addComponent(new ƒ.ComponentMaterial(material));
 
             this.addComponent(new ƒ.ComponentTransform());
@@ -86,7 +86,7 @@ namespace Items {
             newTxt = _texture;
             let newCoat: ƒ.CoatRemissiveTextured = new ƒ.CoatRemissiveTextured();
             newCoat.texture = newTxt;
-            let newMtr: ƒ.Material = new ƒ.Material("mtr", ƒ.ShaderFlatTextured, newCoat);
+            let newMtr: ƒ.Material = new ƒ.Material("mtr", ƒ.ShaderLitTextured, newCoat);
 
             this.getComponent(Game.ƒ.ComponentMaterial).material = newMtr;
         }

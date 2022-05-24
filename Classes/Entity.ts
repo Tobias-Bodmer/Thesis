@@ -45,7 +45,7 @@ namespace Entity {
                 this.idleScale = ani.scale.find(animation => animation[0] == "idle")[1];
             }
             this.shadow = new Shadow(this);
-            
+
             this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
         }
 
@@ -213,7 +213,7 @@ namespace Entity {
         }
 
         private getDamageReduction(_value: number): number {
-            return _value * (1 - (this.attributes.armor / 100));
+            return _value * (1 - Calculation.clampNumber((this.attributes.armor / 100), 0, 1));
         }
         //#region knockback
 
@@ -297,7 +297,8 @@ namespace Entity {
         SMALLTICK,
         SKELETON,
         OGER,
-        SUMMONOR
+        SUMMONOR,
+        BIGBOOM
     }
 
     export function getNameById(_id: Entity.ID): string {

@@ -268,7 +268,12 @@ namespace Networking {
                         if (entity != null) {
                             let direction: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]);
 
-                            bullet = new Bullets.NormalBullet(entity.weapon.bulletType, entity.mtxLocal.translation.toVector2(), direction, message.content.ownerNetId, message.content.bulletNetId)
+                            if (message.content.bulletType == Bullets.BULLETCLASS.NORMAL) {
+                                bullet = new Bullets.NormalBullet(entity.weapon.bulletType, entity.mtxLocal.translation.toVector2(), direction, message.content.ownerNetId, message.content.bulletNetId)
+                            }
+                            if (message.content.bulletType == Bullets.BULLETCLASS.FALLING) {
+                                bullet = new Bullets.FallingBullet(entity.weapon.bulletType, entity.mtxLocal.translation.toVector2(), message.content.ownerNetId, message.content.bulletNetId)
+                            }
                             bullet.spawn();
                         }
                     }
@@ -284,7 +289,7 @@ namespace Networking {
                                 (<Weapons.RangedWeapon>entity.weapon).magazin.push(new Bullets.NormalBullet(tempMagazin.bulletTypes[i], entity.mtxLocal.translation.toVector2(), direction, tempMagazin.ownerNetId, tempMagazin.netIds[i]));
                             } else {
                                 console.log(tempMagazin);
-                                (<Weapons.RangedWeapon>entity.weapon).magazin.push(new Bullets.HomingBullet(tempMagazin.bulletTypes[i], entity.mtxLocal.translation.toVector2(), direction, tempMagazin.ownerNetId, new Game.ƒ.Vector3(message.content.magazin.targets[i][0], message.content.magazin.targets[i][1], message.content.magazin.targets[i][2]), tempMagazin.netIds[i]));
+                                (<Weapons.RangedWeapon>entity.weapon).magazin.push(new Bullets.HomingBullet(tempMagazin.bulletTypes[i], entity.mtxLocal.translation.toVector2(), direction, tempMagazin.ownerNetId, new Game.ƒ.Vector3(message.content.magazin.targets[i].data[0], message.content.magazin.targets[i].data[1], message.content.magazin.targets[i].data[2]), tempMagazin.netIds[i]));
                             }
                         }
                         (<Weapons.RangedWeapon>entity.weapon).shoot(Game.ƒ.Vector3.ZERO(), false);
@@ -591,8 +596,8 @@ namespace Networking {
 
 
     //#region bullet
-    export function spawnBullet(_direction: ƒ.Vector3, _bulletNetId: number, _ownerNetId: number) {
-        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.SPAWNBULLET, direction: _direction, ownerNetId: _ownerNetId, bulletNetId: _bulletNetId } })
+    export function spawnBullet(_bulletType: Bullets.BULLETCLASS, _direction: ƒ.Vector3, _bulletNetId: number, _ownerNetId: number) {
+        client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.id).id, content: { text: FUNCTION.SPAWNBULLET, bulletType: _bulletType, direction: _direction, ownerNetId: _ownerNetId, bulletNetId: _bulletNetId } })
     }
 
     export function sendMagazin(_magazin: Interfaces.IMagazin) {

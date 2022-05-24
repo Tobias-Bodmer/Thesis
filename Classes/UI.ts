@@ -133,7 +133,7 @@ namespace UI {
         loadTexture(_damage: number) {
             let newTxt: ƒ.TextureImage = new ƒ.TextureImage();
             let newCoat: ƒ.CoatRemissiveTextured = new ƒ.CoatRemissiveTextured();
-            let newMtr: ƒ.Material = new ƒ.Material("mtr", ƒ.ShaderFlatTextured, newCoat);
+            let newMtr: ƒ.Material = new ƒ.Material("mtr", ƒ.ShaderLitTextured, newCoat);
             let oldComCoat: ƒ.ComponentMaterial = new ƒ.ComponentMaterial();
 
             oldComCoat = this.getComponent(ƒ.ComponentMaterial);
@@ -221,6 +221,8 @@ namespace UI {
             this.framerate = _frameRate;
             this.addComponent(new Game.ƒ.ComponentTransform());
             this.mtxLocal.translateZ(0.001);
+
+            this.getComponent(ƒ.ComponentMaterial).sortForAlpha = true;
         }
 
     }

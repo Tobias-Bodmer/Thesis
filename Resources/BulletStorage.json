@@ -53,9 +53,9 @@
         {
             "name": "stone",
             "type": 5,
-            "speed": 5,
+            "speed": 8,
             "hitPointsScale": 2,
-            "lifetime": 300,
+            "lifetime": null,
             "knockbackForce": 12,
             "killcount": 1,
             "texturePath": "./Resources/Image/Projectiles/waterBall.png"

@@ -247,14 +247,12 @@ namespace Generation {
                 return;
             }
 
-            if (Networking.client.id == Networking.client.idHost) {
-                // Game.cmpCamera.mtxPivot.translation = newPosition.toVector3(Game.cmpCamera.mtxPivot.translation.z);
+            addRoomToGraph(newRoom);
 
+            if (Networking.client.id == Networking.client.idHost) {
                 Game.avatar1.cmpTransform.mtxLocal.translation = newPosition.toVector3();
                 Game.avatar2.cmpTransform.mtxLocal.translation = newPosition.toVector3();
             }
-
-            addRoomToGraph(newRoom);
         }
     }
     /**
