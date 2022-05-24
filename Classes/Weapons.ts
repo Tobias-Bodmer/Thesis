@@ -51,6 +51,7 @@ namespace Weapons {
         public ItemFunctions: Function[] = [];
 
         public shoot(_direction: ƒ.Vector3, _sync: boolean, _bulletNetId?: number): void {
+            
             let _position: ƒ.Vector2 = this.owner.mtxLocal.translation.toVector2();
             if (_sync) {
                 if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
@@ -86,8 +87,15 @@ namespace Weapons {
             let bulletType: Bullets.BULLETTYPE[] = [];
             let directions: Game.ƒ.Vector2[] = [];
             let netIds: number[] = [];
-            this.magazin.forEach(bul => { bulletType.push(bul.type); directions.push(bul.direction.toVector2()); netIds.push(bul.netId); })
-            let magazinpayload = <Interfaces.IMagazin>{ bulletTypes: bulletType, directions: directions, ownerNetId: this.ownerNetId, netIds: netIds };
+            let targets: ƒ.Vector3[] = [];
+            let magazinpayload;
+            if (this.aimType == AIM.NORMAL) {
+                this.magazin.forEach(bul => { bulletType.push(bul.type); directions.push(bul.direction.toVector2()); netIds.push(bul.netId); });
+                magazinpayload = <Interfaces.IMagazin>{ bulletTypes: bulletType, directions: directions, ownerNetId: this.ownerNetId, netIds: netIds };
+            } else {
+                this.magazin.forEach(bul => { bulletType.push(bul.type); directions.push(bul.direction.toVector2()); netIds.push(bul.netId); targets.push((<Bullets.HomingBullet>bul).target) });
+                magazinpayload = <Interfaces.IMagazin>{ bulletTypes: bulletType, directions: directions, ownerNetId: this.ownerNetId, netIds: netIds, targets: targets };
+            }
             Networking.sendMagazin(magazinpayload);
         }
 
@@ -114,7 +122,7 @@ namespace Weapons {
             for (let i = 0; i < this.projectileAmount; i++) {
                 switch (this.aimType) {
                     case AIM.NORMAL:
-                        magazine.push(new Bullets.Bullet(this.bulletType, _position, _direction, this.ownerNetId, _netId))
+                        magazine.push(new Bullets.NormalBullet(this.bulletType, _position, _direction, this.ownerNetId, _netId))
                         break;
                     case AIM.HOMING:
                         magazine.push(new Bullets.HomingBullet(this.bulletType, _position, _direction, this.ownerNetId, null, _netId));

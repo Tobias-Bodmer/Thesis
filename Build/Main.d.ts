@@ -268,6 +268,7 @@ declare namespace Interfaces {
     interface IInputBulletPayload {
         tick: number;
         inputVector: Game.ƒ.Vector3;
+        rotation: Game.ƒ.Vector3;
     }
     interface IInputAvatarPayload {
         tick: number;
@@ -277,12 +278,14 @@ declare namespace Interfaces {
     interface IStatePayload {
         tick: number;
         position: Game.ƒ.Vector3;
+        rotation: Game.ƒ.Vector3;
     }
     interface IMagazin {
         bulletTypes: Bullets.BULLETTYPE[];
         directions: Game.ƒ.Vector2[];
         ownerNetId: number;
         netIds: number[];
+        targets?: ƒ.Vector3[];
     }
     interface IRoomExits {
         north: boolean;
@@ -439,7 +442,7 @@ declare namespace Networking {
         protected stateBuffer: Interfaces.IStatePayload[];
         constructor(_ownerNetId: number);
         protected handleTick(): void;
-        protected processMovement(_input: Interfaces.IInputAvatarPayload): Interfaces.IStatePayload;
+        protected processMovement(_input: Interfaces.IInputAvatarPayload | Interfaces.IInputBulletPayload): Interfaces.IStatePayload;
     }
     abstract class BulletPrediction extends Prediction {
         protected processMovement(input: Interfaces.IInputBulletPayload): Interfaces.IStatePayload;
@@ -769,7 +772,7 @@ declare namespace Bullets {
     }
     let bulletTxt: ƒ.TextureImage;
     let waterBallTxt: ƒ.TextureImage;
-    class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.INetworkable {
+    abstract class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.INetworkable {
         tag: Tag.TAG;
         ownerNetId: number;
         get owner(): Entity.Entity;
@@ -804,6 +807,9 @@ declare namespace Bullets {
         setBuffToTarget(_target: Entity.Entity): void;
         private offsetCollider;
         collisionDetection(): void;
+    }
+    class NormalBullet extends Bullet implements Interfaces.ISpawnable, Interfaces.INetworkable {
+        constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerNetId: number, _netId?: number);
     }
     class HomingBullet extends Bullet {
         target: ƒ.Vector3;

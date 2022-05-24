@@ -14,8 +14,7 @@ namespace Bullets {
     export let bulletTxt: ƒ.TextureImage = new ƒ.TextureImage();
     export let waterBallTxt: ƒ.TextureImage = new ƒ.TextureImage();
 
-
-    export class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.INetworkable {
+    export abstract class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.INetworkable {
         public tag: Tag.TAG = Tag.TAG.BULLET;
         ownerNetId: number; get owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.ownerNetId) };
         public netId: number;
@@ -39,8 +38,6 @@ namespace Bullets {
         lastPosition: ƒ.Vector3;
         countCheckUpdate: number = 0;
 
-
-
         constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerNetId: number, _netId?: number) {
             super(BULLETTYPE[_bulletType].toLowerCase());
 
@@ -56,8 +53,6 @@ namespace Bullets {
             this.knockbackForce = ref.knockbackForce;
             this.killcount = ref.killcount;
             this.texturePath = ref.texturePath;
-
-            // this.addComponent(new ƒ.ComponentLight(new ƒ.LightPoint(ƒ.Color.CSS("white"))));
 
             this.addComponent(new ƒ.ComponentTransform());
             this.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
@@ -276,6 +271,12 @@ namespace Bullets {
         }
     }
 
+    export class NormalBullet extends Bullet implements Interfaces.ISpawnable, Interfaces.INetworkable {
+        constructor(_bulletType: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerNetId: number, _netId?: number) {
+            super(_bulletType, _position, _direction, _ownerNetId, _netId);
+        }
+    }
+
     export class HomingBullet extends Bullet {
         target: ƒ.Vector3;
         rotateSpeed: number = 2;
@@ -289,14 +290,10 @@ namespace Bullets {
             this.killcount = 1;
             if (_target != null) {
                 this.target = _target;
-            }
-            // else {
-            //     this.target = ƒ.Vector3.SUM(this.mtxLocal.translation, _direction);
-            // }
-            this.targetDirection = _direction;
-            if (Networking.client.idHost == Networking.client.id) {
+            } else {
                 this.setTarget(Game.avatar2.netId);
             }
+            this.targetDirection = _direction;
         }
 
         public move(_direction: Game.ƒ.Vector3) {

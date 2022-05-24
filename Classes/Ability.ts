@@ -119,7 +119,7 @@ namespace Ability {
             super.activateAbility();
             this.bullets = [];
             for (let i = 0; i < this.bulletAmount; i++) {
-                this.bullets.push(new Bullets.Bullet(Bullets.BULLETTYPE.SUMMONER, this.owner.mtxLocal.translation.toVector2(), Game.ƒ.Vector3.ZERO(), this.ownerNetId));
+                this.bullets.push(new Bullets.NormalBullet(Bullets.BULLETTYPE.SUMMONER, this.owner.mtxLocal.translation.toVector2(), Game.ƒ.Vector3.ZERO(), this.ownerNetId));
                 this.bullets[i].mtxLocal.rotateZ((360 / this.bulletAmount * i));
             }
             for (let i = 0; i < this.bulletAmount; i++) {

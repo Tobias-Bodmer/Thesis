@@ -155,7 +155,8 @@ namespace Networking {
                     if (message.content != undefined && message.content.text == FUNCTION.SERVERBUFFER.toString()) {
                         let netObj: Interfaces.INetworkObjects = Game.currentNetObj.find(entity => entity.netId == message.content.netId);
                         let position = new Game.ƒ.Vector3(message.content.buffer.position.data[0], message.content.buffer.position.data[1], message.content.buffer.position.data[2]);
-                        let state: Interfaces.IStatePayload = { tick: message.content.buffer.tick, position: position };
+                        let rotation = new Game.ƒ.Vector3(message.content.buffer.rotation.data[0], message.content.buffer.rotation.data[1], message.content.buffer.rotation.data[2]);
+                        let state: Interfaces.IStatePayload = { tick: message.content.buffer.tick, position: position, rotation: rotation };
                         if (netObj != undefined) {
                             let obj = netObj.netObjectNode;
                             if (obj instanceof Player.Player) {
@@ -166,10 +167,12 @@ namespace Networking {
                             }
                         }
                     }
+
                     //FROM CLIENT BULLET VECTORS
                     if (message.content != undefined && message.content.text == FUNCTION.BULLETPREDICT.toString()) {
                         let inputVector = new Game.ƒ.Vector3(message.content.input.inputVector.data[0], message.content.input.inputVector.data[1], message.content.input.inputVector.data[2]);
-                        let input: Interfaces.IInputBulletPayload = { tick: message.content.input.tick, inputVector: inputVector }
+                        let inputRotationVector = new Game.ƒ.Vector3(message.content.input.rotation.data[0], message.content.input.rotation.data[1], message.content.input.rotation.data[2]);
+                        let input: Interfaces.IInputBulletPayload = { tick: message.content.input.tick, inputVector: inputVector, rotation: inputRotationVector }
                         let netObj: Interfaces.INetworkObjects = Game.currentNetObj.find(elem => elem.netId == message.content.netId);
                         let bullet: Bullets.Bullet;
                         if (netObj != undefined) {
@@ -266,7 +269,7 @@ namespace Networking {
                         if (entity != null) {
                             let direction: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]);
 
-                            bullet = new Bullets.Bullet(entity.weapon.bulletType, entity.mtxLocal.translation.toVector2(), direction, message.content.ownerNetId, message.content.bulletNetId)
+                            bullet = new Bullets.NormalBullet(entity.weapon.bulletType, entity.mtxLocal.translation.toVector2(), direction, message.content.ownerNetId, message.content.bulletNetId)
                             bullet.spawn();
                         }
                     }
@@ -279,9 +282,10 @@ namespace Networking {
                         for (let i = 0; i < tempMagazin.bulletTypes.length; i++) {
                             let direction: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.magazin.directions[i].data[0], message.content.magazin.directions[i].data[1], 0);
                             if ((<Weapons.RangedWeapon>entity.weapon).aimType == Weapons.AIM.NORMAL) {
-                                (<Weapons.RangedWeapon>entity.weapon).magazin.push(new Bullets.Bullet(tempMagazin.bulletTypes[i], entity.mtxLocal.translation.toVector2(), direction, tempMagazin.ownerNetId, tempMagazin.netIds[i]));
+                                (<Weapons.RangedWeapon>entity.weapon).magazin.push(new Bullets.NormalBullet(tempMagazin.bulletTypes[i], entity.mtxLocal.translation.toVector2(), direction, tempMagazin.ownerNetId, tempMagazin.netIds[i]));
                             } else {
-                                (<Weapons.RangedWeapon>entity.weapon).magazin.push(new Bullets.HomingBullet(tempMagazin.bulletTypes[i], entity.mtxLocal.translation.toVector2(), direction, tempMagazin.ownerNetId, null, tempMagazin.netIds[i]));
+                                console.log(tempMagazin);
+                                (<Weapons.RangedWeapon>entity.weapon).magazin.push(new Bullets.HomingBullet(tempMagazin.bulletTypes[i], entity.mtxLocal.translation.toVector2(), direction, tempMagazin.ownerNetId, new Game.ƒ.Vector3(message.content.magazin.targets[i][0], message.content.magazin.targets[i][1], message.content.magazin.targets[i][2]), tempMagazin.netIds[i]));
                             }
                         }
                         (<Weapons.RangedWeapon>entity.weapon).shoot(Game.ƒ.Vector3.ZERO(), false);

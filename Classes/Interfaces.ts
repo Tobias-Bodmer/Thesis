@@ -32,8 +32,8 @@ namespace Interfaces {
     export interface IInputBulletPayload {
         tick: number;
         inputVector: Game.ƒ.Vector3;
+        rotation: Game.ƒ.Vector3;
     }
-
 
     export interface IInputAvatarPayload {
         tick: number;
@@ -44,6 +44,7 @@ namespace Interfaces {
     export interface IStatePayload {
         tick: number;
         position: Game.ƒ.Vector3;
+        rotation: Game.ƒ.Vector3;
     }
 
     export interface IMagazin {
@@ -51,6 +52,7 @@ namespace Interfaces {
         directions: Game.ƒ.Vector2[];
         ownerNetId: number;
         netIds: number[];
+        targets?: ƒ.Vector3[];
     }
 
     // export interface BulletInformation {

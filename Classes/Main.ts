@@ -184,12 +184,12 @@ namespace Game {
                         // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.REDTICK, new ƒ.Vector2(3, 3), avatar1);
                         // EnemySpawner.spawnMultipleEnemiesAtRoom(5, Game.currentRoom.mtxLocal.translation.toVector2());
                         // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.ENEMYSMASH, Entity.ID.OGER, new ƒ.Vector2(3, 3), null);
-                        EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
+                        // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3), null);
                     }
 
                     //#region init Items
                     if (Networking.client.id == Networking.client.idHost) {
-                        let item2 = new Items.InternalItem(Items.ITEMID.PROJECTILESUP);
+                        let item2 = new Items.InternalItem(Items.ITEMID.HOMECOMING);
                         item2.setPosition(new ƒ.Vector2(-5, 0));
                         item2.spawn();
                         // // let item3 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(-2, 0), null);

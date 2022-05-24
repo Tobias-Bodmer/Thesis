@@ -18,7 +18,7 @@ namespace Networking {
         protected handleTick() {
         }
 
-        protected processMovement(_input: Interfaces.IInputAvatarPayload): Interfaces.IStatePayload {
+        protected processMovement(_input: Interfaces.IInputAvatarPayload | Interfaces.IInputBulletPayload): Interfaces.IStatePayload {
             return null;
         }
 
@@ -30,7 +30,7 @@ namespace Networking {
             let bullet: Bullets.Bullet = <Bullets.Bullet>this.owner;
             bullet.move(cloneInputVector);
 
-            let newStatePayload: Interfaces.IStatePayload = { tick: input.tick, position: bullet.mtxLocal.translation }
+            let newStatePayload: Interfaces.IStatePayload = { tick: input.tick, position: bullet.mtxLocal.translation, rotation: bullet.mtxLocal.rotation }
             return newStatePayload;
         }
     }
@@ -109,7 +109,7 @@ namespace Networking {
             }
 
             let bufferIndex = this.currentTick % this.bufferSize;
-            let inputPayload: Interfaces.IInputBulletPayload = { tick: this.currentTick, inputVector: this.flyDirection };
+            let inputPayload: Interfaces.IInputBulletPayload = { tick: this.currentTick, inputVector: this.flyDirection, rotation: this.owner.mtxLocal.rotation };
             this.inputBuffer[bufferIndex] = inputPayload;
             // console.log(inputPayload.tick + "___" + inputPayload.inputVector);
             this.stateBuffer[bufferIndex] = this.processMovement(inputPayload);
@@ -163,7 +163,7 @@ namespace Networking {
             (<Player.Player>this.owner).move(cloneInputVector);
 
 
-            let newStatePayload: Interfaces.IStatePayload = { tick: input.tick, position: this.owner.mtxLocal.translation }
+            let newStatePayload: Interfaces.IStatePayload = { tick: input.tick, position: this.owner.mtxLocal.translation, rotation: this.owner.mtxLocal.rotation }
             return newStatePayload;
         }
     }

@@ -122,7 +122,6 @@ namespace Player {
             })
         }
 
-
         public abstract attack(_direction: ƒ.Vector3, _netId?: number, _sync?: boolean): void;
 
 

@@ -104,7 +104,7 @@
                 "speed": 0.8,
                 "scale": 2,
                 "knockbackForce": 0.1,
-                "armor": 10,
+                "armor": 25,
                 "coolDownReduction": 1,
                 "accuracy": 70
             },

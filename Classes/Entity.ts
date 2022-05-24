@@ -47,7 +47,7 @@ namespace Entity {
                 this.idleScale = ani.scale.find(animation => animation[0] == "idle")[1];
             }
             this.shadow = new Shadow(this);
-            // this.addChild(this.shadow);
+            this.addChild(this.shadow);
             this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
         }
 
