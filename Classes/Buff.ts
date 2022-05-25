@@ -7,7 +7,9 @@ namespace Buff {
         SLOW,
         IMMUNE,
         SCALEUP,
-        SCALEDOWN
+        SCALEDOWN,
+        FURIOUS,
+        EXHAUSTED
     }
     export abstract class Buff {
         duration: number;
@@ -271,6 +273,30 @@ namespace Buff {
                     }
                     _avatar.updateScale();
                     payload = <Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.scale, type: Entity.ATTRIBUTETYPE.SCALE };
+                    break;
+                case BUFFID.FURIOUS:
+                    if (_add) {
+                        this.value = _avatar.attributes.armor;
+                        _avatar.attributes.armor = 95;
+                        _avatar.attributes.speed *= 2;
+
+                        _avatar.weapon.getCoolDown.setMaxCoolDown = _avatar.weapon.getCoolDown.getMaxCoolDown / 2;
+                    }
+                    else {
+                        _avatar.attributes.armor = this.value;
+                        _avatar.attributes.speed /= 2;
+
+                        _avatar.weapon.getCoolDown.setMaxCoolDown = _avatar.weapon.getCoolDown.getMaxCoolDown * 2;
+                    }
+                    break;
+                case BUFFID.EXHAUSTED:
+                    if (_add) {
+                        this.value = _avatar.attributes.armor;
+                        _avatar.attributes.armor = 0;
+                    }
+                    else {
+                        _avatar.attributes.armor = this.value;
+                    }
                     break;
             }
             Networking.updateEntityAttributes(payload, _avatar.netId);

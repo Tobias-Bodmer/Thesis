@@ -43,6 +43,18 @@
             "duration": 180,
             "tickRate": 0,
             "value": 10
+        },
+        {
+            "id": 7,
+            "duration": 600,
+            "tickRate": 0,
+            "value": 0
+        },
+        {
+            "id": 8,
+            "duration": 300,
+            "tickRate": 0,
+            "value": 0
         }
     ]
 }

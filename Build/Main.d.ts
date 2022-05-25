@@ -615,7 +615,8 @@ declare namespace Enemy {
     enum BIGBOOMBEHAVIOUR {
         IDLE = 0,
         WALK = 1,
-        SMASH = 2
+        SMASH = 2,
+        STOMP = 3
     }
     class BigBoom extends EnemyDumb implements Game.ƒAid.StateMachine<BIGBOOMBEHAVIOUR> {
         damageTaken: number;
@@ -624,20 +625,21 @@ declare namespace Enemy {
         instructions: ƒAid.StateMachineInstructions<BIGBOOMBEHAVIOUR>;
         normalPhaseCd: Ability.Cooldown;
         furiousPhaseCd: Ability.Cooldown;
-        exaustedPhaseCd: Ability.Cooldown;
+        exhaustedPhaseCd: Ability.Cooldown;
         smashCd: Ability.Cooldown;
+        smashRadius: number;
         stateMachineInstructions: Game.ƒAid.StateMachineInstructions<BIGBOOMBEHAVIOUR>;
         weapon: Weapons.Weapon;
         private stomp;
+        private dash;
         private flock;
-        private furiousArmor;
-        private normalArmor;
-        private exhaustedArmor;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
         update(): void;
         private intro;
         private walking;
         private nextAttack;
+        private throwStone;
+        private doStomp;
         private doSmash;
         private idlePhase;
         private startFuriousPhase;
@@ -706,7 +708,9 @@ declare namespace Buff {
         SLOW = 3,
         IMMUNE = 4,
         SCALEUP = 5,
-        SCALEDOWN = 6
+        SCALEDOWN = 6,
+        FURIOUS = 7,
+        EXHAUSTED = 8
     }
     abstract class Buff {
         duration: number;

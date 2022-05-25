@@ -1,7 +1,7 @@
 namespace Enemy {
 
     export enum BIGBOOMBEHAVIOUR {
-        IDLE, WALK, SMASH
+        IDLE, WALK, SMASH, STOMP
     }
     export class BigBoom extends EnemyDumb implements Game.ƒAid.StateMachine<BIGBOOMBEHAVIOUR> {
         damageTaken: number = 0;
@@ -12,20 +12,17 @@ namespace Enemy {
 
         normalPhaseCd: Ability.Cooldown = new Ability.Cooldown(20 * 60);
         furiousPhaseCd: Ability.Cooldown = new Ability.Cooldown(10 * 60);
-        exaustedPhaseCd: Ability.Cooldown = new Ability.Cooldown(5 * 60);
+        exhaustedPhaseCd: Ability.Cooldown = new Ability.Cooldown(5 * 60);
 
         smashCd: Ability.Cooldown = new Ability.Cooldown(5 * 60);
+        smashRadius: number = 2;
 
-        
         stateMachineInstructions: Game.ƒAid.StateMachineInstructions<BIGBOOMBEHAVIOUR>;
 
         public weapon: Weapons.Weapon = new Weapons.RangedWeapon(12, 1, Bullets.BULLETTYPE.STONE, 1, this.netId, Weapons.AIM.NORMAL);
-        private stomp: Ability.Stomp;
+        private stomp: Ability.Stomp = new Ability.Stomp(this.netId, 100, 12 * 60, 600);
+        private dash: Ability.Dash = new Ability.Dash(this.netId, 30, 1, 8 * 60, 4);
         private flock: FlockingBehaviour = new FlockingBehaviour(this, 4, 4, 1, 1, 1, 1, 0, 10);
-
-        private furiousArmor = 95;
-        private normalArmor = 50;
-        private exhaustedArmor = 0;
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _position, _netId);
@@ -33,16 +30,17 @@ namespace Enemy {
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), this.mtxLocal.scaling.x / 2, this.netId);
 
             this.furiousPhaseCd.onEndCoolDown = this.stopFuriousPhase;
-            this.exaustedPhaseCd.onEndCoolDown = this.stopExaustedPhase;
+            this.exhaustedPhaseCd.onEndCoolDown = this.stopExaustedPhase;
             this.normalPhaseCd.onEndCoolDown = this.startFuriousPhase;
-
-            this.stomp = new Ability.Stomp(this.netId, 1000, 2, 600);
+            this.dash.onEndAbility = this.throwStone;
 
             this.stateMachineInstructions = new Game.ƒAid.StateMachineInstructions();
             this.stateMachineInstructions.transitDefault = () => { };
             this.stateMachineInstructions.actDefault = this.intro;
             this.stateMachineInstructions.setAction(BIGBOOMBEHAVIOUR.IDLE, this.idlePhase);
             this.stateMachineInstructions.setAction(BIGBOOMBEHAVIOUR.WALK, this.walking);
+            this.stateMachineInstructions.setAction(BIGBOOMBEHAVIOUR.SMASH, this.doSmash);
+            this.stateMachineInstructions.setAction(BIGBOOMBEHAVIOUR.STOMP, this.doStomp);
 
             this.instructions = this.stateMachineInstructions;
 
@@ -79,43 +77,91 @@ namespace Enemy {
             this.target = Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2();
             let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
 
-
             if (distance < 2) {
-                // let random: number = Math.round(Math.random() * 100);
-                // if (random > 95) {
-                //     this.doSmash();
-                // }
+                let random: number = Math.round(Math.random() * 100);
+                if (random > 95) {
+                    this.doSmash();
+                }
             }
 
-            if (!this.stomp.doesAbility) {
-                this.nextAttack();
-            }
+            this.nextAttack();
 
-            this.flock.update();
-            this.moveDirection = this.flock.getMoveVector().toVector3();
+            if (!this.dash.doesAbility) {
+                this.flock.update();
+                this.moveDirection = this.flock.getMoveVector().toVector3();
+            }
         }
 
         private nextAttack() {
             let random: number = Math.round(Math.random() * 100);
             switch (true) {
-                case random > 70:
+                case random > 80:
                     //Stomp
-                    this.stomp.doAbility();
+                    if (!this.stomp.hasCooldown() && !this.stomp.doesAbility) {
+                        this.transit(BIGBOOMBEHAVIOUR.STOMP);
+                    }
                     break;
-                case random > 89 && random <= 90:
+                case random <= 80:
                     //Big stone throw
-                    //TODO: Dash away and the throw
-                    // this.weapon.shoot(ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation), true);
+                    if (!this.dash.hasCooldown() && !this.dash.doesAbility) {
+                        console.log("Do Dash!");
+                        this.target = Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2();
+                        this.moveDirection = this.moveAway(this.target).toVector3();
+
+                        this.dash.doAbility();
+                    }
                     break;
             }
         }
 
+        private throwStone = (): void => {
+            this.weapon.shoot(ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation), true);
+        }
+
+        private doStomp = () => {
+            if (!this.stomp.hasCooldown()) {
+                //TODO: switch animation
+
+                // if (this.getCurrentFrame >= ...) {
+                this.stomp.doAbility();
+                // }
+            }
+
+            // if (this.getCurrentFrame >= ...) { 
+            this.transit(BIGBOOMBEHAVIOUR.WALK);
+            // }
+        }
+
         private doSmash = () => {
             if (!this.smashCd.hasCoolDown) {
+                //TODO: switch animation
+
                 this.smashCd.startCoolDown();
 
-                //TODO: change animation and then in the right frame deal damage
+                // if (this.getCurrentFrame >= ...) {
+                let newPos: Game.ƒ.Vector2 = this.mtxLocal.translation.clone.toVector2();
+                let direction: Game.ƒ.Vector2 = Game.ƒ.Vector2.DIFFERENCE(this.target, this.mtxLocal.translation.toVector2());
+
+                if (direction.magnitude > 0) {
+                    direction.normalize();
+                    direction.scale(0.5);
+                }
+
+                newPos.add(direction);
+
+                let swordCollider: Collider.Collider = new Collider.Collider(newPos, this.smashRadius / 2, this.netId);
+                if (swordCollider.collides(Game.avatar1.collider)) {
+                    Game.avatar1.getDamage(this.attributes.attackPoints);
+                }
+                if (swordCollider.collides(Game.avatar2.collider)) {
+                    Game.avatar2.getDamage(this.attributes.attackPoints);
+                }
+                // }
             }
+
+            // if (this.getCurrentFrame >= ...) { 
+            this.transit(BIGBOOMBEHAVIOUR.WALK);
+            // }
         }
 
         private idlePhase = () => {
@@ -125,33 +171,36 @@ namespace Enemy {
         private startFuriousPhase = (): void => {
             this.normalPhaseCd.resetCoolDown();
 
-            this.attributes.armor = this.furiousArmor;
-            this.attributes.speed *= 2;
+            new Buff.AttributesBuff(Buff.BUFFID.FURIOUS, null, 1, 0).addToEntity(this);
 
             //Cooldowns
             this.stomp.getCooldown.setMaxCoolDown = this.stomp.getCooldown.getMaxCoolDown / 2;
-            this.weapon.getCoolDown.setMaxCoolDown = this.weapon.getCoolDown.getMaxCoolDown / 2;
+            this.dash.getCooldown.setMaxCoolDown = this.dash.getCooldown.getMaxCoolDown / 2;
+            this.smashCd.setMaxCoolDown = this.smashCd.getMaxCoolDown / 2;
 
             this.furiousPhaseCd.startCoolDown();
             this.damageTaken = 0;
         }
 
         private stopFuriousPhase = (): void => {
-            this.attributes.speed /= 2;
+            new Buff.AttributesBuff(Buff.BUFFID.FURIOUS, null, 1, 0).removeBuff(this);
+
             this.startExaustedPhase();
         }
 
         private startExaustedPhase = (): void => {
-            this.attributes.armor = this.exhaustedArmor;
+            new Buff.AttributesBuff(Buff.BUFFID.EXHAUSTED, null, 1, 0).addToEntity(this);
             this.transit(BIGBOOMBEHAVIOUR.IDLE);
-            this.exaustedPhaseCd.startCoolDown();
+            this.exhaustedPhaseCd.startCoolDown();
         }
 
         private stopExaustedPhase = (): void => {
-            this.attributes.armor = this.normalArmor;
+            new Buff.AttributesBuff(Buff.BUFFID.EXHAUSTED, null, 1, 0).removeBuff(this);
+
             //Cooldowns
             this.stomp.getCooldown.setMaxCoolDown = this.stomp.getCooldown.getMaxCoolDown * 2;
-            this.weapon.getCoolDown.setMaxCoolDown = this.weapon.getCoolDown.getMaxCoolDown * 2;
+            this.dash.getCooldown.setMaxCoolDown = this.dash.getCooldown.getMaxCoolDown * 2;
+            this.smashCd.setMaxCoolDown = this.smashCd.getMaxCoolDown * 2;
 
             this.normalPhaseCd.startCoolDown();
             this.transit(BIGBOOMBEHAVIOUR.WALK);
