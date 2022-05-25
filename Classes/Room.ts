@@ -38,6 +38,7 @@ namespace Generation {
         public obsticals: Obsitcal[] = [];
         public enemyCountManager: EnemyCountManager;
         public positionUpdated: boolean = false;
+        public exitDoor: Door;
         roomSize: number = 30;
         exits: Interfaces.IRoomExits; // N E S W
         mesh: ƒ.MeshQuad = new ƒ.MeshQuad;
@@ -146,7 +147,7 @@ namespace Generation {
     }
 
     export class NormalRoom extends Room {
-        normalRoomMat: ƒ.Material = new ƒ.Material("normalRoomMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white")));
+        normalRoomMat: ƒ.Material = new ƒ.Material("normalRoomMat", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
             super(_coordinates, _roomSize, ROOMTYPE.NORMAL);
             this.enemyCountManager = new EnemyCountManager(25);
@@ -156,15 +157,32 @@ namespace Generation {
     }
 
     export class BossRoom extends Room {
-        bossRoomMat: ƒ.Material = new ƒ.Material("bossRoomMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("black")));
+        bossRoomMat: ƒ.Material = new ƒ.Material("bossRoomMat", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("black")));
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
             super(_coordinates, _roomSize, ROOMTYPE.BOSS);
+
+            this.exitDoor = new ExitDoor();
+            this.addChild(this.exitDoor);
+            this.exitDoor.mtxLocal.translateZ(0.1);
+            this.exitDoor.mtxLocal.scale(Game.ƒ.Vector3.ONE(0.05));
+
             this.getComponent(Game.ƒ.ComponentMaterial).material = this.bossRoomMat;
+        }
+
+        public update(): void {
+            super.update();
+            if (this.enemyCountManager.finished == true) {
+                this.exitDoor.activate(true);
+            }
+        }
+
+        public onAddToGraph(): void {
+            this.exitDoor.setCollider();
         }
     }
 
     export class TreasureRoom extends Room {
-        private treasureRoomMat: ƒ.Material = new ƒ.Material("treasureRoomMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("yellow")));
+        private treasureRoomMat: ƒ.Material = new ƒ.Material("treasureRoomMat", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("yellow")));
         private spawnChance: number = 25; get getSpawnChance(): number { return this.spawnChance };
         private treasureCount: number = 2;
         private treasures: Items.Item[] = [];
@@ -519,7 +537,13 @@ namespace Generation {
         public closeDoor() {
             this.activate(false);
         }
+    }
 
+    export class ExitDoor extends Door {
+
+        public changeRoom() {
+            Generation.procedualRoomGeneration();
+        }
 
     }
 

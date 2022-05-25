@@ -28,6 +28,7 @@ namespace Generation {
 
         setExits();
         addRoomToGraph(rooms[0]);
+        Game.setMiniMap();
     }
     /**
      * generates a grid thats connected toggether from a given starting point

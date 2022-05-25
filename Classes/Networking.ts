@@ -139,6 +139,10 @@ namespace Networking {
                             newMiniMapInfo.push(<Interfaces.IMinimapInfos>{ coords: newCoords, roomType: oldMiniMapInfo[i].roomType })
                         }
 
+                        if (Game.miniMap != undefined) {
+                            Game.graph.removeChild(Game.miniMap);
+                        }
+
                         Game.miniMap = new UI.Minimap(newMiniMapInfo);
                         Game.graph.addChild(Game.miniMap);
                     }

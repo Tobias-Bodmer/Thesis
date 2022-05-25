@@ -13,7 +13,6 @@ namespace UI {
             super("Minimap");
             this.minmapInfo = _minimapInfo;
 
-
             this.pointer = new Game.ƒ.Node("pointer");
             this.pointer.addComponent(new ƒ.ComponentMesh(new Game.ƒ.MeshQuad));
             this.pointer.addComponent(new ƒ.ComponentMaterial(new ƒ.Material("challengeRoomMat", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("blue")))));
@@ -121,6 +120,7 @@ namespace UI {
                     break;
             }
             cmpMaterial = new ƒ.ComponentMaterial(this.roomMat);
+            cmpMaterial.sortForAlpha = true;
             this.addComponent(cmpMaterial);
             this.addComponent(new Game.ƒ.ComponentTransform());
             this.mtxLocal.translation = new ƒ.Vector3(this.coordinates.x, this.coordinates.y, 1);

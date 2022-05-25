@@ -201,17 +201,6 @@ namespace Game {
 
                     Networking.spawnPlayer();
 
-
-                    if (Networking.client.id == Networking.client.idHost) {
-                        let roomInfos: Interfaces.IMinimapInfos[] = [];
-                        let coords: Game.ƒ.Vector2[] = Generation.getCoordsFromRooms();
-                        for (let i = 0; i < coords.length; i++) {
-                            roomInfos.push(<Interfaces.IMinimapInfos>{ coords: coords[i], roomType: Generation.rooms.find(room => room.coordinates == coords[i]).roomType })
-                        }
-                        miniMap = new UI.Minimap(roomInfos);
-                        graph.addChild(miniMap);
-                    }
-
                     startLoop();
                 } else {
                     setTimeout(waitOnConnection, 300);
@@ -273,6 +262,19 @@ namespace Game {
                 document.getElementById("Startscreen").style.visibility = "visible";
             });
         });
+    }
+
+    export function setMiniMap() {
+        if (Networking.client.id == Networking.client.idHost) {
+            graph.removeChild(miniMap);
+            let roomInfos: Interfaces.IMinimapInfos[] = [];
+            let coords: Game.ƒ.Vector2[] = Generation.getCoordsFromRooms();
+            for (let i = 0; i < coords.length; i++) {
+                roomInfos.push(<Interfaces.IMinimapInfos>{ coords: coords[i], roomType: Generation.rooms.find(room => room.coordinates == coords[i]).roomType })
+            }
+            miniMap = new UI.Minimap(roomInfos);
+            graph.addChild(miniMap);
+        }
     }
 
     function playerChoice(_e: Event) {

@@ -194,6 +194,8 @@ namespace UI {
     export let bleedingParticle: ƒ.TextureImage = new ƒ.TextureImage();
     export let slowParticle: ƒ.TextureImage = new ƒ.TextureImage();
     export let immuneParticle: ƒ.TextureImage = new ƒ.TextureImage();
+    export let furiousParticle: ƒ.TextureImage = new ƒ.TextureImage();
+    export let exhaustedParticle: ƒ.TextureImage = new ƒ.TextureImage();
 
     export let commonParticle: ƒ.TextureImage = new ƒ.TextureImage();
     export let rareParticle: ƒ.TextureImage = new ƒ.TextureImage();

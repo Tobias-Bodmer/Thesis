@@ -34,7 +34,7 @@ namespace Player {
         }
 
         public openDoor(): void {
-            let walls: Generation.Wall[] = (<Generation.Wall[]>Game.currentRoom.getChildren());
+            let walls = Game.currentRoom.walls;
             walls.forEach((wall) => {
                 if (wall.door != undefined && wall.door.isActive) {
                     if (this.collider.collidesRect(wall.door.collider)) {
@@ -42,6 +42,11 @@ namespace Player {
                     }
                 }
             });
+            if (Game.currentRoom.exitDoor != undefined) {
+                if (this.collider.collidesRect(Game.currentRoom.exitDoor.collider)) {
+                    (Game.currentRoom.exitDoor).changeRoom();
+                }
+            }
         }
 
         protected scaleMoveVector(_direction: Game.ƒ.Vector3) {

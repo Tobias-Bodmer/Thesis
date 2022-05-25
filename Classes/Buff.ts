@@ -36,6 +36,10 @@ namespace Buff {
                     return new UI.Particles(BUFFID.POISON, UI.poisonParticle, 6, 12);
                 case BUFFID.IMMUNE:
                     return new UI.Particles(BUFFID.IMMUNE, UI.immuneParticle, 1, 6);
+                case BUFFID.FURIOUS:
+                    return new UI.Particles(BUFFID.FURIOUS, UI.furiousParticle, 1, 6);
+                case BUFFID.EXHAUSTED:
+                    return new UI.Particles(BUFFID.EXHAUSTED, UI.exhaustedParticle, 1, 6);
                 default:
                     return null;
             }

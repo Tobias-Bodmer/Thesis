@@ -32,6 +32,7 @@ declare namespace Game {
     let attributeBuffJSON: Buff.AttributesBuff[];
     let bulletsJSON: Bullets.Bullet[];
     let loaded: boolean;
+    function setMiniMap(): void;
     function pause(_sync: boolean, _triggerOption: boolean): void;
     function playing(_sync: boolean, _triggerOption: boolean): void;
     function loadTextures(): Promise<void>;
@@ -67,6 +68,8 @@ declare namespace UI {
     let bleedingParticle: ƒ.TextureImage;
     let slowParticle: ƒ.TextureImage;
     let immuneParticle: ƒ.TextureImage;
+    let furiousParticle: ƒ.TextureImage;
+    let exhaustedParticle: ƒ.TextureImage;
     let commonParticle: ƒ.TextureImage;
     let rareParticle: ƒ.TextureImage;
     let epicParticle: ƒ.TextureImage;
@@ -1101,6 +1104,7 @@ declare namespace Generation {
         obsticals: Obsitcal[];
         enemyCountManager: EnemyCountManager;
         positionUpdated: boolean;
+        exitDoor: Door;
         roomSize: number;
         exits: Interfaces.IRoomExits;
         mesh: ƒ.MeshQuad;
@@ -1135,6 +1139,8 @@ declare namespace Generation {
     export class BossRoom extends Room {
         bossRoomMat: ƒ.Material;
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
+        update(): void;
+        onAddToGraph(): void;
     }
     export class TreasureRoom extends Room {
         private treasureRoomMat;
@@ -1192,6 +1198,9 @@ declare namespace Generation {
         changeRoom(): void;
         openDoor(): void;
         closeDoor(): void;
+    }
+    export class ExitDoor extends Door {
+        changeRoom(): void;
     }
     export class Obsitcal extends ƒ.Node {
         tag: Tag.TAG;
