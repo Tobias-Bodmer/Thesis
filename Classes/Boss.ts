@@ -3,12 +3,8 @@ namespace Enemy {
     export enum BIGBOOMBEHAVIOUR {
         IDLE, WALK, SMASH, STOMP
     }
-    export class BigBoom extends EnemyDumb implements Game.ƒAid.StateMachine<BIGBOOMBEHAVIOUR> {
+    export class BigBoom extends EnemyDumb {
         damageTaken: number = 0;
-        stateCurrent: BIGBOOMBEHAVIOUR;
-        stateNext: BIGBOOMBEHAVIOUR;
-
-        instructions: ƒAid.StateMachineInstructions<BIGBOOMBEHAVIOUR>;
 
         normalPhaseCd: Ability.Cooldown = new Ability.Cooldown(20 * 60);
         furiousPhaseCd: Ability.Cooldown = new Ability.Cooldown(10 * 60);
@@ -17,7 +13,7 @@ namespace Enemy {
         smashCd: Ability.Cooldown = new Ability.Cooldown(5 * 60);
         smashRadius: number = 2;
 
-        stateMachineInstructions: Game.ƒAid.StateMachineInstructions<BIGBOOMBEHAVIOUR>;
+        stateMachineInstructions: Game.ƒAid.StateMachineInstructions<ENEMYBEHAVIOUR>;
 
         public weapon: Weapons.Weapon = new Weapons.RangedWeapon(12, 1, Bullets.BULLETTYPE.STONE, 1, this.netId, Weapons.AIM.NORMAL);
         private stomp: Ability.Stomp = new Ability.Stomp(this.netId, 100, 12 * 60, 600);
@@ -37,10 +33,10 @@ namespace Enemy {
             this.stateMachineInstructions = new Game.ƒAid.StateMachineInstructions();
             this.stateMachineInstructions.transitDefault = () => { };
             this.stateMachineInstructions.actDefault = this.intro;
-            this.stateMachineInstructions.setAction(BIGBOOMBEHAVIOUR.IDLE, this.idlePhase);
-            this.stateMachineInstructions.setAction(BIGBOOMBEHAVIOUR.WALK, this.walking);
-            this.stateMachineInstructions.setAction(BIGBOOMBEHAVIOUR.SMASH, this.doSmash);
-            this.stateMachineInstructions.setAction(BIGBOOMBEHAVIOUR.STOMP, this.doStomp);
+            this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.IDLE, this.idlePhase);
+            this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.WALK, this.walking);
+            this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.SMASH, this.doSmash);
+            this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.STOMP, this.doStomp);
 
             this.instructions = this.stateMachineInstructions;
 
@@ -49,23 +45,14 @@ namespace Enemy {
             this.isAggressive = true;
         }
 
-        public update(): void {
-            if (Networking.client.id == Networking.client.idHost) {
-                this.updateBuffs();
-                this.shadow.updateShadowPos();
-                this.setCollider();
-                this.act();
-                this.move(this.moveDirection);
-                Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId);
-            }
-        }
+   
 
         private intro = (): void => {
             //TODO: Intro animation here and when it is done then fight...
 
             if (this.damageTaken >= 1) {
                 this.normalPhaseCd.startCoolDown();
-                this.transit(BIGBOOMBEHAVIOUR.WALK);
+                this.transit(ENEMYBEHAVIOUR.WALK);
             }
         }
 
@@ -98,7 +85,7 @@ namespace Enemy {
                 case random > 80:
                     //Stomp
                     if (!this.stomp.hasCooldown() && !this.stomp.doesAbility) {
-                        this.transit(BIGBOOMBEHAVIOUR.STOMP);
+                        this.transit(ENEMYBEHAVIOUR.STOMP);
                     }
                     break;
                 case random <= 80:
@@ -128,7 +115,7 @@ namespace Enemy {
             }
 
             // if (this.getCurrentFrame >= ...) { 
-            this.transit(BIGBOOMBEHAVIOUR.WALK);
+            this.transit(ENEMYBEHAVIOUR.WALK);
             // }
         }
 
@@ -160,7 +147,7 @@ namespace Enemy {
             }
 
             // if (this.getCurrentFrame >= ...) { 
-            this.transit(BIGBOOMBEHAVIOUR.WALK);
+            this.transit(ENEMYBEHAVIOUR.WALK);
             // }
         }
 
@@ -190,7 +177,7 @@ namespace Enemy {
 
         private startExaustedPhase = (): void => {
             new Buff.AttributesBuff(Buff.BUFFID.EXHAUSTED, null, 1, 0).addToEntity(this);
-            this.transit(BIGBOOMBEHAVIOUR.IDLE);
+            this.transit(ENEMYBEHAVIOUR.IDLE);
             this.exhaustedPhaseCd.startCoolDown();
         }
 
@@ -203,17 +190,9 @@ namespace Enemy {
             this.smashCd.setMaxCoolDown = this.smashCd.getMaxCoolDown * 2;
 
             this.normalPhaseCd.startCoolDown();
-            this.transit(BIGBOOMBEHAVIOUR.WALK);
+            this.transit(ENEMYBEHAVIOUR.WALK);
         }
 
-        public transit(_next: BIGBOOMBEHAVIOUR): void {
-            console.info(BIGBOOMBEHAVIOUR[this.stateCurrent]);
-            this.instructions.transit(this.stateCurrent, _next, this);
-        }
-
-        public act(): void {
-            this.instructions.act(this.stateCurrent, this);
-        }
 
         public getDamage(_value: number): void {
             let hpBefore = this.attributes.healthPoints;
@@ -225,22 +204,17 @@ namespace Enemy {
         }
     }
 
-    export enum SUMMNORBEHAVIOUR {
-        IDLE, WALK, SUMMON, ATTACK, TELEPORT, SHOOT360
-    }
-    export class Summonor extends EnemyShoot implements Game.ƒAid.StateMachine<SUMMNORBEHAVIOUR> {
+  
+    export class Summonor extends EnemyShoot {
         damageTaken: number = 0;
-        stateCurrent: SUMMNORBEHAVIOUR;
-        stateNext: SUMMNORBEHAVIOUR;
-        instructions: ƒAid.StateMachineInstructions<SUMMNORBEHAVIOUR>;
 
         attackPhaseCd: Ability.Cooldown = new Ability.Cooldown(580);
         defencePhaseCd: Ability.Cooldown = new Ability.Cooldown(720);
         shootingCount: number = 3;
         currentShootingCount: number = 0;
         teleportPosition: ƒ.Vector3 = new ƒ.Vector3();
-        afterTeleportState: SUMMNORBEHAVIOUR;
-        stateMachineInstructions: Game.ƒAid.StateMachineInstructions<SUMMNORBEHAVIOUR>;
+        afterTeleportState: ENEMYBEHAVIOUR;
+        stateMachineInstructions: Game.ƒAid.StateMachineInstructions<ENEMYBEHAVIOUR>;
         dashDirection: number = 100;
 
 
@@ -268,43 +242,24 @@ namespace Enemy {
             this.stateMachineInstructions = new Game.ƒAid.StateMachineInstructions();
             this.stateMachineInstructions.transitDefault = () => { };
             this.stateMachineInstructions.actDefault = this.intro;
-            this.stateMachineInstructions.setAction(SUMMNORBEHAVIOUR.ATTACK, this.attackingPhase);
-            this.stateMachineInstructions.setAction(SUMMNORBEHAVIOUR.SUMMON, this.defencePhase);
-            this.stateMachineInstructions.setAction(SUMMNORBEHAVIOUR.TELEPORT, this.doTeleport);
-            this.stateMachineInstructions.setAction(SUMMNORBEHAVIOUR.SHOOT360, this.shooting360);
+            this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.ATTACK, this.attackingPhase);
+            this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.SUMMON, this.defencePhase);
+            this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.TELEPORT, this.doTeleport);
+            this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.SHOOT360, this.shooting360);
 
 
             this.instructions = this.stateMachineInstructions;
 
             this.dash.onDoAbility = this.shootOnDash;
             this.dash.onEndAbility = this.changeDashDirection;
-            this.transit(SUMMNORBEHAVIOUR.ATTACK);
+            this.transit(ENEMYBEHAVIOUR.ATTACK);
         }
-
-        public transit(_next: SUMMNORBEHAVIOUR): void {
-            console.info(SUMMNORBEHAVIOUR[this.stateCurrent]);
-            this.instructions.transit(this.stateCurrent, _next, this);
-        }
-        public act(): void {
-            this.instructions.act(this.stateCurrent, this);
-        }
-
-        public update(): void {
-            if (Networking.client.id == Networking.client.idHost) {
-                this.updateBuffs();
-                this.shadow.updateShadowPos();
-                this.setCollider();
-                this.act();
-                this.move(this.moveDirection);
-                Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId);
-            }
-        }
-
+     
         intro = () => {
             //TODO: Intro animation here and when it is done then fight...
 
             if (this.damageTaken >= 1) {
-                this.transit(SUMMNORBEHAVIOUR.ATTACK);
+                this.transit(ENEMYBEHAVIOUR.ATTACK);
             }
         }
 
@@ -320,7 +275,7 @@ namespace Enemy {
             if (this.damageTaken >= (this.attributes.maxHealthPoints * 0.34)) {
                 this.moveDirection = Game.ƒ.Vector3.ZERO();
                 let tempPortPos = new Game.ƒ.Vector2(Game.currentRoom.mtxWorld.translation.x, Game.currentRoom.mtxWorld.translation.y - Game.currentRoom.roomSize / 3);
-                this.teleport(SUMMNORBEHAVIOUR.SUMMON, tempPortPos);
+                this.teleport(ENEMYBEHAVIOUR.SUMMON, tempPortPos);
                 return;
             }
             if (!this.attackPhaseCd.hasCoolDown) {
@@ -355,7 +310,7 @@ namespace Enemy {
                 case random > 99:
                     if (!this.shoot360Cooldown.hasCoolDown) {
                         this.currentShootingCount = this.shootingCount;
-                        this.teleport(SUMMNORBEHAVIOUR.SHOOT360, new Game.ƒ.Vector2(Game.currentRoom.mtxWorld.translation.x + 3, Game.currentRoom.mtxWorld.translation.y + 3));
+                        this.teleport(ENEMYBEHAVIOUR.SHOOT360, new Game.ƒ.Vector2(Game.currentRoom.mtxWorld.translation.x + 3, Game.currentRoom.mtxWorld.translation.y + 3));
                     }
                     break;
                 case random > 50 && random < 70:
@@ -408,7 +363,7 @@ namespace Enemy {
             this.damageTaken = 0;
             new Buff.AttributesBuff(Buff.BUFFID.IMMUNE, null, 1, 0).removeBuff(this);
             this.currentShootingCount = this.shootingCount;
-            this.teleport(SUMMNORBEHAVIOUR.SHOOT360, new Game.ƒ.Vector2(Game.currentRoom.mtxWorld.translation.x, Game.currentRoom.mtxWorld.translation.y));
+            this.teleport(ENEMYBEHAVIOUR.SHOOT360, new Game.ƒ.Vector2(Game.currentRoom.mtxWorld.translation.x, Game.currentRoom.mtxWorld.translation.y));
         }
 
         /**
@@ -416,10 +371,10 @@ namespace Enemy {
          * @param _nextState nextState after the Teleport is done
          * @param _teleportPosition teleportPosistion the Summoner is teleporting to
          */
-        private teleport(_nextState: SUMMNORBEHAVIOUR, _teleportPosition: Game.ƒ.Vector2) {
+        private teleport(_nextState: ENEMYBEHAVIOUR, _teleportPosition: Game.ƒ.Vector2) {
             this.teleportPosition = _teleportPosition.clone.toVector3(this.mtxWorld.translation.z);
             this.afterTeleportState = _nextState;
-            this.transit(SUMMNORBEHAVIOUR.TELEPORT);
+            this.transit(ENEMYBEHAVIOUR.TELEPORT);
         }
 
         private doTeleport = (): void => {
@@ -451,7 +406,7 @@ namespace Enemy {
             }
             else if (this.getCurrentFrame >= 12) {
                 this.shoot360Cooldown.startCoolDown();
-                this.transit(SUMMNORBEHAVIOUR.ATTACK);
+                this.transit(ENEMYBEHAVIOUR.ATTACK);
                 new Buff.AttributesBuff(Buff.BUFFID.IMMUNE, null, 1, 0).removeBuff(this);
                 this.currentShootingCount = this.shootingCount;
             }

@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -179,13 +179,29 @@ declare namespace Enemy {
         BIGBOOM = 6,
         SUMMONORADDS = 7
     }
-    class Enemy extends Entity.Entity implements Interfaces.IKnockbackable {
+    enum ENEMYBEHAVIOUR {
+        IDLE = 0,
+        WALK = 1,
+        SUMMON = 2,
+        ATTACK = 3,
+        TELEPORT = 4,
+        SHOOT360 = 5,
+        SMASH = 6,
+        STOMP = 7
+    }
+    import ƒAid = FudgeAid;
+    class Enemy extends Entity.Entity implements Interfaces.IKnockbackable, Game.ƒAid.StateMachine<ENEMYBEHAVIOUR> {
         currentBehaviour: Entity.BEHAVIOUR;
         target: ƒ.Vector2;
         moveDirection: Game.ƒ.Vector3;
         flocking: FlockingBehaviour;
         isAggressive: boolean;
+        stateNext: ENEMYBEHAVIOUR;
+        stateCurrent: ENEMYBEHAVIOUR;
+        instructions: ƒAid.StateMachineInstructions<ENEMYBEHAVIOUR>;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
+        act(): void;
+        transit(_next: ENEMYBEHAVIOUR): void;
         update(): void;
         getDamage(_value: number): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
@@ -621,23 +637,19 @@ declare namespace Enemy {
         SMASH = 2,
         STOMP = 3
     }
-    class BigBoom extends EnemyDumb implements Game.ƒAid.StateMachine<BIGBOOMBEHAVIOUR> {
+    class BigBoom extends EnemyDumb {
         damageTaken: number;
-        stateCurrent: BIGBOOMBEHAVIOUR;
-        stateNext: BIGBOOMBEHAVIOUR;
-        instructions: ƒAid.StateMachineInstructions<BIGBOOMBEHAVIOUR>;
         normalPhaseCd: Ability.Cooldown;
         furiousPhaseCd: Ability.Cooldown;
         exhaustedPhaseCd: Ability.Cooldown;
         smashCd: Ability.Cooldown;
         smashRadius: number;
-        stateMachineInstructions: Game.ƒAid.StateMachineInstructions<BIGBOOMBEHAVIOUR>;
+        stateMachineInstructions: Game.ƒAid.StateMachineInstructions<ENEMYBEHAVIOUR>;
         weapon: Weapons.Weapon;
         private stomp;
         private dash;
         private flock;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
-        update(): void;
         private intro;
         private walking;
         private nextAttack;
@@ -649,30 +661,17 @@ declare namespace Enemy {
         private stopFuriousPhase;
         private startExaustedPhase;
         private stopExaustedPhase;
-        transit(_next: BIGBOOMBEHAVIOUR): void;
-        act(): void;
         getDamage(_value: number): void;
     }
-    enum SUMMNORBEHAVIOUR {
-        IDLE = 0,
-        WALK = 1,
-        SUMMON = 2,
-        ATTACK = 3,
-        TELEPORT = 4,
-        SHOOT360 = 5
-    }
-    class Summonor extends EnemyShoot implements Game.ƒAid.StateMachine<SUMMNORBEHAVIOUR> {
+    class Summonor extends EnemyShoot {
         damageTaken: number;
-        stateCurrent: SUMMNORBEHAVIOUR;
-        stateNext: SUMMNORBEHAVIOUR;
-        instructions: ƒAid.StateMachineInstructions<SUMMNORBEHAVIOUR>;
         attackPhaseCd: Ability.Cooldown;
         defencePhaseCd: Ability.Cooldown;
         shootingCount: number;
         currentShootingCount: number;
         teleportPosition: ƒ.Vector3;
-        afterTeleportState: SUMMNORBEHAVIOUR;
-        stateMachineInstructions: Game.ƒAid.StateMachineInstructions<SUMMNORBEHAVIOUR>;
+        afterTeleportState: ENEMYBEHAVIOUR;
+        stateMachineInstructions: Game.ƒAid.StateMachineInstructions<ENEMYBEHAVIOUR>;
         dashDirection: number;
         weapon: Weapons.Weapon;
         private summon;
@@ -681,9 +680,6 @@ declare namespace Enemy {
         private shoot360Cooldown;
         private flock;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
-        transit(_next: SUMMNORBEHAVIOUR): void;
-        act(): void;
-        update(): void;
         intro: () => void;
         getDamage(_value: number): void;
         attackingPhase: () => void;

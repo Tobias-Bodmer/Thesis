@@ -11,14 +11,22 @@ namespace Enemy {
         SUMMONORADDS
     }
 
+    export enum ENEMYBEHAVIOUR {
+        IDLE, WALK, SUMMON, ATTACK, TELEPORT, SHOOT360, SMASH, STOMP
+    }
+
     import ƒAid = FudgeAid;
 
-    export class Enemy extends Entity.Entity implements Interfaces.IKnockbackable {
+    export class Enemy extends Entity.Entity implements Interfaces.IKnockbackable, Game.ƒAid.StateMachine<ENEMYBEHAVIOUR> {
         currentBehaviour: Entity.BEHAVIOUR;
         target: ƒ.Vector2;
         moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
         flocking: FlockingBehaviour;
         isAggressive: boolean;
+
+        stateNext: ENEMYBEHAVIOUR;
+        stateCurrent: ENEMYBEHAVIOUR;
+        instructions: ƒAid.StateMachineInstructions<ENEMYBEHAVIOUR>;
 
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
@@ -41,11 +49,20 @@ namespace Enemy {
             this.collider = new Collider.Collider(new ƒ.Vector2(this.mtxLocal.translation.x + (ref.offsetColliderX * this.mtxLocal.scaling.x), this.mtxLocal.translation.y + (ref.offsetColliderY * this.mtxLocal.scaling.y)), ((this.mtxLocal.scaling.x * this.idleScale) / 2) * this.colliderScaleFaktor, this.netId);
         }
 
+        act(): void {
+            this.instructions.act(this.stateCurrent, this);
+        }
+
+        transit(_next: ENEMYBEHAVIOUR): void {
+            console.info(ENEMYBEHAVIOUR[this.stateCurrent]);
+            this.instructions.transit(this.stateCurrent, _next, this);
+        }
+
         public update() {
             this.shadow.updateShadowPos();
             if (Networking.client.id == Networking.client.idHost) {
                 super.update();
-                this.moveBehaviour();
+                this.act();
                 this.move(this.moveDirection);
                 Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId);
             }
