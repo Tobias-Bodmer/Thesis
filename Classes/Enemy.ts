@@ -23,7 +23,7 @@ namespace Enemy {
         target: ƒ.Vector2;
         moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
         protected abstract flocking: FlockingBehaviour;
-        isAggressive: boolean;
+        protected isAggressive: boolean;
 
         stateNext: ENEMYBEHAVIOUR;
         stateCurrent: ENEMYBEHAVIOUR;
@@ -59,7 +59,7 @@ namespace Enemy {
         }
 
         transit(_next: ENEMYBEHAVIOUR): void {
-            console.info(ENEMYBEHAVIOUR[this.stateCurrent]);
+            console.info(ENEMYBEHAVIOUR[this.stateCurrent] + " to " + ENEMYBEHAVIOUR[_next]);
             this.instructions.transit(this.stateCurrent, _next, this);
         }
 
@@ -91,9 +91,6 @@ namespace Enemy {
             // this.moveDirection.subtract(_direction);
         }
 
-        moveBehaviour() {
-
-        }
 
         public moveSimple(_target: ƒ.Vector2): ƒ.Vector2 {
             this.target = _target;
@@ -171,9 +168,7 @@ namespace Enemy {
         constructor(_id: Entity.ID, _pos: Game.ƒ.Vector2, _netId: number) {
             super(_id, _pos, _netId);
             this.isAggressive = true;
-
             this.stateMachineInstructions.actDefault = this.walkAI
-
             this.instructions = this.stateMachineInstructions;
             this.circleDirection = this.getCircleDirection();
             this.circleRadius = Calculation.clampNumber(this.circleRadius * Math.random() * (this.circleRadius - 2), 2, this.circleRadius);
@@ -196,16 +191,18 @@ namespace Enemy {
         }
 
         private walkAI = () => {
-            // let distance = this.target.toVector3().getDistance(this.mtxLocal.translation);
-            // if (Math.abs(distance - this.circleRadius) <= this.circleTolerance) {
-            //     this.walkCircle();
-            // }
-            // if (distance > this.circleRadius + this.circleTolerance) {
-            //     this.getCloser();
-            // }
-            // else if (distance > this.circleRadius - this.circleTolerance) {
-            //     this.getFurtherAway();
-            // }
+            this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
+            let distance = this.target.toVector3().getDistance(this.mtxLocal.translation);
+            console.log(distance);
+            if (Math.abs(distance - this.circleRadius) <= this.circleTolerance) {
+                this.walkCircle();
+            }
+            if (distance > this.circleRadius + this.circleTolerance) {
+                this.getCloser();
+            }
+            if (distance < this.circleRadius - this.circleTolerance) {
+                this.getFurtherAway();
+            }
         }
 
         private getCloser = () => {
@@ -229,59 +226,70 @@ namespace Enemy {
 
 
     export class EnemyDumb extends Enemy {
-        protected flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 4, 1, 0, 0);
+        protected flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 3, 1, 0, 0);
         private aggressiveDistance: number = 3 * 3;
         private stamina: Ability.Cooldown = new Ability.Cooldown(180);
         private recover: Ability.Cooldown = new Ability.Cooldown(60);
 
         constructor(_id: Entity.ID, _pos: Game.ƒ.Vector2, _netId: number) {
             super(_id, _pos, _netId);
-            this.isAggressive = true;
-            this.stamina.onEndCoolDown = () => this.recoverStam;
+            this.isAggressive = false;
+            this.stamina.onEndCoolDown = this.OnStaminaCooldownEnd;
+            this.recover.onEndCoolDown = this.OnRecoverCooldownEnd;
+            this.stateMachineInstructions.actDefault = this.idle;
+            this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.WALK, this.walk);
+            this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.IDLE, this.idle);
+            this.stateMachineInstructions.setTransition(ENEMYBEHAVIOUR.IDLE, ENEMYBEHAVIOUR.WALK, this.startWalking);
+            this.stateMachineInstructions.setTransition(ENEMYBEHAVIOUR.WALK, ENEMYBEHAVIOUR.IDLE, this.startIdling);
+            this.instructions = this.stateMachineInstructions;
+            this.stateCurrent = ENEMYBEHAVIOUR.IDLE;
         }
-        behaviour() {
-            this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2();
-            this.target = Game.avatar1.mtxLocal.translation.toVector2();
-            let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitudeSquared;
-            this.flocking.update();
 
+        public update(): void {
+            this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2();
+            this.flocking.update();
+            super.update();
+            this.checkAggressiveState();
+        }
+
+        private checkAggressiveState() {
+            if (this.isAggressive) {
+                return;
+            }
+            let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitudeSquared;
             if (distance < this.aggressiveDistance) {
                 this.isAggressive = true;
             }
+        }
+
+        private OnStaminaCooldownEnd = () => {
+            this.transit(ENEMYBEHAVIOUR.IDLE);
+        }
+
+        private OnRecoverCooldownEnd = () => {
+            this.transit(ENEMYBEHAVIOUR.WALK);
+        }
+
+        private startIdling = () => {
+            this.recover.startCoolDown();
+        }
+
+        private idle = () => {
+            this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
+            this.moveDirection = Game.ƒ.Vector3.ZERO();
             if (this.isAggressive && !this.recover.hasCoolDown) {
-                this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
+                this.transit(ENEMYBEHAVIOUR.WALK);
             }
+        }
+
+        private startWalking = () => {
+            this.stamina.startCoolDown();
+        }
+
+        private walk = () => {
+            this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
             this.moveDirection = this.flocking.getMoveVector().toVector3();
         }
-
-        private recoverStam = () => {
-            this.recover.startCoolDown();
-            this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
-        }
-
-        moveBehaviour() {
-            this.behaviour();
-            switch (this.currentBehaviour) {
-                case Entity.BEHAVIOUR.IDLE:
-                    this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
-                    // this.moveDirection = ƒ.Vector3.ZERO();
-                    break;
-                case Entity.BEHAVIOUR.FOLLOW:
-                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
-                    if (!this.stamina.hasCoolDown && !this.recover.hasCoolDown) {
-                        this.stamina.startCoolDown();
-                    }
-                    if (this.stamina.hasCoolDown) {
-                        //TODO: set a callback function to do this.
-                        // if (this.stamina.getCurrentCooldown == 1) {
-                        //     this.recover.startCoolDown();
-                        //     this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
-                        // }
-                    }
-                    break;
-            }
-        }
-
     }
 
     export class EnemySmash extends Enemy {

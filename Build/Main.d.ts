@@ -196,7 +196,7 @@ declare namespace Enemy {
         target: ƒ.Vector2;
         moveDirection: Game.ƒ.Vector3;
         protected abstract flocking: FlockingBehaviour;
-        isAggressive: boolean;
+        protected isAggressive: boolean;
         stateNext: ENEMYBEHAVIOUR;
         stateCurrent: ENEMYBEHAVIOUR;
         instructions: ƒAid.StateMachineInstructions<ENEMYBEHAVIOUR>;
@@ -208,7 +208,6 @@ declare namespace Enemy {
         getDamage(_value: number): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
         move(_direction: ƒ.Vector3): void;
-        moveBehaviour(): void;
         moveSimple(_target: ƒ.Vector2): ƒ.Vector2;
         moveAway(_target: ƒ.Vector2): ƒ.Vector2;
         die(): void;
@@ -233,9 +232,14 @@ declare namespace Enemy {
         private stamina;
         private recover;
         constructor(_id: Entity.ID, _pos: Game.ƒ.Vector2, _netId: number);
-        behaviour(): void;
-        private recoverStam;
-        moveBehaviour(): void;
+        update(): void;
+        private checkAggressiveState;
+        private OnStaminaCooldownEnd;
+        private OnRecoverCooldownEnd;
+        private startIdling;
+        private idle;
+        private startWalking;
+        private walk;
     }
     class EnemySmash extends Enemy {
         coolDown: Ability.Cooldown;
