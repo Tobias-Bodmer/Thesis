@@ -188,7 +188,8 @@ declare namespace Enemy {
         TELEPORT = 4,
         SHOOT360 = 5,
         SMASH = 6,
-        STOMP = 7
+        STOMP = 7,
+        DASH = 8
     }
     import ƒAid = FudgeAid;
     abstract class Enemy extends Entity.Entity implements Interfaces.IKnockbackable, Game.ƒAid.StateMachine<ENEMYBEHAVIOUR> {
@@ -258,6 +259,7 @@ declare namespace Enemy {
         randomPlayer: number;
         protected flocking: FlockingBehaviour;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
+        update(): void;
         behaviour(): void;
         moveBehaviour(): void;
     }

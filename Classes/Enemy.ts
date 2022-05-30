@@ -13,7 +13,7 @@ namespace Enemy {
     }
 
     export enum ENEMYBEHAVIOUR {
-        IDLE, WALK, SUMMON, ATTACK, TELEPORT, SHOOT360, SMASH, STOMP
+        IDLE, WALK, SUMMON, ATTACK, TELEPORT, SHOOT360, SMASH, STOMP, DASH
     }
 
     import ƒAid = FudgeAid;
@@ -353,7 +353,15 @@ namespace Enemy {
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _position, _netId);
             this.flocking = new FlockingBehaviour(this, 3, 3, 1, 1, 2, 0, 0, 0);
+            this.isAggressive = true;
 
+            this.instructions = this.stateMachineInstructions;
+        }
+
+        public update(): void {
+            this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2();
+            this.flocking.update();
+            super.update();
         }
 
         behaviour() {
