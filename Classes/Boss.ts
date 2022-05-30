@@ -13,12 +13,11 @@ namespace Enemy {
         smashCd: Ability.Cooldown = new Ability.Cooldown(5 * 60);
         smashRadius: number = 2;
 
-        stateMachineInstructions: Game.ƒAid.StateMachineInstructions<ENEMYBEHAVIOUR>;
 
         public weapon: Weapons.Weapon = new Weapons.RangedWeapon(12, 1, Bullets.BULLETTYPE.STONE, 1, this.netId, Weapons.AIM.NORMAL);
         private stomp: Ability.Stomp = new Ability.Stomp(this.netId, 100, 12 * 60, 600);
         private dash: Ability.Dash = new Ability.Dash(this.netId, 30, 1, 8 * 60, 4);
-        private flock: FlockingBehaviour = new FlockingBehaviour(this, 4, 4, 1, 1, 1, 1, 0, 10);
+        protected flocking: FlockingBehaviour = new FlockingBehaviour(this, 4, 4, 1, 1, 1, 1, 0, 10);
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _position, _netId);
@@ -45,7 +44,7 @@ namespace Enemy {
             this.isAggressive = true;
         }
 
-   
+
 
         private intro = (): void => {
             //TODO: Intro animation here and when it is done then fight...
@@ -74,8 +73,8 @@ namespace Enemy {
             this.nextAttack();
 
             if (!this.dash.doesAbility) {
-                this.flock.update();
-                this.moveDirection = this.flock.getMoveVector().toVector3();
+                this.flocking.update();
+                this.moveDirection = this.flocking.getMoveVector().toVector3();
             }
         }
 
@@ -204,7 +203,7 @@ namespace Enemy {
         }
     }
 
-  
+
     export class Summonor extends EnemyShoot {
         damageTaken: number = 0;
 
@@ -214,7 +213,6 @@ namespace Enemy {
         currentShootingCount: number = 0;
         teleportPosition: ƒ.Vector3 = new ƒ.Vector3();
         afterTeleportState: ENEMYBEHAVIOUR;
-        stateMachineInstructions: Game.ƒAid.StateMachineInstructions<ENEMYBEHAVIOUR>;
         dashDirection: number = 100;
 
 
@@ -223,7 +221,7 @@ namespace Enemy {
         private dash: Ability.Dash = new Ability.Dash(this.netId, 60, 1, 6 * 60, 4);
         private shoot360: Ability.circleShoot = new Ability.circleShoot(this.netId, 0, 1, 60);
         private shoot360Cooldown: Ability.Cooldown = new Ability.Cooldown(580);
-        private flock: FlockingBehaviour = new FlockingBehaviour(
+        protected flocking: FlockingBehaviour = new FlockingBehaviour(
             this,
             4,
             4,
@@ -254,7 +252,7 @@ namespace Enemy {
             this.dash.onEndAbility = this.changeDashDirection;
             this.transit(ENEMYBEHAVIOUR.ATTACK);
         }
-     
+
         intro = () => {
             //TODO: Intro animation here and when it is done then fight...
 
@@ -288,18 +286,18 @@ namespace Enemy {
 
                 if (distance < 5) {
                     this.isAggressive = true;
-                    this.flock.notToTargetWeight = 2;
-                    this.flock.toTargetWeight = 1;
+                    this.flocking.notToTargetWeight = 2;
+                    this.flocking.toTargetWeight = 1;
                 } else if (distance > 8) {
-                    this.flock.notToTargetWeight = 1;
-                    this.flock.toTargetWeight = 2;
+                    this.flocking.notToTargetWeight = 1;
+                    this.flocking.toTargetWeight = 2;
                 }
 
                 if (!this.dash.doesAbility) {
                     this.nextAttack();
 
-                    this.flock.update();
-                    this.moveDirection = this.flock.getMoveVector().toVector3();
+                    this.flocking.update();
+                    this.moveDirection = this.flocking.getMoveVector().toVector3();
                 }
             }
         }

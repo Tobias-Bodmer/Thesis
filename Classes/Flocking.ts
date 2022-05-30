@@ -52,7 +52,7 @@ namespace Enemy {
             })
         }
 
-        public calculateCohesionMove(): Game.ƒ.Vector2 {
+        private calculateCohesionMove(): Game.ƒ.Vector2 {
             if (this.currentNeighbours.length <= 0) {
                 return ƒ.Vector2.ZERO();
             }
@@ -79,7 +79,7 @@ namespace Enemy {
             }
         }
 
-        public calculateAllignmentMove(): Game.ƒ.Vector2 {
+        private calculateAllignmentMove(): Game.ƒ.Vector2 {
             if (this.currentNeighbours.length <= 0) {
                 return this.myEnemy.moveDirection.toVector2();
             }
@@ -93,7 +93,7 @@ namespace Enemy {
             }
         }
 
-        public calculateAvoidanceMove(): Game.ƒ.Vector2 {
+        private calculateAvoidanceMove(): Game.ƒ.Vector2 {
             if (this.currentNeighbours.length <= 0) {
                 return ƒ.Vector2.ZERO();
             }
@@ -113,7 +113,7 @@ namespace Enemy {
             }
         }
 
-        public calculateObsticalAvoidanceMove(): Game.ƒ.Vector2 {
+        private calculateObsticalAvoidanceMove(): Game.ƒ.Vector2 {
             let obsticals: Game.ƒ.Node[] = [];
             Game.currentRoom.walls.forEach(elem => {
                 obsticals.push(elem);

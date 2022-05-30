@@ -37,61 +37,28 @@ namespace EnemySpawner {
         let enemy: Enemy.Enemy;
         switch (_enemyClass) {
             case Enemy.ENEMYCLASS.ENEMYDASH:
-                if (_netID == null) {
-                    enemy = new Enemy.EnemyDash(_id, _position, _netID);
-                } else {
-                    enemy = new Enemy.EnemyDash(_id, _position, _netID);
-                }
+                enemy = new Enemy.EnemyDash(_id, _position, _netID);
                 break;
             case Enemy.ENEMYCLASS.ENEMYDUMB:
-                if (_netID == null) {
-                    enemy = new Enemy.EnemyDumb(_id, _position, _netID);
-                } else {
-                    enemy = new Enemy.EnemyDumb(_id, _position, _netID);
-                }
+                enemy = new Enemy.EnemyDumb(_id, _position, _netID);
                 break;
             case Enemy.ENEMYCLASS.ENEMYPATROL:
-                if (_netID == null) {
-                    enemy = new Enemy.EnemyPatrol(_id, _position, _netID);
-                } else {
-                    enemy = new Enemy.EnemyPatrol(_id, _position, _netID);
-                }
+                enemy = new Enemy.EnemyPatrol(_id, _position, _netID);
                 break;
-            // case Enemy.E:
-            //     if (_netID == null) {
-            //         enemy = new Enemy.EnemyShoot(_id, new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale, Math.random() * ref.attributes.knockbackForce + 0.5, ref.attributes.armor), _position, _netID);
-            //     } else {
-            //         enemy = new Enemy.EnemyShoot(_id, _attributes, _position, _netID);
-            //     }
-            //     break;
             case Enemy.ENEMYCLASS.ENEMYSMASH:
-                if (_netID == null) {
-                    enemy = new Enemy.EnemySmash(_id, _position, _netID);
-                } else {
-                    enemy = new Enemy.EnemySmash(_id, _position, _netID);
-                }
+                enemy = new Enemy.EnemySmash(_id, _position, _netID);
                 break;
             case Enemy.ENEMYCLASS.SUMMONORADDS:
-                if (_netID == null) {
-                    enemy = new Enemy.SummonorAdds(_id, _position, _target, _netID);
-                } else {
-                    enemy = new Enemy.SummonorAdds(_id, _position, _target, _netID);
-                }
+                enemy = new Enemy.SummonorAdds(_id, _position, _target, _netID);
                 break;
             case Enemy.ENEMYCLASS.SUMMONOR:
-                if (_netID == null) {
-                    enemy = new Enemy.Summonor(_id, _position, _netID);
-                } else {
-                    enemy = new Enemy.Summonor(_id, _position, _netID);
-                }
+                enemy = new Enemy.Summonor(_id, _position, _netID);
                 break;
             case Enemy.ENEMYCLASS.BIGBOOM:
-                if (_netID == null) {
-                    enemy = new Enemy.BigBoom(_id, _position, _netID);
-                } else {
-                    enemy = new Enemy.BigBoom(_id, _position, _netID);
-                }
+                enemy = new Enemy.BigBoom(_id, _position, _netID);
                 break;
+            case Enemy.ENEMYCLASS.ENEMYCIRCLE:
+                enemy = new Enemy.EnemyCircle(_id, _position, _netID);
             default:
                 break;
         }

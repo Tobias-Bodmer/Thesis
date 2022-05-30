@@ -2,6 +2,7 @@ namespace Enemy {
 
     export enum ENEMYCLASS {
         ENEMYDUMB,
+        ENEMYCIRCLE,
         ENEMYDASH,
         ENEMYSMASH,
         ENEMYPATROL,
@@ -17,16 +18,18 @@ namespace Enemy {
 
     import ƒAid = FudgeAid;
 
-    export class Enemy extends Entity.Entity implements Interfaces.IKnockbackable, Game.ƒAid.StateMachine<ENEMYBEHAVIOUR> {
+    export abstract class Enemy extends Entity.Entity implements Interfaces.IKnockbackable, Game.ƒAid.StateMachine<ENEMYBEHAVIOUR> {
         currentBehaviour: Entity.BEHAVIOUR;
         target: ƒ.Vector2;
         moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
-        flocking: FlockingBehaviour;
+        protected abstract flocking: FlockingBehaviour;
         isAggressive: boolean;
 
         stateNext: ENEMYBEHAVIOUR;
         stateCurrent: ENEMYBEHAVIOUR;
         instructions: ƒAid.StateMachineInstructions<ENEMYBEHAVIOUR>;
+        protected stateMachineInstructions: Game.ƒAid.StateMachineInstructions<ENEMYBEHAVIOUR>;
+
 
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
@@ -47,6 +50,8 @@ namespace Enemy {
             this.offsetColliderY = ref.offsetColliderY;
             this.colliderScaleFaktor = ref.colliderScaleFaktor;
             this.collider = new Collider.Collider(new ƒ.Vector2(this.mtxLocal.translation.x + (ref.offsetColliderX * this.mtxLocal.scaling.x), this.mtxLocal.translation.y + (ref.offsetColliderY * this.mtxLocal.scaling.y)), ((this.mtxLocal.scaling.x * this.idleScale) / 2) * this.colliderScaleFaktor, this.netId);
+            this.stateMachineInstructions = new Game.ƒAid.StateMachineInstructions();
+
         }
 
         act(): void {
@@ -158,9 +163,73 @@ namespace Enemy {
         }
     }
 
+    export class EnemyCircle extends Enemy {
+        public flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 0.1, 4, 1, 0, 1);
+        private circleRadius: number = 5;
+        private circleDirection: number;
+        private circleTolerance: number = 0.1;
+        constructor(_id: Entity.ID, _pos: Game.ƒ.Vector2, _netId: number) {
+            super(_id, _pos, _netId);
+            this.isAggressive = true;
+
+            this.stateMachineInstructions.actDefault = this.walkAI
+
+            this.instructions = this.stateMachineInstructions;
+            this.circleDirection = this.getCircleDirection();
+            this.circleRadius = Calculation.clampNumber(this.circleRadius * Math.random() * (this.circleRadius - 2), 2, this.circleRadius);
+        }
+
+        private getCircleDirection(): number {
+            let random = Math.random();
+            if (random > 0.5) {
+                return 90;
+            }
+            else {
+                return -90;
+            }
+        }
+
+        public update(): void {
+            this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2();
+            this.flocking.update();
+            super.update();
+        }
+
+        private walkAI = () => {
+            // let distance = this.target.toVector3().getDistance(this.mtxLocal.translation);
+            // if (Math.abs(distance - this.circleRadius) <= this.circleTolerance) {
+            //     this.walkCircle();
+            // }
+            // if (distance > this.circleRadius + this.circleTolerance) {
+            //     this.getCloser();
+            // }
+            // else if (distance > this.circleRadius - this.circleTolerance) {
+            //     this.getFurtherAway();
+            // }
+        }
+
+        private getCloser = () => {
+            this.flocking.toTargetWeight = 1;
+            this.flocking.notToTargetWeight = 0;
+            this.moveDirection = this.flocking.getMoveVector().toVector3();
+        }
+
+        private getFurtherAway = () => {
+            this.flocking.notToTargetWeight = 1;
+            this.flocking.toTargetWeight = 0;
+            this.moveDirection = this.flocking.getMoveVector().toVector3();
+        }
+
+        private walkCircle = () => {
+            this.flocking.toTargetWeight = 1;
+            this.flocking.notToTargetWeight = 0;
+            this.moveDirection = Calculation.getRotatedVectorByAngle2D(this.flocking.getMoveVector().toVector3(), this.circleDirection);
+        }
+    }
+
 
     export class EnemyDumb extends Enemy {
-        public flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 4, 1, 0, 0);
+        protected flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 4, 1, 0, 0);
         private aggressiveDistance: number = 3 * 3;
         private stamina: Ability.Cooldown = new Ability.Cooldown(180);
         private recover: Ability.Cooldown = new Ability.Cooldown(60);
@@ -220,6 +289,7 @@ namespace Enemy {
         avatars: Player.Player[] = [];
         randomPlayer = Math.round(Math.random());
         currentBehaviour: Entity.BEHAVIOUR = Entity.BEHAVIOUR.IDLE;
+        protected flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 4, 1, 0, 0);
 
 
         behaviour() {
@@ -269,6 +339,8 @@ namespace Enemy {
         dashCount: number = 1;
         avatars: Player.Player[] = [];
         randomPlayer = Math.round(Math.random());
+        protected flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 4, 1, 0, 0);
+
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _position, _netId);
@@ -323,6 +395,8 @@ namespace Enemy {
         patrolPoints: ƒ.Vector2[] = [new ƒ.Vector2(0, 4), new ƒ.Vector2(5, 0)];
         waitTime: number = 1000;
         currenPointIndex: number = 0;
+        protected flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 4, 1, 0, 0);
+
 
         moveBehaviour(): void {
             this.patrol();
@@ -347,6 +421,8 @@ namespace Enemy {
 
     export class EnemyShoot extends Enemy {
         viewRadius: number = 3;
+        protected flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 4, 1, 0, 0);
+
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _position, _netId);
 

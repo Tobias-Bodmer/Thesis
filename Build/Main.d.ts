@@ -171,13 +171,14 @@ declare namespace Entity {
 declare namespace Enemy {
     enum ENEMYCLASS {
         ENEMYDUMB = 0,
-        ENEMYDASH = 1,
-        ENEMYSMASH = 2,
-        ENEMYPATROL = 3,
-        ENEMYSHOOT = 4,
-        SUMMONOR = 5,
-        BIGBOOM = 6,
-        SUMMONORADDS = 7
+        ENEMYCIRCLE = 1,
+        ENEMYDASH = 2,
+        ENEMYSMASH = 3,
+        ENEMYPATROL = 4,
+        ENEMYSHOOT = 5,
+        SUMMONOR = 6,
+        BIGBOOM = 7,
+        SUMMONORADDS = 8
     }
     enum ENEMYBEHAVIOUR {
         IDLE = 0,
@@ -190,15 +191,16 @@ declare namespace Enemy {
         STOMP = 7
     }
     import ƒAid = FudgeAid;
-    class Enemy extends Entity.Entity implements Interfaces.IKnockbackable, Game.ƒAid.StateMachine<ENEMYBEHAVIOUR> {
+    abstract class Enemy extends Entity.Entity implements Interfaces.IKnockbackable, Game.ƒAid.StateMachine<ENEMYBEHAVIOUR> {
         currentBehaviour: Entity.BEHAVIOUR;
         target: ƒ.Vector2;
         moveDirection: Game.ƒ.Vector3;
-        flocking: FlockingBehaviour;
+        protected abstract flocking: FlockingBehaviour;
         isAggressive: boolean;
         stateNext: ENEMYBEHAVIOUR;
         stateCurrent: ENEMYBEHAVIOUR;
         instructions: ƒAid.StateMachineInstructions<ENEMYBEHAVIOUR>;
+        protected stateMachineInstructions: Game.ƒAid.StateMachineInstructions<ENEMYBEHAVIOUR>;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
         act(): void;
         transit(_next: ENEMYBEHAVIOUR): void;
@@ -212,8 +214,21 @@ declare namespace Enemy {
         die(): void;
         collide(_direction: ƒ.Vector3): void;
     }
-    class EnemyDumb extends Enemy {
+    class EnemyCircle extends Enemy {
         flocking: FlockingBehaviour;
+        private circleRadius;
+        private circleDirection;
+        private circleTolerance;
+        constructor(_id: Entity.ID, _pos: Game.ƒ.Vector2, _netId: number);
+        private getCircleDirection;
+        update(): void;
+        private walkAI;
+        private getCloser;
+        private getFurtherAway;
+        private walkCircle;
+    }
+    class EnemyDumb extends Enemy {
+        protected flocking: FlockingBehaviour;
         private aggressiveDistance;
         private stamina;
         private recover;
@@ -227,6 +242,7 @@ declare namespace Enemy {
         avatars: Player.Player[];
         randomPlayer: number;
         currentBehaviour: Entity.BEHAVIOUR;
+        protected flocking: FlockingBehaviour;
         behaviour(): void;
         moveBehaviour(): void;
     }
@@ -236,6 +252,7 @@ declare namespace Enemy {
         dashCount: number;
         avatars: Player.Player[];
         randomPlayer: number;
+        protected flocking: FlockingBehaviour;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
         behaviour(): void;
         moveBehaviour(): void;
@@ -244,11 +261,13 @@ declare namespace Enemy {
         patrolPoints: ƒ.Vector2[];
         waitTime: number;
         currenPointIndex: number;
+        protected flocking: FlockingBehaviour;
         moveBehaviour(): void;
         patrol(): void;
     }
     class EnemyShoot extends Enemy {
         viewRadius: number;
+        protected flocking: FlockingBehaviour;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
         behaviour(): void;
         moveBehaviour(): void;
@@ -644,11 +663,10 @@ declare namespace Enemy {
         exhaustedPhaseCd: Ability.Cooldown;
         smashCd: Ability.Cooldown;
         smashRadius: number;
-        stateMachineInstructions: Game.ƒAid.StateMachineInstructions<ENEMYBEHAVIOUR>;
         weapon: Weapons.Weapon;
         private stomp;
         private dash;
-        private flock;
+        protected flocking: FlockingBehaviour;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
         private intro;
         private walking;
@@ -671,14 +689,13 @@ declare namespace Enemy {
         currentShootingCount: number;
         teleportPosition: ƒ.Vector3;
         afterTeleportState: ENEMYBEHAVIOUR;
-        stateMachineInstructions: Game.ƒAid.StateMachineInstructions<ENEMYBEHAVIOUR>;
         dashDirection: number;
         weapon: Weapons.Weapon;
         private summon;
         private dash;
         private shoot360;
         private shoot360Cooldown;
-        private flock;
+        protected flocking: FlockingBehaviour;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
         intro: () => void;
         getDamage(_value: number): void;
@@ -900,10 +917,10 @@ declare namespace Enemy {
         constructor(_enemy: Enemy, _sightRadius: number, _avoidRadius: number, _cohesionWeight: number, _allignWeight: number, _avoidWeight: number, _toTargetWeight: number, _notToTargetWeight: number, _obsticalAvoidWeight?: number);
         update(): void;
         private findNeighbours;
-        calculateCohesionMove(): Game.ƒ.Vector2;
-        calculateAllignmentMove(): Game.ƒ.Vector2;
-        calculateAvoidanceMove(): Game.ƒ.Vector2;
-        calculateObsticalAvoidanceMove(): Game.ƒ.Vector2;
+        private calculateCohesionMove;
+        private calculateAllignmentMove;
+        private calculateAvoidanceMove;
+        private calculateObsticalAvoidanceMove;
         getMoveVector(): Game.ƒ.Vector2;
     }
 }
