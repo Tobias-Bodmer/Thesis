@@ -253,14 +253,16 @@ declare namespace Enemy {
     }
     class EnemyDash extends Enemy {
         protected dash: Ability.Dash;
-        lastMoveDireciton: Game.ƒ.Vector3;
+        private lastMoveDireciton;
+        private dashDistance;
         dashCount: number;
-        avatars: Player.Player[];
-        randomPlayer: number;
         protected flocking: FlockingBehaviour;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
         update(): void;
-        behaviour(): void;
+        private startDash;
+        private doDash;
+        private onEndDash;
+        private walk;
         moveBehaviour(): void;
     }
     class EnemyPatrol extends Enemy {

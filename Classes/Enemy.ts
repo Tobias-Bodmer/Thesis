@@ -226,7 +226,7 @@ namespace Enemy {
 
 
     export class EnemyDumb extends Enemy {
-        protected flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 3, 1, 0, 0);
+        protected flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 3, 1, 0, 1);
         private aggressiveDistance: number = 3 * 3;
         private stamina: Ability.Cooldown = new Ability.Cooldown(180);
         private recover: Ability.Cooldown = new Ability.Cooldown(60);
@@ -342,20 +342,25 @@ namespace Enemy {
     }
 
     export class EnemyDash extends Enemy {
-        protected dash = new Ability.Dash(this.netId, 12, 1, 5 * 60, 3);
-        lastMoveDireciton: Game.ƒ.Vector3;
+        protected dash = new Ability.Dash(this.netId, 12, 1, 300, 3);
+        private lastMoveDireciton: Game.ƒ.Vector3;
+        private dashDistance: number = Math.pow(2, 2);
         dashCount: number = 1;
-        avatars: Player.Player[] = [];
-        randomPlayer = Math.round(Math.random());
+
         protected flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 4, 1, 0, 0);
 
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _position, _netId);
-            this.flocking = new FlockingBehaviour(this, 3, 3, 1, 1, 2, 0, 0, 0);
             this.isAggressive = true;
-
+            this.dash.onEndAbility = this.onEndDash;
+            this.stateMachineInstructions.actDefault = this.walk;
+            this.stateMachineInstructions.setTransition(ENEMYBEHAVIOUR.WALK, ENEMYBEHAVIOUR.DASH, this.startDash);
+            this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.DASH, this.doDash);
+            this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.WALK, this.walk);
             this.instructions = this.stateMachineInstructions;
+            this.lastMoveDireciton = this.moveDirection;
+            this.stateCurrent = ENEMYBEHAVIOUR.WALK;
         }
 
         public update(): void {
@@ -364,31 +369,32 @@ namespace Enemy {
             super.update();
         }
 
-        behaviour() {
-            this.avatars = [Game.avatar1, Game.avatar2]
-            this.target = (<Player.Player>this.avatars[this.randomPlayer]).mtxLocal.translation.toVector2();
-            let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitudeSquared;
-            this.flocking.update();
-
-            if (!this.dash.hasCooldown()) {
-                this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
-            }
-            if (Math.random() * 100 < 0.1) {
-                this.dash.doAbility();
-            }
-
-
-            if (this.moveDirection.magnitudeSquared > 0.0005) {
-                this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
-            }
-            else {
-                this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
-            }
-
+        private startDash = () => {
+            this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
+            this.dash.doAbility();
         }
 
+        private doDash = () => {
+            this.moveDirection = this.lastMoveDireciton;
+        }
+
+        private onEndDash = () => {
+            this.transit(ENEMYBEHAVIOUR.WALK);
+        }
+
+        private walk = () => {
+            let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitudeSquared;
+            this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
+            this.moveDirection = this.flocking.getMoveVector().toVector3();
+            this.lastMoveDireciton = this.moveDirection;
+            if (distance < this.dashDistance && !this.dash.hasCooldown()) {
+                this.transit(ENEMYBEHAVIOUR.DASH);
+            }
+        }
+
+
+
         moveBehaviour(): void {
-            this.behaviour();
             switch (this.currentBehaviour) {
                 case Entity.BEHAVIOUR.FOLLOW:
                     if (!this.dash.doesAbility) {
