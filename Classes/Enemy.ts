@@ -343,9 +343,9 @@ namespace Enemy {
 
     export class EnemyDash extends Enemy {
         protected dash = new Ability.Dash(this.netId, 12, 1, 300, 3);
-        private lastMoveDireciton: Game.ƒ.Vector3;
-        private dashDistance: number = Math.pow(2, 2);
-        dashCount: number = 1;
+        protected lastMoveDireciton: Game.ƒ.Vector3;
+        protected dashDistance: number = Math.pow(2, 2);
+        protected dashCount: number = 1;
 
         protected flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 4, 1, 0, 0);
 
@@ -361,10 +361,10 @@ namespace Enemy {
             this.instructions = this.stateMachineInstructions;
             this.lastMoveDireciton = this.moveDirection;
             this.stateCurrent = ENEMYBEHAVIOUR.WALK;
+            this.target = Game.ƒ.Vector3.ZERO().toVector2();
         }
 
         public update(): void {
-            this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2();
             this.flocking.update();
             super.update();
         }
@@ -382,7 +382,9 @@ namespace Enemy {
             this.transit(ENEMYBEHAVIOUR.WALK);
         }
 
-        private walk = () => {
+        protected walk = () => {
+            console.log("old walk");
+            this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2();
             let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitudeSquared;
             this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
             this.moveDirection = this.flocking.getMoveVector().toVector3();
@@ -496,20 +498,27 @@ namespace Enemy {
 
     export class SummonorAdds extends EnemyDash {
         avatar: Player.Player;
-        randomPlayer = Math.round(Math.random());
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _target: Player.Player, _netId?: number) {
             super(_id, _position, _netId);
             this.avatar = _target;
-            this.flocking = new FlockingBehaviour(this, 3, 1, 0.1, 1, 4, 1, 0, 0);
-            this.isAggressive = true;
         }
 
-        behaviour() {
+
+        protected walk = () => {
+            //TODO: help tobiii 
+            console.log("new walk");
             this.target = this.avatar.mtxLocal.translation.toVector2();
-            this.flocking.update();
+            let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitudeSquared;
+            this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
             this.moveDirection = this.flocking.getMoveVector().toVector3();
+            this.lastMoveDireciton = this.moveDirection;
+            if (distance < this.dashDistance && !this.dash.hasCooldown()) {
+                this.transit(ENEMYBEHAVIOUR.DASH);
+            }
         }
+
+
     }
 
 
