@@ -503,46 +503,4 @@ namespace Enemy {
 
     }
 
-
-
-    // export class EnemyCircle extends Enemy {
-    //     distance: number = 5;
-
-    //     constructor(_name: string, _properties: Player.Character, _position: ƒ.Vector2) {
-    //         super(_name, _properties, _position);
-    //     }
-
-    //     move(): void {
-    //         super.move();
-    //         this.moveCircle();
-    //     }
-
-    //     lifespan(_graph: ƒ.Node): void {
-    //         super.lifespan(_graph);
-    //     }
-
-    //     async moveCircle() {
-    //         this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation);
-    //         console.log(this.target);
-    //         let distancePlayer1 = this.cmpTransform.mtxLocal.translation.getDistance(Game.avatar1.cmpTransform.mtxLocal.translation);
-    //         // let distancePlayer2 = this.cmpTransform.mtxLocal.translation.getDistance(Game.player2.cmpTransform.mtxLocal.translation);
-    //         if (distancePlayer1 > this.distance) {
-    //             this.moveSimple();
-    //         }
-    //         else {
-    //             let degree = Calculation.calcDegree(this.cmpTransform.mtxLocal.translation, this.target)
-    //             let add = 0;
-
-    //             // while (distancePlayer1 <= this.distance) {
-    //             //     let direction: Game.ƒ.Vector3 = Game.ƒ.Vector3.DIFFERENCE(this.cmpTransform.mtxLocal.translation, InputSystem.calcPositionFromDegree(degree + add, this.distance).toVector3(0));
-    //             //     direction.normalize();
-
-    //             //     direction.scale((1 / Game.frameRate * this.properties.attributes.speed));
-    //             //     this.cmpTransform.mtxLocal.translate(direction, true);
-    //             //     add += 5;
-    //             // }
-
-    //         }
-    //     }
-    // }
 }
