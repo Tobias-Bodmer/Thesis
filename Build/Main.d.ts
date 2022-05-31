@@ -263,7 +263,6 @@ declare namespace Enemy {
         private doDash;
         private onEndDash;
         protected walk: () => void;
-        moveBehaviour(): void;
     }
     class EnemyPatrol extends Enemy {
         patrolPoints: ƒ.Vector2[];

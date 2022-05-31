@@ -383,7 +383,6 @@ namespace Enemy {
         }
 
         protected walk = () => {
-            console.log("old walk");
             this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2();
             let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitudeSquared;
             this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
@@ -395,24 +394,6 @@ namespace Enemy {
         }
 
 
-
-        moveBehaviour(): void {
-            switch (this.currentBehaviour) {
-                case Entity.BEHAVIOUR.FOLLOW:
-                    if (!this.dash.doesAbility) {
-                        this.moveDirection = this.flocking.getMoveVector().toVector3();
-                        this.lastMoveDireciton = this.moveDirection;
-                    }
-                    break;
-                case Entity.BEHAVIOUR.IDLE:
-                    this.moveDirection = ƒ.Vector3.ZERO();
-                    break;
-                case Entity.BEHAVIOUR.FLEE:
-                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
-                    this.moveDirection = this.moveAway(this.target).toVector3();
-                    break;
-            }
-        }
     }
 
     export class EnemyPatrol extends Enemy {
@@ -502,12 +483,13 @@ namespace Enemy {
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _target: Player.Player, _netId?: number) {
             super(_id, _position, _netId);
             this.avatar = _target;
+            this.stateMachineInstructions.actDefault = this.walk;
+            this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.WALK, this.walk);
         }
 
 
         protected walk = () => {
             //TODO: help tobiii 
-            console.log("new walk");
             this.target = this.avatar.mtxLocal.translation.toVector2();
             let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitudeSquared;
             this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
