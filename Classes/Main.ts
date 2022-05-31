@@ -172,7 +172,7 @@ namespace Game {
             waitOnConnection();
             async function waitOnConnection() {
                 setClient();
-                if (Networking.clients.filter(elem => elem.ready == true).length >= 2 && Networking.client.idHost != undefined ) {
+                if (Networking.clients.filter(elem => elem.ready == true).length >= 2 && Networking.client.idHost != undefined) {
                     if (Networking.client.id == Networking.client.idHost) {
                         document.getElementById("IMHOST").style.visibility = "visible";
                     }
@@ -192,9 +192,20 @@ namespace Game {
 
                     //#region init Items
                     if (Networking.client.id == Networking.client.idHost) {
-                        let item2 = new Items.InternalItem(Items.ITEMID.HOMECOMING);
+                        let item2 = new Items.BuffItem(Items.ITEMID.GETWEAKO);
+                        let item3 = new Items.BuffItem(Items.ITEMID.GETSTRONKO);
+                        let item4 = new Items.InternalItem(Items.ITEMID.AOETEST);
+                        let item5 = new Items.BuffItem(Items.ITEMID.SLOWYSLOW);
+
                         item2.setPosition(new ƒ.Vector2(-5, 0));
                         item2.spawn();
+                        item3.setPosition(new ƒ.Vector2(5, 0));
+                        item3.spawn();
+                        item4.setPosition(new ƒ.Vector2(-10, 0));
+                        item4.spawn();
+                        item5.setPosition(new ƒ.Vector2(10, 0));
+                        item5.spawn();
+
                         // // let item3 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(-2, 0), null);
                         // let zipzap = new Items.InternalItem(Items.ITEMID.TEST);
                         // zipzap.setPosition(new ƒ.Vector2(5, 0));

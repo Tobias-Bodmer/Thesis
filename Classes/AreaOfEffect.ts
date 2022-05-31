@@ -27,11 +27,9 @@ namespace Ability {
             this.areaMat = new ƒ.Material("aoeShader", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), UI.commonParticle));
             let cmpMat = new Game.ƒ.ComponentMaterial(this.areaMat);
             this.addComponent(cmpMat);
-
             this.addComponent(new Game.ƒ.ComponentTransform());
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), 2, this.netId);
-            this.mtxLocal.scaling = new Game.ƒ.Vector3(this.collider.getRadius * 2, this.collider.getRadius * 2, 1)
-            this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
+            this.mtxLocal.scaling = new Game.ƒ.Vector3(this.collider.getRadius * 2, this.collider.getRadius * 2, 1);
         }
 
         public eventUpdate = (_event: Event): void => {
@@ -39,7 +37,7 @@ namespace Ability {
         }
 
         protected update(): void {
-            this.collider.position = this.mtxWorld.translation.toVector2();
+            this.collider.position = this.getParent().mtxWorld.translation.toVector2();
             this.collisionDetection();
         }
         public despawn = () => {
@@ -49,20 +47,24 @@ namespace Ability {
             Networking.popID(this.netId);
         }
 
-        protected spawn (_entity: Entity.Entity) {
+        protected spawn(_entity: Entity.Entity) {
             _entity.addChild(this);
             this.mtxLocal.translateZ(0.01);
+
             if (this.duration == undefined) {
                 return;
             }
             else {
                 this.duration.startCoolDown();
             }
+
+            this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);
         }
 
         public addToEntity(_entity: Entity.Entity) {
             this.spawn(_entity);
             this.ownerNetId = _entity.netId;
+
         }
 
         protected collisionDetection() {

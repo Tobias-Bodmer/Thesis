@@ -35,6 +35,10 @@ namespace EnemySpawner {
     }
 
     export function spawnByID(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2, _target?: Player.Player, _netID?: number) {
+        if (Game.currentRoom.enemyCountManager.finished) {
+            return;
+        }
+        
         let enemy: Enemy.Enemy;
         switch (_enemyClass) {
             case Enemy.ENEMYCLASS.ENEMYDASH:

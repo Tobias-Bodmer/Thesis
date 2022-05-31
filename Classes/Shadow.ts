@@ -34,5 +34,12 @@ namespace Entity {
             this.getComponent(Game.ƒ.ComponentMaterial).material = this.shadowMatRound;
         }
 
+
+        updateShadowPos() {
+            let factor = (this.shadowParent.mtxLocal.translation.z * 0.1)+1;
+            this.mtxLocal.translation = new ƒ.Vector3(0, 0, this.shadowParent.mtxLocal.translation.z * -1);
+            this.mtxLocal.scaling = new Game.ƒ.Vector3(1 * factor, 1 * factor, 1 * factor);
+        }
+
     }
 }

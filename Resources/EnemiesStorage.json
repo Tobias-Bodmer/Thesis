@@ -85,7 +85,7 @@
             "attributes": {
                 "healthPoints": 1,
                 "attackPoints": 0,
-                "speed": 1.5,
+                "speed": 3,
                 "scale": 2,
                 "knockbackForce": 0.1,
                 "armor": 5,
@@ -99,9 +99,9 @@
         {
             "name": "bigboom",
             "attributes": {
-                "healthPoints": 1,
+                "healthPoints": 250,
                 "attackPoints": 0,
-                "speed": 0.8,
+                "speed": 2,
                 "scale": 2,
                 "knockbackForce": 0.1,
                 "armor": 25,
@@ -110,6 +110,7 @@
             },
             "offsetColliderX": 0,
             "offsetColliderY": 0,
-            "colliderScaleFaktor": 1        }
+            "colliderScaleFaktor": 1
+        }
     ]
 }

@@ -176,7 +176,9 @@ namespace Enemy {
         }
 
         private stopFuriousPhase = (): void => {
-            new Buff.AttributesBuff(Buff.BUFFID.FURIOUS, null, 1, 0).removeBuff(this);
+            if (this.buffs.find(buff => buff.id == Buff.BUFFID.FURIOUS) != undefined) {
+                this.buffs.find(buff => buff.id == Buff.BUFFID.FURIOUS).removeBuff(this);
+            }
 
             this.startExaustedPhase();
         }
@@ -188,7 +190,9 @@ namespace Enemy {
         }
 
         private stopExaustedPhase = (): void => {
-            new Buff.AttributesBuff(Buff.BUFFID.EXHAUSTED, null, 1, 0).removeBuff(this);
+            if (this.buffs.find(buff => buff.id == Buff.BUFFID.EXHAUSTED) != undefined) {
+                this.buffs.find(buff => buff.id == Buff.BUFFID.EXHAUSTED).removeBuff(this);
+            }
 
             //Cooldowns
             this.stomp.getCooldown.setMaxCoolDown = this.stomp.getCooldown.getMaxCoolDown * 2;
@@ -424,7 +428,9 @@ namespace Enemy {
             else if (this.getCurrentFrame >= 12) {
                 this.shoot360Cooldown.startCoolDown();
                 this.transit(ENEMYBEHAVIOUR.ATTACK);
-                new Buff.AttributesBuff(Buff.BUFFID.IMMUNE, null, 1, 0).removeBuff(this);
+                if (this.buffs.find(buff => buff.id == Buff.BUFFID.IMMUNE) != undefined) {
+                    this.buffs.find(buff => buff.id == Buff.BUFFID.IMMUNE).removeBuff(this);
+                }
                 this.currentShootingCount = this.shootingCount;
             }
         }

@@ -61,7 +61,7 @@ namespace Buff {
          */
         public removeBuff(_avatar: Entity.Entity) {
             _avatar.removeChild(_avatar.getChildren().find(child => (<UI.Particles>child).id == this.id));
-            _avatar.buffs.splice(_avatar.buffs.indexOf(this));
+            _avatar.buffs.splice(_avatar.buffs.indexOf(this), 1);
             if (Networking.client.idHost == Networking.client.id) {
                 this.getBuffStatsById(this.id, _avatar, false);
                 Networking.updateBuffList(_avatar.buffs, _avatar.netId);

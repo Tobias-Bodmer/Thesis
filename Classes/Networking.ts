@@ -514,9 +514,12 @@ namespace Networking {
                     }
                     //send request to switch rooms
                     if (message.content != undefined && message.content.text == FUNCTION.SWITCHROOMREQUEST.toString()) {
-                        Generation.switchRoom(message.content.direction);
+                        if (message.content.direction == null && Game.currentRoom instanceof Generation.BossRoom) {
+                            (<Generation.BossRoom>Game.currentRoom).exitDoor.changeRoom();
+                        } else {
+                            Generation.switchRoom(message.content.direction);
+                        }
                     }
-
                 }
             }
         }

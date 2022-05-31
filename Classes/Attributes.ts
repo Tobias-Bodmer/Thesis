@@ -24,10 +24,16 @@ namespace Entity {
         scale: number;
         accuracy: number = 80;
 
+        protected readonly baseMaxHealthPoints: number;
+        protected readonly baseHealthPoints: number;
+        protected readonly baseAttackPoints: number;
+        protected readonly baseSpeed: number;
+        protected readonly baseKnockbackForce: number;
+
 
         constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _armor: number, _cooldownReduction: number, _accuracy: number) {
             this.scale = _scale;
-            this.armor = this.newGameFactor(_armor);
+            this.armor = Calculation.clampNumber(this.newGameFactor(_armor), 0, 99);
             this.healthPoints = this.newGameFactor(_healthPoints);
             this.maxHealthPoints = this.healthPoints;
             this.attackPoints = this.newGameFactor(_attackPoints);
@@ -35,14 +41,20 @@ namespace Entity {
             this.knockbackForce = _knockbackForce
             this.coolDownReduction = _cooldownReduction;
             this.accuracy = _accuracy;
+
+            this.baseHealthPoints = this.healthPoints;
+            this.baseMaxHealthPoints = this.healthPoints;
+            this.baseAttackPoints = this.attackPoints;
+            this.baseSpeed = this.speed;
+            this.baseKnockbackForce = this.knockbackForce;
         }
 
         public updateScaleDependencies() {
-            this.maxHealthPoints = Math.round(this.maxHealthPoints * (100 + (10 * this.scale)) / 100);
-            this.healthPoints = Math.round(this.healthPoints * (100 + (10 * this.scale)) / 100);
-            this.attackPoints = Math.round(this.attackPoints * this.scale);
-            this.speed = Math.fround(this.speed / this.scale);
-            this.knockbackForce = this.knockbackForce * (100 + (10 * this.scale)) / 100;
+            this.maxHealthPoints = Math.round(this.baseMaxHealthPoints * (100 + (10 * this.scale)) / 100);
+            this.healthPoints = Math.round(this.baseHealthPoints * (100 + (10 * this.scale)) / 100);
+            this.attackPoints = Math.round(this.baseAttackPoints * this.scale);
+            this.speed = Math.fround(this.baseSpeed / this.scale);
+            this.knockbackForce = this.baseKnockbackForce * (100 + (10 * this.scale)) / 100;
         }
 
         private newGameFactor(_value: number): number {

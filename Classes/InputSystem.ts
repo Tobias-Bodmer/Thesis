@@ -2,8 +2,8 @@ namespace InputSystem {
 
     document.addEventListener("keydown", keyboardDownEvent);
     document.addEventListener("keyup", keyboardUpEvent);
-    Game.canvas.addEventListener("mousedown", attack);
-    Game.canvas.addEventListener("mousemove", rotateToMouse);
+    document.addEventListener("mousedown", attack);
+    document.addEventListener("mousemove", rotateToMouse);
 
     //#region rotate
     let mousePosition: ƒ.Vector3;

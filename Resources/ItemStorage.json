@@ -89,8 +89,8 @@
             "rarity": 2
         },
         {
-            "name": "zip zap",
-            "description": "brrrrzt",
+            "name": "stinky",
+            "description": "you stink and make other damage",
             "id": 16,
             "imgSrc": "./Resources/Image/Items/iceBucket.png",
             "value": 0,

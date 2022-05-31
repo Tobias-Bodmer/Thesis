@@ -1,4 +1,5 @@
 body {
+    user-select: none;
     font-family: 'MinecraftiaRegular';
     font-weight: normal;
     font-style: normal;
@@ -19,6 +20,7 @@ canvas {
 }
 
 #Hostscreen>#Rooms {
+    user-select: text;
     position: absolute;
     overflow-y: scroll;
     width: 200px;
@@ -30,6 +32,7 @@ canvas {
 }
 
 #Hostscreen>p {
+    user-select: text;
     margin-left: 50%;
     transform: translateX(-50%);
     text-align: center;

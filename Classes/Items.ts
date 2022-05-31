@@ -435,7 +435,7 @@ namespace Items {
             possibleItems = this.getPossibleItems();
             let randomIndex = Math.round(Math.random() * (possibleItems.length - 1));
             let returnItem = possibleItems[randomIndex];
-            // this.itemPool.splice(this.itemPool.indexOf(returnItem));
+            // this.itemPool.splice(this.itemPool.indexOf(returnItem), 1);
             return returnItem.clone();
         }
 

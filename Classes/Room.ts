@@ -574,7 +574,11 @@ namespace Generation {
 
         public changeRoom() {
             Game.newGamePlus++;
-            Generation.procedualRoomGeneration();
+            if (Networking.client.id == Networking.client.idHost) {
+                Generation.procedualRoomGeneration();
+            } else {
+                Networking.switchRoomRequest(null);
+            }
         }
     }
 

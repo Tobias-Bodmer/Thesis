@@ -654,6 +654,11 @@ declare namespace Entity {
         coolDownReduction: number;
         scale: number;
         accuracy: number;
+        protected readonly baseMaxHealthPoints: number;
+        protected readonly baseHealthPoints: number;
+        protected readonly baseAttackPoints: number;
+        protected readonly baseSpeed: number;
+        protected readonly baseKnockbackForce: number;
         constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _armor: number, _cooldownReduction: number, _accuracy: number);
         updateScaleDependencies(): void;
         private newGameFactor;
@@ -1274,6 +1279,7 @@ declare namespace Entity {
     class ShadowRound extends Shadow {
         private shadowMatRound;
         constructor(_parent: Game.ƒ.Node);
+        updateShadowPos(): void;
     }
 }
 declare namespace Weapons {
