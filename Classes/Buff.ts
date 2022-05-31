@@ -37,7 +37,7 @@ namespace Buff {
                 case BUFFID.IMMUNE:
                     return new UI.Particles(BUFFID.IMMUNE, UI.immuneParticle, 1, 6);
                 case BUFFID.FURIOUS:
-                    return new UI.Particles(BUFFID.FURIOUS, UI.furiousParticle, 1, 6);
+                    return new UI.Particles(BUFFID.FURIOUS, UI.furiousParticle, 8, 6);
                 case BUFFID.EXHAUSTED:
                     return new UI.Particles(BUFFID.EXHAUSTED, UI.exhaustedParticle, 1, 6);
                 default:
@@ -243,7 +243,7 @@ namespace Buff {
                 case BUFFID.SLOW:
                     if (_add) {
                         this.removedValue = _avatar.attributes.speed - Calculation.subPercentageAmountToValue(_avatar.attributes.speed, this.value);
-                        _avatar.attributes.speed -= Calculation.subPercentageAmountToValue(_avatar.attributes.speed, this.value);
+                        _avatar.attributes.speed -= this.removedValue;
                     } else {
                         _avatar.attributes.speed += this.removedValue;
                     }
@@ -259,7 +259,7 @@ namespace Buff {
                 case BUFFID.SCALEUP:
                     if (_add) {
                         this.removedValue = Calculation.addPercentageAmountToValue(_avatar.attributes.scale, this.value) - _avatar.attributes.scale;
-                        _avatar.attributes.scale = Calculation.addPercentageAmountToValue(_avatar.attributes.scale, this.value);
+                        _avatar.attributes.scale += this.removedValue;
                     }
                     else {
                         _avatar.attributes.scale -= this.removedValue;
@@ -270,7 +270,7 @@ namespace Buff {
                 case BUFFID.SCALEDOWN:
                     if (_add) {
                         this.removedValue = _avatar.attributes.scale - Calculation.subPercentageAmountToValue(_avatar.attributes.scale, this.value);
-                        _avatar.attributes.scale = Calculation.subPercentageAmountToValue(_avatar.attributes.scale, this.value);
+                        _avatar.attributes.scale -= this.removedValue;
                     }
                     else {
                         _avatar.attributes.scale += this.removedValue;
@@ -280,14 +280,14 @@ namespace Buff {
                     break;
                 case BUFFID.FURIOUS:
                     if (_add) {
-                        this.value = _avatar.attributes.armor;
+                        this.removedValue = _avatar.attributes.armor;
                         _avatar.attributes.armor = 95;
                         _avatar.attributes.speed *= 2;
 
                         _avatar.weapon.getCoolDown.setMaxCoolDown = _avatar.weapon.getCoolDown.getMaxCoolDown / 2;
                     }
                     else {
-                        _avatar.attributes.armor = this.value;
+                        _avatar.attributes.armor = this.removedValue;
                         _avatar.attributes.speed /= 2;
 
                         _avatar.weapon.getCoolDown.setMaxCoolDown = _avatar.weapon.getCoolDown.getMaxCoolDown * 2;
@@ -295,11 +295,11 @@ namespace Buff {
                     break;
                 case BUFFID.EXHAUSTED:
                     if (_add) {
-                        this.value = _avatar.attributes.armor;
+                        this.removedValue = _avatar.attributes.armor;
                         _avatar.attributes.armor = 0;
                     }
                     else {
-                        _avatar.attributes.armor = this.value;
+                        _avatar.attributes.armor = this.removedValue;
                     }
                     break;
             }

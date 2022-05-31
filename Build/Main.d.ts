@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -13,6 +13,7 @@ declare namespace Game {
     let viewport: ƒ.Viewport;
     let cmpCamera: ƒ.ComponentCamera;
     let graph: ƒ.Node;
+    let newGamePlus: number;
     let avatar1: Player.Player;
     let avatar2: Player.Player;
     let currentRoom: Generation.Room;
@@ -238,6 +239,7 @@ declare namespace Enemy {
         private OnStaminaCooldownEnd;
         private OnRecoverCooldownEnd;
         private startIdling;
+        die(): void;
         private idle;
         private startWalking;
         private walk;
@@ -285,6 +287,7 @@ declare namespace Enemy {
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _target: Player.Player, _netId?: number);
         protected walk: () => void;
     }
+    function getEnemyClass(_enemy: Enemy.Enemy): ENEMYCLASS;
 }
 declare namespace Interfaces {
     interface ISpawnable {
@@ -653,6 +656,7 @@ declare namespace Entity {
         accuracy: number;
         constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _armor: number, _cooldownReduction: number, _accuracy: number);
         updateScaleDependencies(): void;
+        private newGameFactor;
     }
 }
 declare namespace Enemy {
@@ -662,7 +666,7 @@ declare namespace Enemy {
         SMASH = 2,
         STOMP = 3
     }
-    class BigBoom extends EnemyDumb {
+    class BigBoom extends Enemy {
         damageTaken: number;
         normalPhaseCd: Ability.Cooldown;
         furiousPhaseCd: Ability.Cooldown;
@@ -674,6 +678,7 @@ declare namespace Enemy {
         private dash;
         protected flocking: FlockingBehaviour;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
+        die(): void;
         private intro;
         private walking;
         private nextAttack;
@@ -687,7 +692,7 @@ declare namespace Enemy {
         private stopExaustedPhase;
         getDamage(_value: number): void;
     }
-    class Summonor extends EnemyShoot {
+    class Summonor extends Enemy {
         damageTaken: number;
         attackPhaseCd: Ability.Cooldown;
         defencePhaseCd: Ability.Cooldown;
@@ -705,6 +710,7 @@ declare namespace Enemy {
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
         intro: () => void;
         getDamage(_value: number): void;
+        die(): void;
         attackingPhase: () => void;
         private nextAttack;
         private doDash;
@@ -1109,9 +1115,10 @@ declare namespace Generation {
     export class EnemyCountManager {
         private maxEnemyCount;
         get getMaxEnemyCount(): number;
-        private currentEnemyCoount;
+        private currentEnemyCount;
         finished: boolean;
-        constructor(_enemyCount: number);
+        setFinished: boolean;
+        constructor(_enemyCount: number, _setFinished: boolean);
         onEnemyDeath(): void;
     }
     export let txtStartRoom: Game.ƒ.TextureImage;
@@ -1156,10 +1163,13 @@ declare namespace Generation {
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
     }
     export class BossRoom extends Room {
+        private boss;
         bossRoomMat: ƒ.Material;
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
         update(): void;
+        done(): void;
         onAddToGraph(): void;
+        private getRandomBoss;
     }
     export class TreasureRoom extends Room {
         private treasureRoomMat;
@@ -1252,12 +1262,18 @@ declare namespace Generation {
 }
 declare namespace Entity {
     let txtShadow: Game.ƒ.TextureImage;
+    let txtShadowRound: Game.ƒ.TextureImage;
     class Shadow extends Game.ƒ.Node {
         private mesh;
         private shadowMatt;
         shadowParent: Game.ƒ.Node;
+        protected cmpMaterial: ƒ.ComponentMaterial;
         constructor(_parent: Game.ƒ.Node);
         updateShadowPos(): void;
+    }
+    class ShadowRound extends Shadow {
+        private shadowMatRound;
+        constructor(_parent: Game.ƒ.Node);
     }
 }
 declare namespace Weapons {

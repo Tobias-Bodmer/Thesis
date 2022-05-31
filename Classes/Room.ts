@@ -10,21 +10,28 @@ namespace Generation {
 
     export class EnemyCountManager {
         private maxEnemyCount: number; get getMaxEnemyCount(): number { return this.maxEnemyCount };
-        private currentEnemyCoount: number;
+        private currentEnemyCount: number;
         public finished: boolean;
-        constructor(_enemyCount: number) {
+        public setFinished: boolean;
+
+        constructor(_enemyCount: number, _setFinished: boolean) {
             this.maxEnemyCount = _enemyCount;
-            this.currentEnemyCoount = _enemyCount;
+            this.currentEnemyCount = _enemyCount;
             this.finished = false;
+            this.setFinished = _setFinished;
             if (_enemyCount <= 0) {
-                this.finished = true;
+                if (this.setFinished) {
+                    this.finished = true;
+                }
             }
         }
 
         public onEnemyDeath() {
-            this.currentEnemyCoount--;
-            if (this.currentEnemyCoount <= 0) {
-                this.finished = true;
+            this.currentEnemyCount--;
+            if (this.currentEnemyCount <= 0) {
+                if (this.setFinished) {
+                    this.finished = true;
+                }
             }
         }
     }
@@ -54,7 +61,7 @@ namespace Generation {
             super("room");
             this.tag = Tag.TAG.ROOM;
             this.coordinates = _coordiantes;
-            this.enemyCountManager = new EnemyCountManager(0);
+            this.enemyCountManager = new EnemyCountManager(0, true);
             if (_roomSize != undefined) {
                 this.roomSize = _roomSize;
             }
@@ -150,16 +157,19 @@ namespace Generation {
         normalRoomMat: ƒ.Material = new ƒ.Material("normalRoomMat", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
             super(_coordinates, _roomSize, ROOMTYPE.NORMAL);
-            this.enemyCountManager = new EnemyCountManager(25);
+            this.enemyCountManager = new EnemyCountManager(1, true);
 
             this.getComponent(Game.ƒ.ComponentMaterial).material = this.normalRoomMat;
         }
     }
 
     export class BossRoom extends Room {
-        bossRoomMat: ƒ.Material = new ƒ.Material("bossRoomMat", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("black")));
+        private boss: Enemy.Enemy;
+        bossRoomMat: ƒ.Material = new ƒ.Material("bossRoomMat", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("blue")));
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
             super(_coordinates, _roomSize, ROOMTYPE.BOSS);
+
+            this.enemyCountManager = new EnemyCountManager(0, false);
 
             this.exitDoor = new ExitDoor();
             this.addChild(this.exitDoor);
@@ -173,11 +183,31 @@ namespace Generation {
             super.update();
             if (this.enemyCountManager.finished == true) {
                 this.exitDoor.activate(true);
+                this.exitDoor.setCollider();
             }
         }
 
+        public done(): void {
+            this.enemyCountManager.finished = true;
+            // this.boss = null;
+        }
+
         public onAddToGraph(): void {
-            this.exitDoor.setCollider();
+            this.boss = this.getRandomBoss();
+            if (this.boss != undefined) {
+                Game.graph.addChild(this.boss);
+                Networking.spawnEnemy(Enemy.getEnemyClass(this.boss), this.boss, this.boss.netId);
+            }
+        }
+
+        private getRandomBoss(): Enemy.Enemy {
+            let random = Math.round(Math.random());
+            if (random <= 0) {
+                return new Enemy.Summonor(Entity.ID.SUMMONOR, this.mtxWorld.translation.toVector2());
+            }
+            else {
+                return new Enemy.BigBoom(Entity.ID.BIGBOOM, this.mtxWorld.translation.toVector2());
+            }
         }
     }
 
@@ -337,7 +367,6 @@ namespace Generation {
 
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
             super(_coordinates, _roomSize, ROOMTYPE.CHALLENGE);
-            this.enemyCountManager = new EnemyCountManager(10);
             this.getComponent(Game.ƒ.ComponentMaterial).material = this.challengeRoomMat;
             this.challenge = this.randomChallenge();
         }
@@ -380,6 +409,8 @@ namespace Generation {
             // if (this.enemyCountManager.finished) {
             //     return;
             // }
+            this.enemyCountManager = new EnemyCountManager(10, true);
+
             Game.avatar1.weapon = new Weapons.ThorsHammer(1, Bullets.BULLETTYPE.THORSHAMMER, 1, Game.avatar1.netId);
             Game.avatar2.weapon = new Weapons.ThorsHammer(1, Bullets.BULLETTYPE.THORSHAMMER, 1, Game.avatar2.netId);
 
@@ -542,9 +573,9 @@ namespace Generation {
     export class ExitDoor extends Door {
 
         public changeRoom() {
+            Game.newGamePlus++;
             Generation.procedualRoomGeneration();
         }
-
     }
 
     export class Obsitcal extends ƒ.Node {

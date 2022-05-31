@@ -27,10 +27,10 @@ namespace Entity {
 
         constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _armor: number, _cooldownReduction: number, _accuracy: number) {
             this.scale = _scale;
-            this.armor = _armor;
-            this.healthPoints = _healthPoints;
+            this.armor = this.newGameFactor(_armor);
+            this.healthPoints = this.newGameFactor(_healthPoints);
             this.maxHealthPoints = this.healthPoints;
-            this.attackPoints = _attackPoints;
+            this.attackPoints = this.newGameFactor(_attackPoints);
             this.speed = _speed;
             this.knockbackForce = _knockbackForce
             this.coolDownReduction = _cooldownReduction;
@@ -43,6 +43,14 @@ namespace Entity {
             this.attackPoints = Math.round(this.attackPoints * this.scale);
             this.speed = Math.fround(this.speed / this.scale);
             this.knockbackForce = this.knockbackForce * (100 + (10 * this.scale)) / 100;
+        }
+
+        private newGameFactor(_value: number): number {
+            let amount = 1.5;
+            for (let i = 0; i < Game.newGamePlus; i++) {
+                _value *= amount;
+            }
+            return _value;
         }
     }
 }

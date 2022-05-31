@@ -193,7 +193,6 @@ namespace Enemy {
         private walkAI = () => {
             this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
             let distance = this.target.toVector3().getDistance(this.mtxLocal.translation);
-            console.log(distance);
             if (Math.abs(distance - this.circleRadius) <= this.circleTolerance) {
                 this.walkCircle();
             }
@@ -272,6 +271,12 @@ namespace Enemy {
 
         private startIdling = () => {
             this.recover.startCoolDown();
+        }
+
+        public die(): void {
+            super.die();
+            this.stamina = null;
+            this.recover = null;
         }
 
         private idle = () => {
@@ -499,8 +504,31 @@ namespace Enemy {
                 this.transit(ENEMYBEHAVIOUR.DASH);
             }
         }
-
-
     }
 
+    export function getEnemyClass(_enemy: Enemy.Enemy): ENEMYCLASS {
+        switch (true) {
+            case _enemy instanceof EnemyDumb:
+                return ENEMYCLASS.ENEMYDUMB;
+            case _enemy instanceof EnemyCircle:
+                return ENEMYCLASS.ENEMYCIRCLE;
+            case _enemy instanceof BigBoom:
+                return ENEMYCLASS.BIGBOOM;
+            case _enemy instanceof SummonorAdds:
+                return ENEMYCLASS.SUMMONORADDS;
+            case _enemy instanceof Summonor:
+                return ENEMYCLASS.SUMMONOR;
+            case _enemy instanceof EnemyDash:
+                return ENEMYCLASS.ENEMYDASH;
+            case _enemy instanceof EnemyPatrol:
+                return ENEMYCLASS.ENEMYPATROL;
+            case _enemy instanceof EnemyShoot:
+                return ENEMYCLASS.ENEMYSHOOT;
+            case _enemy instanceof EnemySmash:
+                return ENEMYCLASS.ENEMYSMASH;
+            default:
+                return null;
+        }
+
+    }
 }

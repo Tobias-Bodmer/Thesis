@@ -22,6 +22,7 @@ namespace EnemySpawner {
         }
     }
 
+    //TODO: make fresh
     function getRandomEnemyId(): number {
         let random = Math.round(Math.random() * Object.keys(Entity.ID).length / 2);
         if (random <= 2) {

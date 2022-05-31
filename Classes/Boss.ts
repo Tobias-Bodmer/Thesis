@@ -3,7 +3,7 @@ namespace Enemy {
     export enum BIGBOOMBEHAVIOUR {
         IDLE, WALK, SMASH, STOMP
     }
-    export class BigBoom extends EnemyDumb {
+    export class BigBoom extends Enemy {
         damageTaken: number = 0;
 
         normalPhaseCd: Ability.Cooldown = new Ability.Cooldown(20 * 60);
@@ -44,7 +44,14 @@ namespace Enemy {
             this.isAggressive = true;
         }
 
+        public die(): void {
+            Networking.popID(this.netId);
+            Game.graph.removeChild(this);
 
+            if (Game.currentRoom.roomType == Generation.ROOMTYPE.BOSS) {
+                (<Generation.BossRoom>Game.currentRoom).done();
+            }
+        }
 
         private intro = (): void => {
             //TODO: Intro animation here and when it is done then fight...
@@ -204,7 +211,7 @@ namespace Enemy {
     }
 
 
-    export class Summonor extends EnemyShoot {
+    export class Summonor extends Enemy {
         damageTaken: number = 0;
 
         attackPhaseCd: Ability.Cooldown = new Ability.Cooldown(580);
@@ -262,9 +269,21 @@ namespace Enemy {
         }
 
         public getDamage(_value: number): void {
+            let hpBefore = this.attributes.healthPoints;
             super.getDamage(_value);
             if (this.attributes.hitable) {
-                this.damageTaken += _value;
+                if (this.attributes.hitable) {
+                    this.damageTaken += hpBefore - this.attributes.healthPoints;
+                }
+            }
+        }
+
+        public die(): void {
+            Networking.popID(this.netId);
+            Game.graph.removeChild(this);
+
+            if (Game.currentRoom.roomType == Generation.ROOMTYPE.BOSS) {
+                (<Generation.BossRoom>Game.currentRoom).done();
             }
         }
 

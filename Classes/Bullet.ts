@@ -226,6 +226,10 @@ namespace Bullets {
 
         public collisionDetection() {
             let colliders: ƒ.Node[] = [];
+            if (this.owner == undefined) {
+                this.despawn();
+            }
+
             if (this.owner.tag == Tag.TAG.PLAYER) {
                 colliders = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY);
                 colliders.forEach((_elem) => {
@@ -288,8 +292,8 @@ namespace Bullets {
 
             this.flyDirection = ƒ.Vector3.Z();
             this.flyDirection.scale(-1);
-            this.shadow = new Entity.Shadow(this);
-
+            this.shadow = new Entity.ShadowRound(this);
+            this.shadow.mtxLocal.scaling = this.mtxLocal.scaling;
             this.mtxLocal.translateZ(this.generateZIndex());
         }
 

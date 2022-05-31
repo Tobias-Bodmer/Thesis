@@ -30,6 +30,8 @@ namespace Game {
 
     viewport.initialize("Viewport", graph, cmpCamera, canvas);
 
+    export let newGamePlus: number = 0;
+
     export let avatar1: Player.Player;
     export let avatar2: Player.Player;
 
@@ -170,7 +172,7 @@ namespace Game {
             waitOnConnection();
             async function waitOnConnection() {
                 setClient();
-                if (Networking.clients.filter(elem => elem.ready == true).length >= 2 && Networking.client.idHost != undefined) {
+                if (Networking.clients.filter(elem => elem.ready == true).length >= 2 && Networking.client.idHost != undefined ) {
                     if (Networking.client.id == Networking.client.idHost) {
                         document.getElementById("IMHOST").style.visibility = "visible";
                     }
@@ -381,6 +383,9 @@ namespace Game {
         await UI.bleedingParticle.load("./Resources/Image/Particles/bleeding.png");
         await UI.slowParticle.load("./Resources/Image/Particles/slow.png");
         await UI.immuneParticle.load("./Resources/Image/Particles/immune.png");
+        await UI.exhaustedParticle.load("./Resources/Image/Particles/exhausted.png");
+        await UI.furiousParticle.load("./Resources/Image/Particles/furious.png");
+
 
         await UI.commonParticle.load("./Resources/Image/Particles/Rarity/common.png");
         await UI.rareParticle.load("./Resources/Image/Particles/Rarity/rare.png");
@@ -389,6 +394,8 @@ namespace Game {
 
 
         await Entity.txtShadow.load("./Resources/Image/Particles/shadow.png");
+        await Entity.txtShadowRound.load("./Resources/Image/Particles/roundShadow.png");
+
 
         //Minimap
         await UI.normalRoom.load("./Resources/Image/Minimap/normal.png");

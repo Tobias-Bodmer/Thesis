@@ -9,9 +9,6 @@ namespace Generation {
     export const compareSouth: Game.ƒ.Vector2 = new ƒ.Vector2(0, -1);
     export const compareWest: Game.ƒ.Vector2 = new ƒ.Vector2(-1, 0);
 
-    //spawn chances
-    let challengeRoomSpawnChance: number = 30;
-
     export function procedualRoomGeneration() {
         rooms = [];
         generationFailed = false;
@@ -25,9 +22,8 @@ namespace Generation {
         rooms.forEach(room => { console.log(room.mtxLocal.translation.clone.toString()) });
         moveRoomToWorldCoords(rooms[0]);
 
-
         setExits();
-        addRoomToGraph(rooms[0]);
+        startLevel();
         Game.setMiniMap();
     }
     /**
@@ -255,6 +251,17 @@ namespace Generation {
                 Game.avatar2.cmpTransform.mtxLocal.translation = newPosition.toVector3();
             }
         }
+    }
+
+    function startLevel() {
+        let newPosition: Game.ƒ.Vector2 = new Game.ƒ.Vector2(0, 0);
+
+        if (Game.avatar2 != undefined && Networking.client.id == Networking.client.idHost) {
+            Game.avatar1.mtxLocal.translation = newPosition.toVector3();
+            Game.avatar2.mtxLocal.translation = newPosition.toVector3();
+        }
+
+        addRoomToGraph(rooms[0]);
     }
     /**
      * removes erything unreliable from the grpah and adds the new room to the graph , sending it to the client & spawns enemies if existing in room
