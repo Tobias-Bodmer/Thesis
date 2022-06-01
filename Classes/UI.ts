@@ -2,6 +2,7 @@ namespace UI {
     //let divUI: HTMLDivElement = <HTMLDivElement>document.getElementById("UI");
     let player1UI: HTMLDivElement = <HTMLDivElement>document.getElementById("Player1");
     let player2UI: HTMLDivElement = <HTMLDivElement>document.getElementById("Player2");
+    let bossUI: HTMLDivElement = <HTMLDivElement>document.getElementById("Boss");
 
     export function updateUI() {
         //Avatar1 UI
@@ -17,6 +18,15 @@ namespace UI {
         //InventoryUI
         updateInvUI(Game.avatar2.items, player2UI);
 
+        //BossUI
+        if (Game.currentRoom.roomType == Generation.ROOMTYPE.BOSS && (<Generation.BossRoom>Game.currentRoom).boss != undefined && (<Generation.BossRoom>Game.currentRoom).boss.attributes.healthPoints > 0) {
+            let boss: Enemy.Enemy = (<Generation.BossRoom>Game.currentRoom).boss;
+            bossUI.style.visibility = "visible";
+            (<HTMLDivElement>bossUI.querySelector("#Name")).innerHTML = boss.name;
+            (<HTMLDivElement>bossUI.querySelector("#HP")).style.width = (boss.attributes.healthPoints / boss.attributes.maxHealthPoints * 100) + "%";
+        } else {
+            bossUI.style.visibility = "hidden";
+        }
 
         function updateInvUI(_inv: Items.Item[], _ui: HTMLElement) {
             _ui.querySelector("#Inventory").querySelectorAll("img").forEach((imgElement) => {

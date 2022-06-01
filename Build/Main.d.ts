@@ -1168,7 +1168,7 @@ declare namespace Generation {
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
     }
     export class BossRoom extends Room {
-        private boss;
+        boss: Enemy.Enemy;
         bossRoomMat: ƒ.Material;
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
         update(): void;

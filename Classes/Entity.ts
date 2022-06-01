@@ -304,21 +304,23 @@ namespace Entity {
     export function getNameById(_id: Entity.ID): string {
         switch (_id) {
             case ID.RANGED:
-                return "ranged";
+                return "Ranged";
             case ID.MELEE:
-                return "tank";
+                return "Tank";
             case ID.BAT:
-                return "bat";
+                return "Bat";
             case ID.REDTICK:
-                return "redTick";
+                return "RedTick";
             case ID.SMALLTICK:
-                return "smallTick";
+                return "SmallTick";
             case ID.SKELETON:
-                return "skeleton";
+                return "Skeleton";
             case ID.OGER:
-                return "oger";
-            case ID.SKELETON:
-                return "summonor";
+                return "Oger";
+            case ID.SUMMONOR:
+                return "Summonor";
+            case ID.BIGBOOM:
+                return "Big Boom";
         }
         return null;
     }

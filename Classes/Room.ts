@@ -164,7 +164,7 @@ namespace Generation {
     }
 
     export class BossRoom extends Room {
-        private boss: Enemy.Enemy;
+        boss: Enemy.Enemy;
         bossRoomMat: ƒ.Material = new ƒ.Material("bossRoomMat", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("blue")));
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
             super(_coordinates, _roomSize, ROOMTYPE.BOSS);
@@ -189,7 +189,6 @@ namespace Generation {
 
         public done(): void {
             this.enemyCountManager.finished = true;
-            // this.boss = null;
         }
 
         public onAddToGraph(): void {

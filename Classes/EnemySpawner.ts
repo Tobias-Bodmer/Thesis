@@ -38,7 +38,7 @@ namespace EnemySpawner {
         if (Game.currentRoom.enemyCountManager.finished) {
             return;
         }
-        
+
         let enemy: Enemy.Enemy;
         switch (_enemyClass) {
             case Enemy.ENEMYCLASS.ENEMYDASH:
@@ -70,6 +70,14 @@ namespace EnemySpawner {
         if (enemy != null) {
             Game.graph.addChild(enemy);
             Networking.spawnEnemy(_enemyClass, enemy, enemy.netId);
+
+            if (Game.currentRoom.roomType == Generation.ROOMTYPE.BOSS && (<Generation.BossRoom>Game.currentRoom).boss == undefined) {
+                if (_enemyClass == Enemy.ENEMYCLASS.BIGBOOM || _enemyClass == Enemy.ENEMYCLASS.SUMMONOR) {
+                    console.log((<Generation.BossRoom>Game.currentRoom).boss);
+                    (<Generation.BossRoom>Game.currentRoom).boss = enemy;
+                    console.log((<Generation.BossRoom>Game.currentRoom).boss);
+                }
+            }
         }
     }
 
