@@ -13,7 +13,7 @@ namespace Enemy {
     }
 
     export enum ENEMYBEHAVIOUR {
-        IDLE, WALK, SUMMON, ATTACK, TELEPORT, SHOOT360, SMASH, STOMP, DASH
+        IDLE, WALK, SUMMON, ATTACK, TELEPORT, SHOOT360, SHOOT, SMASH, STOMP, DASH
     }
 
     import ƒAid = FudgeAid;
@@ -430,56 +430,91 @@ namespace Enemy {
     }
 
     export class EnemyShoot extends Enemy {
-        viewRadius: number = 3;
-        protected flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 4, 1, 0, 0);
+        distanceToPlayer: number = 4 * 4;
+        protected flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 4, 0, 1, 1);
+        private distance: number;
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _position, _netId);
-
-            this.weapon = new Weapons.RangedWeapon(60, 1, Bullets.BULLETTYPE.STANDARD, 2, this.netId, Weapons.AIM.NORMAL);
+            this.weapon = new Weapons.RangedWeapon(60, 1, Bullets.BULLETTYPE.STONE, 2, this.netId, Weapons.AIM.NORMAL);
+            this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.WALK, this.flee);
+            this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.IDLE, this.idle);
+            this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.SHOOT, this.shoot);
+            this.instructions = this.stateMachineInstructions;
+            this.stateCurrent = ENEMYBEHAVIOUR.IDLE;
         }
 
-        behaviour(): void {
-            this.target = Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2();
-            let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
+        public update(): void {
+            this.target = Calculation.getCloserAvatarPosition(this.cmpTransform.mtxLocal.translation).toVector2();
+            this.distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitudeSquared;
+            this.flocking.update();
+            super.update();
+        }
 
-            if (distance < 5) {
-                this.currentBehaviour = Entity.BEHAVIOUR.FLEE;
-                this.isAggressive = true;
-            } else if (distance < 9 && this.isAggressive) {
-                this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
-            } else {
-                this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
+        private flee = () => {
+            this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
+            this.moveDirection = this.flocking.getMoveVector().toVector3();
+
+            // if (!this.weapon.getCoolDown.hasCoolDown) {
+            //     this.transit(ENEMYBEHAVIOUR.SHOOT);
+            // }
+            if (this.distance >= this.distanceToPlayer) {
+                this.transit(ENEMYBEHAVIOUR.IDLE);
             }
         }
 
-        moveBehaviour(): void {
-            this.behaviour();
+        private shoot = () => {
+            this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
+            let direction = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation);
 
-            switch (this.currentBehaviour) {
-                case Entity.BEHAVIOUR.FOLLOW:
-                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
-                    this.moveDirection = this.moveSimple(this.target).toVector3();
-                    break;
-                case Entity.BEHAVIOUR.IDLE:
-                    this.moveDirection = ƒ.Vector3.ZERO();
-                    this.shoot();
-                    break;
-                case Entity.BEHAVIOUR.FLEE:
-                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
-                    this.moveDirection = this.moveAway(this.target).toVector3();
-                    break;
+            this.weapon.shoot(direction, true);
+            this.transit(ENEMYBEHAVIOUR.IDLE);
+        }
+
+        private idle = () => {
+            this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
+            this.moveDirection = Game.ƒ.Vector3.ZERO();
+            if (this.distance < this.distanceToPlayer) {
+                this.transit(ENEMYBEHAVIOUR.WALK);
+            }
+
+            if (!this.weapon.getCoolDown.hasCoolDown) {
+                this.transit(ENEMYBEHAVIOUR.SHOOT);
             }
         }
 
-        public shoot(_netId?: number) {
-            this.target = Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2();
-            let _direction = ƒ.Vector3.DIFFERENCE(this.target.toVector3(0), this.mtxLocal.translation);
 
-            if (_direction.magnitude < 3 || this.isAggressive) {
-                this.weapon.shoot(_direction, true, _netId);
-            }
-        }
+        // behaviour(): void {
+        //     this.target = Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2();
+
+        //     if (distance < 5) {
+        //         this.currentBehaviour = Entity.BEHAVIOUR.FLEE;
+        //         this.isAggressive = true;
+        //     } else if (distance < 9 && this.isAggressive) {
+        //         this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
+        //     } else {
+        //         this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
+        //     }
+        // }
+
+        // moveBehaviour(): void {
+        //     this.behaviour();
+
+        //     switch (this.currentBehaviour) {
+        //         case Entity.BEHAVIOUR.FOLLOW:
+        //             this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
+        //             this.moveDirection = this.moveSimple(this.target).toVector3();
+        //             break;
+        //         case Entity.BEHAVIOUR.IDLE:
+        //             this.moveDirection = ƒ.Vector3.ZERO();
+        //             this.shoot();
+        //             break;
+        //         case Entity.BEHAVIOUR.FLEE:
+        //             this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
+        //             this.moveDirection = this.moveAway(this.target).toVector3();
+        //             break;
+        //     }
+        // }
     }
 
     export class SummonorAdds extends EnemyDash {
