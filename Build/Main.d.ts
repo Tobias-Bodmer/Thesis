@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -188,9 +188,10 @@ declare namespace Enemy {
         ATTACK = 3,
         TELEPORT = 4,
         SHOOT360 = 5,
-        SMASH = 6,
-        STOMP = 7,
-        DASH = 8
+        SHOOT = 6,
+        SMASH = 7,
+        STOMP = 8,
+        DASH = 9
     }
     import ƒAid = FudgeAid;
     abstract class Enemy extends Entity.Entity implements Interfaces.IKnockbackable, Game.ƒAid.StateMachine<ENEMYBEHAVIOUR> {
@@ -275,12 +276,14 @@ declare namespace Enemy {
         patrol(): void;
     }
     class EnemyShoot extends Enemy {
-        viewRadius: number;
+        distanceToPlayer: number;
         protected flocking: FlockingBehaviour;
+        private distance;
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
-        behaviour(): void;
-        moveBehaviour(): void;
-        shoot(_netId?: number): void;
+        update(): void;
+        private flee;
+        private shoot;
+        private idle;
     }
     class SummonorAdds extends EnemyDash {
         avatar: Player.Player;

@@ -36,7 +36,7 @@ namespace EnemySpawner {
 
     export function spawnByID(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2, _target?: Player.Player, _netID?: number) {
         if (Game.currentRoom.enemyCountManager.finished) {
-            return;
+            // return;
         }
 
         let enemy: Enemy.Enemy;
@@ -47,8 +47,8 @@ namespace EnemySpawner {
             case Enemy.ENEMYCLASS.ENEMYDUMB:
                 enemy = new Enemy.EnemyDumb(_id, _position, _netID);
                 break;
-            case Enemy.ENEMYCLASS.ENEMYPATROL:
-                enemy = new Enemy.EnemyPatrol(_id, _position, _netID);
+            case Enemy.ENEMYCLASS.ENEMYSHOOT:
+                enemy = new Enemy.EnemyShoot(_id, _position, _netID);
                 break;
             case Enemy.ENEMYCLASS.ENEMYSMASH:
                 enemy = new Enemy.EnemySmash(_id, _position, _netID);
