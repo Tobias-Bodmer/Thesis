@@ -177,6 +177,7 @@ namespace Generation {
             this.exitDoor.mtxLocal.scale(Game.ƒ.Vector3.ONE(0.05));
 
             this.getComponent(Game.ƒ.ComponentMaterial).material = this.bossRoomMat;
+
         }
 
         public update(): void {
@@ -192,10 +193,14 @@ namespace Generation {
         }
 
         public onAddToGraph(): void {
-            this.boss = this.getRandomBoss();
+            if (this.boss == undefined) {
+                this.boss = this.getRandomBoss();
+            }
             if (this.boss != undefined) {
-                Game.graph.addChild(this.boss);
-                Networking.spawnEnemy(Enemy.getEnemyClass(this.boss), this.boss, this.boss.netId);
+                if (!this.enemyCountManager.finished) {
+                    Game.graph.addChild(this.boss);
+                    Networking.spawnEnemy(Enemy.getEnemyClass(this.boss), this.boss, this.boss.netId);
+                }
             }
         }
 
@@ -368,6 +373,8 @@ namespace Generation {
             super(_coordinates, _roomSize, ROOMTYPE.CHALLENGE);
             this.getComponent(Game.ƒ.ComponentMaterial).material = this.challengeRoomMat;
             this.challenge = this.randomChallenge();
+
+            this.enemyCountManager.finished = false;
         }
 
         protected randomChallenge(): CHALLENGE {
@@ -404,10 +411,10 @@ namespace Generation {
         }
 
         protected startThorsHammerChallenge() {
-            //TODO: activate
-            // if (this.enemyCountManager.finished) {
-            //     return;
-            // }
+            if (this.enemyCountManager.finished) {
+                return;
+            }
+
             this.enemyCountManager = new EnemyCountManager(10, true);
 
             Game.avatar1.weapon = new Weapons.ThorsHammer(1, Bullets.BULLETTYPE.THORSHAMMER, 1, Game.avatar1.netId);

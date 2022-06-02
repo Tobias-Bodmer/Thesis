@@ -41,6 +41,7 @@ declare namespace Game {
 }
 declare namespace UI {
     function updateUI(): void;
+    function itemPopUp(_item: Items.Item): void;
     let txtZero: ƒ.TextureImage;
     let txtOne: ƒ.TextureImage;
     let txtTow: ƒ.TextureImage;

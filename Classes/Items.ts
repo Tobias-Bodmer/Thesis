@@ -378,6 +378,7 @@ namespace Items {
             this.tickRate = temp.tickRate;
             this.duration = temp.duration;
             this.imgSrc = temp.imgSrc;
+            this.description = temp.description;
             this.rarity = temp.rarity;
 
             this.addRarityBuff();

@@ -122,6 +122,15 @@ canvas {
     text-align: center;
 }
 
+#UI>#Item-PopUp {
+    position: absolute;
+    top: 640px;
+    left: 470px;
+    width: 400px;
+    height: 140px;
+    text-align: center;
+}
+
 #Optionscreen {
     position: absolute;
     visibility: hidden;

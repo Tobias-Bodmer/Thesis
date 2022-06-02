@@ -44,15 +44,11 @@ namespace Networking {
     export let enemy: Enemy.Enemy;
     export let currentIDs: number[] = [];
 
-    document.getElementById("HostSpawn").addEventListener("click", () => { spawnPlayer() }, true);
-    let IPConnection = <HTMLInputElement>document.getElementById("IPConnection");
-    document.getElementById("Connecting").addEventListener("click", connecting, true);
-
 
     export function connecting() {
         client = new ƒClient();
         client.addEventListener(FudgeNet.EVENT.MESSAGE_RECEIVED, receiveMessage);
-        client.connectToServer(IPConnection.value);
+        client.connectToServer("wss:thesis-fudgeserver.herokuapp.com");
 
         addClientID()
 
@@ -241,10 +237,12 @@ namespace Networking {
 
                         if (message.content.add) {
                             newItem.addItemToEntity(<Player.Player>entity);
-                            // entity.items.push(newItem);
                         } else {
                             newItem.removeItemFromEntity(<Player.Player>entity);
-                            // entity.items.splice(entity.items.indexOf(entity.items.find(item => item.id == newItem.id)), 1);
+                        }
+
+                        if (Game.avatar1 == entity) {
+                            UI.itemPopUp(newItem);
                         }
                     }
 

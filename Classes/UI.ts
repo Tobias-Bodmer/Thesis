@@ -84,6 +84,38 @@ namespace UI {
         }
     }
 
+    let itemUI: HTMLDivElement = <HTMLDivElement>document.getElementById("Item-PopUp");
+    itemUI.addEventListener("click", itemPopUpClick);
+    let itemPopUps: Array<{ name: string, description: string }> = [];
+    export function itemPopUp(_item: Items.Item) {
+        itemPopUps.push({ name: _item.name, description: _item.description });
+
+        if (itemUI.style.visibility == "hidden") {
+            addItemPopUpContent();
+        }
+    }
+
+    function addItemPopUpContent() {
+        itemUI.querySelector("#Name").innerHTML = itemPopUps[0].name;
+        itemUI.querySelector("#Description").innerHTML = itemPopUps[0].description;
+
+        itemUI.style.visibility = "visible";
+
+        itemPopUps.splice(0, 1);
+    }
+
+    function itemPopUpClick(): void {
+        if (itemUI.style.visibility == "visible") {
+            itemUI.style.visibility = "hidden";
+
+            setTimeout(() => {
+                if (itemPopUps.length > 0) {
+                    addItemPopUpContent();
+                }
+            }, 200);
+        }
+    }
+
     export let txtZero: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtOne: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtTow: ƒ.TextureImage = new ƒ.TextureImage();

@@ -48,6 +48,19 @@
                 </div>
             </div>
         </div>
+        <div id="Item-PopUp" style="visibility: hidden;">
+            <div
+                style="z-index: 1; position: absolute; opacity: 50%; margin-left: -10px;margin-top: -5px;width: 110%; height: 110%; background-color: white;border-radius: 5px;">
+            </div>
+            <div style="z-index: 2; position: relative;">
+                <label id="Name">
+
+                </label>
+                <p id="Description">
+
+                </p>
+            </div>
+        </div>
     </div>
 
     <canvas id="Canvas"></canvas>
@@ -104,13 +117,6 @@
         <button id="BackCredit" class="Back">Back</button>
     </div>
 
-    <div id="ConnectionGUI">
-        <button id="HostSpawn">Spawn</button>
-        <label>Server-Adress:</label>
-        <input type="text" id="IPConnection" value="wss:thesis-fudgeserver.herokuapp.com">
-        <button id="Connecting">Connecting</button>
-        <button id="Enemy">Spawn Enemy</button>
-    </div>
     <div id="IMHOST" style="visibility: hidden;">IM HOST</div>
 </body>
 

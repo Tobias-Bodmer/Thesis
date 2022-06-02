@@ -37,13 +37,13 @@ namespace Player {
             let walls = Game.currentRoom.walls;
             walls.forEach((wall) => {
                 if (wall.door != undefined && wall.door.isActive) {
-                    if (this.collider.collidesRect(wall.door.collider)) {
+                    if (wall.door.collider != undefined && this.collider.collidesRect(wall.door.collider)) {
                         (<Generation.Door>wall.door).changeRoom();
                     }
                 }
             });
             if (Game.currentRoom.exitDoor != undefined) {
-                if (this.collider.collidesRect(Game.currentRoom.exitDoor.collider)) {
+                if (Game.currentRoom.exitDoor.collider != undefined && this.collider.collidesRect(Game.currentRoom.exitDoor.collider)) {
                     (Game.currentRoom.exitDoor).changeRoom();
                 }
             }
@@ -122,6 +122,10 @@ namespace Player {
                     }
                     if (item instanceof Items.BuffItem) {
                         console.log(item.name + ": " + item.description + " smth changed to: " + Buff.BUFFID[(<Items.BuffItem>item).buff[0].id].toString());
+                    }
+
+                    if (Game.avatar1 == this) {
+                        UI.itemPopUp(item);
                     }
                 }
             })
