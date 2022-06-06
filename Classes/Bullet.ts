@@ -17,6 +17,9 @@ namespace Bullets {
 
     export let bulletTxt: ƒ.TextureImage = new ƒ.TextureImage();
     export let waterBallTxt: ƒ.TextureImage = new ƒ.TextureImage();
+    export let thorsHammerTxt: ƒ.TextureImage = new ƒ.TextureImage();
+
+
 
     export abstract class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.INetworkable {
         public tag: Tag.TAG = Tag.TAG.BULLET;
@@ -198,6 +201,9 @@ namespace Bullets {
                         break;
                     case waterBallTxt.url:
                         newTxt = waterBallTxt;
+                        break;
+                    case thorsHammerTxt.url:
+                        newTxt = thorsHammerTxt;
                         break;
 
                     default:

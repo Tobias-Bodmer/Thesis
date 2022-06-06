@@ -68,7 +68,7 @@
             "lifetime": 120,
             "knockbackForce": 6,
             "killcount": 100,
-            "texturePath": "./Resources/Image/Projectiles/waterBall.png"
+            "texturePath": "./Resources/Image/Projectiles/thorsHammerUp.png"
         },
         {
             "name": "zipzap",

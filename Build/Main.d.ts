@@ -383,6 +383,7 @@ declare namespace Items {
     let txtHealthUp: ƒ.TextureImage;
     let txtToxicRelationship: ƒ.TextureImage;
     let txtSpeedUp: ƒ.TextureImage;
+    let txtThorsHammer: ƒ.TextureImage;
     abstract class Item extends Game.ƒ.Node {
         tag: Tag.TAG;
         id: ITEMID;
@@ -827,6 +828,7 @@ declare namespace Bullets {
     }
     let bulletTxt: ƒ.TextureImage;
     let waterBallTxt: ƒ.TextureImage;
+    let thorsHammerTxt: ƒ.TextureImage;
     abstract class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.INetworkable {
         tag: Tag.TAG;
         ownerNetId: number;

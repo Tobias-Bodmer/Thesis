@@ -127,7 +127,7 @@ canvas {
     top: 640px;
     left: 470px;
     width: 400px;
-    height: 140px;
+    height: auto;
     text-align: center;
 }
 

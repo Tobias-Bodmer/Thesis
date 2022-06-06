@@ -76,7 +76,7 @@
             "name": "Thors Hammer",
             "description": "He will choose you!",
             "id": 12,
-            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "imgSrc": "./Resources/Image/Items/thorsHammer.png",
             "value": 0,
             "rarity": 3
         },

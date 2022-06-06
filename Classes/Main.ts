@@ -195,7 +195,7 @@ namespace Game {
                         let item2 = new Items.BuffItem(Items.ITEMID.GETWEAKO);
                         let item3 = new Items.BuffItem(Items.ITEMID.GETSTRONKO);
                         let item4 = new Items.InternalItem(Items.ITEMID.AOETEST);
-                        let item5 = new Items.BuffItem(Items.ITEMID.SLOWYSLOW);
+                        let item5 = new Items.InternalItem(Items.ITEMID.THORSHAMMER);
 
                         item2.setPosition(new ƒ.Vector2(-5, 0));
                         item2.spawn();
@@ -373,6 +373,7 @@ namespace Game {
 
         await Bullets.bulletTxt.load("./Resources/Image/Projectiles/arrow.png");
         await Bullets.waterBallTxt.load("./Resources/Image/Projectiles/waterBall.png")
+        await Bullets.thorsHammerTxt.load("./Resources/Image/Projectiles/thorsHammerUp.png")
 
         //UI
         await UI.txtZero.load("./Resources/Image/white0.png");
@@ -445,6 +446,9 @@ namespace Game {
         await Items.txtHealthUp.load("./Resources/Image/Items/healthUp.png");
         await Items.txtSpeedUp.load("./Resources/Image/Items/speedUp.png");
         await Items.txtToxicRelationship.load("./Resources/Image/Items/toxicRelationship.png");
+        await Items.txtThorsHammer.load("./Resources/Image/Items/thorsHammer.png");
+
+
 
 
         AnimationGeneration.generateAnimationObjects();

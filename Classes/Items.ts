@@ -24,6 +24,8 @@ namespace Items {
     export let txtHealthUp: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtToxicRelationship: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtSpeedUp: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtThorsHammer: ƒ.TextureImage = new ƒ.TextureImage();
+
 
 
     export abstract class Item extends Game.ƒ.Node {
@@ -131,6 +133,7 @@ namespace Items {
                     //TODO: add correct texture and change in JSON
                     break;
                 case ITEMID.THORSHAMMER:
+                    this.loadTexture(txtThorsHammer);
                     //TODO: add correct texture and change in JSON
                     break;
             }
