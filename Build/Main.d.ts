@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -38,6 +38,67 @@ declare namespace Game {
     function playing(_sync: boolean, _triggerOption: boolean): void;
     function loadTextures(): Promise<void>;
     function cameraUpdate(): void;
+}
+declare namespace Ability {
+    abstract class Ability {
+        protected ownerNetId: number;
+        get owner(): Entity.Entity;
+        protected cooldown: Cooldown;
+        get getCooldown(): Cooldown;
+        protected abilityCount: number;
+        protected currentabilityCount: number;
+        protected duration: Cooldown;
+        doesAbility: boolean;
+        onDoAbility: () => void;
+        onEndAbility: () => void;
+        constructor(_ownerNetId: number, _duration: number, _abilityCount: number, _cooldownTime: number);
+        eventUpdate: (_event: Event) => void;
+        protected updateAbility(): void;
+        doAbility(): void;
+        hasCooldown(): boolean;
+        protected activateAbility(): void;
+        protected deactivateAbility(): void;
+    }
+    class Block extends Ability {
+        protected activateAbility(): void;
+        protected deactivateAbility(): void;
+    }
+    class Dash extends Ability {
+        speed: number;
+        constructor(_ownerNetId: number, _duration: number, _abilityCount: number, _cooldownTime: number, _speed: number);
+        protected activateAbility(): void;
+        protected deactivateAbility(): void;
+    }
+    class SpawnSummoners extends Ability {
+        private spawnRadius;
+        protected activateAbility(): void;
+    }
+    class circleShoot extends Ability {
+        bulletAmount: number;
+        private bullets;
+        protected activateAbility(): void;
+    }
+    class Stomp extends Ability {
+        bulletAmount: number;
+        private bullets;
+        protected activateAbility(): void;
+        protected generateSpawnPoints(): Game.ƒ.Vector2[];
+    }
+    class Cooldown {
+        hasCoolDown: boolean;
+        private coolDown;
+        get getMaxCoolDown(): number;
+        set setMaxCoolDown(_param: number);
+        private currentCooldown;
+        get getCurrentCooldown(): number;
+        onEndCoolDown: () => void;
+        constructor(_number: number);
+        startCoolDown(): void;
+        private endCoolDown;
+        resetCoolDown(): void;
+        eventUpdate: (_event: Event) => void;
+        updateCoolDown(): void;
+    }
 }
 declare namespace UI {
     function updateUI(): void;
@@ -546,67 +607,6 @@ declare namespace Networking {
         onClientInput(inputPayload: Interfaces.IInputAvatarPayload): void;
     }
     export {};
-}
-declare namespace Ability {
-    abstract class Ability {
-        protected ownerNetId: number;
-        get owner(): Entity.Entity;
-        protected cooldown: Cooldown;
-        get getCooldown(): Cooldown;
-        protected abilityCount: number;
-        protected currentabilityCount: number;
-        protected duration: Cooldown;
-        doesAbility: boolean;
-        onDoAbility: () => void;
-        onEndAbility: () => void;
-        constructor(_ownerNetId: number, _duration: number, _abilityCount: number, _cooldownTime: number);
-        eventUpdate: (_event: Event) => void;
-        protected updateAbility(): void;
-        doAbility(): void;
-        hasCooldown(): boolean;
-        protected activateAbility(): void;
-        protected deactivateAbility(): void;
-    }
-    class Block extends Ability {
-        protected activateAbility(): void;
-        protected deactivateAbility(): void;
-    }
-    class Dash extends Ability {
-        speed: number;
-        constructor(_ownerNetId: number, _duration: number, _abilityCount: number, _cooldownTime: number, _speed: number);
-        protected activateAbility(): void;
-        protected deactivateAbility(): void;
-    }
-    class SpawnSummoners extends Ability {
-        private spawnRadius;
-        protected activateAbility(): void;
-    }
-    class circleShoot extends Ability {
-        bulletAmount: number;
-        private bullets;
-        protected activateAbility(): void;
-    }
-    class Stomp extends Ability {
-        bulletAmount: number;
-        private bullets;
-        protected activateAbility(): void;
-        protected generateSpawnPoints(): Game.ƒ.Vector2[];
-    }
-    class Cooldown {
-        hasCoolDown: boolean;
-        private coolDown;
-        get getMaxCoolDown(): number;
-        set setMaxCoolDown(_param: number);
-        private currentCooldown;
-        get getCurrentCooldown(): number;
-        onEndCoolDown: () => void;
-        constructor(_number: number);
-        startCoolDown(): void;
-        private endCoolDown;
-        resetCoolDown(): void;
-        eventUpdate: (_event: Event) => void;
-        updateCoolDown(): void;
-    }
 }
 declare namespace Ability {
     enum AOETYPE {

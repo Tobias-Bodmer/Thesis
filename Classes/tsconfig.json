@@ -57,6 +57,7 @@
   },
   "include": [
     "Main.ts",
+    "Ability.ts",
     "UI.ts",
     "Tag.ts",
     "Entity.ts",

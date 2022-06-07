@@ -28,6 +28,22 @@ namespace UI {
             bossUI.style.visibility = "hidden";
         }
 
+        //ItemPopUp
+        if (itemUICooldown.hasCoolDown) {
+            // itemUI.style.visibility = "visible";
+            fade(itemUI, true);
+        } else {
+            // itemUI.style.visibility = "hidden";
+            fade(itemUI, false);
+            if (+getComputedStyle(itemUI).opacity <= 0) {
+                setTimeout(() => {
+                    if (itemPopUps.length > 0) {
+                        addItemPopUpContent();
+                    }
+                }, 200);
+            }
+        }
+
         function updateInvUI(_inv: Items.Item[], _ui: HTMLElement) {
             _ui.querySelector("#Inventory").querySelectorAll("img").forEach((imgElement) => {
                 let remove = true;
@@ -85,7 +101,7 @@ namespace UI {
     }
 
     let itemUI: HTMLDivElement = <HTMLDivElement>document.getElementById("Item-PopUp");
-    itemUI.addEventListener("click", itemPopUpClick);
+    let itemUICooldown: Ability.Cooldown = new Ability.Cooldown(120);
     let itemPopUps: Array<{ name: string, description: string }> = [];
     export function itemPopUp(_item: Items.Item) {
         itemPopUps.push({ name: _item.name, description: _item.description });
@@ -99,20 +115,25 @@ namespace UI {
         itemUI.querySelector("#Name").innerHTML = itemPopUps[0].name;
         itemUI.querySelector("#Description").innerHTML = itemPopUps[0].description;
 
-        itemUI.style.visibility = "visible";
-
         itemPopUps.splice(0, 1);
+
+        itemUICooldown.startCoolDown();
     }
 
-    function itemPopUpClick(): void {
-        if (itemUI.style.visibility == "visible") {
-            itemUI.style.visibility = "hidden";
-
-            setTimeout(() => {
-                if (itemPopUps.length > 0) {
-                    addItemPopUpContent();
+    function fade(_element: HTMLElement, _in: boolean) {
+        if (_element) {
+            if (_in) {
+                if (+_element.style.opacity <= 0) {
+                    _element.style.visibility = "visible";
                 }
-            }, 200);
+                _element.style.opacity = (+_element.style.opacity + 0.1).toString();
+            } else {
+                if (+_element.style.opacity <= 0) {
+                    _element.style.visibility = "hidden";
+                    return;
+                }
+                _element.style.opacity = (+_element.style.opacity - 0.1).toString();
+            }
         }
     }
 
