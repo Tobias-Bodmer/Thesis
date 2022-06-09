@@ -195,8 +195,8 @@ namespace Game {
                     if (Networking.client.id == Networking.client.idHost) {
                         let item2 = new Items.BuffItem(Items.ITEMID.GETWEAKO);
                         let item3 = new Items.BuffItem(Items.ITEMID.GETSTRONKO);
-                        let item4 = new Items.InternalItem(Items.ITEMID.AOETEST);
-                        let item5 = new Items.InternalItem(Items.ITEMID.THORSHAMMER);
+                        let item4 = new Items.InternalItem(Items.ITEMID.SCALEDOWN);
+                        let item5 = new Items.InternalItem(Items.ITEMID.SCALEUP);
 
                         item2.setPosition(new ƒ.Vector2(-5, 0));
                         item2.spawn();
@@ -421,8 +421,8 @@ namespace Game {
         //AVATAR
         await AnimationGeneration.txtRangedIdle.load("./Resources/Image/Player/rangedIdle.png");
         await AnimationGeneration.txtRangedWalk.load("./Resources/Image/Player/rangedWalk.png");
-
-
+        await AnimationGeneration.txtRangedIdleLeft.load("./Resources/Image/Player/rangedIdle_left.png");
+        await AnimationGeneration.txtRangedWalkLeft.load("./Resources/Image/Player/rangedWalk_left.png");
 
         //ENEMY
         await AnimationGeneration.txtBatIdle.load("./Resources/Image/Enemies/bat/batIdle.png");
@@ -443,8 +443,6 @@ namespace Game {
         await AnimationGeneration.txtSummonerIdle.load("./Resources/Image/Enemies/summoner/summonerIdle.png");
         await AnimationGeneration.txtSummonerSummon.load("./Resources/Image/Enemies/summoner/summonerSmash.png");
         await AnimationGeneration.txtSummonerTeleport.load("./Resources/Image/Enemies/summoner/summonerTeleport.png");
-
-
 
 
         //Items

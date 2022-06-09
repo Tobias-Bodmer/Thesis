@@ -245,6 +245,7 @@ namespace Bullets {
             let colliders: ƒ.Node[] = [];
             if (this.owner == undefined) {
                 this.despawn();
+                return;
             }
 
             if (this.owner.tag == Tag.TAG.PLAYER) {

@@ -254,6 +254,14 @@ namespace Entity {
                             this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name]);
                             this.currentAnimationState = ANIMATIONSTATES.WALK;
                             break;
+                        case ANIMATIONSTATES.IDLELEFT:
+                            this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name]);
+                            this.currentAnimationState = ANIMATIONSTATES.IDLELEFT;
+                            break;
+                        case ANIMATIONSTATES.WALKLEFT:
+                            this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name]);
+                            this.currentAnimationState = ANIMATIONSTATES.WALKLEFT;
+                            break;
                         case ANIMATIONSTATES.SUMMON:
                             this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations[name]);
                             this.currentAnimationState = ANIMATIONSTATES.SUMMON;
@@ -281,7 +289,7 @@ namespace Entity {
 
     }
     export enum ANIMATIONSTATES {
-        IDLE, WALK, SUMMON, ATTACK, TELEPORT
+        IDLE, IDLELEFT, WALK, WALKLEFT, SUMMON, ATTACK, TELEPORT
     }
 
     export enum BEHAVIOUR {

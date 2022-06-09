@@ -205,10 +205,12 @@ declare namespace Entity {
     }
     enum ANIMATIONSTATES {
         IDLE = 0,
-        WALK = 1,
-        SUMMON = 2,
-        ATTACK = 3,
-        TELEPORT = 4
+        IDLELEFT = 1,
+        WALK = 2,
+        WALKLEFT = 3,
+        SUMMON = 4,
+        ATTACK = 5,
+        TELEPORT = 6
     }
     enum BEHAVIOUR {
         IDLE = 0,
@@ -529,6 +531,8 @@ declare namespace AnimationGeneration {
     export let txtSummonerTeleport: ƒ.TextureImage;
     export let txtRangedIdle: ƒ.TextureImage;
     export let txtRangedWalk: ƒ.TextureImage;
+    export let txtRangedIdleLeft: ƒ.TextureImage;
+    export let txtRangedWalkLeft: ƒ.TextureImage;
     export import ƒAid = FudgeAid;
     export class AnimationContainer {
         id: Entity.ID;
@@ -1100,7 +1104,7 @@ declare namespace Player {
         currentabilityCount: number;
         protected spriteScaleFactor: number;
         constructor(_id: Entity.ID, _netId?: number);
-        updateScale(): void;
+        updateScale(_newScale: number): void;
         move(_direction: ƒ.Vector3): void;
         openDoor(): void;
         protected scaleMoveVector(_direction: Game.ƒ.Vector3): void;
