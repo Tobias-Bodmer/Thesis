@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -520,6 +520,8 @@ declare namespace AnimationGeneration {
     export let txtSummonerIdle: ƒ.TextureImage;
     export let txtSummonerSummon: ƒ.TextureImage;
     export let txtSummonerTeleport: ƒ.TextureImage;
+    export let txtRangedIdle: ƒ.TextureImage;
+    export let txtRangedWalk: ƒ.TextureImage;
     export import ƒAid = FudgeAid;
     export class AnimationContainer {
         id: Entity.ID;
