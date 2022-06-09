@@ -19,6 +19,9 @@ namespace AnimationGeneration {
     export let txtSummonerSummon: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtSummonerTeleport: ƒ.TextureImage = new ƒ.TextureImage();
 
+    export let txtRangedIdle: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtRangedWalk: ƒ.TextureImage = new ƒ.TextureImage();
+
 
     export import ƒAid = FudgeAid;
 
@@ -65,6 +68,10 @@ namespace AnimationGeneration {
                     this.addAnimation(summonerSummon.generatedSpriteAnimation, summonerSummon.animationScale, summonerSummon.frameRate);
                     this.addAnimation(summonerTeleport.generatedSpriteAnimation, summonerTeleport.animationScale, summonerTeleport.frameRate);
                     break;
+                case Entity.ID.RANGED:
+                    this.addAnimation(rangedIdle.generatedSpriteAnimation, rangedIdle.animationScale, rangedIdle.frameRate);
+                    this.addAnimation(rangedWalk.generatedSpriteAnimation, rangedWalk.animationScale, rangedWalk.frameRate);
+                    break;
 
             }
         }
@@ -92,6 +99,9 @@ namespace AnimationGeneration {
     }
 
     //#region spriteSheet
+    let rangedIdle: MyAnimationClass;
+    let rangedWalk: MyAnimationClass;
+
     let batIdle: MyAnimationClass;
 
     let redTickIdle: MyAnimationClass;
@@ -115,6 +125,7 @@ namespace AnimationGeneration {
 
 
     //#region AnimationContainer
+    let rangedAnimation: AnimationContainer;
     let batAnimation: AnimationContainer;
     let redTickAnimation: AnimationContainer;
     let smallTickAnimation: AnimationContainer;
@@ -124,6 +135,10 @@ namespace AnimationGeneration {
     //#endregion
 
     export function generateAnimationObjects() {
+
+        rangedIdle = new MyAnimationClass(Entity.ID.RANGED, "idle", txtRangedIdle, 5, 12);
+        rangedWalk = new MyAnimationClass(Entity.ID.RANGED, "walk", txtRangedWalk, 8, 12);
+
 
         batIdle = new MyAnimationClass(Entity.ID.BAT, "idle", txtBatIdle, 4, 12);
 
@@ -146,13 +161,14 @@ namespace AnimationGeneration {
         summonerTeleport = new MyAnimationClass(Entity.ID.SUMMONOR, "teleport", txtSummonerTeleport, 6, 12);
 
 
-
+        rangedAnimation = new AnimationContainer(Entity.ID.RANGED);
         batAnimation = new AnimationContainer(Entity.ID.BAT);
         redTickAnimation = new AnimationContainer(Entity.ID.REDTICK);
         smallTickAnimation = new AnimationContainer(Entity.ID.SMALLTICK);
         skeletonAnimation = new AnimationContainer(Entity.ID.SKELETON);
         ogerAnimation = new AnimationContainer(Entity.ID.OGER);
         summonerAnimation = new AnimationContainer(Entity.ID.SUMMONOR);
+
     }
 
     export function getAnimationById(_id: Entity.ID): AnimationContainer {
@@ -169,6 +185,8 @@ namespace AnimationGeneration {
                 return ogerAnimation;
             case Entity.ID.SUMMONOR:
                 return summonerAnimation;
+            case Entity.ID.RANGED:
+                return rangedAnimation;
             default:
                 return null;
         }

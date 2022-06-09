@@ -293,7 +293,7 @@ namespace Game {
 
     function playerChoice(_e: Event) {
         if ((<HTMLButtonElement>_e.target).id == "Ranged") {
-            avatar1 = new Player.Ranged(Entity.ID.RANGED, new Entity.Attributes(10000, 5, 5, 1, 2, 5, 1, 80));
+            avatar1 = new Player.Ranged(Entity.ID.RANGED, new Entity.Attributes(10000, 5, 5, 2, 2, 5, 1, 80));
         }
         if ((<HTMLButtonElement>_e.target).id == "Melee") {
             avatar1 = new Player.Melee(Entity.ID.MELEE, new Entity.Attributes(10000, 1, 5, 1, 2, 10, 1, 80));
@@ -415,6 +415,11 @@ namespace Game {
         await UI.merchantRoom.load("./Resources/Image/Minimap/merchant.png");
         await UI.treasureRoom.load("./Resources/Image/Minimap/treasure.png");
         await UI.bossRoom.load("./Resources/Image/Minimap/boss.png");
+
+        //AVATAR
+        await AnimationGeneration.txtRangedIdle.load("./Resources/Image/Player/rangedIdle.png");
+        await AnimationGeneration.txtRangedWalk.load("./Resources/Image/Player/rangedWalk.png");
+
 
 
         //ENEMY
