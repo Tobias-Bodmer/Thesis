@@ -334,22 +334,27 @@ namespace Bullets {
     }
 
     export class HomingBullet extends Bullet {
-        target: ƒ.Vector3;
-        rotateSpeed: number = 2;
-        targetDirection: ƒ.Vector3;
+        public target: ƒ.Vector3;
+        private rotateSpeed: number = 5;
 
-        constructor(_bullettype: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _target?: ƒ.Vector3, _netId?: number) {
+        constructor(_bullettype: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _target: ƒ.Vector3, _netId?: number) {
             super(_bullettype, _position, _direction, _ownerId, _netId);
-            this.speed = 20;
-            this.hitPointsScale = 1;
-            this.lifetime = 1 * 60;
-            this.killcount = 1;
+            // this.speed = 20;
+            // this.hitPointsScale = 1;
+            // this.lifetime = 1 * 60;
+            // this.killcount = 1;
             if (_target != null) {
                 this.target = _target;
             } else {
-                this.setTarget(Game.avatar2.netId);
+                // this.setTarget(Game.avatar2.netId);
+                this.getTarget();
             }
-            this.targetDirection = _direction;
+        }
+
+        private getTarget() {
+            if (this.owner instanceof Enemy.Enemy) {
+                this.target = (<Enemy.Enemy>this.owner).target.toVector3();
+            }
         }
 
         public move(_direction: Game.ƒ.Vector3) {

@@ -886,9 +886,9 @@ declare namespace Bullets {
     }
     class HomingBullet extends Bullet {
         target: ƒ.Vector3;
-        rotateSpeed: number;
-        targetDirection: ƒ.Vector3;
-        constructor(_bullettype: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _target?: ƒ.Vector3, _netId?: number);
+        private rotateSpeed;
+        constructor(_bullettype: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _target: ƒ.Vector3, _netId?: number);
+        private getTarget;
         move(_direction: Game.ƒ.Vector3): void;
         setTarget(_netID: number): void;
         private calculateHoming;

@@ -227,7 +227,7 @@ namespace Enemy {
         dashDirection: number = 100;
 
 
-        public weapon: Weapons.Weapon = new Weapons.RangedWeapon(12, 1, Bullets.BULLETTYPE.SUMMONER, 1, this.netId, Weapons.AIM.NORMAL);
+        public weapon: Weapons.Weapon = new Weapons.RangedWeapon(12, 1, Bullets.BULLETTYPE.SUMMONER, 1, this.netId, Weapons.AIM.HOMING);
         private summon: Ability.SpawnSummoners = new Ability.SpawnSummoners(this.netId, 0, 1, 45);
         private dash: Ability.Dash = new Ability.Dash(this.netId, 60, 1, 6 * 60, 4);
         private shoot360: Ability.circleShoot = new Ability.circleShoot(this.netId, 0, 1, 60);

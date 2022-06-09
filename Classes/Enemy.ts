@@ -436,7 +436,7 @@ namespace Enemy {
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _position, _netId);
-            this.weapon = new Weapons.RangedWeapon(60, 1, Bullets.BULLETTYPE.STONE, 1, this.netId, Weapons.AIM.NORMAL);
+            this.weapon = new Weapons.RangedWeapon(60, 1, Bullets.BULLETTYPE.SLOW, 1, this.netId, Weapons.AIM.NORMAL);
             this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.WALK, this.flee);
             this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.IDLE, this.idle);
             this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.SHOOT, this.shoot);
@@ -482,39 +482,6 @@ namespace Enemy {
                 this.transit(ENEMYBEHAVIOUR.SHOOT);
             }
         }
-
-
-        // behaviour(): void {
-        //     this.target = Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2();
-
-        //     if (distance < 5) {
-        //         this.currentBehaviour = Entity.BEHAVIOUR.FLEE;
-        //         this.isAggressive = true;
-        //     } else if (distance < 9 && this.isAggressive) {
-        //         this.currentBehaviour = Entity.BEHAVIOUR.FOLLOW;
-        //     } else {
-        //         this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
-        //     }
-        // }
-
-        // moveBehaviour(): void {
-        //     this.behaviour();
-
-        //     switch (this.currentBehaviour) {
-        //         case Entity.BEHAVIOUR.FOLLOW:
-        //             this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
-        //             this.moveDirection = this.moveSimple(this.target).toVector3();
-        //             break;
-        //         case Entity.BEHAVIOUR.IDLE:
-        //             this.moveDirection = ƒ.Vector3.ZERO();
-        //             this.shoot();
-        //             break;
-        //         case Entity.BEHAVIOUR.FLEE:
-        //             this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
-        //             this.moveDirection = this.moveAway(this.target).toVector3();
-        //             break;
-        //     }
-        // }
     }
 
     export class SummonorAdds extends EnemyDash {
