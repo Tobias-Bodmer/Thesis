@@ -438,8 +438,7 @@ namespace Networking {
                                 entity.attributes.coolDownReduction = message.content.payload.value;
                                 break;
                             case Entity.ATTRIBUTETYPE.SCALE:
-                                entity.attributes.scale = message.content.payload.value;
-                                entity.updateScale();
+                                entity.updateScale(message.content.payload.value);
                                 break;
                         }
                     }

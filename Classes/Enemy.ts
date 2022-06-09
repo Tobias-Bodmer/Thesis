@@ -45,7 +45,7 @@ namespace Enemy {
             }
 
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
-            this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale);
+            this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.getScale, this.attributes.getScale, 1);
             this.offsetColliderX = ref.offsetColliderX;
             this.offsetColliderY = ref.offsetColliderY;
             this.colliderScaleFaktor = ref.colliderScaleFaktor;

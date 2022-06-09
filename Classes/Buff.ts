@@ -258,25 +258,27 @@ namespace Buff {
                     break;
                 case BUFFID.SCALEUP:
                     if (_add) {
-                        this.removedValue = Calculation.addPercentageAmountToValue(_avatar.attributes.scale, this.value) - _avatar.attributes.scale;
-                        _avatar.attributes.scale += this.removedValue;
+                        this.removedValue = Calculation.addPercentageAmountToValue(_avatar.attributes.getScale, this.value) - _avatar.attributes.getScale;
+                        _avatar.updateScale(_avatar.attributes.getScale + this.removedValue);
+
                     }
                     else {
-                        _avatar.attributes.scale -= this.removedValue;
+                        _avatar.updateScale(_avatar.attributes.getScale - this.removedValue);
+
                     }
-                    _avatar.updateScale();
-                    payload = <Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.scale, type: Entity.ATTRIBUTETYPE.SCALE };
+                    payload = <Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.getScale, type: Entity.ATTRIBUTETYPE.SCALE };
                     break;
                 case BUFFID.SCALEDOWN:
                     if (_add) {
-                        this.removedValue = _avatar.attributes.scale - Calculation.subPercentageAmountToValue(_avatar.attributes.scale, this.value);
-                        _avatar.attributes.scale -= this.removedValue;
+                        this.removedValue = _avatar.attributes.getScale - Calculation.subPercentageAmountToValue(_avatar.attributes.getScale, this.value);
+                        _avatar.updateScale(_avatar.attributes.getScale - this.removedValue);
+
                     }
                     else {
-                        _avatar.attributes.scale += this.removedValue;
+                        _avatar.updateScale(_avatar.attributes.getScale + this.removedValue);
+
                     }
-                    _avatar.updateScale();
-                    payload = <Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.scale, type: Entity.ATTRIBUTETYPE.SCALE };
+                    payload = <Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.getScale, type: Entity.ATTRIBUTETYPE.SCALE };
                     break;
                 case BUFFID.FURIOUS:
                     if (_add) {
