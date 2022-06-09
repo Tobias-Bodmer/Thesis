@@ -317,7 +317,7 @@ namespace Items {
                 case ITEMID.SCALEDOWN:
                     if (host) {
                         if (_add) {
-                            this.changedValue = Calculation.subPercentageAmountToValue(_avatar.attributes.getScale, this.value) - _avatar.attributes.getScale;
+                            this.changedValue = _avatar.attributes.getScale - Calculation.subPercentageAmountToValue(_avatar.attributes.getScale, this.value);
                             _avatar.updateScale(_avatar.attributes.getScale - this.changedValue);
 
                         } else {

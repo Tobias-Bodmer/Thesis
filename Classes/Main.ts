@@ -52,6 +52,7 @@ namespace Game {
     export let coolDowns: Ability.Cooldown[] = [];
     //JSON
     export let enemiesJSON: Entity.Entity[];
+    export let avatarsJSON: Entity.Entity[];
     export let internalItemJSON: Items.InternalItem[];
     export let buffItemJSON: Items.BuffItem[];
 
@@ -194,8 +195,8 @@ namespace Game {
                     if (Networking.client.id == Networking.client.idHost) {
                         let item2 = new Items.BuffItem(Items.ITEMID.GETWEAKO);
                         let item3 = new Items.BuffItem(Items.ITEMID.GETSTRONKO);
-                        let item4 = new Items.InternalItem(Items.ITEMID.AOETEST);
-                        let item5 = new Items.InternalItem(Items.ITEMID.THORSHAMMER);
+                        let item4 = new Items.InternalItem(Items.ITEMID.SCALEDOWN);
+                        let item5 = new Items.InternalItem(Items.ITEMID.SCALEUP);
 
                         item2.setPosition(new ƒ.Vector2(-5, 0));
                         item2.spawn();
@@ -293,10 +294,10 @@ namespace Game {
 
     function playerChoice(_e: Event) {
         if ((<HTMLButtonElement>_e.target).id == "Ranged") {
-            avatar1 = new Player.Ranged(Entity.ID.RANGED, new Entity.Attributes(10000, 5, 2.5, 1, 2, 5, 1, 80));
+            avatar1 = new Player.Ranged(Entity.ID.RANGED);
         }
         if ((<HTMLButtonElement>_e.target).id == "Melee") {
-            avatar1 = new Player.Melee(Entity.ID.MELEE, new Entity.Attributes(10000, 1, 5, 1, 1, 10, 1, 80));
+            avatar1 = new Player.Melee(Entity.ID.MELEE);
         }
         document.getElementById("Lobbyscreen").style.visibility = "hidden";
         readySate();
@@ -351,6 +352,7 @@ namespace Game {
     async function loadJSON() {
         const loadEnemy = await (await fetch("./Resources/EnemiesStorage.json")).json();
         enemiesJSON = (<Entity.Entity[]>loadEnemy.enemies);
+        avatarsJSON = (<Entity.Entity[]>loadEnemy.avatars);
 
         const loadItem = await (await fetch("./Resources/ItemStorage.json")).json();
         internalItemJSON = (<Items.InternalItem[]>loadItem.internalItems);
@@ -419,8 +421,8 @@ namespace Game {
         //AVATAR
         await AnimationGeneration.txtRangedIdle.load("./Resources/Image/Player/rangedIdle.png");
         await AnimationGeneration.txtRangedWalk.load("./Resources/Image/Player/rangedWalk.png");
-
-
+        await AnimationGeneration.txtRangedIdleLeft.load("./Resources/Image/Player/rangedIdle_left.png");
+        await AnimationGeneration.txtRangedWalkLeft.load("./Resources/Image/Player/rangedWalk_left.png");
 
         //ENEMY
         await AnimationGeneration.txtBatIdle.load("./Resources/Image/Enemies/bat/batIdle.png");
@@ -441,8 +443,6 @@ namespace Game {
         await AnimationGeneration.txtSummonerIdle.load("./Resources/Image/Enemies/summoner/summonerIdle.png");
         await AnimationGeneration.txtSummonerSummon.load("./Resources/Image/Enemies/summoner/summonerSmash.png");
         await AnimationGeneration.txtSummonerTeleport.load("./Resources/Image/Enemies/summoner/summonerTeleport.png");
-
-
 
 
         //Items

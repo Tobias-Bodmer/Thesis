@@ -4,23 +4,45 @@ namespace Player {
         public client: Networking.ClientPrediction;
         readonly abilityCount: number = 1;
         currentabilityCount: number = this.abilityCount;
+        protected spriteScaleFactor: number = 2;
 
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _netId?: number) {
+        constructor(_id: Entity.ID, _netId?: number) {
             super(_id, _netId);
-            this.attributes = _attributes;
-            this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.getScale, this.attributes.getScale, 1);
+
+            let ref = Game.avatarsJSON.find(avatar => avatar.name == Entity.ID[_id].toLowerCase())
+            console.log(ref);
+            this.attributes = new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, (<any>ref.attributes).scale, ref.attributes.knockbackForce, ref.attributes.armor, ref.attributes.coolDownReduction, ref.attributes.accuracy);
+
+            this.updateScale(this.attributes.getScale);
             this.tag = Tag.TAG.PLAYER;
             this.client = new Networking.ClientPrediction(this.netId);
+        }
+
+        public updateScale(_newScale: number) {
+            this.attributes.updateScaleDependencies(_newScale);
+            this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.getScale * this.spriteScaleFactor, this.attributes.getScale * this.spriteScaleFactor, 1);
+            this.collider.setRadius((this.cmpTransform.mtxLocal.scaling.x / 2) * this.colliderScaleFaktor);
         }
 
         public move(_direction: ƒ.Vector3) {
 
             if (_direction.magnitude > 0) {
                 _direction.normalize();
-                this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
-            }
-            else if (_direction.magnitude == 0) {
-                this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
+                if (_direction.x >= 0) {
+                    this.switchAnimation(Entity.ANIMATIONSTATES.WALK);
+                } else {
+                    this.switchAnimation(Entity.ANIMATIONSTATES.WALKLEFT);
+                }
+            } else if (_direction.magnitude <= 0) {
+                if (this == Game.avatar1) {
+                    console.log(this.currentAnimationState);
+                }
+
+                if (this.currentAnimationState == Entity.ANIMATIONSTATES.WALKLEFT || this.currentAnimationState == Entity.ANIMATIONSTATES.IDLELEFT) {
+                    this.switchAnimation(Entity.ANIMATIONSTATES.IDLELEFT);
+                } else {
+                    this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
+                }
             }
 
             this.setCollider();
@@ -163,6 +185,7 @@ namespace Player {
             this.block.doAbility();
         }
     }
+
     export class Ranged extends Player {
         public weapon = new Weapons.RangedWeapon(25, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId, Weapons.AIM.NORMAL);
         public dash: Ability.Dash = new Ability.Dash(this.netId, 8, 1, 60, 5);

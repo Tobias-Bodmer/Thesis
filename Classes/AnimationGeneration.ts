@@ -21,6 +21,8 @@ namespace AnimationGeneration {
 
     export let txtRangedIdle: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtRangedWalk: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtRangedIdleLeft: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtRangedWalkLeft: ƒ.TextureImage = new ƒ.TextureImage();
 
 
     export import ƒAid = FudgeAid;
@@ -71,6 +73,8 @@ namespace AnimationGeneration {
                 case Entity.ID.RANGED:
                     this.addAnimation(rangedIdle.generatedSpriteAnimation, rangedIdle.animationScale, rangedIdle.frameRate);
                     this.addAnimation(rangedWalk.generatedSpriteAnimation, rangedWalk.animationScale, rangedWalk.frameRate);
+                    this.addAnimation(rangedIdleLeft.generatedSpriteAnimation, rangedIdleLeft.animationScale, rangedIdleLeft.frameRate);
+                    this.addAnimation(rangedWalkLeft.generatedSpriteAnimation, rangedWalkLeft.animationScale, rangedWalkLeft.frameRate);
                     break;
 
             }
@@ -101,6 +105,8 @@ namespace AnimationGeneration {
     //#region spriteSheet
     let rangedIdle: MyAnimationClass;
     let rangedWalk: MyAnimationClass;
+    let rangedIdleLeft: MyAnimationClass;
+    let rangedWalkLeft: MyAnimationClass;
 
     let batIdle: MyAnimationClass;
 
@@ -138,7 +144,8 @@ namespace AnimationGeneration {
 
         rangedIdle = new MyAnimationClass(Entity.ID.RANGED, "idle", txtRangedIdle, 5, 12);
         rangedWalk = new MyAnimationClass(Entity.ID.RANGED, "walk", txtRangedWalk, 8, 12);
-
+        rangedIdleLeft = new MyAnimationClass(Entity.ID.RANGED, "idleleft", txtRangedIdleLeft, 5, 12);
+        rangedWalkLeft = new MyAnimationClass(Entity.ID.RANGED, "walkleft", txtRangedWalkLeft, 8, 12);
 
         batIdle = new MyAnimationClass(Entity.ID.BAT, "idle", txtBatIdle, 4, 12);
 

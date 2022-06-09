@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -27,6 +27,7 @@ declare namespace Game {
     let items: Items.Item[];
     let coolDowns: Ability.Cooldown[];
     let enemiesJSON: Entity.Entity[];
+    let avatarsJSON: Entity.Entity[];
     let internalItemJSON: Items.InternalItem[];
     let buffItemJSON: Items.BuffItem[];
     let damageBuffJSON: Buff.DamageBuff[];
@@ -204,10 +205,12 @@ declare namespace Entity {
     }
     enum ANIMATIONSTATES {
         IDLE = 0,
-        WALK = 1,
-        SUMMON = 2,
-        ATTACK = 3,
-        TELEPORT = 4
+        IDLELEFT = 1,
+        WALK = 2,
+        WALKLEFT = 3,
+        SUMMON = 4,
+        ATTACK = 5,
+        TELEPORT = 6
     }
     enum BEHAVIOUR {
         IDLE = 0,
@@ -528,6 +531,8 @@ declare namespace AnimationGeneration {
     export let txtSummonerTeleport: ƒ.TextureImage;
     export let txtRangedIdle: ƒ.TextureImage;
     export let txtRangedWalk: ƒ.TextureImage;
+    export let txtRangedIdleLeft: ƒ.TextureImage;
+    export let txtRangedWalkLeft: ƒ.TextureImage;
     export import ƒAid = FudgeAid;
     export class AnimationContainer {
         id: Entity.ID;
@@ -855,6 +860,8 @@ declare namespace Bullets {
         type: BULLETTYPE;
         time: number;
         killcount: number;
+        hitted: Entity.Entity[];
+        hittedCd: Ability.Cooldown[];
         texturePath: string;
         lastPosition: ƒ.Vector3;
         countCheckUpdate: number;
@@ -872,6 +879,8 @@ declare namespace Bullets {
         protected loadTexture(): void;
         setBuffToTarget(_target: Entity.Entity): void;
         protected offsetCollider(): void;
+        private addHitted;
+        private resetHitted;
         collisionDetection(): void;
     }
     class NormalBullet extends Bullet {
@@ -1093,7 +1102,9 @@ declare namespace Player {
         client: Networking.ClientPrediction;
         readonly abilityCount: number;
         currentabilityCount: number;
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _netId?: number);
+        protected spriteScaleFactor: number;
+        constructor(_id: Entity.ID, _netId?: number);
+        updateScale(_newScale: number): void;
         move(_direction: ƒ.Vector3): void;
         openDoor(): void;
         protected scaleMoveVector(_direction: Game.ƒ.Vector3): void;

@@ -51,7 +51,7 @@ namespace Weapons {
         public ItemFunctions: Function[] = [];
 
         public shoot(_direction: ƒ.Vector3, _sync: boolean, _bulletNetId?: number): void {
-            
+
             let _position: ƒ.Vector2 = this.owner.mtxLocal.translation.toVector2();
             if (_sync) {
                 if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
@@ -156,6 +156,10 @@ namespace Weapons {
                     enemy.getDamage(this.owner.attributes.attackPoints);
                 }
             })
+
+            if (Networking.client.id != Networking.client.idHost && this.owner == Game.avatar1) {
+                Networking.spawnBullet(null, _direction, null, this.ownerNetId);
+            }
         }
 
         public getType(): WEAPONTYPE {
