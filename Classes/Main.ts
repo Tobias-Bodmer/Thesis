@@ -443,13 +443,17 @@ namespace Game {
         //Items
         await Items.txtIceBucket.load("./Resources/Image/Items/iceBucket.png");
         await Items.txtDmgUp.load("./Resources/Image/Items/damageUp.png");
-        await Items.txtHealthUp.load("./Resources/Image/Items/healthUp.png");
         await Items.txtSpeedUp.load("./Resources/Image/Items/speedUp.png");
-        await Items.txtToxicRelationship.load("./Resources/Image/Items/toxicRelationship.png");
+        await Items.txtProjectilesUp.load("./Resources/Image/Items/projectilesUp.png");
+        await Items.txtHealthUp.load("./Resources/Image/Items/healthUp.png");
+        await Items.txtScaleUp.load("./Resources/Image/Items/scaleUp.png");
+        await Items.txtScaleDown.load("./Resources/Image/Items/scaleDown.png");
+        await Items.txtHomeComing.load("./Resources/Image/Items/homecoming.png");
         await Items.txtThorsHammer.load("./Resources/Image/Items/thorsHammer.png");
-
-
-
+        await Items.txtToxicRelationship.load("./Resources/Image/Items/toxicRelationship.png");
+        await Items.txtGetStronko.load("./Resources/Image/Items/getStronko.png");
+        await Items.txtGetWeako.load("./Resources/Image/Items/getWeako.png");
+        
 
         AnimationGeneration.generateAnimationObjects();
 

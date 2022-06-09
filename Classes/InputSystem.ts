@@ -83,7 +83,6 @@ namespace InputSystem {
             moveVector.x += 1;
         }
 
-        // Game.avatar1.move(moveVector);
         return moveVector;
     }
 

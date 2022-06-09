@@ -441,10 +441,16 @@ declare namespace Items {
     }
     let txtIceBucket: ƒ.TextureImage;
     let txtDmgUp: ƒ.TextureImage;
-    let txtHealthUp: ƒ.TextureImage;
-    let txtToxicRelationship: ƒ.TextureImage;
     let txtSpeedUp: ƒ.TextureImage;
+    let txtProjectilesUp: ƒ.TextureImage;
+    let txtHealthUp: ƒ.TextureImage;
+    let txtScaleUp: ƒ.TextureImage;
+    let txtScaleDown: ƒ.TextureImage;
+    let txtHomeComing: ƒ.TextureImage;
     let txtThorsHammer: ƒ.TextureImage;
+    let txtToxicRelationship: ƒ.TextureImage;
+    let txtGetStronko: ƒ.TextureImage;
+    let txtGetWeako: ƒ.TextureImage;
     abstract class Item extends Game.ƒ.Node {
         tag: Tag.TAG;
         id: ITEMID;

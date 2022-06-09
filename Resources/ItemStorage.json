@@ -20,7 +20,7 @@
             "name": "speedUp",
             "description": "up over and gone!",
             "id": 2,
-            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "imgSrc": "./Resources/Image/Items/speedUp.png",
             "value": 5,
             "rarity": 0
         },
@@ -28,7 +28,7 @@
             "name": "projectilesUp",
             "description": "It's dangerous to go alone, take this.",
             "id": 3,
-            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "imgSrc": "./Resources/Image/Items/projectilesUp.png",
             "value": 1,
             "rarity": 2
         },
@@ -44,7 +44,7 @@
             "name": "scaleUp",
             "description": "bigger means better",
             "id": 5,
-            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "imgSrc": "./Resources/Image/Items/scaleUp.png",
             "value": 13,
             "rarity": 1
         },
@@ -52,7 +52,7 @@
             "name": "scaleDown",
             "description": "small n tiny",
             "id": 6,
-            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "imgSrc": "./Resources/Image/Items/scaleDown.png",
             "value": 13,
             "rarity": 1
         },
@@ -68,7 +68,7 @@
             "name": "HomeComing",
             "description": "harder better faster stronger",
             "id": 8,
-            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "imgSrc": "./Resources/Image/Items/homecoming.png",
             "value": 0,
             "rarity": 3
         },
@@ -132,7 +132,7 @@
             "name": "GetStronko",
             "description": "scalesYouUP",
             "id": 13,
-            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "imgSrc": "./Resources/Image/Items/getStronko.png",
             "value": 25,
             "duration": 180,
             "tickRate": 0,
@@ -142,7 +142,7 @@
             "name": "GetWeako",
             "description": "scalesYouDown",
             "id": 14,
-            "imgSrc": "./Resources/Image/Items/iceBucket.png",
+            "imgSrc": "./Resources/Image/Items/getWeako.png",
             "value": 10,
             "duration": 180,
             "tickRate": 0,

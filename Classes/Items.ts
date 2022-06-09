@@ -21,10 +21,16 @@ namespace Items {
 
     export let txtIceBucket: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtDmgUp: ƒ.TextureImage = new ƒ.TextureImage();
-    export let txtHealthUp: ƒ.TextureImage = new ƒ.TextureImage();
-    export let txtToxicRelationship: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtSpeedUp: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtProjectilesUp: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtHealthUp: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtScaleUp: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtScaleDown: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtHomeComing: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtThorsHammer: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtToxicRelationship: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtGetStronko: ƒ.TextureImage = new ƒ.TextureImage();
+    export let txtGetWeako: ƒ.TextureImage = new ƒ.TextureImage();
 
 
 
@@ -102,29 +108,24 @@ namespace Items {
                     break;
                 case ITEMID.SPEEDUP:
                     this.loadTexture(txtSpeedUp);
-                    //TODO: add correct texture and change in JSON
-
                     break;
                 case ITEMID.PROJECTILESUP:
-                    //TODO: add correct texture and change in JSON
-
+                    this.loadTexture(txtProjectilesUp);
                     break;
                 case ITEMID.HEALTHUP:
                     this.loadTexture(txtHealthUp);
-                    //TODO: add correct texture and change in JSON
-
                     break;
                 case ITEMID.SCALEUP:
-                    //TODO: add correct texture and change in JSON
-
+                    this.loadTexture(txtScaleUp);
                     break;
                 case ITEMID.SCALEDOWN:
-                    //TODO: add correct texture and change in JSON
+                    this.loadTexture(txtScaleDown);
                     break;
                 case ITEMID.ARMORUP:
                     //TODO: add correct texture and change in JSON
                     break;
                 case ITEMID.HOMECOMING:
+                    this.loadTexture(txtHomeComing);
                     break;
                 case ITEMID.TOXICRELATIONSHIP:
                     this.loadTexture(txtToxicRelationship);
@@ -132,8 +133,19 @@ namespace Items {
                 case ITEMID.VAMPY:
                     //TODO: add correct texture and change in JSON
                     break;
+                case ITEMID.SLOWYSLOW:
+                    //TODO: add correct texture and change in JSON
+                    break;
                 case ITEMID.THORSHAMMER:
                     this.loadTexture(txtThorsHammer);
+                    break;
+                case ITEMID.GETSTRONKO:
+                    this.loadTexture(txtGetStronko);
+                    break;
+                case ITEMID.GETWEAKO:
+                    this.loadTexture(txtGetWeako);
+                    break;
+                case ITEMID.ZIPZAP:
                     //TODO: add correct texture and change in JSON
                     break;
             }
