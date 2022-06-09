@@ -19,8 +19,6 @@ namespace Bullets {
     export let waterBallTxt: ƒ.TextureImage = new ƒ.TextureImage();
     export let thorsHammerTxt: ƒ.TextureImage = new ƒ.TextureImage();
 
-
-
     export abstract class Bullet extends Game.ƒ.Node implements Interfaces.ISpawnable, Interfaces.INetworkable {
         public tag: Tag.TAG = Tag.TAG.BULLET;
         ownerNetId: number; get owner(): Entity.Entity { return Game.entities.find(elem => elem.netId == this.ownerNetId) };
@@ -40,6 +38,8 @@ namespace Bullets {
 
         time: number = 0;
         killcount: number = 1;
+        hitted: Entity.Entity[] = [];
+        hittedCd: Ability.Cooldown[] = [];
 
         texturePath: string;
         lastPosition: ƒ.Vector3;
@@ -230,6 +230,17 @@ namespace Bullets {
             this.collider.position = newPosition;
         }
 
+        private addHitted(_elem: Entity.Entity) {
+            this.hitted.push(<Entity.Entity>_elem);
+            this.hittedCd.push(new Ability.Cooldown(60));
+            this.hittedCd[this.hittedCd.length - 1].startCoolDown();
+            this.hittedCd[this.hittedCd.length - 1].onEndCoolDown = this.resetHitted;
+        }
+
+        private resetHitted = (): void => {
+            this.hitted.splice(0, 1);
+        }
+
         public collisionDetection() {
             let colliders: ƒ.Node[] = [];
             if (this.owner == undefined) {
@@ -239,9 +250,15 @@ namespace Bullets {
             if (this.owner.tag == Tag.TAG.PLAYER) {
                 colliders = Game.graph.getChildren().filter(element => (<Enemy.Enemy>element).tag == Tag.TAG.ENEMY);
                 colliders.forEach((_elem) => {
+
+                    if (this.hitted.find(element => element == _elem)) {
+                        return;
+                    }
+
                     let element: Enemy.Enemy = (<Enemy.Enemy>_elem);
                     if (this.collider.collides(element.collider) && element.attributes != undefined && this.killcount > 0) {
                         if ((<Enemy.Enemy>element).attributes.healthPoints > 0) {
+                            this.addHitted(<Entity.Entity>_elem);
                             if (element instanceof Enemy.SummonorAdds) {
                                 if ((<Enemy.SummonorAdds>element).avatar == this.owner) {
                                     this.killcount--;
@@ -259,9 +276,15 @@ namespace Bullets {
             if (this.owner.tag == Tag.TAG.ENEMY) {
                 colliders = Game.graph.getChildren().filter(element => (<Player.Player>element).tag == Tag.TAG.PLAYER);
                 colliders.forEach((_elem) => {
+
+                    if (this.hitted.find(element => element == _elem)) {
+                        return;
+                    }
+
                     let element: Player.Player = (<Player.Player>_elem);
                     if (this.collider.collides(element.collider) && element.attributes != undefined) {
                         if ((<Player.Player>element).attributes.healthPoints > 0 && (<Player.Player>element).attributes.hitable) {
+                            this.addHitted(<Entity.Entity>_elem);
                             (<Player.Player>element).getDamage(this.hitPointsScale);
                             (<Player.Player>element).getKnockback(this.knockbackForce, this.mtxLocal.translation);
                             this.killcount--;

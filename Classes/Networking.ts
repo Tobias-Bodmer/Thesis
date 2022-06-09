@@ -196,14 +196,12 @@ namespace Networking {
                         let netId: number = message.content.netId
                         let attributes: Entity.Attributes = new Entity.Attributes(message.content.attributes.healthPoints, message.content.attributes.attackPoints, message.content.attributes.speed, message.content.attributes.scale, message.content.attributes.knockbackForce, message.content.attributes.armor, message.content.attributes.coolDownReduction, message.content.attributes.accuracy);
                         if (message.content.type == Entity.ID.MELEE) {
-                            Game.avatar2 = new Player.Melee(Entity.ID.MELEE, attributes, netId);
-                            Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], 0);
-                            Game.graph.addChild(Game.avatar2);
+                            Game.avatar2 = new Player.Melee(Entity.ID.MELEE, netId);
                         } else if (message.content.type == Entity.ID.RANGED) {
-                            Game.avatar2 = new Player.Ranged(Entity.ID.RANGED, attributes,
-                                netId);
-                            Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], 0);
+                            Game.avatar2 = new Player.Ranged(Entity.ID.RANGED, netId);
                         }
+                        Game.avatar2.mtxLocal.translation = new Game.ƒ.Vector3(message.content.position.data[0], message.content.position.data[1], 0);
+                        Game.avatar2.attributes = attributes;
                     }
 
                     //Runtime updates and communication
@@ -269,6 +267,10 @@ namespace Networking {
                         let entity: Entity.Entity = Game.entities.find(elem => elem.netId == message.content.ownerNetId);
                         if (entity != null) {
                             let direction: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.direction.data[0], message.content.direction.data[1], message.content.direction.data[2]);
+
+                            if (message.content.bulletType == null && entity instanceof Player.Melee) {
+                                entity.attack(direction);
+                            }
 
                             if (message.content.bulletType == Bullets.BULLETCLASS.NORMAL) {
                                 bullet = new Bullets.NormalBullet(entity.weapon.bulletType, entity.mtxLocal.translation.toVector2(), direction, message.content.ownerNetId, message.content.bulletNetId)

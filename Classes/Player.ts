@@ -4,14 +4,24 @@ namespace Player {
         public client: Networking.ClientPrediction;
         readonly abilityCount: number = 1;
         currentabilityCount: number = this.abilityCount;
+        protected spriteScaleFactor: number = 2;
 
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _netId?: number) {
+        constructor(_id: Entity.ID, _netId?: number) {
             super(_id, _netId);
-            this.attributes = _attributes;
-            this.attributes.scale = 2;
-            this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale);
+
+            let ref = Game.avatarsJSON.find(avatar => avatar.name == Entity.ID[_id].toLowerCase())
+            console.log(ref);
+            this.attributes = new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale, ref.attributes.knockbackForce, ref.attributes.armor, ref.attributes.coolDownReduction, ref.attributes.accuracy);
+
+            this.updateScale();
             this.tag = Tag.TAG.PLAYER;
             this.client = new Networking.ClientPrediction(this.netId);
+        }
+
+        public updateScale() {
+            this.attributes.updateScaleDependencies();
+            this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.scale * this.spriteScaleFactor, this.attributes.scale * this.spriteScaleFactor, this.attributes.scale * this.spriteScaleFactor);
+            this.collider.setRadius((this.cmpTransform.mtxLocal.scaling.x / 2) * this.colliderScaleFaktor);
         }
 
         public move(_direction: ƒ.Vector3) {

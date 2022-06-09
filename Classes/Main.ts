@@ -52,6 +52,7 @@ namespace Game {
     export let coolDowns: Ability.Cooldown[] = [];
     //JSON
     export let enemiesJSON: Entity.Entity[];
+    export let avatarsJSON: Entity.Entity[];
     export let internalItemJSON: Items.InternalItem[];
     export let buffItemJSON: Items.BuffItem[];
 
@@ -293,10 +294,10 @@ namespace Game {
 
     function playerChoice(_e: Event) {
         if ((<HTMLButtonElement>_e.target).id == "Ranged") {
-            avatar1 = new Player.Ranged(Entity.ID.RANGED, new Entity.Attributes(10000, 5, 5, 1, 2, 5, 1, 80));
+            avatar1 = new Player.Ranged(Entity.ID.RANGED);
         }
         if ((<HTMLButtonElement>_e.target).id == "Melee") {
-            avatar1 = new Player.Melee(Entity.ID.MELEE, new Entity.Attributes(10000, 1, 5, 1, 1, 10, 1, 80));
+            avatar1 = new Player.Melee(Entity.ID.MELEE);
         }
         document.getElementById("Lobbyscreen").style.visibility = "hidden";
         readySate();
@@ -351,6 +352,7 @@ namespace Game {
     async function loadJSON() {
         const loadEnemy = await (await fetch("./Resources/EnemiesStorage.json")).json();
         enemiesJSON = (<Entity.Entity[]>loadEnemy.enemies);
+        avatarsJSON = (<Entity.Entity[]>loadEnemy.avatars);
 
         const loadItem = await (await fetch("./Resources/ItemStorage.json")).json();
         internalItemJSON = (<Items.InternalItem[]>loadItem.internalItems);

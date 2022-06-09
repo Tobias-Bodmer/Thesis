@@ -1,4 +1,38 @@
 {
+    "avatars": [
+        {
+            "name": "ranged",
+            "attributes": {
+                "healthPoints": 1000,
+                "attackPoints": 5,
+                "speed": 3,
+                "scale": 1,
+                "knockbackForce": 0.1,
+                "armor": 0,
+                "coolDownReduction": 1,
+                "accuracy": 80
+            },
+            "offsetColliderX": 0,
+            "offsetColliderY": 0,
+            "colliderScaleFaktor": 1
+        },
+        {
+            "name": "melee",
+            "attributes": {
+                "healthPoints": 1000,
+                "attackPoints": 6,
+                "speed": 3,
+                "scale": 1,
+                "knockbackForce": 0.1,
+                "armor": 5,
+                "coolDownReduction": 1,
+                "accuracy": 80
+            },
+            "offsetColliderX": 0,
+            "offsetColliderY": 0,
+            "colliderScaleFaktor": 1
+        }
+    ],
     "enemies": [
         {
             "name": "bat",

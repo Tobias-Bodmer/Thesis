@@ -27,6 +27,7 @@ declare namespace Game {
     let items: Items.Item[];
     let coolDowns: Ability.Cooldown[];
     let enemiesJSON: Entity.Entity[];
+    let avatarsJSON: Entity.Entity[];
     let internalItemJSON: Items.InternalItem[];
     let buffItemJSON: Items.BuffItem[];
     let damageBuffJSON: Buff.DamageBuff[];
@@ -854,6 +855,8 @@ declare namespace Bullets {
         type: BULLETTYPE;
         time: number;
         killcount: number;
+        hitted: Entity.Entity[];
+        hittedCd: Ability.Cooldown[];
         texturePath: string;
         lastPosition: ƒ.Vector3;
         countCheckUpdate: number;
@@ -871,6 +874,8 @@ declare namespace Bullets {
         protected loadTexture(): void;
         setBuffToTarget(_target: Entity.Entity): void;
         protected offsetCollider(): void;
+        private addHitted;
+        private resetHitted;
         collisionDetection(): void;
     }
     class NormalBullet extends Bullet {
@@ -1092,7 +1097,9 @@ declare namespace Player {
         client: Networking.ClientPrediction;
         readonly abilityCount: number;
         currentabilityCount: number;
-        constructor(_id: Entity.ID, _attributes: Entity.Attributes, _netId?: number);
+        protected spriteScaleFactor: number;
+        constructor(_id: Entity.ID, _netId?: number);
+        updateScale(): void;
         move(_direction: ƒ.Vector3): void;
         openDoor(): void;
         protected scaleMoveVector(_direction: Game.ƒ.Vector3): void;

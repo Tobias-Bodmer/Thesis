@@ -3,7 +3,7 @@ namespace InputSystem {
     document.addEventListener("keydown", keyboardDownEvent);
     document.addEventListener("keyup", keyboardUpEvent);
     document.addEventListener("mousedown", attack);
-    document.addEventListener("mousemove", rotateToMouse);
+    // document.addEventListener("mousemove", rotateToMouse);
 
     //#region rotate
     let mousePosition: ƒ.Vector3;
@@ -98,8 +98,8 @@ namespace InputSystem {
             switch (mouseButton) {
                 case 0:
                     //left mouse button player.attack
-                    let direction: Game.ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(mousePosition, Game.avatar1.mtxLocal.translation);
                     rotateToMouse(e_);
+                    let direction: Game.ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(mousePosition, Game.avatar1.mtxLocal.translation);
                     Game.avatar1.attack(direction, null, true);
                     break;
                 case 2:
