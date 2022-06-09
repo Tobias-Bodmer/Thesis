@@ -21,7 +21,7 @@ namespace Entity {
         speed: number;
         attackPoints: number;
         coolDownReduction: number = 1;
-        scale: number;
+        private scale: number; get getScale(): number { return this.scale };
         accuracy: number = 80;
 
         protected readonly baseMaxHealthPoints: number;
@@ -49,12 +49,27 @@ namespace Entity {
             this.baseKnockbackForce = this.knockbackForce;
         }
 
-        public updateScaleDependencies() {
-            this.maxHealthPoints = Math.round(this.baseMaxHealthPoints * (100 + (10 * this.scale)) / 100);
-            this.healthPoints = Math.round(this.baseHealthPoints * (100 + (10 * this.scale)) / 100);
-            this.attackPoints = Math.round(this.baseAttackPoints * this.scale);
-            this.speed = Math.fround(this.baseSpeed / this.scale);
-            this.knockbackForce = this.baseKnockbackForce * (100 + (10 * this.scale)) / 100;
+        public updateScaleDependencies(_newScale: number) {
+            if (_newScale == this.scale) {
+                return;
+            }
+            if (_newScale > this.scale) {
+                this.maxHealthPoints = Math.round(this.baseMaxHealthPoints * (100 + (10 * _newScale)) / 100);
+                this.healthPoints = Math.round(this.healthPoints * (100 + (10 * _newScale)) / 100);
+                this.attackPoints = Math.round(this.baseAttackPoints * _newScale);
+                this.speed = Math.fround(this.baseSpeed / _newScale);
+                this.knockbackForce = this.baseKnockbackForce * (100 + (10 * _newScale)) / 100;
+            } else {
+                let amountMaxHealthPoints = (Math.round(this.baseMaxHealthPoints * (100 + (10 * this.scale)) / 100)) - (Math.round(this.baseMaxHealthPoints * (100 + (10 * _newScale)) / 100));
+                let amountHealthPoints = (Math.round(this.baseHealthPoints * (100 + (10 * this.scale)) / 100)) - (Math.round(this.baseHealthPoints * (100 + (10 * _newScale)) / 100));
+                let amountAttackPoints = (Math.round(this.baseAttackPoints * this.scale)) - (Math.round(this.baseAttackPoints * _newScale));
+                let amountSpeed = (Math.fround(this.baseSpeed / this.scale)) - (Math.fround(this.baseSpeed / _newScale));
+                this.maxHealthPoints -= amountMaxHealthPoints;
+                this.healthPoints -= amountHealthPoints;
+                this.attackPoints -= amountAttackPoints;
+                this.speed -= amountSpeed;
+            }
+            this.scale = _newScale;
         }
 
         private newGameFactor(_value: number): number {

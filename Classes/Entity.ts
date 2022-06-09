@@ -63,9 +63,9 @@ namespace Entity {
             }
         }
 
-        public updateScale() {
-            this.attributes.updateScaleDependencies();
-            this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale);
+        public updateScale(_newScale: number) {
+            this.attributes.updateScaleDependencies(_newScale);
+            this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.getScale, this.attributes.getScale, 1);
             this.collider.setRadius((this.cmpTransform.mtxLocal.scaling.x / 2) * this.colliderScaleFaktor);
         }
 
@@ -221,7 +221,7 @@ namespace Entity {
             if (!this.performKnockback) {
                 this.performKnockback = true;
                 let direction: Game.ƒ.Vector3 = Game.ƒ.Vector2.DIFFERENCE(this.cmpTransform.mtxLocal.translation.toVector2(), _position.toVector2()).toVector3(0);
-                let knockBackScaling: number = Game.deltaTime * this.attributes.scale;
+                let knockBackScaling: number = Game.deltaTime * this.attributes.getScale;
 
                 direction.normalize();
 

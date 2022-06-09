@@ -305,25 +305,26 @@ namespace Items {
                 case ITEMID.SCALEUP:
                     if (host) {
                         if (_add) {
-                            this.changedValue = Calculation.addPercentageAmountToValue(_avatar.attributes.scale, this.value) - _avatar.attributes.scale;
-                            _avatar.attributes.scale = Calculation.addPercentageAmountToValue(_avatar.attributes.scale, this.value);
+                            this.changedValue = Calculation.addPercentageAmountToValue(_avatar.attributes.getScale, this.value) - _avatar.attributes.getScale;
+                            _avatar.updateScale(_avatar.attributes.getScale + this.changedValue);
                         } else {
-                            _avatar.attributes.scale -= this.changedValue;
+                            _avatar.updateScale(_avatar.attributes.getScale - this.changedValue);
+
                         }
-                        _avatar.updateScale();
-                        Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.scale, type: Entity.ATTRIBUTETYPE.SCALE }, _avatar.netId);
+                        Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.getScale, type: Entity.ATTRIBUTETYPE.SCALE }, _avatar.netId);
                     }
                     break;
                 case ITEMID.SCALEDOWN:
                     if (host) {
                         if (_add) {
-                            this.changedValue = Calculation.subPercentageAmountToValue(_avatar.attributes.scale, this.value) - _avatar.attributes.scale;
-                            _avatar.attributes.scale = Calculation.subPercentageAmountToValue(_avatar.attributes.scale, this.value);
+                            this.changedValue = Calculation.subPercentageAmountToValue(_avatar.attributes.getScale, this.value) - _avatar.attributes.getScale;
+                            _avatar.updateScale(_avatar.attributes.getScale - this.changedValue);
+
                         } else {
-                            _avatar.attributes.scale -= this.changedValue;
+                            _avatar.updateScale(_avatar.attributes.getScale + this.changedValue);
+
                         }
-                        _avatar.updateScale();
-                        Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.scale, type: Entity.ATTRIBUTETYPE.SCALE }, _avatar.netId);
+                        Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.getScale, type: Entity.ATTRIBUTETYPE.SCALE }, _avatar.netId);
                     }
                     break;
                 case ITEMID.ARMORUP:

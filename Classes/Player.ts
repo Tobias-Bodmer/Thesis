@@ -8,8 +8,7 @@ namespace Player {
         constructor(_id: Entity.ID, _attributes: Entity.Attributes, _netId?: number) {
             super(_id, _netId);
             this.attributes = _attributes;
-            this.attributes.scale = 2;
-            this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale);
+            this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.getScale, this.attributes.getScale, 1);
             this.tag = Tag.TAG.PLAYER;
             this.client = new Networking.ClientPrediction(this.netId);
         }

@@ -293,7 +293,7 @@ namespace Game {
 
     function playerChoice(_e: Event) {
         if ((<HTMLButtonElement>_e.target).id == "Ranged") {
-            avatar1 = new Player.Ranged(Entity.ID.RANGED, new Entity.Attributes(10000, 5, 5, 1, 2, 5, 1, 80));
+            avatar1 = new Player.Ranged(Entity.ID.RANGED, new Entity.Attributes(10000, 5, 2.5, 1, 2, 5, 1, 80));
         }
         if ((<HTMLButtonElement>_e.target).id == "Melee") {
             avatar1 = new Player.Melee(Entity.ID.MELEE, new Entity.Attributes(10000, 1, 5, 1, 1, 10, 1, 80));

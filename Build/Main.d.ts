@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/aid/build/fudgeaid.js" />
 /// <reference types="../fudge/core/build/fudgecore.js" />
+/// <reference types="../fudge/aid/build/fudgeaid.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -186,7 +186,7 @@ declare namespace Entity {
         constructor(_id: Entity.ID, _netId: number);
         eventUpdate: (_event: Event) => void;
         update(): void;
-        updateScale(): void;
+        updateScale(_newScale: number): void;
         setCollider(): void;
         protected updateBuffs(): void;
         protected collide(_direction: ƒ.Vector3): void;
@@ -665,7 +665,8 @@ declare namespace Entity {
         speed: number;
         attackPoints: number;
         coolDownReduction: number;
-        scale: number;
+        private scale;
+        get getScale(): number;
         accuracy: number;
         protected readonly baseMaxHealthPoints: number;
         protected readonly baseHealthPoints: number;
@@ -673,7 +674,7 @@ declare namespace Entity {
         protected readonly baseSpeed: number;
         protected readonly baseKnockbackForce: number;
         constructor(_healthPoints: number, _attackPoints: number, _speed: number, _scale: number, _knockbackForce: number, _armor: number, _cooldownReduction: number, _accuracy: number);
-        updateScaleDependencies(): void;
+        updateScaleDependencies(_newScale: number): void;
         private newGameFactor;
     }
 }

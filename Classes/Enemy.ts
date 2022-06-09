@@ -45,7 +45,7 @@ namespace Enemy {
             }
 
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
-            this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.scale, this.attributes.scale, this.attributes.scale);
+            this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.getScale, this.attributes.getScale, 1);
             this.offsetColliderX = ref.offsetColliderX;
             this.offsetColliderY = ref.offsetColliderY;
             this.colliderScaleFaktor = ref.colliderScaleFaktor;
@@ -436,7 +436,7 @@ namespace Enemy {
 
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _position, _netId);
-            this.weapon = new Weapons.RangedWeapon(60, 1, Bullets.BULLETTYPE.STONE, 2, this.netId, Weapons.AIM.NORMAL);
+            this.weapon = new Weapons.RangedWeapon(60, 1, Bullets.BULLETTYPE.STONE, 1, this.netId, Weapons.AIM.NORMAL);
             this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.WALK, this.flee);
             this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.IDLE, this.idle);
             this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.SHOOT, this.shoot);
