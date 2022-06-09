@@ -458,7 +458,7 @@ namespace Game {
         await Items.txtToxicRelationship.load("./Resources/Image/Items/toxicRelationship.png");
         await Items.txtGetStronko.load("./Resources/Image/Items/getStronko.png");
         await Items.txtGetWeako.load("./Resources/Image/Items/getWeako.png");
-        
+
 
         AnimationGeneration.generateAnimationObjects();
 
