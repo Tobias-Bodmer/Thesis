@@ -29,7 +29,7 @@ namespace UI {
         }
 
         //ItemPopUp
-        if (itemUICooldown.hasCoolDown) {
+        if (itemUICooldown.hasCooldown) {
             // itemUI.style.visibility = "visible";
             fade(itemUI, true);
         } else {
@@ -117,7 +117,7 @@ namespace UI {
 
         itemPopUps.splice(0, 1);
 
-        itemUICooldown.startCoolDown();
+        itemUICooldown.startCooldown();
     }
 
     function fade(_element: HTMLElement, _in: boolean) {

@@ -30,6 +30,7 @@ namespace Game {
 
     viewport.initialize("Viewport", graph, cmpCamera, canvas);
 
+    export let runs: number = 0;
     export let newGamePlus: number = 0;
 
     export let avatar1: Player.Player;

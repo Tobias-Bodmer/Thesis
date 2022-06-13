@@ -21,7 +21,7 @@ namespace Ability {
             this.updateAbility();
         }
         protected updateAbility() {
-            if (this.doesAbility && !this.duration.hasCoolDown) {
+            if (this.doesAbility && !this.duration.hasCooldown) {
                 this.deactivateAbility();
                 this.doesAbility = false;
             }
@@ -30,22 +30,22 @@ namespace Ability {
             }
         }
         public doAbility(): void {
-            if (!this.cooldown.hasCoolDown && this.currentabilityCount <= 0) {
+            if (!this.cooldown.hasCooldown && this.currentabilityCount <= 0) {
                 this.currentabilityCount = this.abilityCount;
             }
-            if (!this.cooldown.hasCoolDown && this.currentabilityCount > 0) {
+            if (!this.cooldown.hasCooldown && this.currentabilityCount > 0) {
                 this.doesAbility = true;
                 this.activateAbility()
-                this.duration.startCoolDown();
+                this.duration.startCooldown();
                 this.currentabilityCount--;
                 if (this.currentabilityCount <= 0) {
-                    this.cooldown.startCoolDown();
+                    this.cooldown.startCooldown();
                 }
             }
         }
 
         public hasCooldown(): boolean {
-            return this.cooldown.hasCoolDown;
+            return this.cooldown.hasCooldown;
         }
 
         protected activateAbility() {
@@ -156,47 +156,47 @@ namespace Ability {
     }
 
     export class Cooldown {
-        public hasCoolDown: boolean
-        private coolDown: number; get getMaxCoolDown(): number { return this.coolDown }; set setMaxCoolDown(_param: number) { this.coolDown = _param; }
+        public hasCooldown: boolean;
+        private cooldown: number; get getMaxCoolDown(): number { return this.cooldown }; set setMaxCoolDown(_param: number) { this.cooldown = _param; }
         private currentCooldown: number; get getCurrentCooldown(): number { return this.currentCooldown };
-        public onEndCoolDown: () => void;
+        public onEndCooldown: () => void;
         constructor(_number: number) {
-            this.coolDown = _number;
+            this.cooldown = _number;
             this.currentCooldown = _number;
-            this.hasCoolDown = false;
+            this.hasCooldown = false;
         }
 
-        public startCoolDown() {
-            this.hasCoolDown = true
+        public startCooldown() {
+            this.hasCooldown = true
             Game.ƒ.Loop.addEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
 
         }
 
-        private endCoolDown() {
-            if (this.onEndCoolDown != undefined) {
-                this.onEndCoolDown();
+        private endCooldown() {
+            if (this.onEndCooldown != undefined) {
+                this.onEndCooldown();
             }
-            this.hasCoolDown = false;
-            this.currentCooldown = this.coolDown;
+            this.hasCooldown = false;
+            this.currentCooldown = this.cooldown;
             Game.ƒ.Loop.removeEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
         }
 
-        public resetCoolDown() {
-            this.hasCoolDown = false;
-            this.currentCooldown = this.coolDown;
+        public resetCooldown() {
+            this.hasCooldown = false;
+            this.currentCooldown = this.cooldown;
             Game.ƒ.Loop.removeEventListener(Game.ƒ.EVENT.LOOP_FRAME, this.eventUpdate);
         }
 
         public eventUpdate = (_event: Event): void => {
-            this.updateCoolDown();
+            this.updateCooldown();
         }
 
-        public updateCoolDown(): void {
-            if (this.hasCoolDown && this.currentCooldown > 0) {
+        public updateCooldown(): void {
+            if (this.hasCooldown && this.currentCooldown > 0) {
                 this.currentCooldown--;
             }
-            if (this.currentCooldown <= 0 && this.hasCoolDown) {
-                this.endCoolDown();
+            if (this.currentCooldown <= 0 && this.hasCooldown) {
+                this.endCooldown();
             }
         }
     }

@@ -233,8 +233,8 @@ namespace Bullets {
         private addHitted(_elem: Entity.Entity) {
             this.hitted.push(<Entity.Entity>_elem);
             this.hittedCd.push(new Ability.Cooldown(60));
-            this.hittedCd[this.hittedCd.length - 1].startCoolDown();
-            this.hittedCd[this.hittedCd.length - 1].onEndCoolDown = this.resetHitted;
+            this.hittedCd[this.hittedCd.length - 1].startCooldown();
+            this.hittedCd[this.hittedCd.length - 1].onEndCooldown = this.resetHitted;
         }
 
         private resetHitted = (): void => {
@@ -437,9 +437,9 @@ namespace Bullets {
                     this.avatars = [Game.avatar1, Game.avatar2];
                     this.move();
                     this.collider.position = this.mtxLocal.translation.toVector2();
-                    if (!this.tickHit.hasCoolDown) {
+                    if (!this.tickHit.hasCooldown) {
                         this.collisionDetection();
-                        this.tickHit.startCoolDown();
+                        this.tickHit.startCooldown();
                     }
                     Networking.updateBullet(this.mtxLocal.translation, this.mtxLocal.rotation, this.netId);
                     this.killcount = 50;

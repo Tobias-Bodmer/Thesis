@@ -80,7 +80,7 @@ namespace Buff {
                 _avatar.buffs.push(this);
                 this.addParticle(_avatar);
                 if (this.coolDown != undefined) {
-                    this.coolDown.startCoolDown();
+                    this.coolDown.startCooldown();
                 }
                 Networking.updateBuffList(_avatar.buffs, _avatar.netId);
             }
@@ -164,7 +164,7 @@ namespace Buff {
 
         public doBuffStuff(_avatar: Entity.Entity) {
             if (this.coolDown != undefined) {
-                if (!this.coolDown.hasCoolDown) {
+                if (!this.coolDown.hasCooldown) {
                     this.removeBuff(_avatar);
                     return;
                 }

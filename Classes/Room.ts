@@ -205,8 +205,7 @@ namespace Generation {
         }
 
         private getRandomBoss(): Enemy.Enemy {
-            let random = Math.round(Math.random());
-            if (random <= 0) {
+            if (Game.runs % 3 == 0) {
                 return new Enemy.Summonor(Entity.ID.SUMMONOR, this.mtxWorld.translation.toVector2());
             }
             else {
@@ -579,7 +578,12 @@ namespace Generation {
     export class ExitDoor extends Door {
 
         public changeRoom() {
-            Game.newGamePlus++;
+            Game.runs++;
+
+            if (Game.runs % 3 == 0) {
+                Game.newGamePlus++;
+            }
+
             if (Networking.client.id == Networking.client.idHost) {
                 Generation.procedualRoomGeneration();
             } else {

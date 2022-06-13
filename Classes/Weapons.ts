@@ -54,10 +54,10 @@ namespace Weapons {
 
             let _position: ƒ.Vector2 = this.owner.mtxLocal.translation.toVector2();
             if (_sync) {
-                if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
+                if (this.currentAttackCount <= 0 && !this.cooldown.hasCooldown) {
                     this.currentAttackCount = this.attackCount;
                 }
-                if (this.currentAttackCount > 0 && !this.cooldown.hasCoolDown) {
+                if (this.currentAttackCount > 0 && !this.cooldown.hasCooldown) {
 
                     if (this.owner.attributes.accuracy < 100) {
                         this.inaccuracy(_direction);
@@ -69,9 +69,9 @@ namespace Weapons {
 
                     this.fire(this.magazin);
                     this.currentAttackCount--;
-                    if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
+                    if (this.currentAttackCount <= 0 && !this.cooldown.hasCooldown) {
                         this.cooldown.setMaxCoolDown = this.cooldown.getMaxCoolDown * this.owner.attributes.coolDownReduction;
-                        this.cooldown.startCoolDown();
+                        this.cooldown.startCooldown();
                     }
                 }
 
@@ -184,19 +184,19 @@ namespace Weapons {
             if (this.owner.items.find(item => item.id == Items.ITEMID.THORSHAMMER) != null) {
                 let _position: ƒ.Vector2 = this.owner.mtxLocal.translation.toVector2();
                 if (_sync) {
-                    if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
+                    if (this.currentAttackCount <= 0 && !this.cooldown.hasCooldown) {
                         this.currentAttackCount = this.attackCount;
                     }
-                    if (this.currentAttackCount > 0 && !this.cooldown.hasCoolDown) {
+                    if (this.currentAttackCount > 0 && !this.cooldown.hasCooldown) {
                         this.magazin = this.loadMagazine(_position, _direction, this.bulletType, _bulletNetId);
 
                         this.sendMagazin();
 
                         this.fire(this.magazin);
                         this.currentAttackCount--;
-                        if (this.currentAttackCount <= 0 && !this.cooldown.hasCoolDown) {
+                        if (this.currentAttackCount <= 0 && !this.cooldown.hasCooldown) {
                             this.cooldown.setMaxCoolDown = this.cooldown.getMaxCoolDown * this.owner.attributes.coolDownReduction;
-                            this.cooldown.startCoolDown();
+                            this.cooldown.startCooldown();
                         }
                     }
                 }

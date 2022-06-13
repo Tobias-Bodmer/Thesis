@@ -24,9 +24,9 @@ namespace Enemy {
             this.tag = Tag.TAG.ENEMY;
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), this.mtxLocal.scaling.x / 2, this.netId);
 
-            this.furiousPhaseCd.onEndCoolDown = this.stopFuriousPhase;
-            this.exhaustedPhaseCd.onEndCoolDown = this.stopExaustedPhase;
-            this.normalPhaseCd.onEndCoolDown = this.startFuriousPhase;
+            this.furiousPhaseCd.onEndCooldown = this.stopFuriousPhase;
+            this.exhaustedPhaseCd.onEndCooldown = this.stopExaustedPhase;
+            this.normalPhaseCd.onEndCooldown = this.startFuriousPhase;
             this.dash.onEndAbility = this.throwStone;
 
             this.stateMachineInstructions = new Game.ƒAid.StateMachineInstructions();
@@ -57,7 +57,7 @@ namespace Enemy {
             //TODO: Intro animation here and when it is done then fight...
 
             if (this.damageTaken >= 1) {
-                this.normalPhaseCd.startCoolDown();
+                this.normalPhaseCd.startCooldown();
                 this.transit(ENEMYBEHAVIOUR.WALK);
             }
         }
@@ -126,10 +126,10 @@ namespace Enemy {
         }
 
         private doSmash = () => {
-            if (!this.smashCd.hasCoolDown) {
+            if (!this.smashCd.hasCooldown) {
                 //TODO: switch animation
 
-                this.smashCd.startCoolDown();
+                this.smashCd.startCooldown();
 
                 // if (this.getCurrentFrame >= ...) {
                 let newPos: Game.ƒ.Vector2 = this.mtxLocal.translation.clone.toVector2();
@@ -162,7 +162,7 @@ namespace Enemy {
         }
 
         private startFuriousPhase = (): void => {
-            this.normalPhaseCd.resetCoolDown();
+            this.normalPhaseCd.resetCooldown();
 
             new Buff.AttributesBuff(Buff.BUFFID.FURIOUS, null, 1, 0).addToEntity(this);
 
@@ -171,7 +171,7 @@ namespace Enemy {
             this.dash.getCooldown.setMaxCoolDown = this.dash.getCooldown.getMaxCoolDown / 2;
             this.smashCd.setMaxCoolDown = this.smashCd.getMaxCoolDown / 2;
 
-            this.furiousPhaseCd.startCoolDown();
+            this.furiousPhaseCd.startCooldown();
             this.damageTaken = 0;
         }
 
@@ -186,7 +186,7 @@ namespace Enemy {
         private startExaustedPhase = (): void => {
             new Buff.AttributesBuff(Buff.BUFFID.EXHAUSTED, null, 1, 0).addToEntity(this);
             this.transit(ENEMYBEHAVIOUR.IDLE);
-            this.exhaustedPhaseCd.startCoolDown();
+            this.exhaustedPhaseCd.startCooldown();
         }
 
         private stopExaustedPhase = (): void => {
@@ -199,7 +199,7 @@ namespace Enemy {
             this.dash.getCooldown.setMaxCoolDown = this.dash.getCooldown.getMaxCoolDown * 2;
             this.smashCd.setMaxCoolDown = this.smashCd.getMaxCoolDown * 2;
 
-            this.normalPhaseCd.startCoolDown();
+            this.normalPhaseCd.startCooldown();
             this.transit(ENEMYBEHAVIOUR.WALK);
         }
 
@@ -246,7 +246,7 @@ namespace Enemy {
             super(_id, _position, _netId);
             this.tag = Tag.TAG.ENEMY;
             this.collider = new Collider.Collider(this.mtxLocal.translation.toVector2(), this.mtxLocal.scaling.x / 2, this.netId);
-            this.defencePhaseCd.onEndCoolDown = this.stopDefencePhase;
+            this.defencePhaseCd.onEndCooldown = this.stopDefencePhase;
 
             this.stateMachineInstructions = new Game.ƒAid.StateMachineInstructions();
             this.stateMachineInstructions.transitDefault = () => { };
@@ -299,11 +299,11 @@ namespace Enemy {
                 this.teleport(ENEMYBEHAVIOUR.SUMMON, tempPortPos);
                 return;
             }
-            if (!this.attackPhaseCd.hasCoolDown) {
+            if (!this.attackPhaseCd.hasCooldown) {
                 this.attackPhaseCd.setMaxCoolDown = Math.round(this.attackPhaseCd.getMaxCoolDown + Math.random() * 5 + Math.random() * -5);
-                this.attackPhaseCd.startCoolDown();
+                this.attackPhaseCd.startCooldown();
             }
-            if (this.attackPhaseCd.hasCoolDown) {
+            if (this.attackPhaseCd.hasCooldown) {
                 let distance = ƒ.Vector3.DIFFERENCE(Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2().toVector3(), this.cmpTransform.mtxLocal.translation).magnitude;
                 this.target = Calculation.getCloserAvatarPosition(this.mtxLocal.translation).toVector2();
 
@@ -329,7 +329,7 @@ namespace Enemy {
             let random: number = Math.round(Math.random() * 100);
             switch (true) {
                 case random > 99:
-                    if (!this.shoot360Cooldown.hasCoolDown) {
+                    if (!this.shoot360Cooldown.hasCooldown) {
                         this.currentShootingCount = this.shootingCount;
                         this.teleport(ENEMYBEHAVIOUR.SHOOT360, new Game.ƒ.Vector2(Game.currentRoom.mtxWorld.translation.x + 3, Game.currentRoom.mtxWorld.translation.y + 3));
                     }
@@ -366,9 +366,9 @@ namespace Enemy {
         }
 
         defencePhase = (): void => {
-            if (!this.defencePhaseCd.hasCoolDown) {
+            if (!this.defencePhaseCd.hasCooldown) {
                 this.defencePhaseCd.setMaxCoolDown = Math.round(this.defencePhaseCd.getMaxCoolDown + Math.random() * 5 + Math.random() * -5);
-                this.defencePhaseCd.startCoolDown();
+                this.defencePhaseCd.startCooldown();
                 new Buff.AttributesBuff(Buff.BUFFID.IMMUNE, null, 1, 0).addToEntity(this);
             } else {
                 if (this.mtxLocal.translation.equals(this.teleportPosition, 1)) {
@@ -426,7 +426,7 @@ namespace Enemy {
 
             }
             else if (this.getCurrentFrame >= 12) {
-                this.shoot360Cooldown.startCoolDown();
+                this.shoot360Cooldown.startCooldown();
                 this.transit(ENEMYBEHAVIOUR.ATTACK);
                 if (this.buffs.find(buff => buff.id == Buff.BUFFID.IMMUNE) != undefined) {
                     this.buffs.find(buff => buff.id == Buff.BUFFID.IMMUNE).removeBuff(this);

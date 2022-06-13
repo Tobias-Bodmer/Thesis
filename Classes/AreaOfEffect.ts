@@ -21,7 +21,7 @@ namespace Ability {
             Networking.IdManager(_netId);
 
             this.duration = new Cooldown(120);
-            this.duration.onEndCoolDown = this.despawn;
+            this.duration.onEndCooldown = this.despawn;
             this.addComponent(new Game.ƒ.ComponentMesh(new Game.ƒ.MeshQuad));
             this.damageValue = 1;
             this.areaMat = new ƒ.Material("aoeShader", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), UI.commonParticle));
@@ -55,7 +55,7 @@ namespace Ability {
                 return;
             }
             else {
-                this.duration.startCoolDown();
+                this.duration.startCooldown();
             }
 
             this.addEventListener(Game.ƒ.EVENT.RENDER_PREPARE, this.eventUpdate);

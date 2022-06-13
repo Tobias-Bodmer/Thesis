@@ -233,8 +233,8 @@ namespace Enemy {
         constructor(_id: Entity.ID, _pos: Game.ƒ.Vector2, _netId: number) {
             super(_id, _pos, _netId);
             this.isAggressive = false;
-            this.stamina.onEndCoolDown = this.OnStaminaCooldownEnd;
-            this.recover.onEndCoolDown = this.OnRecoverCooldownEnd;
+            this.stamina.onEndCooldown = this.OnStaminaCooldownEnd;
+            this.recover.onEndCooldown = this.OnRecoverCooldownEnd;
             this.stateMachineInstructions.actDefault = this.idle;
             this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.WALK, this.walk);
             this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.IDLE, this.idle);
@@ -270,7 +270,7 @@ namespace Enemy {
         }
 
         private startIdling = () => {
-            this.recover.startCoolDown();
+            this.recover.startCooldown();
         }
 
         public die(): void {
@@ -282,13 +282,13 @@ namespace Enemy {
         private idle = () => {
             this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
             this.moveDirection = Game.ƒ.Vector3.ZERO();
-            if (this.isAggressive && !this.recover.hasCoolDown) {
+            if (this.isAggressive && !this.recover.hasCooldown) {
                 this.transit(ENEMYBEHAVIOUR.WALK);
             }
         }
 
         private startWalking = () => {
-            this.stamina.startCoolDown();
+            this.stamina.startCooldown();
         }
 
         private walk = () => {
@@ -313,11 +313,11 @@ namespace Enemy {
             if (this.currentBehaviour == Entity.BEHAVIOUR.ATTACK && this.getCurrentFrame >= (<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["attack"]).frames.length - 1) {
                 this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
             }
-            if (distance < 4 && !this.coolDown.hasCoolDown) {
-                this.coolDown.startCoolDown();
+            if (distance < 4 && !this.coolDown.hasCooldown) {
+                this.coolDown.startCooldown();
                 this.currentBehaviour = Entity.BEHAVIOUR.ATTACK;
             }
-            if (this.coolDown.hasCoolDown && this.currentBehaviour != Entity.BEHAVIOUR.IDLE) {
+            if (this.coolDown.hasCooldown && this.currentBehaviour != Entity.BEHAVIOUR.IDLE) {
                 this.currentBehaviour = Entity.BEHAVIOUR.IDLE;
             }
             if (this.currentBehaviour != Entity.BEHAVIOUR.FOLLOW) {
@@ -478,7 +478,7 @@ namespace Enemy {
                 this.transit(ENEMYBEHAVIOUR.WALK);
             }
 
-            if (!this.weapon.getCoolDown.hasCoolDown) {
+            if (!this.weapon.getCoolDown.hasCooldown) {
                 this.transit(ENEMYBEHAVIOUR.SHOOT);
             }
         }

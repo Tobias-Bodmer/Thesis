@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -13,6 +13,7 @@ declare namespace Game {
     let viewport: ƒ.Viewport;
     let cmpCamera: ƒ.ComponentCamera;
     let graph: ƒ.Node;
+    let runs: number;
     let newGamePlus: number;
     let avatar1: Player.Player;
     let avatar2: Player.Player;
@@ -86,19 +87,19 @@ declare namespace Ability {
         protected generateSpawnPoints(): Game.ƒ.Vector2[];
     }
     class Cooldown {
-        hasCoolDown: boolean;
-        private coolDown;
+        hasCooldown: boolean;
+        private cooldown;
         get getMaxCoolDown(): number;
         set setMaxCoolDown(_param: number);
         private currentCooldown;
         get getCurrentCooldown(): number;
-        onEndCoolDown: () => void;
+        onEndCooldown: () => void;
         constructor(_number: number);
-        startCoolDown(): void;
-        private endCoolDown;
-        resetCoolDown(): void;
+        startCooldown(): void;
+        private endCooldown;
+        resetCooldown(): void;
         eventUpdate: (_event: Event) => void;
-        updateCoolDown(): void;
+        updateCooldown(): void;
     }
 }
 declare namespace UI {
