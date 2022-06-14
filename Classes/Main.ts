@@ -200,13 +200,13 @@ namespace Game {
                         let item5 = new Items.InternalItem(Items.ITEMID.SCALEUP);
 
                         item2.setPosition(new ƒ.Vector2(-5, 0));
-                        item2.spawn();
+                        // item2.spawn();
                         item3.setPosition(new ƒ.Vector2(5, 0));
-                        item3.spawn();
+                        // item3.spawn();
                         item4.setPosition(new ƒ.Vector2(-10, 0));
-                        item4.spawn();
+                        // item4.spawn();
                         item5.setPosition(new ƒ.Vector2(10, 0));
-                        item5.spawn();
+                        // item5.spawn();
 
                         // // let item3 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(-2, 0), null);
                         // let zipzap = new Items.InternalItem(Items.ITEMID.TEST);
@@ -479,7 +479,9 @@ namespace Game {
             direction.scale(avatar1.client.minTimeBetweenTicks * damper);
         }
         cmpCamera.mtxPivot.translate(new ƒ.Vector3(-direction.x, direction.y, 0), true);
-        miniMap.mtxLocal.translation = new ƒ.Vector3(cmpCamera.mtxPivot.translation.x + miniMap.offsetX, cmpCamera.mtxPivot.translation.y + miniMap.offsetY, 0);
+        if (miniMap != undefined) {
+            miniMap.mtxLocal.translation = new ƒ.Vector3(cmpCamera.mtxPivot.translation.x + miniMap.offsetX, cmpCamera.mtxPivot.translation.y + miniMap.offsetY, 0);
+        }
     }
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
