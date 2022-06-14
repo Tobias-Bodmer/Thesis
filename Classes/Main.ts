@@ -200,13 +200,13 @@ namespace Game {
                         let item5 = new Items.InternalItem(Items.ITEMID.SCALEUP);
 
                         item2.setPosition(new ƒ.Vector2(-5, 0));
-                        item2.spawn();
+                        // item2.spawn();
                         item3.setPosition(new ƒ.Vector2(5, 0));
-                        item3.spawn();
+                        // item3.spawn();
                         item4.setPosition(new ƒ.Vector2(-10, 0));
-                        item4.spawn();
+                        // item4.spawn();
                         item5.setPosition(new ƒ.Vector2(10, 0));
-                        item5.spawn();
+                        // item5.spawn();
 
                         // // let item3 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(-2, 0), null);
                         // let zipzap = new Items.InternalItem(Items.ITEMID.TEST);
