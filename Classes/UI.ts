@@ -19,7 +19,7 @@ namespace UI {
         updateInvUI(Game.avatar2.items, player2UI);
 
         //BossUI
-        if (Game.currentRoom.roomType == Generation.ROOMTYPE.BOSS && (<Generation.BossRoom>Game.currentRoom).boss != undefined && (<Generation.BossRoom>Game.currentRoom).boss.attributes.healthPoints > 0) {
+        if (Game.currentRoom != undefined && Game.currentRoom.roomType == Generation.ROOMTYPE.BOSS && (<Generation.BossRoom>Game.currentRoom).boss != undefined && (<Generation.BossRoom>Game.currentRoom).boss.attributes.healthPoints > 0) {
             let boss: Enemy.Enemy = (<Generation.BossRoom>Game.currentRoom).boss;
             bossUI.style.visibility = "visible";
             (<HTMLDivElement>bossUI.querySelector("#Name")).innerHTML = boss.name;

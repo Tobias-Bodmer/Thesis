@@ -485,6 +485,7 @@ namespace Networking {
                         let tanslation: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.room.translation.data[0], message.content.room.translation.data[1], message.content.room.translation.data[2]);
                         let roomInfo: Interfaces.IRoom = { coordinates: coordiantes, roomSize: message.content.room.roomSize, exits: message.content.room.exits, roomType: message.content.room.roomType, translation: tanslation };
                         let newRoom: Generation.Room;
+                        console.warn("room: " + roomInfo);
                         switch (roomInfo.roomType) {
                             case Generation.ROOMTYPE.START:
                                 newRoom = new Generation.StartRoom(roomInfo.coordinates, roomInfo.roomSize);

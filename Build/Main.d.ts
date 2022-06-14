@@ -1287,7 +1287,7 @@ declare namespace Generation {
     function getCoordsFromRooms(): Game.ƒ.Vector2[];
     function switchRoom(_direction: Interfaces.IRoomExits): void;
     /**
-     * removes erything unreliable from the grpah and adds the new room to the graph , sending it to the client & spawns enemies if existing in room
+     * removes erything unreliable from the graph and adds the new room to the graph , sending it to the client & spawns enemies if existing in room
      * @param _room the room it should spawn
      */
     function addRoomToGraph(_room: Room): void;
