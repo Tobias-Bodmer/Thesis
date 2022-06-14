@@ -270,6 +270,7 @@ namespace Networking {
 
                             if (message.content.bulletType == null && entity instanceof Player.Melee) {
                                 entity.attack(direction);
+                                return;
                             }
 
                             if (message.content.bulletType == Bullets.BULLETCLASS.NORMAL) {

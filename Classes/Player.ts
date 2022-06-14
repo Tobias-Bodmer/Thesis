@@ -187,7 +187,7 @@ namespace Player {
     }
 
     export class Ranged extends Player {
-        public weapon = new Weapons.RangedWeapon(25, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId, Weapons.AIM.NORMAL);
+        public weapon = new Weapons.RangedWeapon(35, 1, Bullets.BULLETTYPE.STANDARD, 1, this.netId, Weapons.AIM.NORMAL);
         public dash: Ability.Dash = new Ability.Dash(this.netId, 8, 1, 60, 5);
         performAbility: boolean = false;
         lastMoveDirection: Game.ƒ.Vector3;

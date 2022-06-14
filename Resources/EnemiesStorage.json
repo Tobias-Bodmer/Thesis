@@ -3,7 +3,7 @@
         {
             "name": "ranged",
             "attributes": {
-                "healthPoints": 1000,
+                "healthPoints": 100,
                 "attackPoints": 5,
                 "speed": 3,
                 "scale": 1,
@@ -19,7 +19,7 @@
         {
             "name": "melee",
             "attributes": {
-                "healthPoints": 1000,
+                "healthPoints": 100,
                 "attackPoints": 6,
                 "speed": 3,
                 "scale": 1,
@@ -117,7 +117,7 @@
         {
             "name": "summonor",
             "attributes": {
-                "healthPoints": 1,
+                "healthPoints": 250,
                 "attackPoints": 0,
                 "speed": 3,
                 "scale": 2,
