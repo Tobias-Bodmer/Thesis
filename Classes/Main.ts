@@ -144,7 +144,7 @@ namespace Game {
     }
 
     function startLoop() {
-        if (Networking.client.id != Networking.client.idHost && avatar2 != undefined && Game.currentRoom != undefined) {
+        if (Networking.client.id != Networking.client.idHost && avatar2 != undefined) {
             Networking.loaded();
         }
         if (Game.loaded) {
