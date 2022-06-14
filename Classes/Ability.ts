@@ -96,9 +96,9 @@ namespace Ability {
             if (Networking.client.id == Networking.client.idHost) {
                 let position: Game.ƒ.Vector2 = new ƒ.Vector2(this.owner.mtxLocal.translation.x + Math.random() * this.spawnRadius, this.owner.mtxLocal.translation.y + 5)
                 if (Math.round(Math.random()) > 0.5) {
-                    EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.BAT, position, Game.avatar1, null);
+                    EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, position, Game.avatar1, null);
                 } else {
-                    EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, Entity.ID.BAT, position, Game.avatar2, null);
+                    EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONORADDS, position, Game.avatar2, null);
                 }
             }
         }
@@ -122,7 +122,6 @@ namespace Ability {
     }
 
     export class Stomp extends Ability {
-        //TODO: DoStomp
         public bulletAmount: number = 60;
         private bullets: Bullets.Bullet[] = [];
         protected activateAbility(): void {

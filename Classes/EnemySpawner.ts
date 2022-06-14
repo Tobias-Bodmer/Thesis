@@ -4,14 +4,12 @@ namespace EnemySpawner {
 
     export function spawnMultipleEnemiesAtRoom(_maxEnemies: number, _roomPos: Game.ƒ.Vector2): void {
         if (Networking.client.idHost == Networking.client.id) {
-            //TODO: depending on currentroom.enemyCount and decrease it 
             let spawnedEnemies: number = 0;
             while (spawnedEnemies < _maxEnemies) {
                 if (currentTime == spawnTime) {
                     let position = new ƒ.Vector2(((Math.random() * Game.currentRoom.roomSize / 2) - ((Math.random() * Game.currentRoom.roomSize / 2))), ((Math.random() * Game.currentRoom.roomSize / 2) - ((Math.random() * Game.currentRoom.roomSize / 2))));
                     position.add(_roomPos);
-                    //TODO: use ID to get random enemies
-                    spawnByID(Enemy.ENEMYCLASS.ENEMYDUMB, Entity.ID.SMALLTICK, position);
+                    getRandomEnemy(position);
                     spawnedEnemies++;
                 }
                 currentTime--;
@@ -22,19 +20,20 @@ namespace EnemySpawner {
         }
     }
 
-    //TODO: make fresh
-    function getRandomEnemyId(): number {
-        let random = Math.round(Math.random() * Object.keys(Entity.ID).length / 2);
-        if (random <= 2) {
-            return getRandomEnemyId();
+    function getRandomEnemy(_position: ƒ.Vector2): void {
+        let enemyClass: number = Math.round(Math.random() * Object.keys(Enemy.ENEMYCLASS).length / 2);
+
+        if (enemyClass == undefined || enemyClass == Enemy.ENEMYCLASS.BIGBOOM || enemyClass == Enemy.ENEMYCLASS.SUMMONOR ||
+            enemyClass == Enemy.ENEMYCLASS.SUMMONORADDS || enemyClass == Enemy.ENEMYCLASS.ENEMYSMASH ||
+            enemyClass == Enemy.ENEMYCLASS.ENEMYPATROL) {
+            getRandomEnemy(_position);
+            return;
         }
-        else {
-            console.log(random);
-            return random;
-        }
+
+        spawnByID(enemyClass, _position);
     }
 
-    export function spawnByID(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2, _target?: Player.Player, _netID?: number) {
+    export function spawnByID(_enemyClass: Enemy.ENEMYCLASS, _position: ƒ.Vector2, _target?: Player.Player, _netID?: number) {
         if (Game.currentRoom.enemyCountManager.finished) {
             // return;
         }
@@ -42,28 +41,28 @@ namespace EnemySpawner {
         let enemy: Enemy.Enemy;
         switch (_enemyClass) {
             case Enemy.ENEMYCLASS.ENEMYDASH:
-                enemy = new Enemy.EnemyDash(_id, _position, _netID);
+                enemy = new Enemy.EnemyDash(Entity.ID.REDTICK, _position, _netID);
                 break;
             case Enemy.ENEMYCLASS.ENEMYDUMB:
-                enemy = new Enemy.EnemyDumb(_id, _position, _netID);
+                enemy = new Enemy.EnemyDumb(Entity.ID.SMALLTICK, _position, _netID);
                 break;
             case Enemy.ENEMYCLASS.ENEMYSHOOT:
-                enemy = new Enemy.EnemyShoot(_id, _position, _netID);
+                enemy = new Enemy.EnemyShoot(Entity.ID.SKELETON, _position, _netID);
                 break;
             case Enemy.ENEMYCLASS.ENEMYSMASH:
-                enemy = new Enemy.EnemySmash(_id, _position, _netID);
+                enemy = new Enemy.EnemySmash(Entity.ID.OGER, _position, _netID);
                 break;
             case Enemy.ENEMYCLASS.SUMMONORADDS:
-                enemy = new Enemy.SummonorAdds(_id, _position, _target, _netID);
+                enemy = new Enemy.SummonorAdds(Entity.ID.BAT, _position, _target, _netID);
                 break;
             case Enemy.ENEMYCLASS.SUMMONOR:
-                enemy = new Enemy.Summonor(_id, _position, _netID);
+                enemy = new Enemy.Summonor(Entity.ID.SUMMONOR, _position, _netID);
                 break;
             case Enemy.ENEMYCLASS.BIGBOOM:
-                enemy = new Enemy.BigBoom(_id, _position, _netID);
+                enemy = new Enemy.BigBoom(Entity.ID.BIGBOOM, _position, _netID);
                 break;
             case Enemy.ENEMYCLASS.ENEMYCIRCLE:
-                enemy = new Enemy.EnemyCircle(_id, _position, _netID);
+                enemy = new Enemy.EnemyCircle(Entity.ID.BAT, _position, _netID);
             default:
                 break;
         }
@@ -84,12 +83,12 @@ namespace EnemySpawner {
     export function networkSpawnById(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2, _netID: number, _target?: number) {
         if (_target != null) {
             if (Game.avatar1.netId == _target) {
-                spawnByID(_enemyClass, _id, _position, Game.avatar1, _netID);
+                spawnByID(_enemyClass, _position, Game.avatar1, _netID);
             } else {
-                spawnByID(_enemyClass, _id, _position, Game.avatar2, _netID);
+                spawnByID(_enemyClass, _position, Game.avatar2, _netID);
             }
         } else {
-            spawnByID(_enemyClass, _id, _position, null, _netID);
+            spawnByID(_enemyClass, _position, null, _netID);
         }
     }
 

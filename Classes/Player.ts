@@ -34,10 +34,6 @@ namespace Player {
                     this.switchAnimation(Entity.ANIMATIONSTATES.WALKLEFT);
                 }
             } else if (_direction.magnitude <= 0) {
-                if (this == Game.avatar1) {
-                    console.log(this.currentAnimationState);
-                }
-
                 if (this.currentAnimationState == Entity.ANIMATIONSTATES.WALKLEFT || this.currentAnimationState == Entity.ANIMATIONSTATES.IDLELEFT) {
                     this.switchAnimation(Entity.ANIMATIONSTATES.IDLELEFT);
                 } else {

@@ -382,7 +382,7 @@ namespace Enemy {
 
         stopDefencePhase = () => {
             this.damageTaken = 0;
-            new Buff.AttributesBuff(Buff.BUFFID.IMMUNE, null, 1, 0).removeBuff(this);
+            this.buffs.find(buff => buff.id == Buff.BUFFID.IMMUNE).removeBuff(this);
             this.currentShootingCount = this.shootingCount;
             this.teleport(ENEMYBEHAVIOUR.SHOOT360, new Game.ƒ.Vector2(Game.currentRoom.mtxWorld.translation.x, Game.currentRoom.mtxWorld.translation.y));
         }
