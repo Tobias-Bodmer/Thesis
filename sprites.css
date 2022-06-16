@@ -1,5 +1,6 @@
 body{
     font-family: Minecraft;
+    background-color: rgb(145, 143, 140);
 }
 .sprite{
     width: 100%;
@@ -42,4 +43,8 @@ h1{
 
 #right{
     width: 50%;
+}
+
+.credits{
+    font-size: 10px;
 }
