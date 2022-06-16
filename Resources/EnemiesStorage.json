@@ -85,7 +85,7 @@
         {
             "name": "skeleton",
             "attributes": {
-                "healthPoints": 100,
+                "healthPoints": 30,
                 "attackPoints": 1,
                 "speed": 2,
                 "scale": 2,
@@ -101,7 +101,7 @@
         {
             "name": "oger",
             "attributes": {
-                "healthPoints": 100,
+                "healthPoints": 40,
                 "attackPoints": 5,
                 "speed": 1,
                 "scale": 2,

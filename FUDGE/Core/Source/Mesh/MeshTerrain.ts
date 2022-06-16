@@ -44,6 +44,13 @@ namespace FudgeCore {
     }
 
     public create(_resolution: Vector2 = Vector2.ONE(2), _scaleInput: Vector2 = Vector2.ONE(), _functionOrSeed: HeightMapFunction | number = 0): void {
+
+      new Vertex{ new Vector3(_blade.x / 2, _blade.y / 2, _blade.z / 2), new Vector2() }
+      new Vertex{ new Vector3(-_blade.x / 2, _blade.y / 2, _blade.z / 2), new Vector2() }
+      new Vertex{ new Vector3(_blade.x / 2, -_blade.y / 2, _blade.z / 2), new Vector2() }
+      new Vertex{ new Vector3(-_blade.x / 2, -_blade.y / 2, _blade.z / 2), new Vector2() }
+
+
       this.clear();
       this.seed = undefined;
       this.resolution = new Vector2(Math.round(_resolution.x), Math.round(_resolution.y));

@@ -162,6 +162,7 @@ namespace Game {
     function start() {
         loadTextures();
         loadJSON();
+        Networking.connecting();
         // ƒAid.addStandardLightComponents(graph);
 
         //TODO: add sprite to graphe for startscreen
@@ -169,11 +170,15 @@ namespace Game {
         document.getElementById("StartGame").addEventListener("click", () => {
             document.getElementById("Startscreen").style.visibility = "hidden";
 
-            Networking.connecting();
-
             waitOnConnection();
             async function waitOnConnection() {
                 setClient();
+
+                if (Networking.client.idRoom.toLowerCase() == "lobby") {
+                    if (document.getElementById("Hostscreen").style.visibility.toLowerCase() != "visible") {
+                        document.getElementById("Hostscreen").style.visibility = "visible";
+                    }
+                }
                 if (Networking.clients.filter(elem => elem.ready == true).length >= 2 && Networking.client.idHost != undefined) {
                     if (Networking.client.id == Networking.client.idHost) {
                         document.getElementById("IMHOST").style.visibility = "visible";
@@ -185,7 +190,7 @@ namespace Game {
                     // EnemySpawner.spawnEnemies();
 
                     if (Networking.client.id == Networking.client.idHost) {
-                        EnemySpawner.spawnByID(Enemy.ENEMYCLASS.ENEMYSHOOT, new ƒ.Vector2(3, 3));
+                        // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.ENEMYSHOOT, new ƒ.Vector2(3, 3));
                         // EnemySpawner.spawnMultipleEnemiesAtRoom(5, Game.currentRoom.mtxLocal.translation.toVector2());
                         // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.ENEMYSMASH, Entity.ID.OGER, new ƒ.Vector2(3, 3), null);
                         // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3));
@@ -194,19 +199,19 @@ namespace Game {
 
                     //#region init Items
                     if (Networking.client.id == Networking.client.idHost) {
-                        let item2 = new Items.BuffItem(Items.ITEMID.GETWEAKO);
-                        let item3 = new Items.BuffItem(Items.ITEMID.GETSTRONKO);
-                        let item4 = new Items.InternalItem(Items.ITEMID.SCALEDOWN);
-                        let item5 = new Items.InternalItem(Items.ITEMID.SCALEUP);
+                        let item2 = new Items.BuffItem(Items.ITEMID.TOXICRELATIONSHIP);
+                        // let item3 = new Items.BuffItem(Items.ITEMID.GETSTRONKO);
+                        let item4 = new Items.InternalItem(Items.ITEMID.PROJECTILESUP);
+                        let item5 = new Items.InternalItem(Items.ITEMID.DMGUP);
 
                         item2.setPosition(new ƒ.Vector2(-5, 0));
-                        // item2.spawn();
-                        item3.setPosition(new ƒ.Vector2(5, 0));
+                        item2.spawn();
+                        // item3.setPosition(new ƒ.Vector2(5, 0));
                         // item3.spawn();
                         item4.setPosition(new ƒ.Vector2(-10, 0));
-                        // item4.spawn();
+                        item4.spawn();
                         item5.setPosition(new ƒ.Vector2(10, 0));
-                        // item5.spawn();
+                        item5.spawn();
 
                         // // let item3 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(-2, 0), null);
                         // let zipzap = new Items.InternalItem(Items.ITEMID.TEST);
@@ -224,7 +229,7 @@ namespace Game {
 
             }
 
-            document.getElementById("Hostscreen").style.visibility = "visible";
+
 
             document.getElementById("Host").addEventListener("click", Networking.createRoom);
             document.getElementById("Join").addEventListener("click", () => {
