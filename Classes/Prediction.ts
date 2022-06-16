@@ -130,6 +130,7 @@ namespace Networking {
             if (positionError > this.AsyncTolerance) {
                 console.warn(this.owner.name + " need to be updated to: X:" + this.latestServerState.position.x + " Y: " + this.latestServerState.position.y);
                 this.owner.mtxLocal.translation = this.latestServerState.position;
+                this.owner.mtxLocal.rotation = this.latestServerState.rotation;
 
                 this.stateBuffer[serverStateBufferIndex] = this.latestServerState;
 
@@ -235,6 +236,7 @@ namespace Networking {
             if (positionError > this.AsyncTolerance) {
                 console.warn("you need to be updated to: X:" + this.latestServerState.position.x + " Y: " + this.latestServerState.position.y);
                 this.owner.mtxLocal.translation = this.latestServerState.position;
+                this.owner.mtxLocal.rotation = this.latestServerState.rotation;
 
                 this.stateBuffer[serverStateBufferIndex] = this.latestServerState;
 
