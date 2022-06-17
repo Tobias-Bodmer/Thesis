@@ -46,7 +46,7 @@ namespace Buff {
         }
 
         public clone(): Buff {
-            return this;
+            return;
         }
 
         protected applyBuff(_avatar: Entity.Entity) {

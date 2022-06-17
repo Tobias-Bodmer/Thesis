@@ -416,9 +416,8 @@ namespace Items {
             switch (this.id) {
                 case ITEMID.TOXICRELATIONSHIP:
                     if (host) {
-                        let newBuff = this.buff.find(buff => buff.id == Buff.BUFFID.POISON).clone();
-                        newBuff.duration = undefined;
-                        (<Buff.DamageBuff>newBuff).value = 0.5;
+                        let buffref = Game.damageBuffJSON.find(buff => buff.id == Buff.BUFFID.POISON);
+                        let newBuff = new Buff.DamageBuff(buffref.id, null, buffref.tickRate, 0.5);
                         newBuff.addToEntity(_avatar);
                     }
                     break;
