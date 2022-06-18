@@ -22,6 +22,8 @@ namespace Entity {
         protected idleScale: number;
         protected currentKnockback: ƒ.Vector3 = ƒ.Vector3.ZERO();
         public shadow: Shadow;
+        protected spriteScaleFactor: number = 2;
+
 
         constructor(_id: Entity.ID, _netId: number) {
             super(getNameById(_id));
@@ -63,10 +65,14 @@ namespace Entity {
             }
         }
 
-        public updateScale(_newScale: number) {
-            this.attributes.updateScaleDependencies(_newScale);
-            this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.getScale, this.attributes.getScale, 1);
+        public updateScale(_newScale: number, _updateScaleDependencies: boolean) {
+            if (_updateScaleDependencies) {
+                this.attributes.updateScaleDependencies(_newScale);
+            }
+
+            this.mtxLocal.scaling = new ƒ.Vector3(_newScale * this.spriteScaleFactor, _newScale * this.spriteScaleFactor, 1);
             this.collider.setRadius((this.cmpTransform.mtxLocal.scaling.x / 2) * this.colliderScaleFaktor);
+            this.attributes.scale = _newScale;
         }
 
         public setCollider() {
@@ -198,7 +204,7 @@ namespace Entity {
                     this.attributes.healthPoints -= hitValue;
                     Game.graph.addChild(new UI.DamageUI(this.mtxLocal.translation, Math.round(hitValue)));
                     Networking.updateUI(this.mtxLocal.translation.toVector2(), Math.round(hitValue));
-                    Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: this.attributes.healthPoints, type: ATTRIBUTETYPE.HEALTHPOINTS }, this.netId);
+                    Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: this.attributes }, this.netId);
                 }
                 if (this.attributes.healthPoints <= 0) {
                     Networking.removeEntity(this.netId);

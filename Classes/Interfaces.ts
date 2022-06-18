@@ -16,8 +16,7 @@ namespace Interfaces {
         getDamage(): void;
     }
     export interface IAttributeValuePayload {
-        value: number | boolean;
-        type: Entity.ATTRIBUTETYPE;
+        value: Entity.Attributes;
     }
 
     export interface INetworkable {

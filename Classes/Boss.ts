@@ -42,6 +42,9 @@ namespace Enemy {
             this.target = Game.avatar1.mtxLocal.translation.toVector2();
 
             this.isAggressive = true;
+
+            this.spriteScaleFactor = 2;
+            this.updateScale(this.attributes.getScale, false);
         }
 
         public die(): void {
@@ -262,6 +265,10 @@ namespace Enemy {
             this.dash.onDoAbility = this.shootOnDash;
             this.dash.onEndAbility = this.changeDashDirection;
             this.transit(ENEMYBEHAVIOUR.ATTACK);
+
+            this.spriteScaleFactor = 2;
+
+            this.updateScale(this.attributes.getScale, false);
         }
 
         intro = () => {

@@ -413,36 +413,21 @@ namespace Networking {
 
                     //apply item attributes
                     if (message.content != undefined && message.content.text == FUNCTION.UPDATEATTRIBUTES.toString()) {
+                        let refAttributes = <Entity.Attributes>message.content.payload.value;
                         let entity = Game.entities.find(elem => elem.netId == message.content.netId);
-                        switch (message.content.payload.type) {
-                            case Entity.ATTRIBUTETYPE.HEALTHPOINTS:
-                                entity.attributes.healthPoints = message.content.payload.value;
-                                break;
-                            case Entity.ATTRIBUTETYPE.MAXHEALTHPOINTS:
-                                entity.attributes.maxHealthPoints = message.content.payload.value
-                                break;
-                            case Entity.ATTRIBUTETYPE.KNOCKBACKFORCE:
-                                entity.attributes.knockbackForce = message.content.payload.value;
-                                break;
-                            case Entity.ATTRIBUTETYPE.HITABLE:
-                                entity.attributes.hitable = message.content.payload.value;
-                                break;
-                            case Entity.ATTRIBUTETYPE.ARMOR:
-                                entity.attributes.armor = message.content.payload.value;
-                                break;
-                            case Entity.ATTRIBUTETYPE.SPEED:
-                                entity.attributes.speed = message.content.payload.value;
-                                break;
-                            case Entity.ATTRIBUTETYPE.ATTACKPOINTS:
-                                entity.attributes.attackPoints = message.content.payload.value;
-                                break;
-                            case Entity.ATTRIBUTETYPE.COOLDOWNREDUCTION:
-                                entity.attributes.coolDownReduction = message.content.payload.value;
-                                break;
-                            case Entity.ATTRIBUTETYPE.SCALE:
-                                entity.updateScale(message.content.payload.value);
-                                break;
-                        }
+
+                        entity.updateScale(refAttributes.scale, false);
+
+                        entity.attributes.accuracy = refAttributes.accuracy;
+                        entity.attributes.armor = refAttributes.armor;
+                        entity.attributes.attackPoints = refAttributes.attackPoints;
+                        entity.attributes.coolDownReduction = refAttributes.coolDownReduction;
+                        entity.attributes.maxHealthPoints = refAttributes.maxHealthPoints;
+                        entity.attributes.healthPoints = refAttributes.healthPoints;
+                        entity.attributes.hitable = refAttributes.hitable;
+                        entity.attributes.knockbackForce = refAttributes.knockbackForce;
+                        entity.attributes.speed = refAttributes.speed;
+                        entity.attributes.scale = refAttributes.scale;
                     }
 
                     //apply weapon

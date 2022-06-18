@@ -208,7 +208,15 @@ namespace Buff {
     export class AttributesBuff extends Buff {
         private isBuffApplied: boolean;
         value: number;
-        private removedValue: number;
+        private difHealthPoints: number;
+        private difMaxHealthPoints: number;
+        private difArmor: number;
+        private difSpeed: number;
+        private difAttackPoints: number;
+        private difCoolDownReduction: number;
+        private difScale: number;
+        private difAccurary: number;
+        private difKnockback: number;
         constructor(_id: BUFFID, _duration: number, _tickRate: number, _value: number) {
             super(_id, _duration, _tickRate);
             this.isBuffApplied = false;
@@ -242,10 +250,10 @@ namespace Buff {
             switch (_id) {
                 case BUFFID.SLOW:
                     if (_add) {
-                        this.removedValue = _avatar.attributes.speed - Calculation.subPercentageAmountToValue(_avatar.attributes.speed, this.value);
-                        _avatar.attributes.speed -= this.removedValue;
+                        this.difSpeed = _avatar.attributes.speed - Calculation.subPercentageAmountToValue(_avatar.attributes.speed, this.value);
+                        _avatar.attributes.speed -= this.difSpeed;
                     } else {
-                        _avatar.attributes.speed += this.removedValue;
+                        _avatar.attributes.speed += this.difSpeed;
                     }
                     break;
                 case BUFFID.IMMUNE:
@@ -254,57 +262,86 @@ namespace Buff {
                     } else {
                         _avatar.attributes.hitable = true;
                     }
-                    payload = <Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.hitable, type: Entity.ATTRIBUTETYPE.HITABLE }
+                    payload = <Interfaces.IAttributeValuePayload>{ value: _avatar.attributes }
                     break;
                 case BUFFID.SCALEUP:
                     if (_add) {
-                        this.removedValue = Calculation.addPercentageAmountToValue(_avatar.attributes.getScale, this.value) - _avatar.attributes.getScale;
-                        _avatar.updateScale(_avatar.attributes.getScale + this.removedValue);
-
+                        let currentMaxHealthPoints = _avatar.attributes.maxHealthPoints;
+                        let currentHealthPoints = _avatar.attributes.healthPoints;
+                        let currentAttackPoints = _avatar.attributes.attackPoints;
+                        let currentSpeed = _avatar.attributes.speed;
+                        let currentKnockbackForce = _avatar.attributes.knockbackForce;
+                        this.difScale = Calculation.addPercentageAmountToValue(_avatar.attributes.getScale, this.value) - _avatar.attributes.getScale;
+                        _avatar.updateScale(_avatar.attributes.getScale + this.difScale, _add);
+                        this.difMaxHealthPoints = currentMaxHealthPoints - _avatar.attributes.maxHealthPoints;
+                        this.difHealthPoints = currentHealthPoints - _avatar.attributes.healthPoints;
+                        this.difAttackPoints = currentAttackPoints - _avatar.attributes.attackPoints;
+                        this.difSpeed = currentSpeed - _avatar.attributes.speed;
+                        this.difKnockback = currentKnockbackForce - _avatar.attributes.knockbackForce;
                     }
                     else {
-                        _avatar.updateScale(_avatar.attributes.getScale - this.removedValue);
+                        _avatar.updateScale(_avatar.attributes.getScale - this.difScale, _add);
+                        _avatar.attributes.maxHealthPoints += this.difMaxHealthPoints;
+                        _avatar.attributes.healthPoints += this.difHealthPoints;
+                        _avatar.attributes.attackPoints += this.difAttackPoints;
+                        _avatar.attributes.speed += this.difSpeed;
+                        _avatar.attributes.knockbackForce += this.difKnockback;
 
                     }
-                    payload = <Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.getScale, type: Entity.ATTRIBUTETYPE.SCALE };
+                    payload = <Interfaces.IAttributeValuePayload>{ value: _avatar.attributes };
                     break;
                 case BUFFID.SCALEDOWN:
                     if (_add) {
-                        this.removedValue = _avatar.attributes.getScale - Calculation.subPercentageAmountToValue(_avatar.attributes.getScale, this.value);
-                        _avatar.updateScale(_avatar.attributes.getScale - this.removedValue);
-
+                        let currentMaxHealthPoints = _avatar.attributes.maxHealthPoints;
+                        let currentHealthPoints = _avatar.attributes.healthPoints;
+                        let currentAttackPoints = _avatar.attributes.attackPoints;
+                        let currentSpeed = _avatar.attributes.speed;
+                        let currentKnockbackForce = _avatar.attributes.knockbackForce;
+                        this.difScale = _avatar.attributes.getScale - Calculation.subPercentageAmountToValue(_avatar.attributes.getScale, this.value);
+                        _avatar.updateScale(_avatar.attributes.getScale - this.difScale, _add);
+                        this.difMaxHealthPoints = currentMaxHealthPoints - _avatar.attributes.maxHealthPoints;
+                        this.difHealthPoints = currentHealthPoints - _avatar.attributes.healthPoints;
+                        this.difAttackPoints = currentAttackPoints - _avatar.attributes.attackPoints;
+                        this.difSpeed = currentSpeed - _avatar.attributes.speed;
+                        this.difKnockback = currentKnockbackForce - _avatar.attributes.knockbackForce;
                     }
                     else {
-                        _avatar.updateScale(_avatar.attributes.getScale + this.removedValue);
-
+                        _avatar.updateScale(_avatar.attributes.getScale + this.difScale, _add);
+                        _avatar.attributes.maxHealthPoints += this.difMaxHealthPoints;
+                        _avatar.attributes.healthPoints += this.difHealthPoints;
+                        _avatar.attributes.attackPoints += this.difAttackPoints;
+                        _avatar.attributes.speed += this.difSpeed;
+                        _avatar.attributes.knockbackForce += this.difKnockback;
                     }
-                    payload = <Interfaces.IAttributeValuePayload>{ value: _avatar.attributes.getScale, type: Entity.ATTRIBUTETYPE.SCALE };
+                    payload = <Interfaces.IAttributeValuePayload>{ value: _avatar.attributes };
                     break;
                 case BUFFID.FURIOUS:
                     if (_add) {
-                        this.removedValue = _avatar.attributes.armor;
-                        _avatar.attributes.armor = 95;
-                        _avatar.attributes.speed *= 2;
+                        this.difArmor = 95 - _avatar.attributes.armor;
+                        this.difSpeed = _avatar.attributes.speed * 2 - _avatar.attributes.speed;
+                        _avatar.attributes.armor += this.difArmor;
+                        _avatar.attributes.speed += this.difSpeed;
 
                         _avatar.weapon.getCoolDown.setMaxCoolDown = _avatar.weapon.getCoolDown.getMaxCoolDown / 2;
                     }
                     else {
-                        _avatar.attributes.armor = this.removedValue;
-                        _avatar.attributes.speed /= 2;
+                        _avatar.attributes.armor -= this.difArmor;
+                        _avatar.attributes.speed -= this.difSpeed;
 
                         _avatar.weapon.getCoolDown.setMaxCoolDown = _avatar.weapon.getCoolDown.getMaxCoolDown * 2;
                     }
                     break;
                 case BUFFID.EXHAUSTED:
                     if (_add) {
-                        this.removedValue = _avatar.attributes.armor;
-                        _avatar.attributes.armor = 0;
+                        this.difArmor = 0 - _avatar.attributes.armor;
+                        _avatar.attributes.armor += this.difArmor;
                     }
                     else {
-                        _avatar.attributes.armor = this.removedValue;
+                        _avatar.attributes.armor -= this.difArmor;
                     }
                     break;
             }
+            payload = <Interfaces.IAttributeValuePayload>{ value: _avatar.attributes };
             Networking.updateEntityAttributes(payload, _avatar.netId);
         }
     }

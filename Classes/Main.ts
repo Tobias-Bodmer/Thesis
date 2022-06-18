@@ -201,8 +201,8 @@ namespace Game {
                     if (Networking.client.id == Networking.client.idHost) {
                         let item2 = new Items.BuffItem(Items.ITEMID.TOXICRELATIONSHIP);
                         // let item3 = new Items.BuffItem(Items.ITEMID.GETSTRONKO);
-                        let item4 = new Items.InternalItem(Items.ITEMID.PROJECTILESUP);
-                        let item5 = new Items.InternalItem(Items.ITEMID.DMGUP);
+                        let item4 = new Items.BuffItem(Items.ITEMID.GETSTRONKO);
+                        let item5 = new Items.BuffItem(Items.ITEMID.GETWEAKO);
 
                         item2.setPosition(new ƒ.Vector2(-5, 0));
                         item2.spawn();

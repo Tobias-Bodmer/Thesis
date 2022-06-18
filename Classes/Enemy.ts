@@ -24,6 +24,8 @@ namespace Enemy {
         moveDirection: Game.ƒ.Vector3 = Game.ƒ.Vector3.ZERO();
         protected abstract flocking: FlockingBehaviour;
         protected isAggressive: boolean;
+        protected canThinkCoolDown: Ability.Cooldown;
+        protected canThink: boolean;
 
         stateNext: ENEMYBEHAVIOUR;
         stateCurrent: ENEMYBEHAVIOUR;
@@ -44,6 +46,11 @@ namespace Enemy {
                 this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["idle"]);
             }
 
+            this.canThink = false;
+            this.canThinkCoolDown = new Ability.Cooldown(60 + (Math.random() * 5));
+            this.canThinkCoolDown.onEndCooldown = this.startThinkin;
+            this.canThinkCoolDown.startCooldown();
+
             this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
             this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.getScale, this.attributes.getScale, 1);
             this.offsetColliderX = ref.offsetColliderX;
@@ -54,6 +61,7 @@ namespace Enemy {
 
         }
 
+
         act(): void {
             this.instructions.act(this.stateCurrent, this);
         }
@@ -63,13 +71,19 @@ namespace Enemy {
             this.instructions.transit(this.stateCurrent, _next, this);
         }
 
+        protected startThinkin = () => {
+            this.canThink = true;
+        }
+
         public update() {
-            this.shadow.updateShadowPos();
-            if (Networking.client.id == Networking.client.idHost) {
-                super.update();
-                this.act();
-                this.move(this.moveDirection);
-                Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId);
+            if (this.canThink) {
+                this.shadow.updateShadowPos();
+                if (Networking.client.id == Networking.client.idHost) {
+                    super.update();
+                    this.act();
+                    this.move(this.moveDirection);
+                    Networking.updateEnemyPosition(this.cmpTransform.mtxLocal.translation, this.netId);
+                }
             }
         };
 
@@ -162,7 +176,7 @@ namespace Enemy {
 
     export class EnemyCircle extends Enemy {
         public flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 0.1, 4, 1, 0, 1);
-        private circleRadius: number = 5;
+        private circleRadius: number = 2;
         private circleDirection: number;
         private circleTolerance: number = 0.1;
         constructor(_id: Entity.ID, _pos: Game.ƒ.Vector2, _netId: number) {
@@ -303,7 +317,11 @@ namespace Enemy {
         randomPlayer = Math.round(Math.random());
         currentBehaviour: Entity.BEHAVIOUR = Entity.BEHAVIOUR.IDLE;
         protected flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 4, 1, 0, 0);
-
+        constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId: number) {
+            super(_id, _position, _netId);
+            this.spriteScaleFactor = 2;
+            this.updateScale(this.attributes.getScale, false);
+        }
 
         behaviour() {
             this.avatars = [Game.avatar1, Game.avatar2];
@@ -430,7 +448,7 @@ namespace Enemy {
     }
 
     export class EnemyShoot extends Enemy {
-        distanceToPlayer: number = 4 * 4;
+        distanceToPlayer: number = 5 * 5;
         protected flocking: FlockingBehaviour = new FlockingBehaviour(this, 3, 0.5, 0.1, 1, 4, 0, 1, 1);
         private distance: number;
 
@@ -442,6 +460,8 @@ namespace Enemy {
             this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.SHOOT, this.shoot);
             this.instructions = this.stateMachineInstructions;
             this.stateCurrent = ENEMYBEHAVIOUR.IDLE;
+            this.spriteScaleFactor = 2;
+            this.updateScale(this.attributes.getScale, false);
         }
 
         public update(): void {
@@ -492,6 +512,7 @@ namespace Enemy {
             this.avatar = _target;
             this.stateMachineInstructions.actDefault = this.walk;
             this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.WALK, this.walk);
+            this.flocking.avoidRadius = 2;
         }
 
 

@@ -185,10 +185,11 @@ declare namespace Entity {
         protected idleScale: number;
         protected currentKnockback: ƒ.Vector3;
         shadow: Shadow;
+        protected spriteScaleFactor: number;
         constructor(_id: Entity.ID, _netId: number);
         eventUpdate: (_event: Event) => void;
         update(): void;
-        updateScale(_newScale: number): void;
+        updateScale(_newScale: number, _updateScaleDependencies: boolean): void;
         setCollider(): void;
         protected updateBuffs(): void;
         protected collide(_direction: ƒ.Vector3): void;
@@ -266,6 +267,8 @@ declare namespace Enemy {
         moveDirection: Game.ƒ.Vector3;
         protected abstract flocking: FlockingBehaviour;
         protected isAggressive: boolean;
+        protected canThinkCoolDown: Ability.Cooldown;
+        protected canThink: boolean;
         stateNext: ENEMYBEHAVIOUR;
         stateCurrent: ENEMYBEHAVIOUR;
         instructions: ƒAid.StateMachineInstructions<ENEMYBEHAVIOUR>;
@@ -273,6 +276,7 @@ declare namespace Enemy {
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number);
         act(): void;
         transit(_next: ENEMYBEHAVIOUR): void;
+        protected startThinkin: () => void;
         update(): void;
         getDamage(_value: number): void;
         getKnockback(_knockbackForce: number, _position: Game.ƒ.Vector3): void;
@@ -317,6 +321,7 @@ declare namespace Enemy {
         randomPlayer: number;
         currentBehaviour: Entity.BEHAVIOUR;
         protected flocking: FlockingBehaviour;
+        constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId: number);
         behaviour(): void;
         moveBehaviour(): void;
     }
@@ -373,8 +378,7 @@ declare namespace Interfaces {
         getDamage(): void;
     }
     interface IAttributeValuePayload {
-        value: number | boolean;
-        type: Entity.ATTRIBUTETYPE;
+        value: Entity.Attributes;
     }
     interface INetworkable {
         netId: number;
@@ -488,7 +492,7 @@ declare namespace Items {
         addItemToEntity(_avatar: Player.Player): void;
         removeItemFromEntity(_avatar: Player.Player): void;
         clone(): Item;
-        protected setAttributesById(_avatar: Player.Player, _add: boolean): void;
+        protected setAttributesById(_avatar: Player.Player, _addBuff: boolean): void;
     }
     class BuffItem extends Item {
         value: number;
@@ -671,7 +675,7 @@ declare namespace Entity {
         speed: number;
         attackPoints: number;
         coolDownReduction: number;
-        private scale;
+        scale: number;
         get getScale(): number;
         accuracy: number;
         protected readonly baseMaxHealthPoints: number;
@@ -817,7 +821,15 @@ declare namespace Buff {
     class AttributesBuff extends Buff {
         private isBuffApplied;
         value: number;
-        private removedValue;
+        private difHealthPoints;
+        private difMaxHealthPoints;
+        private difArmor;
+        private difSpeed;
+        private difAttackPoints;
+        private difCoolDownReduction;
+        private difScale;
+        private difAccurary;
+        private difKnockback;
         constructor(_id: BUFFID, _duration: number, _tickRate: number, _value: number);
         clone(): AttributesBuff;
         doBuffStuff(_avatar: Entity.Entity): void;
@@ -1103,9 +1115,7 @@ declare namespace Player {
         client: Networking.ClientPrediction;
         readonly abilityCount: number;
         currentabilityCount: number;
-        protected spriteScaleFactor: number;
         constructor(_id: Entity.ID, _netId?: number);
-        updateScale(_newScale: number): void;
         move(_direction: ƒ.Vector3): void;
         openDoor(): void;
         protected scaleMoveVector(_direction: Game.ƒ.Vector3): void;

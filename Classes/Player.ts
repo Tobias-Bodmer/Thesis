@@ -4,7 +4,6 @@ namespace Player {
         public client: Networking.ClientPrediction;
         readonly abilityCount: number = 1;
         currentabilityCount: number = this.abilityCount;
-        protected spriteScaleFactor: number = 2;
 
         constructor(_id: Entity.ID, _netId?: number) {
             super(_id, _netId);
@@ -13,15 +12,11 @@ namespace Player {
             console.log(ref);
             this.attributes = new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, (<any>ref.attributes).scale, ref.attributes.knockbackForce, ref.attributes.armor, ref.attributes.coolDownReduction, ref.attributes.accuracy);
 
-            this.updateScale(this.attributes.getScale);
             this.tag = Tag.TAG.PLAYER;
             this.client = new Networking.ClientPrediction(this.netId);
-        }
-
-        public updateScale(_newScale: number) {
-            this.attributes.updateScaleDependencies(_newScale);
-            this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.getScale * this.spriteScaleFactor, this.attributes.getScale * this.spriteScaleFactor, 1);
-            this.collider.setRadius((this.cmpTransform.mtxLocal.scaling.x / 2) * this.colliderScaleFaktor);
+            
+            this.spriteScaleFactor = 2;
+            this.updateScale(this.attributes.getScale, false);
         }
 
         public move(_direction: ƒ.Vector3) {
