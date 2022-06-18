@@ -25,7 +25,7 @@ namespace EnemySpawner {
     }
 
     function getRandomEnemy(_position: ƒ.Vector2): void {
-        let enemyClass: number = Math.round(Math.random() * Object.keys(Enemy.ENEMYCLASS).length / 2);
+        let enemyClass: number = Math.round(Math.random() * ((Object.keys(Enemy.ENEMYCLASS).length / 2) - 1));
 
         if (enemyClass == undefined || enemyClass == Enemy.ENEMYCLASS.BIGBOOM || enemyClass == Enemy.ENEMYCLASS.SUMMONOR ||
             enemyClass == Enemy.ENEMYCLASS.SUMMONORADDS || enemyClass == Enemy.ENEMYCLASS.ENEMYSMASH ||
@@ -39,8 +39,9 @@ namespace EnemySpawner {
 
     export function spawnByID(_enemyClass: Enemy.ENEMYCLASS, _position: ƒ.Vector2, _target?: Player.Player, _netID?: number) {
         if (Game.currentRoom.enemyCountManager.finished) {
-            // return;
+            return;
         }
+        console.log("spawned enemy " + Enemy.ENEMYCLASS[_enemyClass].toString());
 
         let enemy: Enemy.Enemy;
         switch (_enemyClass) {
