@@ -211,7 +211,6 @@ namespace Weapons {
             let removeItem = this.owner.items.find(item => (<Items.InternalItem>item).id == Items.ITEMID.THORSHAMMER);
 
             if (removeItem != undefined) {
-                Networking.updateInventory(false, removeItem.id, removeItem.netId, this.ownerNetId);
                 this.owner.items.splice(this.owner.items.indexOf(removeItem), 1);
             }
         }

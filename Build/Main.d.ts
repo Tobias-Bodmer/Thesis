@@ -937,7 +937,7 @@ declare namespace Collider {
     }
 }
 declare namespace EnemySpawner {
-    function spawnMultipleEnemiesAtRoom(_maxEnemies: number, _roomPos: Game.ƒ.Vector2): void;
+    function spawnMultipleEnemiesAtRoom(_maxEnemies: number, _roomPos: Game.ƒ.Vector2, _enemyClass?: Enemy.ENEMYCLASS): void;
     function spawnByID(_enemyClass: Enemy.ENEMYCLASS, _position: ƒ.Vector2, _target?: Player.Player, _netID?: number): void;
     function networkSpawnById(_enemyClass: Enemy.ENEMYCLASS, _id: Entity.ID, _position: ƒ.Vector2, _netID: number, _target?: number): void;
 }
@@ -1148,6 +1148,7 @@ declare namespace Generation {
         private maxEnemyCount;
         get getMaxEnemyCount(): number;
         private currentEnemyCount;
+        get getCurrentEnemyCount(): number;
         finished: boolean;
         setFinished: boolean;
         constructor(_enemyCount: number, _setFinished: boolean);
@@ -1232,11 +1233,13 @@ declare namespace Generation {
     }
     export class ChallengeRoom extends Room {
         challenge: CHALLENGE;
+        item: Items.Item;
         challengeRoomMat: ƒ.Material;
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number);
         protected randomChallenge(): CHALLENGE;
         update(): void;
         onAddToGraph(): void;
+        spawnEnemys(): void;
         protected startThorsHammerChallenge(): void;
         protected stopThorsHammerChallenge(): void;
     }

@@ -2,14 +2,18 @@ namespace EnemySpawner {
     let spawnTime: number = 0 * 60;
     let currentTime: number = spawnTime;
 
-    export function spawnMultipleEnemiesAtRoom(_maxEnemies: number, _roomPos: Game.ƒ.Vector2): void {
+    export function spawnMultipleEnemiesAtRoom(_maxEnemies: number, _roomPos: Game.ƒ.Vector2, _enemyClass?: Enemy.ENEMYCLASS): void {
         if (Networking.client.idHost == Networking.client.id) {
             let spawnedEnemies: number = 0;
             while (spawnedEnemies < _maxEnemies) {
                 if (currentTime == spawnTime) {
                     let position = new ƒ.Vector2(((Math.random() * Game.currentRoom.roomSize / 2) - ((Math.random() * Game.currentRoom.roomSize / 2))), ((Math.random() * Game.currentRoom.roomSize / 2) - ((Math.random() * Game.currentRoom.roomSize / 2))));
                     position.add(_roomPos);
-                    getRandomEnemy(position);
+                    if (_enemyClass == undefined) {
+                        getRandomEnemy(position);
+                    } else {
+                        spawnByID(_enemyClass, position);
+                    }
                     spawnedEnemies++;
                 }
                 currentTime--;

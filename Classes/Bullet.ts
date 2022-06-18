@@ -181,7 +181,6 @@ namespace Bullets {
                     item.setChoosenOneNetId(Game.avatar1.netId);
                 }
                 item.spawn();
-                console.log("spawn");
             }
         }
 

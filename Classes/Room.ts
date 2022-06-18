@@ -10,7 +10,7 @@ namespace Generation {
 
     export class EnemyCountManager {
         private maxEnemyCount: number; get getMaxEnemyCount(): number { return this.maxEnemyCount };
-        private currentEnemyCount: number;
+        private currentEnemyCount: number; get getCurrentEnemyCount(): number { return this.currentEnemyCount };
         public finished: boolean;
         public setFinished: boolean;
 
@@ -366,6 +366,7 @@ namespace Generation {
     }
     export class ChallengeRoom extends Room {
         challenge: CHALLENGE;
+        item: Items.Item;
         challengeRoomMat: ƒ.Material = new ƒ.Material("challengeRoomMat", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("blue")));
 
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
@@ -393,6 +394,17 @@ namespace Generation {
                             break;
                     }
                 }
+            } else {
+                if (Networking.client.id == Networking.client.idHost) {
+                    switch (this.challenge) {
+                        case CHALLENGE.THORSHAMMER:
+                            this.spawnEnemys();
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
             }
         }
 
@@ -409,12 +421,24 @@ namespace Generation {
             }
         }
 
+        public spawnEnemys() {
+            let avatar1Inv = Game.avatar1.items.find(item => item == this.item);
+            let avatar2Inv = Game.avatar2.items.find(item => item == this.item);
+            if (avatar1Inv != undefined || avatar2Inv != undefined) {
+                if (this.enemyCountManager.getMaxEnemyCount <= 0) {
+                    this.enemyCountManager = new EnemyCountManager(10, false);
+                    EnemySpawner.spawnMultipleEnemiesAtRoom(this.enemyCountManager.getMaxEnemyCount, this.mtxLocal.translation.toVector2(), Enemy.ENEMYCLASS.ENEMYDASH);
+                }
+            }
+            if (this.enemyCountManager.getMaxEnemyCount > 0 && this.enemyCountManager.getCurrentEnemyCount <= 0) {
+                this.enemyCountManager.finished = true;
+            }
+        }
+
         protected startThorsHammerChallenge() {
             if (this.enemyCountManager.finished) {
                 return;
             }
-
-            this.enemyCountManager = new EnemyCountManager(10, true);
 
             Game.avatar1.weapon = new Weapons.ThorsHammer(1, Bullets.BULLETTYPE.THORSHAMMER, 1, Game.avatar1.netId);
             Game.avatar2.weapon = new Weapons.ThorsHammer(1, Bullets.BULLETTYPE.THORSHAMMER, 1, Game.avatar2.netId);
@@ -430,8 +454,11 @@ namespace Generation {
                 choosenOne = Game.avatar2;
             }
 
-            thorshammer.addItemToEntity(choosenOne);
-            Networking.updateInventory(true, thorshammer.id, thorshammer.netId, choosenOne.netId);
+            thorshammer.choosenOneNetId = choosenOne.netId;
+            thorshammer.setPosition(this.mtxLocal.translation.toVector2());
+            thorshammer.spawn();
+
+            this.item = thorshammer;
         }
 
         protected stopThorsHammerChallenge() {

@@ -231,6 +231,7 @@ namespace Networking {
                             newItem = new Items.InternalItem(message.content.itemId, message.content.itemNetId);
                         }
 
+
                         let entity = Game.entities.find(elem => (<Player.Player>elem).netId == message.content.netId);
 
                         if (message.content.add) {
