@@ -95,10 +95,25 @@ namespace Generation {
         }
 
         private addWalls(): void {
-            this.addChild((new Wall(new ƒ.Vector2(0.5, 0), new ƒ.Vector2(1 / this.roomSize, 1 + 1 / this.roomSize), this)));
-            this.addChild((new Wall(new ƒ.Vector2(0, 0.5), new ƒ.Vector2(1, 1 / this.roomSize), this)));
-            this.addChild((new Wall(new ƒ.Vector2(-0.5, 0), new ƒ.Vector2(1 / this.roomSize, 1 + 1 / this.roomSize), this)));
-            this.addChild((new Wall(new ƒ.Vector2(0, -0.5), new ƒ.Vector2(1, 1 / this.roomSize), this)));
+            let offset: number = 0.499 + 1 / this.roomSize / 2;
+
+            let newWall: Wall = (new Wall(new ƒ.Vector2(offset, 0), new ƒ.Vector2(1 / this.roomSize, offset * 2 + 1 / this.roomSize), this));
+            newWall.getComponent(ƒ.ComponentMaterial).material = new ƒ.Material("doorMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtWallWest));
+            this.addChild(newWall);
+
+            newWall = (new Wall(new ƒ.Vector2(0, offset), new ƒ.Vector2(1 + 0.8 / this.roomSize, 1 / this.roomSize), this));
+            newWall.getComponent(ƒ.ComponentMaterial).material = new ƒ.Material("doorMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtWallSouth));
+            this.addChild(newWall);
+            newWall.mtxLocal.translateZ(0.00001);
+
+            newWall = (new Wall(new ƒ.Vector2(-offset, 0), new ƒ.Vector2(1 / this.roomSize, offset * 2 + 1 / this.roomSize), this));
+            newWall.getComponent(ƒ.ComponentMaterial).material = new ƒ.Material("doorMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtWallEast));
+            this.addChild(newWall);
+
+            newWall = (new Wall(new ƒ.Vector2(0, -offset), new ƒ.Vector2(1 + 0.8 / this.roomSize, 1 / this.roomSize), this));
+            newWall.getComponent(ƒ.ComponentMaterial).material = new ƒ.Material("doorMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtWallNorth));
+            this.addChild(newWall);
+            newWall.mtxLocal.translateZ(0.00001);
 
             this.getChildren().filter(elem => (<Wall>elem).tag == Tag.TAG.WALL).forEach(wall => {
                 this.walls.push((<Wall>wall));
@@ -499,6 +514,10 @@ namespace Generation {
 
     }
 
+    export let txtWallNorth: Game.ƒ.TextureImage = new Game.ƒ.TextureImage();
+    export let txtWallSouth: Game.ƒ.TextureImage = new Game.ƒ.TextureImage();
+    export let txtWallEast: Game.ƒ.TextureImage = new Game.ƒ.TextureImage();
+    export let txtWallWest: Game.ƒ.TextureImage = new Game.ƒ.TextureImage();
     export class Wall extends ƒ.Node {
         public tag: Tag.TAG = Tag.TAG.WALL;
         public collider: Game.ƒ.Rectangle;
@@ -513,8 +532,8 @@ namespace Generation {
             this.addComponent(new ƒ.ComponentMaterial(new ƒ.Material("red", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("grey")))));
 
             let newPos = _pos.toVector3(0.01);
-            this.mtxLocal.translation = newPos;
             this.mtxLocal.scaling = _scaling.toVector3(1);
+            this.mtxLocal.translation = newPos;
 
 
             if (_pos.x != 0) {

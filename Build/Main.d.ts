@@ -1255,6 +1255,10 @@ declare namespace Generation {
         protected startThorsHammerChallenge(): void;
         protected stopThorsHammerChallenge(): void;
     }
+    export let txtWallNorth: Game.ƒ.TextureImage;
+    export let txtWallSouth: Game.ƒ.TextureImage;
+    export let txtWallEast: Game.ƒ.TextureImage;
+    export let txtWallWest: Game.ƒ.TextureImage;
     export class Wall extends ƒ.Node {
         tag: Tag.TAG;
         collider: Game.ƒ.Rectangle;

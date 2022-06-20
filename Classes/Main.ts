@@ -382,7 +382,12 @@ namespace Game {
         await Generation.txtBossRoom.load("./Resources/Image/Rooms/swampStandard.png");
         await Generation.txtMerchantRoom.load("./Resources/Image/Rooms/swampStandard.png");
         await Generation.txtTreasureRoom.load("./Resources/Image/Rooms/swampStandard.png");
-        await Generation.txtChallengeRoom.load("./Resources/Image/Rooms/swampStandard.png");
+        await Generation.txtChallengeRoom.load("./Resources/Image/Rooms/challengeStandard.png");
+
+        await Generation.txtWallNorth.load("./Resources/Image/Rooms/wallNorth.png");
+        await Generation.txtWallSouth.load("./Resources/Image/Rooms/wallSouth.png");
+        await Generation.txtWallEast.load("./Resources/Image/Rooms/wallEast.png");
+        await Generation.txtWallWest.load("./Resources/Image/Rooms/wallWest.png");
 
         await Generation.txtDoorNorth.load("./Resources/Image/Rooms/doorNorth.png");
         await Generation.txtDoorSouth.load("./Resources/Image/Rooms/doorSouth.png");
