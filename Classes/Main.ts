@@ -377,7 +377,13 @@ namespace Game {
     }
 
     export async function loadTextures() {
-        await Generation.txtStartRoom.load("./Resources/Image/Rooms/map01.png");
+        await Generation.txtStartRoom.load("./Resources/Image/Rooms/swampStandard.png");
+        await Generation.txtNormalRoom.load("./Resources/Image/Rooms/swampStandard.png");
+        await Generation.txtBossRoom.load("./Resources/Image/Rooms/swampStandard.png");
+        await Generation.txtMerchantRoom.load("./Resources/Image/Rooms/swampStandard.png");
+        await Generation.txtTreasureRoom.load("./Resources/Image/Rooms/swampStandard.png");
+        await Generation.txtChallengeRoom.load("./Resources/Image/Rooms/swampStandard.png");
+
         await Generation.txtDoorNorth.load("./Resources/Image/Rooms/doorNorth.png");
         await Generation.txtDoorSouth.load("./Resources/Image/Rooms/doorSouth.png");
         await Generation.txtDoorEast.load("./Resources/Image/Rooms/doorEast.png");

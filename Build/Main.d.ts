@@ -185,7 +185,9 @@ declare namespace Entity {
         protected idleScale: number;
         protected currentKnockback: ƒ.Vector3;
         shadow: Shadow;
-        protected spriteScaleFactor: number;
+        spriteScaleFactor: number;
+        shadowOffsetY: number;
+        shadowOffsetX: number;
         constructor(_id: Entity.ID, _netId: number);
         eventUpdate: (_event: Event) => void;
         update(): void;
@@ -995,11 +997,6 @@ declare namespace InputSystem {
     function calcPositionFromDegree(_degrees: number, _distance: number): ƒ.Vector2;
     function move(): Game.ƒ.Vector3;
 }
-declare namespace Level {
-    class Landscape extends ƒ.Node {
-        constructor(_name: string);
-    }
-}
 declare namespace UI {
     class Minimap extends Game.ƒ.Node {
         tag: Tag.TAG;
@@ -1165,6 +1162,11 @@ declare namespace Generation {
         onEnemyDeath(): void;
     }
     export let txtStartRoom: Game.ƒ.TextureImage;
+    export let txtNormalRoom: Game.ƒ.TextureImage;
+    export let txtBossRoom: Game.ƒ.TextureImage;
+    export let txtMerchantRoom: Game.ƒ.TextureImage;
+    export let txtTreasureRoom: Game.ƒ.TextureImage;
+    export let txtChallengeRoom: Game.ƒ.TextureImage;
     export abstract class Room extends ƒ.Node {
         tag: Tag.TAG;
         roomType: ROOMTYPE;

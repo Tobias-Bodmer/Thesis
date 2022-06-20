@@ -111,7 +111,6 @@ namespace Networking {
             let bufferIndex = this.currentTick % this.bufferSize;
             let inputPayload: Interfaces.IInputBulletPayload = { tick: this.currentTick, inputVector: this.flyDirection, rotation: this.owner.mtxLocal.rotation };
             this.inputBuffer[bufferIndex] = inputPayload;
-            // console.log(inputPayload.tick + "___" + inputPayload.inputVector);
             this.stateBuffer[bufferIndex] = this.processMovement(inputPayload);
 
             //send inputPayload to host
@@ -207,7 +206,6 @@ namespace Networking {
             this.switchAvatarAbilityState();
             let inputPayload: Interfaces.IInputAvatarPayload = { tick: this.currentTick, inputVector: new ƒ.Vector3(this.horizontalInput, this.verticalInput, 0), doesAbility: this.doesAbility };
             this.inputBuffer[bufferIndex] = inputPayload;
-            // console.log(inputPayload.tick + "___" + inputPayload.inputVector.clone);
             this.stateBuffer[bufferIndex] = this.processMovement(inputPayload);
 
             //send inputPayload to host

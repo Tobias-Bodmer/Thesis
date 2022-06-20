@@ -22,7 +22,9 @@ namespace Entity {
         protected idleScale: number;
         protected currentKnockback: ƒ.Vector3 = ƒ.Vector3.ZERO();
         public shadow: Shadow;
-        protected spriteScaleFactor: number = 2;
+        public spriteScaleFactor: number = 2;
+        public shadowOffsetY: number = 0;
+        public shadowOffsetX: number = 0;
 
 
         constructor(_id: Entity.ID, _netId: number) {
@@ -239,7 +241,6 @@ namespace Entity {
 
         protected reduceKnockback() {
             this.currentKnockback.scale(0.5);
-            // console.log(this.currentKnockback.magnitude);
             if (this.currentKnockback.magnitude < 0.0001) {
                 this.currentKnockback = Game.ƒ.Vector3.ZERO();
                 this.performKnockback = false;
@@ -288,7 +289,7 @@ namespace Entity {
                 }
             }
             else {
-                // console.warn("no animationContainer or animation with name: " + name + " at Entity: " + this.name);
+                console.warn("no animationContainer or animation with name: " + name + " at Entity: " + this.name);
             }
         }
 

@@ -3,7 +3,6 @@ namespace InputSystem {
     document.addEventListener("keydown", keyboardDownEvent);
     document.addEventListener("keyup", keyboardUpEvent);
     document.addEventListener("mousedown", attack);
-    // document.addEventListener("mousemove", rotateToMouse);
 
     //#region rotate
     let mousePosition: ƒ.Vector3;
@@ -12,7 +11,6 @@ namespace InputSystem {
         if (Game.gamestate == Game.GAMESTATES.PLAYING) {
             let ray: ƒ.Ray = Game.viewport.getRayFromClient(new ƒ.Vector2(_mouseEvent.pageX - Game.canvas.offsetLeft, _mouseEvent.pageY - Game.canvas.offsetTop));
             mousePosition = ray.intersectPlane(new ƒ.Vector3(0, 0, 0), new ƒ.Vector3(0, 0, 1));
-            // Game.avatar1.mtxLocal.rotation = new ƒ.Vector3(0, 0, Calculation.calcDegree(Game.avatar1.mtxLocal.translation, mousePosition));
         }
     }
 
@@ -102,12 +100,7 @@ namespace InputSystem {
                     let direction: Game.ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(mousePosition, Game.avatar1.mtxLocal.translation);
                     Game.avatar1.attack(direction, null, true);
                     break;
-                case 2:
-                    //TODO: right mouse button player.heavyAttack or something like that
-
-                    break;
                 default:
-
                     break;
             }
         }

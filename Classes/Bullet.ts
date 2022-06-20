@@ -362,14 +362,9 @@ namespace Bullets {
 
         constructor(_bullettype: BULLETTYPE, _position: ƒ.Vector2, _direction: ƒ.Vector3, _ownerId: number, _target: ƒ.Vector3, _netId?: number) {
             super(_bullettype, _position, _direction, _ownerId, _netId);
-            // this.speed = 20;
-            // this.hitPointsScale = 1;
-            // this.lifetime = 1 * 60;
-            // this.killcount = 1;
             if (_target != null) {
                 this.target = _target;
             } else {
-                // this.setTarget(Game.avatar2.netId);
                 this.getTarget();
             }
         }

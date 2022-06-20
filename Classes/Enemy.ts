@@ -51,14 +51,14 @@ namespace Enemy {
             this.canThinkCoolDown.onEndCooldown = this.startThinkin;
             this.canThinkCoolDown.startCooldown();
 
-            this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
+            this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0);
             this.mtxLocal.scaling = new ƒ.Vector3(this.attributes.getScale, this.attributes.getScale, 1);
             this.offsetColliderX = ref.offsetColliderX;
             this.offsetColliderY = ref.offsetColliderY;
             this.colliderScaleFaktor = ref.colliderScaleFaktor;
             this.collider = new Collider.Collider(new ƒ.Vector2(this.mtxLocal.translation.x + (ref.offsetColliderX * this.mtxLocal.scaling.x), this.mtxLocal.translation.y + (ref.offsetColliderY * this.mtxLocal.scaling.y)), ((this.mtxLocal.scaling.x * this.idleScale) / 2) * this.colliderScaleFaktor, this.netId);
             this.stateMachineInstructions = new Game.ƒAid.StateMachineInstructions();
-
+            this.shadowOffsetY = -0.8;
         }
 
 
@@ -76,8 +76,8 @@ namespace Enemy {
         }
 
         public update() {
+            this.shadow.updateShadowPos();
             if (this.canThink) {
-                this.shadow.updateShadowPos();
                 if (Networking.client.id == Networking.client.idHost) {
                     super.update();
                     this.act();
@@ -96,13 +96,11 @@ namespace Enemy {
             super.getKnockback(_knockbackForce, _position);
         }
         move(_direction: ƒ.Vector3) {
-            // this.moveDirection.add(_direction);
             if (this.isAggressive) {
                 this.collide(_direction);
             } else {
                 this.switchAnimation(Entity.ANIMATIONSTATES.IDLE);
             }
-            // this.moveDirection.subtract(_direction);
         }
 
 
@@ -126,7 +124,6 @@ namespace Enemy {
         public collide(_direction: ƒ.Vector3) {
             let knockback = this.currentKnockback.clone;
             if (knockback.magnitude > 0) {
-                // console.log("direction: " + knockback.magnitude);
             }
             if (_direction.magnitude > 0) {
                 _direction.normalize();
@@ -164,10 +161,6 @@ namespace Enemy {
                     this.cmpTransform.mtxLocal.translate(_direction);
                 }
                 _direction.subtract(knockback);
-                if (knockback.magnitude > 0) {
-                    // console.log("knockback: " + knockback.magnitude);
-                    // console.log("direction: " + _direction.magnitude);
-                }
             }
 
             this.reduceKnockback();
@@ -186,6 +179,8 @@ namespace Enemy {
             this.instructions = this.stateMachineInstructions;
             this.circleDirection = this.getCircleDirection();
             this.circleRadius = Calculation.clampNumber(this.circleRadius * Math.random() * (this.circleRadius - 2), 2, this.circleRadius);
+            this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_pos.x, _pos.y, 0.1);
+            this.shadowOffsetY = 0;
         }
 
         private getCircleDirection(): number {
@@ -461,6 +456,8 @@ namespace Enemy {
             this.instructions = this.stateMachineInstructions;
             this.stateCurrent = ENEMYBEHAVIOUR.IDLE;
             this.spriteScaleFactor = 2;
+            this.shadowOffsetY = 0;
+            this.shadowOffsetX = -0.1;
             this.updateScale(this.attributes.getScale, false);
         }
 
@@ -513,11 +510,12 @@ namespace Enemy {
             this.stateMachineInstructions.actDefault = this.walk;
             this.stateMachineInstructions.setAction(ENEMYBEHAVIOUR.WALK, this.walk);
             this.flocking.avoidRadius = 2;
+            this.cmpTransform.mtxLocal.translation = new ƒ.Vector3(_position.x, _position.y, 0.1);
+            this.shadowOffsetY = 0;
         }
 
 
         protected walk = () => {
-            //TODO: help tobiii 
             this.target = this.avatar.mtxLocal.translation.toVector2();
             let distance = ƒ.Vector3.DIFFERENCE(this.target.toVector3(), this.cmpTransform.mtxLocal.translation).magnitudeSquared;
             this.switchAnimation(Entity.ANIMATIONSTATES.WALK);

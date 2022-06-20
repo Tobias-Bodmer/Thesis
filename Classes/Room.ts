@@ -36,6 +36,11 @@ namespace Generation {
         }
     }
     export let txtStartRoom: Game.ƒ.TextureImage = new Game.ƒ.TextureImage();
+    export let txtNormalRoom: Game.ƒ.TextureImage = new Game.ƒ.TextureImage();
+    export let txtBossRoom: Game.ƒ.TextureImage = new Game.ƒ.TextureImage();
+    export let txtMerchantRoom: Game.ƒ.TextureImage = new Game.ƒ.TextureImage();
+    export let txtTreasureRoom: Game.ƒ.TextureImage = new Game.ƒ.TextureImage();
+    export let txtChallengeRoom: Game.ƒ.TextureImage = new Game.ƒ.TextureImage();
 
     export abstract class Room extends ƒ.Node {
         public tag: Tag.TAG;
@@ -154,7 +159,7 @@ namespace Generation {
     }
 
     export class NormalRoom extends Room {
-        normalRoomMat: ƒ.Material = new ƒ.Material("normalRoomMat", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("white")));
+        normalRoomMat: ƒ.Material = new ƒ.Material("normalRoomMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtNormalRoom));
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
             super(_coordinates, _roomSize, ROOMTYPE.NORMAL);
             this.enemyCountManager = new EnemyCountManager(15, true);
@@ -165,7 +170,7 @@ namespace Generation {
 
     export class BossRoom extends Room {
         boss: Enemy.Enemy;
-        bossRoomMat: ƒ.Material = new ƒ.Material("bossRoomMat", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("blue")));
+        bossRoomMat: ƒ.Material = new ƒ.Material("bossRoomMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtBossRoom));
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
             super(_coordinates, _roomSize, ROOMTYPE.BOSS);
 
@@ -215,7 +220,7 @@ namespace Generation {
     }
 
     export class TreasureRoom extends Room {
-        private treasureRoomMat: ƒ.Material = new ƒ.Material("treasureRoomMat", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("yellow")));
+        private treasureRoomMat: ƒ.Material = new ƒ.Material("treasureRoomMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtTreasureRoom));
         private spawnChance: number = 25; get getSpawnChance(): number { return this.spawnChance };
         private treasureCount: number = 2;
         private treasures: Items.Item[] = [];
@@ -253,7 +258,7 @@ namespace Generation {
     }
 
     export class MerchantRoom extends Room {
-        private merchantRoomMat: ƒ.Material = new ƒ.Material("merchantRoomMat", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("green")));
+        private merchantRoomMat: ƒ.Material = new ƒ.Material("merchantRoomMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtMerchantRoom));
         private merchant: Entity.Merchant = new Entity.Merchant(Entity.ID.MERCHANT);
         private items: Items.Item[] = [];
         private itemsSpawnPoints: ƒ.Vector2[] = [];
@@ -367,7 +372,7 @@ namespace Generation {
     export class ChallengeRoom extends Room {
         challenge: CHALLENGE;
         item: Items.Item;
-        challengeRoomMat: ƒ.Material = new ƒ.Material("challengeRoomMat", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("blue")));
+        challengeRoomMat: ƒ.Material = new ƒ.Material("challengeRoomMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtChallengeRoom));
 
         constructor(_coordinates: Game.ƒ.Vector2, _roomSize: number) {
             super(_coordinates, _roomSize, ROOMTYPE.CHALLENGE);
@@ -578,7 +583,6 @@ namespace Generation {
 
             this.addComponent(new ƒ.ComponentTransform());
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshQuad));
-            // this.addComponent(new ƒ.ComponentMaterial(new ƒ.Material("green", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("green")))));
             this.addComponent(new ƒ.ComponentMaterial(this.doorMat));
 
             this.mtxLocal.translateZ(0.1);

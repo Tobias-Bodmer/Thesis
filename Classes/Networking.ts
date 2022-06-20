@@ -177,7 +177,6 @@ namespace Networking {
                         let bullet: Bullets.Bullet;
                         if (netObj != undefined) {
                             bullet = <Bullets.Bullet>netObj.netObjectNode;
-                            // console.log(bullet + "" + message.content.netId);
                             bullet.serverPrediction.updateEntityToCheck(message.content.netId);
                             bullet.serverPrediction.onClientInput(input);
                         }
@@ -208,7 +207,6 @@ namespace Networking {
                     //Sync avatar2 position and rotation
                     if (message.content != undefined && message.content.text == FUNCTION.TRANSFORM.toString()) {
                         // let test: Game.ƒ.Vector3 = message.content.value.data;
-                        // // console.log(test);
                         let moveVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.value.data[0], message.content.value.data[1], message.content.value.data[2]);
                         let rotateVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.rotation.data[0], message.content.rotation.data[1], message.content.rotation.data[2]);
 

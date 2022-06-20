@@ -17,13 +17,16 @@ namespace Entity {
 
             this.addComponent(this.cmpMaterial);
             this.addComponent(new Game.ƒ.ComponentTransform());
-            this.mtxLocal.scaling = new Game.ƒ.Vector3(2, 2, 1);
 
             _parent.addChild(this);
         }
 
         updateShadowPos() {
             this.mtxLocal.translation = new ƒ.Vector3(0, 0, this.shadowParent.mtxLocal.translation.z * -1);
+            if (this.shadowParent instanceof Entity) {
+                this.mtxLocal.translateY(-(((<Entity>this.shadowParent).spriteScaleFactor / (this.mtxWorld.scaling.y * (<Entity>this.shadowParent).spriteScaleFactor))) - (<Entity>this.shadowParent).shadowOffsetY);
+                this.mtxLocal.translateX((<Entity>this.shadowParent).shadowOffsetX);
+            }
         }
     }
 
@@ -36,7 +39,7 @@ namespace Entity {
 
 
         updateShadowPos() {
-            let factor = (this.shadowParent.mtxLocal.translation.z * 0.1)+1;
+            let factor = (this.shadowParent.mtxLocal.translation.z * 0.1) + 1;
             this.mtxLocal.translation = new ƒ.Vector3(0, 0, this.shadowParent.mtxLocal.translation.z * -1);
             this.mtxLocal.scaling = new Game.ƒ.Vector3(1 * factor, 1 * factor, 1 * factor);
         }

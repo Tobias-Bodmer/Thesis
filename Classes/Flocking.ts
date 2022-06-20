@@ -221,7 +221,6 @@ namespace Enemy {
             }
 
             let move = Game.ƒ.Vector2.SUM(notToTarget, target, cohesion, avoid, allign, obsticalAvoid);
-            // console.log("move magnitude" + move.toString());
 
             return move;
         }

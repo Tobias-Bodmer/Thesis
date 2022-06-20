@@ -14,9 +14,10 @@ namespace Player {
 
             this.tag = Tag.TAG.PLAYER;
             this.client = new Networking.ClientPrediction(this.netId);
-            
             this.spriteScaleFactor = 2;
             this.updateScale(this.attributes.getScale, false);
+            this.shadowOffsetX = 0.05;
+            this.shadowOffsetY = -0.1;
         }
 
         public move(_direction: ƒ.Vector3) {

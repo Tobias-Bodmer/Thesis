@@ -41,9 +41,8 @@ namespace Enemy {
 
             this.target = Game.avatar1.mtxLocal.translation.toVector2();
 
-            this.isAggressive = true;
-
             this.spriteScaleFactor = 2;
+            this.shadowOffsetY = 0.5;
             this.updateScale(this.attributes.getScale, false);
         }
 
@@ -264,11 +263,12 @@ namespace Enemy {
 
             this.dash.onDoAbility = this.shootOnDash;
             this.dash.onEndAbility = this.changeDashDirection;
-            this.transit(ENEMYBEHAVIOUR.ATTACK);
 
             this.spriteScaleFactor = 2;
-
+            this.shadowOffsetY = 0.2;
+            this.shadowOffsetX = -0.1;
             this.updateScale(this.attributes.getScale, false);
+            this.shadow.mtxLocal.scale(new ƒ.Vector3(1.5, 1.75, 1));
         }
 
         intro = () => {
