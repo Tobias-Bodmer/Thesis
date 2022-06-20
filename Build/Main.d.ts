@@ -1,6 +1,6 @@
 /// <reference path="../FUDGE/Net/Build/Client/FudgeClient.d.ts" />
-/// <reference types="../fudge/core/build/fudgecore.js" />
 /// <reference types="../fudge/aid/build/fudgeaid.js" />
+/// <reference types="../fudge/core/build/fudgecore.js" />
 declare namespace Game {
     enum GAMESTATES {
         PLAYING = 0,
@@ -777,7 +777,7 @@ declare namespace Buff {
         protected coolDown: Ability.Cooldown;
         constructor(_id: BUFFID, _duration: number, _tickRate: number);
         protected getParticleById(_id: BUFFID): UI.Particles;
-        clone(): Buff;
+        abstract clone(): Buff;
         protected applyBuff(_avatar: Entity.Entity): void;
         /**
          * removes the buff from the buff list, removes the particle and sends the new list to the client
@@ -1263,16 +1263,22 @@ declare namespace Generation {
         addDoor(_pos: Game.ƒ.Vector2, _scaling: Game.ƒ.Vector2): void;
         setCollider(): void;
     }
+    export let txtDoorNorth: Game.ƒ.TextureImage;
+    export let txtDoorSouth: Game.ƒ.TextureImage;
+    export let txtDoorEast: Game.ƒ.TextureImage;
+    export let txtDoorWest: Game.ƒ.TextureImage;
     export class Door extends ƒ.Node {
         tag: Tag.TAG;
         collider: Game.ƒ.Rectangle;
         direction: Interfaces.IRoomExits;
+        private doorMat;
         constructor();
         setCollider(): void;
         changeRoom(): void;
         openDoor(): void;
         closeDoor(): void;
     }
+    export let txtDoorExit: Game.ƒ.TextureImage;
     export class ExitDoor extends Door {
         changeRoom(): void;
     }

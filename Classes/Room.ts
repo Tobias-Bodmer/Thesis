@@ -173,11 +173,11 @@ namespace Generation {
 
             this.exitDoor = new ExitDoor();
             this.addChild(this.exitDoor);
-            this.exitDoor.mtxLocal.translateZ(0.1);
-            this.exitDoor.mtxLocal.scale(Game.ƒ.Vector3.ONE(0.05));
+            this.exitDoor.mtxLocal.translateZ(-0.099);
+            this.exitDoor.mtxLocal.scale(Game.ƒ.Vector3.ONE(0.1));
+            this.exitDoor.getComponent(ƒ.ComponentMaterial).material = new ƒ.Material("doorMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtDoorExit));
 
             this.getComponent(Game.ƒ.ComponentMaterial).material = this.bossRoomMat;
-
         }
 
         public update(): void {
@@ -505,7 +505,7 @@ namespace Generation {
 
             this.addComponent(new ƒ.ComponentTransform());
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshQuad));
-            this.addComponent(new ƒ.ComponentMaterial(new ƒ.Material("red", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("red")))));
+            this.addComponent(new ƒ.ComponentMaterial(new ƒ.Material("red", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("grey")))));
 
             let newPos = _pos.toVector3(0.01);
             this.mtxLocal.translation = newPos;
@@ -540,19 +540,19 @@ namespace Generation {
                 this.door.mtxLocal.scaling = new Game.ƒ.Vector3(1, _scaling.x / _scaling.y * 3, 1);
                 if (_pos.x > 0) {
                     this.door.direction = (<Interfaces.IRoomExits>{ north: false, east: true, south: false, west: false });
-                    this.door.mtxLocal.translateX(-0.5);
+                    this.door.getComponent(ƒ.ComponentMaterial).material = new ƒ.Material("doorMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtDoorEast));
                 } else {
                     this.door.direction = (<Interfaces.IRoomExits>{ north: false, east: false, south: false, west: true });
-                    this.door.mtxLocal.translateX(0.5);
+                    this.door.getComponent(ƒ.ComponentMaterial).material = new ƒ.Material("doorMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtDoorWest));
                 }
             } else {
                 this.door.mtxLocal.scaling = new Game.ƒ.Vector3(_scaling.y / _scaling.x * 3, 1, 1);
                 if (_pos.y > 0) {
                     this.door.direction = (<Interfaces.IRoomExits>{ north: true, east: false, south: false, west: false });
-                    this.door.mtxLocal.translateY(-0.5);
+                    this.door.getComponent(ƒ.ComponentMaterial).material = new ƒ.Material("doorMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtDoorNorth));
                 } else {
                     this.door.direction = (<Interfaces.IRoomExits>{ north: false, east: false, south: true, west: false });
-                    this.door.mtxLocal.translateY(0.5);
+                    this.door.getComponent(ƒ.ComponentMaterial).material = new ƒ.Material("doorMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtDoorSouth));
                 }
             }
         }
@@ -562,18 +562,24 @@ namespace Generation {
         }
     }
 
+    export let txtDoorNorth: Game.ƒ.TextureImage = new Game.ƒ.TextureImage();
+    export let txtDoorSouth: Game.ƒ.TextureImage = new Game.ƒ.TextureImage();
+    export let txtDoorEast: Game.ƒ.TextureImage = new Game.ƒ.TextureImage();
+    export let txtDoorWest: Game.ƒ.TextureImage = new Game.ƒ.TextureImage();
     export class Door extends ƒ.Node {
         public tag: Tag.TAG = Tag.TAG.DOOR;
         public collider: Game.ƒ.Rectangle;
 
         public direction: Interfaces.IRoomExits;
+        private doorMat: ƒ.Material = new ƒ.Material("doorMat", ƒ.ShaderLitTextured, new ƒ.CoatRemissiveTextured(ƒ.Color.CSS("white"), txtDoorNorth));
 
         constructor() {
             super("Door");
 
             this.addComponent(new ƒ.ComponentTransform());
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshQuad));
-            this.addComponent(new ƒ.ComponentMaterial(new ƒ.Material("green", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("green")))));
+            // this.addComponent(new ƒ.ComponentMaterial(new ƒ.Material("green", ƒ.ShaderLit, new ƒ.CoatRemissive(ƒ.Color.CSS("green")))));
+            this.addComponent(new ƒ.ComponentMaterial(this.doorMat));
 
             this.mtxLocal.translateZ(0.1);
             this.closeDoor();
@@ -602,6 +608,7 @@ namespace Generation {
         }
     }
 
+    export let txtDoorExit: Game.ƒ.TextureImage = new Game.ƒ.TextureImage();
     export class ExitDoor extends Door {
 
         public changeRoom() {

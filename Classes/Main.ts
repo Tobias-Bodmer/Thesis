@@ -378,6 +378,11 @@ namespace Game {
 
     export async function loadTextures() {
         await Generation.txtStartRoom.load("./Resources/Image/Rooms/map01.png");
+        await Generation.txtDoorNorth.load("./Resources/Image/Rooms/doorNorth.png");
+        await Generation.txtDoorSouth.load("./Resources/Image/Rooms/doorSouth.png");
+        await Generation.txtDoorEast.load("./Resources/Image/Rooms/doorEast.png");
+        await Generation.txtDoorWest.load("./Resources/Image/Rooms/doorWest.png");
+        await Generation.txtDoorExit.load("./Resources/Image/Rooms/doorExit.png");
 
         await Bullets.bulletTxt.load("./Resources/Image/Projectiles/arrow.png");
         await Bullets.waterBallTxt.load("./Resources/Image/Projectiles/waterBall.png")

@@ -117,7 +117,7 @@
         {
             "name": "summonor",
             "attributes": {
-                "healthPoints": 250,
+                "healthPoints": 1,
                 "attackPoints": 1,
                 "speed": 2,
                 "scale": 1,

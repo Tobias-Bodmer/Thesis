@@ -45,9 +45,7 @@ namespace Buff {
             }
         }
 
-        public clone(): Buff {
-            return;
-        }
+        public abstract clone(): Buff;
 
         protected applyBuff(_avatar: Entity.Entity) {
             if (Networking.client.id == Networking.client.idHost) {
