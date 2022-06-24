@@ -50,14 +50,19 @@ namespace Entity {
         }
 
         public updateScaleDependencies(_newScale: number) {
-            if (_newScale == this.scale) {
+            let difference = _newScale - this.scale;
+
+            if (difference == 0) {
                 return;
             }
-            this.maxHealthPoints += Math.round(this.baseMaxHealthPoints * _newScale) - this.baseMaxHealthPoints;
-            this.healthPoints += Math.round(this.healthPoints * _newScale) - this.healthPoints;
-            this.attackPoints += Math.round(this.baseAttackPoints * _newScale) - this.baseAttackPoints;
-            this.speed += Math.fround(this.baseSpeed * _newScale) - this.baseSpeed;
-            this.knockbackForce += Math.fround(this.baseKnockbackForce * _newScale) - this.baseKnockbackForce;
+
+            this.maxHealthPoints += Math.round((this.baseMaxHealthPoints * difference) * 100) / 100;
+            this.healthPoints += Math.round((this.baseHealthPoints * difference) * 100) / 100;
+            this.attackPoints += Math.round((this.baseAttackPoints * difference) * 100) / 100;
+            this.speed -= Math.round((this.baseSpeed * difference) * 100) / 100;
+            this.knockbackForce += Math.fround((this.baseKnockbackForce * difference) * 100) / 100;
+
+            this.scale = _newScale;
         }
 
 

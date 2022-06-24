@@ -30,11 +30,11 @@ namespace Game {
 
     document.getElementById("Ranged").addEventListener("click", playerChoice);
     document.getElementById("Melee").addEventListener("click", playerChoice);
-    
+
     document.getElementById("BackHost").addEventListener("click", back);
     document.getElementById("BackOption").addEventListener("click", back);
     document.getElementById("BackCredit").addEventListener("click", back);
-    
+
     function back(_e: MouseEvent) {
         document.getElementById("Creditscreen").style.visibility = "hidden";
         document.getElementById("Optionscreen").style.visibility = "hidden";
@@ -220,15 +220,15 @@ namespace Game {
 
                     //#region init Items
                     if (Networking.client.id == Networking.client.idHost) {
-                        // let item2 = new Items.BuffItem(Items.ITEMID.TOXICRELATIONSHIP);
-                        // // let item3 = new Items.BuffItem(Items.ITEMID.GETSTRONKO);
+                        let item2 = new Items.InternalItem(Items.ITEMID.SCALEUP);
+                        let item3 = new Items.InternalItem(Items.ITEMID.SCALEUP);
                         // let item4 = new Items.BuffItem(Items.ITEMID.GETSTRONKO);
                         // let item5 = new Items.BuffItem(Items.ITEMID.GETWEAKO);
 
-                        // item2.setPosition(new ƒ.Vector2(-5, 0));
-                        // item2.spawn();
-                        // // item3.setPosition(new ƒ.Vector2(5, 0));
-                        // // item3.spawn();
+                        item2.setPosition(new ƒ.Vector2(-5, 0));
+                        item2.spawn();
+                        item3.setPosition(new ƒ.Vector2(5, 0));
+                        item3.spawn();
                         // item4.setPosition(new ƒ.Vector2(-10, 0));
                         // item4.spawn();
                         // item5.setPosition(new ƒ.Vector2(10, 0));
