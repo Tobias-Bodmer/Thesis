@@ -22,7 +22,7 @@ namespace Entity {
         protected idleScale: number;
         protected currentKnockback: ƒ.Vector3 = ƒ.Vector3.ZERO();
         public shadow: Shadow;
-        public spriteScaleFactor: number = 2;
+        public spriteScaleFactor: number = 1;
         public shadowOffsetY: number = 0;
         public shadowOffsetX: number = 0;
 

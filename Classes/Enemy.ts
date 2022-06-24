@@ -40,7 +40,7 @@ namespace Enemy {
             this.isAggressive = false;
             let ref = Game.enemiesJSON.find(enemy => enemy.name == Entity.ID[_id].toLowerCase())
             console.log(ref);
-            this.attributes = new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, (<any>ref.attributes).scale, ref.attributes.knockbackForce, ref.attributes.armor, ref.attributes.coolDownReduction, ref.attributes.accuracy);
+            this.attributes = new Entity.Attributes(ref.attributes.healthPoints, ref.attributes.attackPoints, ref.attributes.speed, ref.attributes.scale, ref.attributes.knockbackForce, ref.attributes.armor, ref.attributes.coolDownReduction, ref.attributes.accuracy);
 
             if (this.animationContainer != undefined) {
                 this.setAnimation(<ƒAid.SpriteSheetAnimation>this.animationContainer.animations["idle"]);

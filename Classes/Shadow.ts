@@ -24,7 +24,13 @@ namespace Entity {
         updateShadowPos() {
             this.mtxLocal.translation = new ƒ.Vector3(0, 0, this.shadowParent.mtxLocal.translation.z * -1);
             if (this.shadowParent instanceof Entity) {
-                this.mtxLocal.translateY(-(((<Entity>this.shadowParent).spriteScaleFactor / (this.mtxWorld.scaling.y * (<Entity>this.shadowParent).spriteScaleFactor))) - (<Entity>this.shadowParent).shadowOffsetY);
+
+                let offsetY: number = ((<Entity>this.shadowParent).shadowOffsetY * (<Entity>this.shadowParent).attributes.getScale);
+                if (offsetY < (<Entity>this.shadowParent).shadowOffsetY) {
+                    offsetY = ((<Entity>this.shadowParent).shadowOffsetY / (<Entity>this.shadowParent).attributes.getScale);
+                }
+
+                this.mtxLocal.translateY(-(((<Entity>this.shadowParent).spriteScaleFactor / (this.mtxWorld.scaling.y * (<Entity>this.shadowParent).spriteScaleFactor))) - offsetY);
                 this.mtxLocal.translateX((<Entity>this.shadowParent).shadowOffsetX);
             }
         }

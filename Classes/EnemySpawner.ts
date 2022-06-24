@@ -39,7 +39,7 @@ namespace EnemySpawner {
 
     export function spawnByID(_enemyClass: Enemy.ENEMYCLASS, _position: ƒ.Vector2, _target?: Player.Player, _netID?: number) {
         if (Game.currentRoom.enemyCountManager.finished) {
-            return;
+            // return;
         }
         console.log("spawned enemy " + Enemy.ENEMYCLASS[_enemyClass].toString());
 

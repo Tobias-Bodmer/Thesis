@@ -206,7 +206,6 @@ namespace Networking {
                     //Runtime updates and communication
                     //Sync avatar2 position and rotation
                     if (message.content != undefined && message.content.text == FUNCTION.TRANSFORM.toString()) {
-                        // let test: Game.ƒ.Vector3 = message.content.value.data;
                         let moveVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.value.data[0], message.content.value.data[1], message.content.value.data[2]);
                         let rotateVector: Game.ƒ.Vector3 = new Game.ƒ.Vector3(message.content.rotation.data[0], message.content.rotation.data[1], message.content.rotation.data[2]);
 
@@ -214,9 +213,6 @@ namespace Networking {
                             Game.avatar2.mtxLocal.translation = moveVector;
                             Game.avatar2.mtxLocal.rotation = rotateVector;
                             Game.avatar2.collider.position = moveVector.toVector2();
-                            if (Networking.client.id == Networking.client.idHost) {
-                                // Game.avatar2.avatarPrediction();
-                            }
                         }
                     }
 
@@ -443,14 +439,15 @@ namespace Networking {
                                 break;
                             case Weapons.WEAPONTYPE.THORSHAMMERWEAPON:
                                 tempWeapon = new Weapons.ThorsHammer(message.content.weapon.attackCount, refWeapon.bulletType, refWeapon.projectileAmount, refWeapon.ownerNetId);
+                                tempWeapon.weaponStorage = entity.weapon;
                                 break;
                             default:
                                 console.warn(Weapons.WEAPONTYPE[message.content.type] + " does not exist in Networking switch");
                                 break;
                         }
 
-                        if (entity.weapon instanceof Weapons.MeleeWeapon) {
-                            entity.weapon = tempWeapon;
+                        if (entity.weapon instanceof Weapons.ThorsHammer) {
+                            entity.weapon = (<Weapons.ThorsHammer>entity.weapon).weaponStorage;
                         } else {
                             (<Weapons.RangedWeapon>tempWeapon).ItemFunctions = (<Weapons.RangedWeapon>entity.weapon).ItemFunctions;
                             entity.weapon = tempWeapon;

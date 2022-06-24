@@ -190,7 +190,7 @@ namespace Game {
                     // EnemySpawner.spawnEnemies();
 
                     if (Networking.client.id == Networking.client.idHost) {
-                        // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.ENEMYSHOOT, new ƒ.Vector2(3, 3));
+                        EnemySpawner.spawnByID(Enemy.ENEMYCLASS.ENEMYDASH, new ƒ.Vector2(3, 3));
                         // EnemySpawner.spawnMultipleEnemiesAtRoom(5, Game.currentRoom.mtxLocal.translation.toVector2());
                         // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.ENEMYSMASH, Entity.ID.OGER, new ƒ.Vector2(3, 3), null);
                         // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3));
