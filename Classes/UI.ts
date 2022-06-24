@@ -11,8 +11,10 @@ namespace UI {
         //InventoryUI
         updateInvUI(Game.avatar1.items, player1UI);
 
-        //Avatar2 UI
+        //Door-PopUp
+        doorPopUp();
 
+        //Avatar2 UI
         (<HTMLDivElement>player2UI.querySelector("#HP")).style.width = (Game.avatar2.attributes.healthPoints / Game.avatar2.attributes.maxHealthPoints * 100) + "%";
 
         //InventoryUI
@@ -97,6 +99,29 @@ namespace UI {
                     }
                 }
             });
+        }
+
+        function doorPopUp() {
+            let doorIsNear: boolean = false;    
+            
+            Game.currentRoom.walls.forEach((wall) => {
+                if (wall.door != undefined && wall.door.isActive) {
+                    if (wall.door.collider != undefined && Game.avatar1.collider.collidesRect(wall.door.collider)) {
+                        doorIsNear = true;
+                    }
+                }
+            });
+            if (Game.currentRoom.exitDoor != undefined) {
+                if (Game.currentRoom.exitDoor.collider != undefined && Game.avatar1.collider.collidesRect(Game.currentRoom.exitDoor.collider)) {
+                    doorIsNear = true;
+                }
+            }
+
+            if (doorIsNear) {
+                document.getElementById("Door-PopUp").style.visibility = "visible";
+            } else {
+                document.getElementById("Door-PopUp").style.visibility = "hidden";
+            }
         }
     }
 

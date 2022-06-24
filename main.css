@@ -132,6 +132,15 @@ canvas {
     text-align: center;
 }
 
+#UI>#Door-PopUp {
+    position: absolute;
+    top: 550px;
+    left: 470px;
+    width: 400px;
+    height: auto;
+    text-align: center;
+}
+
 #Optionscreen {
     position: absolute;
     visibility: hidden;
