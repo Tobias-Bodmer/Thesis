@@ -115,7 +115,7 @@
             "colliderScaleFaktor": 1
         },
         {
-            "name": "summonor",
+            "name": "summoner",
             "attributes": {
                 "healthPoints": 250,
                 "attackPoints": 1,

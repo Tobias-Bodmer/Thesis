@@ -246,7 +246,7 @@ declare namespace Enemy {
         ENEMYSMASH = 3,
         ENEMYPATROL = 4,
         ENEMYSHOOT = 5,
-        SUMMONOR = 6,
+        SUMMONER = 6,
         BIGBOOM = 7,
         SUMMONORADDS = 8
     }

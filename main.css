@@ -14,9 +14,10 @@ canvas {
 #Hostscreen {
     position: absolute;
     visibility: hidden;
-    top: 30px;
-    left: 20px;
+    top: 9px;
+    left: 9px;
     width: 1000px;
+    height: 600px;
 }
 
 #Hostscreen>#Rooms {
@@ -41,7 +42,7 @@ canvas {
     font-size: x-large;
 }
 
-#Hostscreen>button {
+#Hostscreen>.Button {
     margin-left: 10%;
     transform: translateX(-50%);
     width: 150px;
@@ -164,9 +165,10 @@ canvas {
 }
 
 .Back {
-    position: relative;
-    left: 48%;
-    transform: translateX(-50%);
+    position: absolute;
+    left: 92%;
+    top: 90%;
+    transform: translateX(-55%);
     width: 100px;
     height: 40px;
 }

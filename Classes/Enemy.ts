@@ -7,7 +7,7 @@ namespace Enemy {
         ENEMYSMASH,
         ENEMYPATROL,
         ENEMYSHOOT,
-        SUMMONOR,
+        SUMMONER,
         BIGBOOM,
         SUMMONORADDS
     }
@@ -538,7 +538,7 @@ namespace Enemy {
             case _enemy instanceof SummonorAdds:
                 return ENEMYCLASS.SUMMONORADDS;
             case _enemy instanceof Summonor:
-                return ENEMYCLASS.SUMMONOR;
+                return ENEMYCLASS.SUMMONER;
             case _enemy instanceof EnemyDash:
                 return ENEMYCLASS.ENEMYDASH;
             case _enemy instanceof EnemyPatrol:

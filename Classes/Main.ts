@@ -18,8 +18,29 @@ namespace Game {
     // window.addEventListener("load", init);
     window.addEventListener("load", start);
 
+    document.getElementById("Option").addEventListener("click", () => {
+        document.getElementById("Startscreen").style.visibility = "hidden";
+        document.getElementById("Optionscreen").style.visibility = "visible";
+    });
+
+    document.getElementById("Credits").addEventListener("click", () => {
+        document.getElementById("Startscreen").style.visibility = "hidden";
+        document.getElementById("Creditscreen").style.visibility = "visible";
+    });
+
     document.getElementById("Ranged").addEventListener("click", playerChoice);
     document.getElementById("Melee").addEventListener("click", playerChoice);
+    
+    document.getElementById("BackHost").addEventListener("click", back);
+    document.getElementById("BackOption").addEventListener("click", back);
+    document.getElementById("BackCredit").addEventListener("click", back);
+    
+    function back(_e: MouseEvent) {
+        document.getElementById("Creditscreen").style.visibility = "hidden";
+        document.getElementById("Optionscreen").style.visibility = "hidden";
+        document.getElementById("Hostscreen").style.visibility = "hidden";
+        document.getElementById("Startscreen").style.visibility = "visible";
+    }
     //#endregion "DomElements"
 
     //#region "PublicVariables"
@@ -190,7 +211,7 @@ namespace Game {
                     // EnemySpawner.spawnEnemies();
 
                     if (Networking.client.id == Networking.client.idHost) {
-                        EnemySpawner.spawnByID(Enemy.ENEMYCLASS.ENEMYDASH, new ƒ.Vector2(3, 3));
+                        // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.ENEMYDASH, new ƒ.Vector2(3, 3));
                         // EnemySpawner.spawnMultipleEnemiesAtRoom(5, Game.currentRoom.mtxLocal.translation.toVector2());
                         // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.ENEMYSMASH, Entity.ID.OGER, new ƒ.Vector2(3, 3), null);
                         // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3));
@@ -199,19 +220,19 @@ namespace Game {
 
                     //#region init Items
                     if (Networking.client.id == Networking.client.idHost) {
-                        let item2 = new Items.BuffItem(Items.ITEMID.TOXICRELATIONSHIP);
-                        // let item3 = new Items.BuffItem(Items.ITEMID.GETSTRONKO);
-                        let item4 = new Items.BuffItem(Items.ITEMID.GETSTRONKO);
-                        let item5 = new Items.BuffItem(Items.ITEMID.GETWEAKO);
+                        // let item2 = new Items.BuffItem(Items.ITEMID.TOXICRELATIONSHIP);
+                        // // let item3 = new Items.BuffItem(Items.ITEMID.GETSTRONKO);
+                        // let item4 = new Items.BuffItem(Items.ITEMID.GETSTRONKO);
+                        // let item5 = new Items.BuffItem(Items.ITEMID.GETWEAKO);
 
-                        item2.setPosition(new ƒ.Vector2(-5, 0));
-                        item2.spawn();
-                        // item3.setPosition(new ƒ.Vector2(5, 0));
-                        // item3.spawn();
-                        item4.setPosition(new ƒ.Vector2(-10, 0));
-                        item4.spawn();
-                        item5.setPosition(new ƒ.Vector2(10, 0));
-                        item5.spawn();
+                        // item2.setPosition(new ƒ.Vector2(-5, 0));
+                        // item2.spawn();
+                        // // item3.setPosition(new ƒ.Vector2(5, 0));
+                        // // item3.spawn();
+                        // item4.setPosition(new ƒ.Vector2(-10, 0));
+                        // item4.spawn();
+                        // item5.setPosition(new ƒ.Vector2(10, 0));
+                        // item5.spawn();
 
                         // // let item3 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(-2, 0), null);
                         // let zipzap = new Items.InternalItem(Items.ITEMID.TEST);
@@ -228,8 +249,6 @@ namespace Game {
                 }
 
             }
-
-
 
             document.getElementById("Host").addEventListener("click", Networking.createRoom);
             document.getElementById("Join").addEventListener("click", () => {
@@ -262,26 +281,6 @@ namespace Game {
                     }, 200);
                 }
             }
-        });
-        document.getElementById("Option").addEventListener("click", () => {
-            document.getElementById("Startscreen").style.visibility = "hidden";
-            document.getElementById("Optionscreen").style.visibility = "visible";
-
-            document.getElementById("BackOption").addEventListener("click", () => {
-                document.getElementById("Creditscreen").style.visibility = "hidden";
-                document.getElementById("Optionscreen").style.visibility = "hidden";
-                document.getElementById("Startscreen").style.visibility = "visible";
-            });
-        });
-        document.getElementById("Credits").addEventListener("click", () => {
-            document.getElementById("Startscreen").style.visibility = "hidden";
-            document.getElementById("Creditscreen").style.visibility = "visible";
-
-            document.getElementById("BackCredit").addEventListener("click", () => {
-                document.getElementById("Creditscreen").style.visibility = "hidden";
-                document.getElementById("Optionscreen").style.visibility = "hidden";
-                document.getElementById("Startscreen").style.visibility = "visible";
-            });
         });
     }
 

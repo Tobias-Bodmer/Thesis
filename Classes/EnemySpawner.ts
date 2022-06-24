@@ -27,7 +27,7 @@ namespace EnemySpawner {
     function getRandomEnemy(_position: ƒ.Vector2): void {
         let enemyClass: number = Math.round(Math.random() * ((Object.keys(Enemy.ENEMYCLASS).length / 2) - 1));
 
-        if (enemyClass == undefined || enemyClass == Enemy.ENEMYCLASS.BIGBOOM || enemyClass == Enemy.ENEMYCLASS.SUMMONOR ||
+        if (enemyClass == undefined || enemyClass == Enemy.ENEMYCLASS.BIGBOOM || enemyClass == Enemy.ENEMYCLASS.SUMMONER ||
             enemyClass == Enemy.ENEMYCLASS.SUMMONORADDS || enemyClass == Enemy.ENEMYCLASS.ENEMYSMASH ||
             enemyClass == Enemy.ENEMYCLASS.ENEMYPATROL) {
             getRandomEnemy(_position);
@@ -60,7 +60,7 @@ namespace EnemySpawner {
             case Enemy.ENEMYCLASS.SUMMONORADDS:
                 enemy = new Enemy.SummonorAdds(Entity.ID.BAT, _position, _target, _netID);
                 break;
-            case Enemy.ENEMYCLASS.SUMMONOR:
+            case Enemy.ENEMYCLASS.SUMMONER:
                 enemy = new Enemy.Summonor(Entity.ID.SUMMONOR, _position, _netID);
                 break;
             case Enemy.ENEMYCLASS.BIGBOOM:
@@ -76,7 +76,7 @@ namespace EnemySpawner {
             Networking.spawnEnemy(_enemyClass, enemy, enemy.netId);
 
             if (Game.currentRoom.roomType == Generation.ROOMTYPE.BOSS && (<Generation.BossRoom>Game.currentRoom).boss == undefined) {
-                if (_enemyClass == Enemy.ENEMYCLASS.BIGBOOM || _enemyClass == Enemy.ENEMYCLASS.SUMMONOR) {
+                if (_enemyClass == Enemy.ENEMYCLASS.BIGBOOM || _enemyClass == Enemy.ENEMYCLASS.SUMMONER) {
                     console.log((<Generation.BossRoom>Game.currentRoom).boss);
                     (<Generation.BossRoom>Game.currentRoom).boss = enemy;
                     console.log((<Generation.BossRoom>Game.currentRoom).boss);

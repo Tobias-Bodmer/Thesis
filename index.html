@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html oncontextmenu="return false">
 
 <head>
     <meta charset='utf-8'>
@@ -72,11 +72,14 @@
     </div>
 
     <div id="Hostscreen">
-        <button id="Host" style="margin-left: 188px;">Host</button><br><br>
-        <input type="text" style="width: 80px;" id="Room"><button id="Join">Join</button>
+        <br>
+        <button id="Host" class="Button" style="margin-left: 210px;">Host</button><br><br>
+        <input type="text" style="margin-left: 22px; width: 80px;" id="Room"><button id="Join"
+            class="Button">Join</button>
         <div id="Rooms"></div>
         <br><br><br><br><br><br><br><br>
         <p style="visibility:hidden;">Room: <span id="RoomId"> </span></p>
+        <button id="BackHost" class="Back">Back</button>
     </div>
 
     <div id="Lobbyscreen">
@@ -87,15 +90,15 @@
     <div id="Optionscreen">
         <div style="z-index: 1; position: absolute; opacity: 75%; width: 100%; height: 100%; background-color: gray;">
         </div>
-        <div style="z-index: 2; position: relative">
+        <div style="z-index: 2; position: relative; height: 100%;">
             <br><br>
             <p id="big"> Pause </p>
             <br><br>
-            <p id="big"> Sound <input type="range" value="80%" style="width: 400px;"></p>
+            <p id="big"></p>
             <br><br>
-            <p id="big"> Sound <input type="range" value="80%" style="width: 400px;"></p>
+            <p id="big"></p>
             <br><br>
-            <p id="big"> Sound <input type="range" value="80%" style="width: 400px;"></p>
+            <p id="big"></p>
             <br><br>
             <br><br><br>
             <button id="BackOption" class="Back">Back</button>
