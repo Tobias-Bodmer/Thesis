@@ -1,4 +1,4 @@
-# Thesis
+# Thesis made by **[Tobias Bodmer](https://github.com/Tobias-Bodmer)** & **[Maurice Huchler](https://github.com/MauriceHuchler)** 
 
 ![Titelbild](https://user-images.githubusercontent.com/48796225/176191154-bdcdc3ec-15a4-4c1b-b715-fd7f3b4fb800.jpg)
 
