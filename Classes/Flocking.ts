@@ -61,20 +61,21 @@ namespace Enemy {
                 this.currentNeighbours.forEach(enem => {
                     cohesionMove = Game.ƒ.Vector2.SUM(cohesionMove, enem.mtxLocal.translation.toVector2());
                 })
+                
                 cohesionMove.scale(1 / this.currentNeighbours.length);
                 cohesionMove.subtract(this.pos);
-                // if (this.myEnemy.moveDirection.magnitudeSquared > 0) {
-                //     cohesionMove = Calculation.getRotatedVectorByAngle2D(this.myEnemy.moveDirection, Calculation.calcDegree(this.myEnemy.mtxLocal.translation, cohesionMove.toVector3()) / 10).toVector2()
-                // }
+                
                 let newDirection = ƒ.Vector3.DIFFERENCE(cohesionMove.toVector3(), this.myEnemy.mtxLocal.translation);
                 if (newDirection.magnitude > 0) {
                     newDirection.normalize();
                 }
+
                 let rotateAmount2: number = ƒ.Vector3.CROSS(newDirection, this.myEnemy.moveDirection).z;
                 if (this.myEnemy.moveDirection.magnitudeSquared > 0) {
                     cohesionMove = Calculation.getRotatedVectorByAngle2D(this.myEnemy.moveDirection, -rotateAmount2 * 0.01).toVector2();
 
                 }
+
                 return cohesionMove;
             }
         }

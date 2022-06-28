@@ -312,7 +312,7 @@ namespace Entity {
         SMALLTICK,
         SKELETON,
         OGER,
-        SUMMONOR,
+        SUMMONER,
         BIGBOOM
     }
 
@@ -332,8 +332,8 @@ namespace Entity {
                 return "Skeleton";
             case ID.OGER:
                 return "Oger";
-            case ID.SUMMONOR:
-                return "Summonor";
+            case ID.SUMMONER:
+                return "Summoner";
             case ID.BIGBOOM:
                 return "Big Boom";
         }

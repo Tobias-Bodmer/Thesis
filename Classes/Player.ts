@@ -94,7 +94,7 @@ namespace Player {
                 enemiesCollider.push(element.collider);
             })
 
-            //TODO: uncomment
+            //Collision with Enemies
             // this.calculateCollider(enemiesCollider, _direction);
 
             if (this.canMoveX && this.canMoveY) {

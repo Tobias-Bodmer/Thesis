@@ -234,16 +234,7 @@ namespace Enemy {
         private dash: Ability.Dash = new Ability.Dash(this.netId, 60, 1, 6 * 60, 4);
         private shoot360: Ability.circleShoot = new Ability.circleShoot(this.netId, 0, 1, 60);
         private shoot360Cooldown: Ability.Cooldown = new Ability.Cooldown(580);
-        protected flocking: FlockingBehaviour = new FlockingBehaviour(
-            this,
-            4,
-            4,
-            1,
-            1,
-            1,
-            1,
-            1,
-            10);
+        protected flocking: FlockingBehaviour = new FlockingBehaviour(this, 4, 4, 1, 1, 1, 1, 1, 10);
         constructor(_id: Entity.ID, _position: ƒ.Vector2, _netId?: number) {
             super(_id, _position, _netId);
             this.tag = Tag.TAG.ENEMY;

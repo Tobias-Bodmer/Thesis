@@ -610,7 +610,6 @@ namespace Networking {
     //#endregion
 
     //#region specialItems
-
     export function spawnZipZap(_ownerNetId: number, _netId: number) {
         if (client.idHost == client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNZIPZAP, ownerNetId: _ownerNetId, netId: _netId } })
@@ -624,20 +623,19 @@ namespace Networking {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.SPAWNENEMY, enemyClass: _enemyClass, id: _enemy.id, attributes: _enemy.attributes, position: _enemy.mtxLocal.translation, netId: _netId, target: _enemy.target } })
         }
     }
+    
     export function updateEnemyPosition(_position: ƒ.Vector3, _netId: number) {
         if (Networking.client.id == Networking.client.idHost) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ENEMYTRANSFORM, position: _position, netId: _netId } })
         }
     }
+
     export function updateEntityAnimationState(_state: Entity.ANIMATIONSTATES, _netId: number) {
         if (Networking.client.idHost == Networking.client.id) {
             client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ENTITYANIMATIONSTATE, state: _state, netId: _netId } })
         }
-        // else {
-        //     client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id == client.idHost).id, content: { text: FUNCTION.ENTITYANIMATIONSTATE, state: _state, netId: _netId } })
-
-        // }
     }
+
     export function removeEntity(_netId: number) {
         client.dispatch({ route: undefined, idTarget: clients.find(elem => elem.id != client.idHost).id, content: { text: FUNCTION.ENTITYDIE, netId: _netId } })
     }

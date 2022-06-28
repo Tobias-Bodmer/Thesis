@@ -135,6 +135,7 @@ namespace Enemy {
 
                 super.collide(_direction);
 
+                // Collision with Avatars 
                 // let avatar: Player.Player[] = (<Player.Player[]>Game.graph.getChildren().filter(element => (<Player.Player>element).tag == Tag.TAG.PLAYER));
                 // let avatarColliders: Collider.Collider[] = [];
                 // avatar.forEach((elem) => {
@@ -143,6 +144,7 @@ namespace Enemy {
 
                 // this.calculateCollision(avatarColliders, _direction);
 
+                // Collision with Enemies
                 // let enemies: Enemy.Enemy[] = Game.enemies;
                 // let enemyColliders: Collider.Collider[] = [];
                 // enemies.forEach((elem) => {

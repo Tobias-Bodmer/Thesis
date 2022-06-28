@@ -54,18 +54,6 @@ namespace Interfaces {
         targets?: ƒ.Vector3[];
     }
 
-    // export interface BulletInformation {
-    //     speed: number;
-    //     hitPoint: number;
-    //     lifeTime: number;
-    //     knockbackForce: number;
-    //     passthroughEnemy: number;
-    //     position: Game.ƒ.Vector2;
-    //     direction: Game.ƒ.Vector2;
-    //     rotationDeg: number;
-    //     homingTarget?: Game.ƒ.Vector2;
-    // }
-
     export interface IRoomExits {
         north: boolean;
         east: boolean;

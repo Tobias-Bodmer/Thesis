@@ -233,7 +233,7 @@ declare namespace Entity {
         SMALLTICK = 5,
         SKELETON = 6,
         OGER = 7,
-        SUMMONOR = 8,
+        SUMMONER = 8,
         BIGBOOM = 9
     }
     function getNameById(_id: Entity.ID): string;

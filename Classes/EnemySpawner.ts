@@ -39,7 +39,7 @@ namespace EnemySpawner {
 
     export function spawnByID(_enemyClass: Enemy.ENEMYCLASS, _position: ƒ.Vector2, _target?: Player.Player, _netID?: number) {
         if (Game.currentRoom.enemyCountManager.finished) {
-            // return;
+            return;
         }
         console.log("spawned enemy " + Enemy.ENEMYCLASS[_enemyClass].toString());
 
@@ -61,7 +61,7 @@ namespace EnemySpawner {
                 enemy = new Enemy.SummonorAdds(Entity.ID.BAT, _position, _target, _netID);
                 break;
             case Enemy.ENEMYCLASS.SUMMONER:
-                enemy = new Enemy.Summonor(Entity.ID.SUMMONOR, _position, _netID);
+                enemy = new Enemy.Summonor(Entity.ID.SUMMONER, _position, _netID);
                 break;
             case Enemy.ENEMYCLASS.BIGBOOM:
                 enemy = new Enemy.BigBoom(Entity.ID.BIGBOOM, _position, _netID);

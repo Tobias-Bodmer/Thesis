@@ -32,10 +32,8 @@ namespace UI {
 
         //ItemPopUp
         if (itemUICooldown.hasCooldown) {
-            // itemUI.style.visibility = "visible";
             fade(itemUI, true);
         } else {
-            // itemUI.style.visibility = "hidden";
             fade(itemUI, false);
             if (+getComputedStyle(itemUI).opacity <= 0) {
                 setTimeout(() => {

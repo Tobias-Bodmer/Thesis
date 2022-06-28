@@ -15,7 +15,6 @@ namespace Game {
 
     //#region "DomElements"
     export let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("Canvas");
-    // window.addEventListener("load", init);
     window.addEventListener("load", start);
 
     document.getElementById("Option").addEventListener("click", () => {
@@ -98,7 +97,6 @@ namespace Game {
         cmpCamera.mtxPivot.rotateY(180);
 
         if (Networking.client.id == Networking.client.idHost) {
-            // Generation.rooms = Generation.generateNormalRooms();
             Items.ItemGenerator.fillPool();
             while (true) {
                 Generation.procedualRoomGeneration();
@@ -184,7 +182,6 @@ namespace Game {
         loadTextures();
         loadJSON();
         Networking.connecting();
-        // ƒAid.addStandardLightComponents(graph);
 
         //TODO: add sprite to graphe for startscreen
         document.getElementById("Startscreen").style.visibility = "visible";
@@ -205,41 +202,8 @@ namespace Game {
                         document.getElementById("IMHOST").style.visibility = "visible";
                     }
 
-
                     await init();
                     gamestate = GAMESTATES.PLAYING;
-                    // EnemySpawner.spawnEnemies();
-
-                    if (Networking.client.id == Networking.client.idHost) {
-                        // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.ENEMYDASH, new ƒ.Vector2(3, 3));
-                        // EnemySpawner.spawnMultipleEnemiesAtRoom(5, Game.currentRoom.mtxLocal.translation.toVector2());
-                        // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.ENEMYSMASH, Entity.ID.OGER, new ƒ.Vector2(3, 3), null);
-                        // EnemySpawner.spawnByID(Enemy.ENEMYCLASS.SUMMONOR, Entity.ID.SUMMONOR, new ƒ.Vector2(3, 3));
-
-                    }
-
-                    //#region init Items
-                    if (Networking.client.id == Networking.client.idHost) {
-                        let item2 = new Items.InternalItem(Items.ITEMID.SCALEUP);
-                        let item3 = new Items.InternalItem(Items.ITEMID.SCALEUP);
-                        // let item4 = new Items.BuffItem(Items.ITEMID.GETSTRONKO);
-                        // let item5 = new Items.BuffItem(Items.ITEMID.GETWEAKO);
-
-                        item2.setPosition(new ƒ.Vector2(-5, 0));
-                        item2.spawn();
-                        item3.setPosition(new ƒ.Vector2(5, 0));
-                        item3.spawn();
-                        // item4.setPosition(new ƒ.Vector2(-10, 0));
-                        // item4.spawn();
-                        // item5.setPosition(new ƒ.Vector2(10, 0));
-                        // item5.spawn();
-
-                        // // let item3 = new Items.InternalItem(Items.ITEMID.SCALEUP, new ƒ.Vector2(-2, 0), null);
-                        // let zipzap = new Items.InternalItem(Items.ITEMID.TEST);
-                        // zipzap.setPosition(new ƒ.Vector2(5, 0));
-                        // zipzap.spawn();
-                        // graph.appendChild(item3);
-                    }
 
                     Networking.spawnPlayer();
 
@@ -483,8 +447,7 @@ namespace Game {
 
         AnimationGeneration.generateAnimationObjects();
 
-        //TODO: USE THIS
-        // console.clear();
+        console.clear();
     }
 
     function draw(): void {

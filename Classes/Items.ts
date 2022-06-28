@@ -32,8 +32,6 @@ namespace Items {
     export let txtGetStronko: ƒ.TextureImage = new ƒ.TextureImage();
     export let txtGetWeako: ƒ.TextureImage = new ƒ.TextureImage();
 
-
-
     export abstract class Item extends Game.ƒ.Node {
         public tag: Tag.TAG = Tag.TAG.ITEM;
         id: ITEMID;
@@ -293,9 +291,9 @@ namespace Items {
                             let amount = _avatar.attributes.maxHealthPoints - currentMaxPoints;
                             _avatar.attributes.healthPoints += amount;
                         } else {
-                            _avatar.attributes.maxHealthPoints -= this.changedValue;
                             let currentMaxPoints = _avatar.attributes.maxHealthPoints;
-                            let amount = _avatar.attributes.maxHealthPoints - currentMaxPoints;
+                            _avatar.attributes.maxHealthPoints -= this.changedValue;
+                            let amount = currentMaxPoints - _avatar.attributes.maxHealthPoints;
                             _avatar.attributes.healthPoints -= amount;
                         }
                         Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes }, _avatar.netId);
@@ -320,7 +318,7 @@ namespace Items {
                             _avatar.updateScale(_avatar.attributes.getScale - this.changedValue, _addBuff);
 
                         } else {
-                            _avatar.updateScale(_avatar.attributes.getScale + this.changedValue,_addBuff);
+                            _avatar.updateScale(_avatar.attributes.getScale + this.changedValue, _addBuff);
 
                         }
                         Networking.updateEntityAttributes(<Interfaces.IAttributeValuePayload>{ value: _avatar.attributes }, _avatar.netId);
@@ -450,7 +448,6 @@ namespace Items {
             possibleItems = this.getPossibleItems();
             let randomIndex = Math.round(Math.random() * (possibleItems.length - 1));
             let returnItem = possibleItems[randomIndex];
-            // this.itemPool.splice(this.itemPool.indexOf(returnItem), 1);
             return returnItem.clone();
         }
 

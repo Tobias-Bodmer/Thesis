@@ -64,7 +64,7 @@ namespace AnimationGeneration {
                     this.addAnimation(ogerWalk.generatedSpriteAnimation, ogerWalk.animationScale, ogerWalk.frameRate);
                     this.addAnimation(ogerAttack.generatedSpriteAnimation, ogerAttack.animationScale, ogerAttack.frameRate);
                     break;
-                case Entity.ID.SUMMONOR:
+                case Entity.ID.SUMMONER:
                     this.addAnimation(summonerIdle.generatedSpriteAnimation, summonerIdle.animationScale, summonerIdle.frameRate);
                     this.addAnimation(summonerWalk.generatedSpriteAnimation, summonerWalk.animationScale, summonerWalk.frameRate);
                     this.addAnimation(summonerSummon.generatedSpriteAnimation, summonerSummon.animationScale, summonerSummon.frameRate);
@@ -162,10 +162,10 @@ namespace AnimationGeneration {
         ogerWalk = new MyAnimationClass(Entity.ID.OGER, "walk", txtOgerWalk, 6, 6);
         ogerAttack = new MyAnimationClass(Entity.ID.OGER, "attack", txtOgerAttack, 10, 12);
 
-        summonerIdle = new MyAnimationClass(Entity.ID.SUMMONOR, "idle", txtSummonerIdle, 6, 12);
-        summonerWalk = new MyAnimationClass(Entity.ID.SUMMONOR, "walk", txtSummonerIdle, 6, 12);
-        summonerSummon = new MyAnimationClass(Entity.ID.SUMMONOR, "summon", txtSummonerSummon, 13, 12);
-        summonerTeleport = new MyAnimationClass(Entity.ID.SUMMONOR, "teleport", txtSummonerTeleport, 6, 12);
+        summonerIdle = new MyAnimationClass(Entity.ID.SUMMONER, "idle", txtSummonerIdle, 6, 12);
+        summonerWalk = new MyAnimationClass(Entity.ID.SUMMONER, "walk", txtSummonerIdle, 6, 12);
+        summonerSummon = new MyAnimationClass(Entity.ID.SUMMONER, "summon", txtSummonerSummon, 13, 12);
+        summonerTeleport = new MyAnimationClass(Entity.ID.SUMMONER, "teleport", txtSummonerTeleport, 6, 12);
 
 
         rangedAnimation = new AnimationContainer(Entity.ID.RANGED);
@@ -174,7 +174,7 @@ namespace AnimationGeneration {
         smallTickAnimation = new AnimationContainer(Entity.ID.SMALLTICK);
         skeletonAnimation = new AnimationContainer(Entity.ID.SKELETON);
         ogerAnimation = new AnimationContainer(Entity.ID.OGER);
-        summonerAnimation = new AnimationContainer(Entity.ID.SUMMONOR);
+        summonerAnimation = new AnimationContainer(Entity.ID.SUMMONER);
 
     }
 
@@ -190,7 +190,7 @@ namespace AnimationGeneration {
                 return skeletonAnimation;
             case Entity.ID.OGER:
                 return ogerAnimation;
-            case Entity.ID.SUMMONOR:
+            case Entity.ID.SUMMONER:
                 return summonerAnimation;
             case Entity.ID.RANGED:
                 return rangedAnimation;

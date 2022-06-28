@@ -124,7 +124,7 @@ namespace UI {
             this.addComponent(cmpMaterial);
             this.addComponent(new Game.ƒ.ComponentTransform());
             this.mtxLocal.translation = new ƒ.Vector3(this.coordinates.x, this.coordinates.y, 1);
-            // this.activate(false);
+            this.activate(false);
         }
 
         public isDiscovered() {

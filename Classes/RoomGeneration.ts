@@ -108,11 +108,9 @@ namespace Generation {
             }
         })
         let roomCoord: Game.ƒ.Vector2[] = getCoordsFromRooms();
-        // let nextCoord = getNextPossibleCoordFromSpecificCoord(roomCoord, roomCoord[roomCoord.length - 1]);
         let nextCoord = getNextPossibleCoordFromSpecificCoord(roomCoord, roomCoord[0]);
 
         if (nextCoord == undefined) {
-            // nextCoord = getNextPossibleCoordFromSpecificCoord(roomCoord, roomCoord[roomCoord.length - 2]);
             generationFailed = true;
         }
         else {

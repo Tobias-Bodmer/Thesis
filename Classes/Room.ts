@@ -226,7 +226,7 @@ namespace Generation {
 
         private getRandomBoss(): Enemy.Enemy {
             if (Game.runs % 3 == 0) {
-                return new Enemy.Summonor(Entity.ID.SUMMONOR, this.mtxWorld.translation.toVector2());
+                return new Enemy.Summonor(Entity.ID.SUMMONER, this.mtxWorld.translation.toVector2());
             }
             else {
                 return new Enemy.BigBoom(Entity.ID.BIGBOOM, this.mtxWorld.translation.toVector2());

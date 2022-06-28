@@ -77,7 +77,6 @@ namespace Weapons {
 
             }
             else {
-                // this.magazin = this.loadMagazine(_position, _direction, this.bulletType, _bulletNetId);
                 this.processItemEffects();
                 this.fire(this.magazin);
             }
